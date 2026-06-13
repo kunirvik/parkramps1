@@ -265,9 +265,9 @@ return (
   marginTop: "clamp(0px, 1vw, 60px)"}}>  
   <div className="grid grid-cols-1 md:grid-cols-2   bg-[rgba(0, 0, 0, 0.77)]   bg-cover
     bg-center
-    bg-no-repeat bg-[url('https://res.cloudinary.com/dbx6muxub/image/upload/v1780563482/project-brightness-50_fbitrl.png')] w-full h-full  "
+    bg-no-repeat bg-[url('https://res.cloudinary.com/dbx6muxub/image/upload/v1780563482/project-brightness-50_fbitrl.png')] w-full  "
         style={{
-    maxHeight: "100%",
+    maxHeight: "100vh",
     overflow: "auto",
     // paddingTop: "clamp(50px, 3vw, 50px)", // отступ сверху
    
