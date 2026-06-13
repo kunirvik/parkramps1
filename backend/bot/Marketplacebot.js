@@ -175,27 +175,27 @@ async function getRemainingAttempts(uid) {
   return Math.max(0, MAX_DAILY - totalAttempts)
 }
 
-function canSubmitToday(uid) {
-  const stats = getDailyStats(uid)
-  const totalAttempts = stats.submitted + stats.rejected
-  return totalAttempts < MAX_DAILY
-}
+// function canSubmitToday(uid) {
+//   const stats = getDailyStats(uid)
+//   const totalAttempts = stats.submitted + stats.rejected
+//   return totalAttempts < MAX_DAILY
+// }
 
-function getRemainingAttempts(uid) {
-  const stats = getDailyStats(uid)
-  const totalAttempts = stats.submitted + stats.rejected
-  return Math.max(0, MAX_DAILY - totalAttempts)
-}
+// function getRemainingAttempts(uid) {
+//   const stats = getDailyStats(uid)
+//   const totalAttempts = stats.submitted + stats.rejected
+//   return Math.max(0, MAX_DAILY - totalAttempts)
+// }
 
-function recordSubmission(uid) {
-  const stats = getDailyStats(uid)
-  stats.submitted++
-}
+// function recordSubmission(uid) {
+//   const stats = getDailyStats(uid)
+//   stats.submitted++
+// }
 
-function recordRejection(uid) {
-  const stats = getDailyStats(uid)
-  stats.rejected++
-}
+// function recordRejection(uid) {
+//   const stats = getDailyStats(uid)
+//   stats.rejected++
+// }
 
 // ── Кулдаун ───────────────────────────────────────────────────────────────────
 const cooldowns = new Map()
@@ -387,8 +387,8 @@ async function showConfirm(bot, chatId, s, username) {
 // ── ПРИВЕТСТВЕННАЯ СТРАНИЦА ───────────────────────────────────────────────────
 
 async function showWelcome(bot, chatId, uid) {
-  const remaining = getRemainingAttempts(uid)
-  const stats = getDailyStats(uid)
+  const remaining = await awgetRemainingAttempts(uid)
+  const stats = await agetDailyStats(uid)
   
   let statusText = ""
   if (stats.submitted + stats.rejected > 0) {
@@ -597,7 +597,7 @@ async function onCallback(bot, q) {
   // ── Старт нового оголошення ──────────────────────────────────────────────
   if (data === "start_new" || data === "restart") {
     if (!canSubmitToday(uid)) {
-      const stats = getDailyStats(uid)
+      const stats = await getDailyStats(uid)
       return bot.sendMessage(chatId,
         `⏸ *Ліміт оголошень вичерпано*\n\n` +
         `Ви вже подали максимум оголошень сьогодні:\n` +
@@ -796,8 +796,8 @@ async function onCallback(bot, q) {
       (l.rejectReason ? `\n   _Причина: ${escMd(l.rejectReason)}_` : "")
     ).join("\n\n")
     
-    const stats = getDailyStats(uid)
-    const remaining = getRemainingAttempts(uid)
+    const stats = await getDailyStats(uid)
+    const remaining = await getRemainingAttempts(uid)
     
     return bot.sendMessage(chatId, 
       `*📋 Ваші оголошення:*\n\n${txt}\n\n` +
@@ -832,9 +832,9 @@ async function notifyApproved(listing) {
 }
 
 async function notifyRejected(listing, reason = "") {
-  recordRejection(listing.telegramId)
+  await recordRejection(listing.telegramId)
   
-  const remaining = getRemainingAttempts(listing.telegramId)
+  const remaining = await getRemainingAttempts(listing.telegramId)
   
   await notifyUser(listing.telegramId,
     `❌ *Оголошення відхилено*\n\n` +
