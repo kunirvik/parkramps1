@@ -262,7 +262,7 @@ return (
       </div>
  
  <div className="overflow-hidden flex-col items-center justify-center  "   style={{
-  marginTop: "clamp(60px, 3vw, 60px)"}}>  
+  marginTop: "clamp(0px, 1vw, 60px)"}}>  
   <div className="grid grid-cols-1 md:grid-cols-2   bg-[rgba(0, 0, 0, 0.77)]   bg-cover
     bg-center
     bg-no-repeat bg-[url('https://res.cloudinary.com/dbx6muxub/image/upload/v1780563482/project-brightness-50_fbitrl.png')] w-full h-full  "
