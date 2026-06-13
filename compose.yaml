@@ -1,0 +1,39 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: parkramps1-redis
+    ports:
+      - "6379:6379"
+
+  backend:
+    env_file:
+    - .env
+    build:
+      context: ./backend
+    container_name: parkramps1-backend
+    ports:
+      - "5001:5001"
+    environment:
+      PORT: 5001
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: ${JWT_SECRET}  
+      ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH}
+      MONGODB_URI: ${MONGODB_URI}
+      ADMIN_KEY: ${ADMIN_KEY}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
+    depends_on:
+      - redis
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: parkramps1-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
