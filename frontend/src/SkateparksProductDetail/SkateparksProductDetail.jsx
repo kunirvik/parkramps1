@@ -502,7 +502,7 @@ const handleMouseEnter = useCallback(
 
         <div 
           ref={(el) => (refs.current.container = el)}
-          className="w-full flex-grow mt-[70px] lg:mt-[50px] px-4 "
+          className="w-full flex-grow mt-[1px] lg:mt-[50px] px-4 "
           style={{
             opacity:
               shouldShowLoading && !loadingState.isCompleted ? 0 : 1,
