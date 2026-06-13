@@ -693,58 +693,7 @@ useEffect(() => {
     </div>
   )}
 
-  {/* МОБІЛЬНІ МІНІАТЮРИ ЗВЕРХУ
-  <div
-    ref={el => refs.current.thumbs = el}
-    className="block py-5 sm:hidden w-[100%]"
-    style={{
-      opacity: state.thumbsShown ? 1 : 0,
-    }}
-  >
-    <Swiper
-      modules={[Thumbs]}
-      direction="horizontal"
-      onSwiper={(swiper) => { 
-        setSwiperInstances((prev) => ({ ...prev, thumbs: swiper })); 
-      }}
-      breakpoints={{
-        320: { slidesPerView: 4, spaceBetween: 8 },
-        480: { slidesPerView: 8 },
-        640: { slidesPerView: 8 },
-        768: { slidesPerView: 8 },
-        1024: { slidesPerView: 8 },
-        1280: { slidesPerView: 8 },
-      }}
-      slidesPerView="auto"
-      spaceBetween={10}
-      watchSlidesProgress={true}
-      slideToClickedSlide={true}
-      initialSlide={state.activeProductIndex}
-      speed={SWIPER_CONFIG.SPEED}
-      preventClicks={false}
-      preventClicksPropagation={false}
-      observer={true}
-      observeParents={true}
-      resistance={false}
-      resistanceRatio={0}
-    >
-      {productCatalogSets.map((product, index) => (
-        <SwiperSlide key={product.id}>
-          <img
-            src={product.image}
-            onClick={() => handleThumbnailClick(index)}
-            className={`cursor-pointer transition-all duration-300 rounded-lg border-2 px-3 ${
-              index === state.activeProductIndex
-                ? "opacity-100 scale-105 border-black"
-                : "grayscale border-transparent opacity-60 hover:opacity-100"
-            }`}
-            alt={product.name}
-            draggable="false"
-          />
-        </SwiperSlide>
-      ))}
-    </Swiper>
-  </div> */}
+  
 
   {/* SWIPER ГАЛЕРЕЯ ПРАВОРУЧ (на десктопі) */}
   <div
@@ -875,12 +824,7 @@ useEffect(() => {
           onClose={closeGallery}
         />
 
-        {/* Дата по центру внизу */}
-        {/* <div className="flex justify-center items-center bg-black">
-          <span className="text-[#919190] font-futura font-light text-sm sm:text-[17px]">
-            2015-2025 © всі права захищені
-          </span>
-        </div> */}
+       
 
       </div>
     </>
