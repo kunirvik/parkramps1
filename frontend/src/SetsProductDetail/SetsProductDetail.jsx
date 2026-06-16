@@ -151,17 +151,25 @@ const {
   setAccordionState,
   handleAccordionToggle,
 } = useProductAccordion(openGallery, "sets", state.activeProductIndex);
-const {
-  handleMouseEnter: handleMouseEnterBase,
-  handleMouseLeave,
+// const {
+//   handleMouseEnter: handleMouseEnterBase,
+//   handleMouseLeave,
 
-  // startHoverAnimation,
-  // stopHoverAnimation,
-  scrubToFrame, 
-  setSpeed
+//   startHoverAnimation,
+//   stopHoverAnimation,
+//   scrubToFrame, 
+//   setSpeed
   
 
 
+// } = useHoverAnimation(isTouchDevice, setState);
+const {
+  getMode,
+  handleMouseEnter: handleMouseEnterBase,
+  handleMouseLeave,
+  scrubToFrame,
+  startPlayAnimation,
+  stopHoverAnimation,
 } = useHoverAnimation(isTouchDevice, setState);
 
 const {
@@ -557,6 +565,9 @@ const handleMouseEnter = useCallback(
   stopHoverAnimation={stopHoverAnimation}
   swiperConfig={SWIPER_CONFIG}
   scrubToFrame={scrubToFrame}
+    scrubToFrame={scrubToFrame}
+  startPlayAnimation={startPlayAnimation}
+  getMode={getMode}
 />
   
 

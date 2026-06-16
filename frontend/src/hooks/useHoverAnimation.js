@@ -82,69 +82,149 @@
 //   };
 // }
 
+// import { useCallback, useRef } from "react";
+
+// export function useHoverAnimation(isTouchDevice, setState) {
+//   const hoverIntervalRef = useRef(null);
+//   const speedRef = useRef(600);
+//   const modeRef = useRef("scrub"); // "scrub" | "interval"
+
+//   const stopHoverAnimation = useCallback(() => {
+//     clearInterval(hoverIntervalRef.current);
+//     hoverIntervalRef.current = null;
+//   }, []);
+
+//   const setSpeed = useCallback((ms) => {
+//     speedRef.current = ms;
+//   }, []);
+
+//   // Вызывается при mousemove — передаёт конкретный индекс кадра
+//   const scrubToFrame = useCallback((productIndex, frameIndex, totalImages) => {
+//     if (isTouchDevice || totalImages <= 1) return;
+//     setState((prev) => {
+//       const newIndices = [...prev.selectedImageIndices];
+//       if (newIndices[productIndex] === frameIndex) return prev;
+//       newIndices[productIndex] = frameIndex % totalImages;
+//       return { ...prev, selectedImageIndices: newIndices };
+//     });
+//   }, [isTouchDevice, setState]);
+
+//   // Запускает интервальную анимацию (кнопка Play или авто)
+//   const startHoverAnimation = useCallback((index, product) => {
+//     if (isTouchDevice) return;
+//     stopHoverAnimation();
+//     const totalImages = 1 + (product?.altImages?.length || 0);
+//     if (totalImages <= 1) return;
+
+//     hoverIntervalRef.current = setInterval(() => {
+//       setState((prev) => {
+//         const newIndices = [...prev.selectedImageIndices];
+//         const cur = newIndices[index] ?? 0;
+//         newIndices[index] = (cur + 1) % totalImages;
+//         return { ...prev, selectedImageIndices: newIndices };
+//       });
+//     }, speedRef.current);
+//   }, [isTouchDevice, setState, stopHoverAnimation]);
+
+//   const handleMouseEnter = useCallback((index, product, canAnimate = true) => {
+//     if (isTouchDevice || !canAnimate) return;
+//     setState((prev) => ({ ...prev, hoveredIndex: index }));
+//     // НЕ запускаем интервал при ховере — используем scrub по mousemove
+//   }, [isTouchDevice, setState]);
+
+//   const handleMouseLeave = useCallback(() => {
+//     setState((prev) => ({ ...prev, hoveredIndex: null }));
+//     stopHoverAnimation();
+//   }, [setState, stopHoverAnimation]);
+
+//   return {
+//     handleMouseEnter,
+//     handleMouseLeave,
+//     startHoverAnimation,
+//     stopHoverAnimation,
+//     scrubToFrame,
+//     setSpeed,
+//     speedRef,
+//   };
+// }
+
 import { useCallback, useRef } from "react";
 
+const SCRUB_THRESHOLD = 10; // порог переключения режимов
+
 export function useHoverAnimation(isTouchDevice, setState) {
-  const hoverIntervalRef = useRef(null);
-  const speedRef = useRef(600);
-  const modeRef = useRef("scrub"); // "scrub" | "interval"
+  const playIntervalRef = useRef(null);
+  const speedRef = useRef(500);
 
-  // const stopHoverAnimation = useCallback(() => {
-  //   clearInterval(hoverIntervalRef.current);
-  //   hoverIntervalRef.current = null;
-  // }, []);
+  const getTotalImages = (product) =>
+    1 + (product?.altImages?.length || 0);
 
-  const setSpeed = useCallback((ms) => {
-    speedRef.current = ms;
+  // Определяем режим для конкретного продукта
+  const getMode = useCallback((product) => {
+    return getTotalImages(product) >= SCRUB_THRESHOLD ? "scrub" : "play";
   }, []);
 
-  // Вызывается при mousemove — передаёт конкретный индекс кадра
-  const scrubToFrame = useCallback((productIndex, frameIndex, totalImages) => {
-    if (isTouchDevice || totalImages <= 1) return;
-    setState((prev) => {
-      const newIndices = [...prev.selectedImageIndices];
-      if (newIndices[productIndex] === frameIndex) return prev;
-      newIndices[productIndex] = frameIndex % totalImages;
-      return { ...prev, selectedImageIndices: newIndices };
-    });
-  }, [isTouchDevice, setState]);
+  const stopHoverAnimation = useCallback(() => {
+    clearInterval(playIntervalRef.current);
+    playIntervalRef.current = null;
+  }, []);
 
-  // // Запускает интервальную анимацию (кнопка Play или авто)
-  // const startHoverAnimation = useCallback((index, product) => {
-  //   if (isTouchDevice) return;
-  //   stopHoverAnimation();
-  //   const totalImages = 1 + (product?.altImages?.length || 0);
-  //   if (totalImages <= 1) return;
+  // Скраб: вызывается из onMouseMove, передаём конкретный frameIndex
+  const scrubToFrame = useCallback(
+    (productIndex, frameIndex, totalImages) => {
+      if (isTouchDevice) return;
+      setState((prev) => {
+        const newIndices = [...prev.selectedImageIndices];
+        const clamped = Math.max(0, Math.min(totalImages - 1, frameIndex));
+        if (newIndices[productIndex] === clamped) return prev;
+        newIndices[productIndex] = clamped;
+        return { ...prev, selectedImageIndices: newIndices };
+      });
+    },
+    [isTouchDevice, setState]
+  );
 
-  //   hoverIntervalRef.current = setInterval(() => {
-  //     setState((prev) => {
-  //       const newIndices = [...prev.selectedImageIndices];
-  //       const cur = newIndices[index] ?? 0;
-  //       newIndices[index] = (cur + 1) % totalImages;
-  //       return { ...prev, selectedImageIndices: newIndices };
-  //     });
-  //   }, speedRef.current);
-  // }, [isTouchDevice, setState, stopHoverAnimation]);
+  // Play-режим: запускает интервал (вызывается по клику)
+  const startPlayAnimation = useCallback(
+    (productIndex, product) => {
+      if (isTouchDevice) return;
+      stopHoverAnimation();
+      const totalImages = getTotalImages(product);
+      if (totalImages <= 1) return;
 
-  const handleMouseEnter = useCallback((index, product, canAnimate = true) => {
-    if (isTouchDevice || !canAnimate) return;
-    setState((prev) => ({ ...prev, hoveredIndex: index }));
-    // НЕ запускаем интервал при ховере — используем scrub по mousemove
-  }, [isTouchDevice, setState]);
+      playIntervalRef.current = setInterval(() => {
+        setState((prev) => {
+          const newIndices = [...prev.selectedImageIndices];
+          const cur = newIndices[productIndex] ?? 0;
+          newIndices[productIndex] = (cur + 1) % totalImages;
+          return { ...prev, selectedImageIndices: newIndices };
+        });
+      }, speedRef.current);
+    },
+    [isTouchDevice, setState, stopHoverAnimation]
+  );
+
+  // handleMouseEnter — только обновляет hoveredIndex, без анимации
+  const handleMouseEnter = useCallback(
+    (index, product, canAnimate = true) => {
+      if (isTouchDevice || !canAnimate) return;
+      setState((prev) => ({ ...prev, hoveredIndex: index }));
+    },
+    [isTouchDevice, setState]
+  );
 
   const handleMouseLeave = useCallback(() => {
     setState((prev) => ({ ...prev, hoveredIndex: null }));
-    // stopHoverAnimation();
-  }, [setState, ]);
-    // stopHoverAnimation удалён, так как интервальная анимация не используется. Если нужно будет — раскомментировать и добавить вызов в handleMouseEnter.
+    stopHoverAnimation();
+  }, [setState, stopHoverAnimation]);
 
   return {
+    getMode,
     handleMouseEnter,
     handleMouseLeave,
-    // startHoverAnimation,
-    // stopHoverAnimation,
     scrubToFrame,
-    setSpeed,
-    // speedRef,
+    startPlayAnimation,
+    stopHoverAnimation,
+    playIntervalRef,
   };
 }
