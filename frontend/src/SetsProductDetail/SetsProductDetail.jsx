@@ -155,8 +155,8 @@ const {
   handleMouseEnter: handleMouseEnterBase,
   handleMouseLeave,
 
-  startHoverAnimation,
-  stopHoverAnimation,
+  // startHoverAnimation,
+  // stopHoverAnimation,
   scrubToFrame, 
   setSpeed
   
