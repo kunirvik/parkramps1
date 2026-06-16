@@ -361,11 +361,11 @@ const handleMouseEnter = useCallback(
 
   if (isTouchDevice) return;
 
-//   if (isPointerOverSwiper()) {
-//     const product = productCatalogSets[newIndex];
-//     startHoverAnimation(newIndex, product);
-//   }
-// }, SWIPER_CONFIG.SPEED);
+  // if (isPointerOverSwiper()) {
+  //   const product = productCatalogSets[newIndex];
+  //   startHoverAnimation(newIndex, product);
+  // }
+}, SWIPER_CONFIG.SPEED);
 
     },
     [
