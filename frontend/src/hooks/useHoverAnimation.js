@@ -1,74 +1,139 @@
+// import { useCallback, useRef } from "react";
+
+// export function useHoverAnimation(isTouchDevice, setState) {
+//   const hoverIntervalRef = useRef(null);
+
+//   const getIntervalDuration = useCallback((totalImages) => {
+//     if (totalImages <= 1) return null;
+
+//     const minImages = 3;
+//     const maxImages = 15;
+//     const minInterval = 200;
+//     const maxInterval = 1500;
+
+//     if (totalImages <= minImages) return maxInterval;
+//     if (totalImages >= maxImages) return minInterval;
+
+//     const ratio = (totalImages - minImages) / (maxImages - minImages);
+//     return maxInterval - ratio * (maxInterval - minInterval);
+//   }, []);
+
+//   const stopHoverAnimation = useCallback(() => {
+//     clearInterval(hoverIntervalRef.current);
+//     hoverIntervalRef.current = null;
+//   }, []);
+
+//   const startHoverAnimation = useCallback(
+//     (index, product) => {
+//       if (isTouchDevice) return;
+
+//       stopHoverAnimation();
+
+//       const totalImages = 1 + (product?.altImages?.length || 0);
+//       if (totalImages <= 1) return;
+
+//       const intervalDuration = getIntervalDuration(totalImages);
+
+//       hoverIntervalRef.current = setInterval(() => {
+//         setState((prev) => {
+//           const newIndices = [...prev.selectedImageIndices];
+//           const cur = newIndices[index] ?? 0;
+//           newIndices[index] = (cur + 1) % totalImages;
+
+//           return {
+//             ...prev,
+//             selectedImageIndices: newIndices,
+//           };
+//         });
+//       }, intervalDuration);
+//     },
+//     [getIntervalDuration, isTouchDevice, setState, stopHoverAnimation]
+//   );
+
+//   const handleMouseEnter = useCallback(
+//     (index, product, canAnimate = true) => {
+//       if (isTouchDevice || !canAnimate) return;
+
+//       setState((prev) => ({
+//         ...prev,
+//         hoveredIndex: index,
+//       }));
+
+//       startHoverAnimation(index, product);
+//     },
+//     [isTouchDevice, setState, startHoverAnimation]
+//   );
+
+//   const handleMouseLeave = useCallback(() => {
+//     setState((prev) => ({
+//       ...prev,
+//       hoveredIndex: null,
+//     }));
+//     stopHoverAnimation();
+//   }, [setState, stopHoverAnimation]);
+
+//   return {
+//     handleMouseEnter,
+//     handleMouseLeave,
+//     startHoverAnimation,
+//     stopHoverAnimation,
+//     getIntervalDuration,
+//     hoverIntervalRef,
+//   };
+// }
+
 import { useCallback, useRef } from "react";
 
 export function useHoverAnimation(isTouchDevice, setState) {
   const hoverIntervalRef = useRef(null);
-
-  const getIntervalDuration = useCallback((totalImages) => {
-    if (totalImages <= 1) return null;
-
-    const minImages = 3;
-    const maxImages = 15;
-    const minInterval = 200;
-    const maxInterval = 1500;
-
-    if (totalImages <= minImages) return maxInterval;
-    if (totalImages >= maxImages) return minInterval;
-
-    const ratio = (totalImages - minImages) / (maxImages - minImages);
-    return maxInterval - ratio * (maxInterval - minInterval);
-  }, []);
+  const speedRef = useRef(600);
+  const modeRef = useRef("scrub"); // "scrub" | "interval"
 
   const stopHoverAnimation = useCallback(() => {
     clearInterval(hoverIntervalRef.current);
     hoverIntervalRef.current = null;
   }, []);
 
-  const startHoverAnimation = useCallback(
-    (index, product) => {
-      if (isTouchDevice) return;
+  const setSpeed = useCallback((ms) => {
+    speedRef.current = ms;
+  }, []);
 
-      stopHoverAnimation();
+  // Вызывается при mousemove — передаёт конкретный индекс кадра
+  const scrubToFrame = useCallback((productIndex, frameIndex, totalImages) => {
+    if (isTouchDevice || totalImages <= 1) return;
+    setState((prev) => {
+      const newIndices = [...prev.selectedImageIndices];
+      if (newIndices[productIndex] === frameIndex) return prev;
+      newIndices[productIndex] = frameIndex % totalImages;
+      return { ...prev, selectedImageIndices: newIndices };
+    });
+  }, [isTouchDevice, setState]);
 
-      const totalImages = 1 + (product?.altImages?.length || 0);
-      if (totalImages <= 1) return;
+  // Запускает интервальную анимацию (кнопка Play или авто)
+  const startHoverAnimation = useCallback((index, product) => {
+    if (isTouchDevice) return;
+    stopHoverAnimation();
+    const totalImages = 1 + (product?.altImages?.length || 0);
+    if (totalImages <= 1) return;
 
-      const intervalDuration = getIntervalDuration(totalImages);
+    hoverIntervalRef.current = setInterval(() => {
+      setState((prev) => {
+        const newIndices = [...prev.selectedImageIndices];
+        const cur = newIndices[index] ?? 0;
+        newIndices[index] = (cur + 1) % totalImages;
+        return { ...prev, selectedImageIndices: newIndices };
+      });
+    }, speedRef.current);
+  }, [isTouchDevice, setState, stopHoverAnimation]);
 
-      hoverIntervalRef.current = setInterval(() => {
-        setState((prev) => {
-          const newIndices = [...prev.selectedImageIndices];
-          const cur = newIndices[index] ?? 0;
-          newIndices[index] = (cur + 1) % totalImages;
-
-          return {
-            ...prev,
-            selectedImageIndices: newIndices,
-          };
-        });
-      }, intervalDuration);
-    },
-    [getIntervalDuration, isTouchDevice, setState, stopHoverAnimation]
-  );
-
-  const handleMouseEnter = useCallback(
-    (index, product, canAnimate = true) => {
-      if (isTouchDevice || !canAnimate) return;
-
-      setState((prev) => ({
-        ...prev,
-        hoveredIndex: index,
-      }));
-
-      startHoverAnimation(index, product);
-    },
-    [isTouchDevice, setState, startHoverAnimation]
-  );
+  const handleMouseEnter = useCallback((index, product, canAnimate = true) => {
+    if (isTouchDevice || !canAnimate) return;
+    setState((prev) => ({ ...prev, hoveredIndex: index }));
+    // НЕ запускаем интервал при ховере — используем scrub по mousemove
+  }, [isTouchDevice, setState]);
 
   const handleMouseLeave = useCallback(() => {
-    setState((prev) => ({
-      ...prev,
-      hoveredIndex: null,
-    }));
+    setState((prev) => ({ ...prev, hoveredIndex: null }));
     stopHoverAnimation();
   }, [setState, stopHoverAnimation]);
 
@@ -77,7 +142,8 @@ export function useHoverAnimation(isTouchDevice, setState) {
     handleMouseLeave,
     startHoverAnimation,
     stopHoverAnimation,
-    getIntervalDuration,
-    hoverIntervalRef,
+    scrubToFrame,
+    setSpeed,
+    speedRef,
   };
 }

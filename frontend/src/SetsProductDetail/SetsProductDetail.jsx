@@ -74,6 +74,8 @@ const imageData = imageDataRef.current;
 
 
 
+
+
   const [swiperInstances, setSwiperInstances] = useState({
     main: null,
     thumbs: null,
@@ -152,8 +154,13 @@ const {
 const {
   handleMouseEnter: handleMouseEnterBase,
   handleMouseLeave,
+
   startHoverAnimation,
   stopHoverAnimation,
+  scrubToFrame, 
+  setSpeed
+  
+
 
 } = useHoverAnimation(isTouchDevice, setState);
 
@@ -549,6 +556,7 @@ const handleMouseEnter = useCallback(
   onTouchEnd={handleTouchEnd}
   stopHoverAnimation={stopHoverAnimation}
   swiperConfig={SWIPER_CONFIG}
+  scrubToFrame={scrubToFrame}
 />
   
 
