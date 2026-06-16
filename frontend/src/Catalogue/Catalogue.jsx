@@ -249,7 +249,9 @@ return (
         .status-bar__sep { color: #222; margin: 0 8px; }
       `}</style>
 
-    <div className="bg-black flex flex-col min-h-screen relative">
+    <div className=" flex flex-col min-h-screen relative bg-[rgba(0, 0, 0, 0.77)]   bg-cover
+    bg-center
+    bg-no-repeat bg-[url('https://res.cloudinary.com/dbx6muxub/image/upload/v1780563482/project-brightness-50_fbitrl.png')] w-full">
 
       {/* SocialButtons всегда вверху */}
       <div className="z-50  flex-shrink-0">
@@ -263,9 +265,7 @@ return (
  
  <div className="overflow-hidden flex-col items-center justify-center  "   style={{
   marginTop: "clamp(0px, 1vw, 60px)"}}>  
-  <div className="grid grid-cols-1 md:grid-cols-2   bg-[rgba(0, 0, 0, 0.77)]   bg-cover
-    bg-center
-    bg-no-repeat bg-[url('https://res.cloudinary.com/dbx6muxub/image/upload/v1780563482/project-brightness-50_fbitrl.png')] w-full  "
+  <div className="grid grid-cols-1 md:grid-cols-2     "
         style={{
     maxHeight: "100vh",
     overflow: "auto",
