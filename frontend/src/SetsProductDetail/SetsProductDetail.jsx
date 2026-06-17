@@ -164,12 +164,13 @@ const {
 
 // } = useHoverAnimation(isTouchDevice, setState);
 const {
-  getMode,
+  getMode, userMode, setUserMode,
   handleMouseEnter: handleMouseEnterBase,
   handleMouseLeave,
   scrubToFrame,
   startPlayAnimation,
   stopHoverAnimation,
+   blockScrubBriefly, // ← новый
 } = useHoverAnimation(isTouchDevice, setState);
 
 const {
@@ -358,6 +359,7 @@ const handleMouseEnter = useCallback(
     newIndices[oldIndex] = 0;
     return { ...prev, selectedImageIndices: newIndices };
   });
+   blockScrubBriefly(800); // задержка скраба после смены продукта
 
   if (isTouchDevice) return;
 
@@ -377,8 +379,9 @@ const handleMouseEnter = useCallback(
       isPointerOverSwiper,
       // startHoverInterval,
       //  startHoverAnimation,
-  stopHoverAnimation,
+  // stopHoverAnimation,
       isTouchDevice,
+       blockScrubBriefly // задержка скраба после смены продукта
 
     ]
   );
@@ -564,10 +567,12 @@ const handleMouseEnter = useCallback(
   onTouchEnd={handleTouchEnd}
   stopHoverAnimation={stopHoverAnimation}
   swiperConfig={SWIPER_CONFIG}
-  scrubToFrame={scrubToFrame}
-    scrubToFrame={scrubToFrame}
-  startPlayAnimation={startPlayAnimation}
+userMode={userMode}
+  setUserMode={setUserMode}
   getMode={getMode}
+  scrubToFrame={scrubToFrame}
+  startPlayAnimation={startPlayAnimation}
+  blockScrubBriefly={blockScrubBriefly}
 />
   
 

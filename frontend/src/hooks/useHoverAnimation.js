@@ -148,20 +148,107 @@
 //   };
 // }
 
-import { useCallback, useRef } from "react";
+// import { useCallback, useRef } from "react";
 
-const SCRUB_THRESHOLD = 10; // порог переключения режимов
+// const SCRUB_THRESHOLD = 10; // порог переключения режимов
+
+// export function useHoverAnimation(isTouchDevice, setState) {
+//   const playIntervalRef = useRef(null);
+//   const speedRef = useRef(500);
+
+//   const getTotalImages = (product) =>
+//     1 + (product?.altImages?.length || 0);
+
+//   // Определяем режим для конкретного продукта
+//   const getMode = useCallback((product) => {
+//     return getTotalImages(product) >= SCRUB_THRESHOLD ? "scrub" : "play";
+//   }, []);
+
+//   const stopHoverAnimation = useCallback(() => {
+//     clearInterval(playIntervalRef.current);
+//     playIntervalRef.current = null;
+//   }, []);
+
+//   // Скраб: вызывается из onMouseMove, передаём конкретный frameIndex
+//   const scrubToFrame = useCallback(
+//     (productIndex, frameIndex, totalImages) => {
+//       if (isTouchDevice) return;
+//       setState((prev) => {
+//         const newIndices = [...prev.selectedImageIndices];
+//         const clamped = Math.max(0, Math.min(totalImages - 1, frameIndex));
+//         if (newIndices[productIndex] === clamped) return prev;
+//         newIndices[productIndex] = clamped;
+//         return { ...prev, selectedImageIndices: newIndices };
+//       });
+//     },
+//     [isTouchDevice, setState]
+//   );
+
+//   // Play-режим: запускает интервал (вызывается по клику)
+//   const startPlayAnimation = useCallback(
+//     (productIndex, product) => {
+//       if (isTouchDevice) return;
+//       stopHoverAnimation();
+//       const totalImages = getTotalImages(product);
+//       if (totalImages <= 1) return;
+
+//       playIntervalRef.current = setInterval(() => {
+//         setState((prev) => {
+//           const newIndices = [...prev.selectedImageIndices];
+//           const cur = newIndices[productIndex] ?? 0;
+//           newIndices[productIndex] = (cur + 1) % totalImages;
+//           return { ...prev, selectedImageIndices: newIndices };
+//         });
+//       }, speedRef.current);
+//     },
+//     [isTouchDevice, setState, stopHoverAnimation]
+//   );
+
+//   // handleMouseEnter — только обновляет hoveredIndex, без анимации
+//   const handleMouseEnter = useCallback(
+//     (index, product, canAnimate = true) => {
+//       if (isTouchDevice || !canAnimate) return;
+//       setState((prev) => ({ ...prev, hoveredIndex: index }));
+//     },
+//     [isTouchDevice, setState]
+//   );
+
+//   const handleMouseLeave = useCallback(() => {
+//     setState((prev) => ({ ...prev, hoveredIndex: null }));
+//     stopHoverAnimation();
+//   }, [setState, stopHoverAnimation]);
+
+//   return {
+//     getMode,
+//     handleMouseEnter,
+//     handleMouseLeave,
+//     scrubToFrame,
+//     startPlayAnimation,
+//     stopHoverAnimation,
+//     playIntervalRef,
+//   };
+// }
+
+import { useCallback, useRef, useState } from "react";
+
+const SCRUB_THRESHOLD = 10;
 
 export function useHoverAnimation(isTouchDevice, setState) {
   const playIntervalRef = useRef(null);
-  const speedRef = useRef(500);
+  const scrubReadyRef = useRef(true); // задержка после смены продукта
+  const [userMode, setUserMode] = useState("scrub"); // "scrub" | "play"
 
-  const getTotalImages = (product) =>
-    1 + (product?.altImages?.length || 0);
+  const getTotalImages = (product) => 1 + (product?.altImages?.length || 0);
 
-  // Определяем режим для конкретного продукта
-  const getMode = useCallback((product) => {
-    return getTotalImages(product) >= SCRUB_THRESHOLD ? "scrub" : "play";
+  const getMode = useCallback(
+    (product) => (getTotalImages(product) >= SCRUB_THRESHOLD ? "scrub" : "play"),
+    []
+  );
+
+  // Заблокировать скраб на N мс (вызывать при смене продукта)
+  const blockScrubBriefly = useCallback((ms = 800) => {
+    scrubReadyRef.current = false;
+    setTimeout(() => { scrubReadyRef.current = true; }, ms);
   }, []);
 
   const stopHoverAnimation = useCallback(() => {
@@ -169,10 +256,9 @@ export function useHoverAnimation(isTouchDevice, setState) {
     playIntervalRef.current = null;
   }, []);
 
-  // Скраб: вызывается из onMouseMove, передаём конкретный frameIndex
   const scrubToFrame = useCallback(
     (productIndex, frameIndex, totalImages) => {
-      if (isTouchDevice) return;
+      if (isTouchDevice || !scrubReadyRef.current) return;
       setState((prev) => {
         const newIndices = [...prev.selectedImageIndices];
         const clamped = Math.max(0, Math.min(totalImages - 1, frameIndex));
@@ -184,14 +270,12 @@ export function useHoverAnimation(isTouchDevice, setState) {
     [isTouchDevice, setState]
   );
 
-  // Play-режим: запускает интервал (вызывается по клику)
   const startPlayAnimation = useCallback(
-    (productIndex, product) => {
+    (productIndex, product, speed = 450) => {
       if (isTouchDevice) return;
       stopHoverAnimation();
       const totalImages = getTotalImages(product);
       if (totalImages <= 1) return;
-
       playIntervalRef.current = setInterval(() => {
         setState((prev) => {
           const newIndices = [...prev.selectedImageIndices];
@@ -199,12 +283,11 @@ export function useHoverAnimation(isTouchDevice, setState) {
           newIndices[productIndex] = (cur + 1) % totalImages;
           return { ...prev, selectedImageIndices: newIndices };
         });
-      }, speedRef.current);
+      }, speed);
     },
     [isTouchDevice, setState, stopHoverAnimation]
   );
 
-  // handleMouseEnter — только обновляет hoveredIndex, без анимации
   const handleMouseEnter = useCallback(
     (index, product, canAnimate = true) => {
       if (isTouchDevice || !canAnimate) return;
@@ -220,11 +303,13 @@ export function useHoverAnimation(isTouchDevice, setState) {
 
   return {
     getMode,
+    userMode,
+    setUserMode,
     handleMouseEnter,
     handleMouseLeave,
     scrubToFrame,
     startPlayAnimation,
     stopHoverAnimation,
-    playIntervalRef,
+    blockScrubBriefly,
   };
 }
