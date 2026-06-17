@@ -1081,7 +1081,7 @@ export default function ProductGallery({
 
           {/* Счётчик кадров */}
           {allImages.length > 1 && (
-            <div className="absolute top-2.5 left-3 z-10 pointer-events-none">
+            <div className="absolute top-2.5 right-3 z-10 pointer-events-none">
               <span
                 className="text-[11px] text-white px-2.5 py-1 rounded-full"
                 style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(6px)" }}
@@ -1094,7 +1094,7 @@ export default function ProductGallery({
           {/* Кнопка (i) — стеклянная */}
           {allImages.length > 1 && (
             <button
-              className="absolute top-2.5 right-3 z-20 w-7 h-7 rounded-full flex items-center justify-center"
+              className="absolute top-2.5 left-3 z-20 w-7 h-7 rounded-full flex items-center justify-center"
               style={{
                 background: "rgba(120,120,120,0.28)",
                 backdropFilter: "blur(8px)",
