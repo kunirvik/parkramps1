@@ -877,7 +877,7 @@ function Filmstrip({ product, currentFrameIndex, onFrameSelect }) {
         onMouseUp={() => { isDragging.current = false; trackRef.current.style.cursor = "grab"; }}
         onMouseLeave={() => { isDragging.current = false; }}
       >
-        {allImages.map((src, i) => (
+        {/* {allImages.map((src, i) => (
           <div
             key={i}
             onClick={() => onFrameSelect(i)}
@@ -892,11 +892,11 @@ function Filmstrip({ product, currentFrameIndex, onFrameSelect }) {
               <div className="absolute inset-0 bg-black/25 pointer-events-none" />
             )}
           </div>
-        ))}
+        ))} */}
       </div>
-      <p className="text-[11px] text-gray-400 mt-1 text-right">
+      {/* <p className="text-[11px] text-gray-400 mt-1 text-right">
         {currentFrameIndex + 1} / {allImages.length}
-      </p>
+      </p> */}
     </div>
   );
 }
