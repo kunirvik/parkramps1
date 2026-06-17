@@ -960,7 +960,7 @@ export default function ProductGallery({
 
   const hintText =
     effectiveMode === "scrub"
-      ? "Двигайте мышью по фото — кадр меняется по позиции курсора"
+      ? "Двигайте мышью по фото для просмотра 360°"
       : "Нажмите на фото — запустится анимация. Ещё раз — пауза";
 
   const handleStageMouseMove = useCallback(
@@ -1112,7 +1112,7 @@ export default function ProductGallery({
             className="absolute z-30 pointer-events-none"
             style={{
               top: 44,
-              right: 10,
+             left: 10,
               minWidth: 190,
               maxWidth: 230,
               background: "rgba(25,25,25,0.6)",
