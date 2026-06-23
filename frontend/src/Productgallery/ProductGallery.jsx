@@ -1372,7 +1372,71 @@ export default function ProductGallery({
       }}
     >
       <div className="w-full flex flex-col">
+<div
+  ref={(el) => (refs.thumbs = el)}
+  className="w-full mb-5 lg:mb-6"
+  style={{ opacity: state.thumbsShown ? 1 : 0 }}
+>
+  <Swiper
+    modules={[Thumbs]}
+    direction="horizontal"
+    onSwiper={(swiper) => setSwiperInstances((prev) => ({ ...prev, thumbs: swiper }))}
+    slidesPerView="auto"
+    spaceBetween={10}
+    watchSlidesProgress={true}
+    slideToClickedSlide={true}
+    initialSlide={state.activeProductIndex}
+    speed={swiperConfig.SPEED}
+    preventClicks={false}
+    preventClicksPropagation={false}
+    observer={true}
+    observeParents={true}
+    resistance={false}
+    resistanceRatio={0}
+  >
+    {products.map((product, index) => {
+      const isActive = index === state.activeProductIndex;
 
+      return (
+        <SwiperSlide key={product.id} className="!w-[90px] sm:!w-[110px] lg:!w-[140px]">
+          <div
+            onClick={() => !isActive && onThumbnailClick(index)}
+            className="flex flex-col items-center gap-1"
+            style={{ cursor: isActive ? "default" : "pointer" }}
+          >
+            <img
+              src={product.image}
+              className={`
+                w-full h-16 sm:h-20 lg:h-24 object-contain rounded-lg px-2
+                transition-all duration-300
+                ${isActive
+                  ? "opacity-100 scale-105"
+                  : "grayscale opacity-50 hover:opacity-80 hover:grayscale-0"
+                }
+              `}
+              alt={product.name}
+              draggable="false"
+            />
+            {/* Название — только у неактивных */}
+            <span
+              className={`
+                text-[10px] sm:text-[11px] text-center leading-tight
+                transition-all duration-300 line-clamp-1 w-full px-1
+                ${isActive
+                  ? "opacity-0 select-none pointer-events-none"
+                  : "opacity-60"
+                }
+              `}
+              style={{ color: "var(--color-text-secondary)" }}
+            >
+              {product.name}
+            </span>
+          </div>
+        </SwiperSlide>
+      );
+    })}
+  </Swiper>
+</div>
         {/* Главная область */}
         <div
           ref={stageRef}
@@ -1546,9 +1610,9 @@ export default function ProductGallery({
         />
 
         {/* Thumbs навигация */}
-        <div
+        {/* <div
           ref={(el) => (refs.thumbs = el)}
-          className="w-full mt-5 lg:mt-8"
+          className="w-full mt-5 lg:mt-6"
           style={{ opacity: state.thumbsShown ? 1 : 0 }}
         >
           <Swiper
@@ -1584,7 +1648,7 @@ export default function ProductGallery({
               </SwiperSlide>
             ))}
           </Swiper>
-        </div>
+        </div> */}
 
       </div>
     </div>
