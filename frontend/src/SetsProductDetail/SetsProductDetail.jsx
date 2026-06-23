@@ -180,6 +180,7 @@ const {
   scrubToFrame,
   startPlayAnimation,
   stopHoverAnimation,
+   preloadAdjacentProducts,
 } = useHoverAnimation(isTouchDevice, setState);
 
 const {
@@ -411,6 +412,10 @@ const handleMouseEnter = useCallback(
   );
 
  
+useEffect(() => {
+  preloadAdjacentProducts(productCatalogSets, state.activeProductIndex);
+}, [state.activeProductIndex, preloadAdjacentProducts]); 
+
 
   // ─── Effects ──────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -542,7 +547,7 @@ const handleMouseEnter = useCallback(
 
           {/* <div className="w-full h-[50%] flex flex-col lg:flex-row relative"> */}
           <div className="w-full flex flex-col lg:flex-row relative lg:items-start lg:h-screen lg:max-h-[calc(100vh-130px)]">
-            
+
          
 <ProductInfo
   product={currentProduct}

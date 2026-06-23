@@ -313,20 +313,28 @@
 //     blockScrubBriefly,
 //   };
 // }
-
-
 import { useCallback, useRef, useState } from "react";
+
+// Кеш уже предзагруженных продуктов
+const preloadedProducts = new Set();
+
+function preloadImages(product) {
+  if (!product || preloadedProducts.has(product.id)) return;
+  preloadedProducts.add(product.id);
+
+  const urls = [product.image, ...(product.altImages || [])];
+  urls.forEach((src) => {
+    const img = new Image();
+    img.src = src;
+  });
+}
 
 export function useHoverAnimation(isTouchDevice, setState) {
   const playIntervalRef = useRef(null);
   const [userMode, setUserMode] = useState("play");
 
   const getTotalImages = (product) => 1 + (product?.altImages?.length || 0);
-
-  // Все продукты теперь в режиме play
   const getMode = useCallback(() => "play", []);
-
-  // Заглушка — blockScrubBriefly больше не нужен, но оставим для совместимости
   const blockScrubBriefly = useCallback(() => {}, []);
 
   const stopHoverAnimation = useCallback(() => {
@@ -334,19 +342,44 @@ export function useHoverAnimation(isTouchDevice, setState) {
     playIntervalRef.current = null;
   }, []);
 
-  // scrubToFrame — заглушка (убран скраб)
   const scrubToFrame = useCallback(() => {}, []);
+
+  // Предзагрузить соседние продукты
+  const preloadAdjacentProducts = useCallback((products, currentIndex) => {
+    const toPreload = [
+      products[currentIndex],
+      products[currentIndex - 1],
+      products[currentIndex + 1],
+    ].filter(Boolean);
+    toPreload.forEach(preloadImages);
+  }, []);
 
   const startPlayAnimation = useCallback(
     (productIndex, product, speed = 450) => {
       stopHoverAnimation();
-      const totalImages = getTotalImages(product);
+      const allImages = [product.image, ...(product.altImages || [])];
+      const totalImages = allImages.length;
       if (totalImages <= 1) return;
+
+      // Проверяем загружена ли следующая картинка перед переключением
       playIntervalRef.current = setInterval(() => {
         setState((prev) => {
+          const cur = prev.selectedImageIndices[productIndex] ?? 0;
+          const next = (cur + 1) % totalImages;
+          const nextSrc = allImages[next];
+
+          // Проверяем кеш браузера
+          const img = new Image();
+          img.src = nextSrc;
+
+          // naturalWidth > 0 = картинка уже в кеше браузера
+          if (!img.complete || img.naturalWidth === 0) {
+            // Ещё не загружена — пропускаем этот тик, ждём следующего
+            return prev;
+          }
+
           const newIndices = [...prev.selectedImageIndices];
-          const cur = newIndices[productIndex] ?? 0;
-          newIndices[productIndex] = (cur + 1) % totalImages;
+          newIndices[productIndex] = next;
           return { ...prev, selectedImageIndices: newIndices };
         });
       }, speed);
@@ -377,5 +410,71 @@ export function useHoverAnimation(isTouchDevice, setState) {
     startPlayAnimation,
     stopHoverAnimation,
     blockScrubBriefly,
+    preloadAdjacentProducts, // ← новый
   };
 }
+
+// import { useCallback, useRef, useState } from "react";
+
+// export function useHoverAnimation(isTouchDevice, setState) {
+//   const playIntervalRef = useRef(null);
+//   const [userMode, setUserMode] = useState("play");
+
+//   const getTotalImages = (product) => 1 + (product?.altImages?.length || 0);
+
+//   // Все продукты теперь в режиме play
+//   const getMode = useCallback(() => "play", []);
+
+//   // Заглушка — blockScrubBriefly больше не нужен, но оставим для совместимости
+//   const blockScrubBriefly = useCallback(() => {}, []);
+
+//   const stopHoverAnimation = useCallback(() => {
+//     clearInterval(playIntervalRef.current);
+//     playIntervalRef.current = null;
+//   }, []);
+
+//   // scrubToFrame — заглушка (убран скраб)
+//   const scrubToFrame = useCallback(() => {}, []);
+
+//   const startPlayAnimation = useCallback(
+//     (productIndex, product, speed = 450) => {
+//       stopHoverAnimation();
+//       const totalImages = getTotalImages(product);
+//       if (totalImages <= 1) return;
+//       playIntervalRef.current = setInterval(() => {
+//         setState((prev) => {
+//           const newIndices = [...prev.selectedImageIndices];
+//           const cur = newIndices[productIndex] ?? 0;
+//           newIndices[productIndex] = (cur + 1) % totalImages;
+//           return { ...prev, selectedImageIndices: newIndices };
+//         });
+//       }, speed);
+//     },
+//     [setState, stopHoverAnimation]
+//   );
+
+//   const handleMouseEnter = useCallback(
+//     (index, product, canAnimate = true) => {
+//       if (isTouchDevice || !canAnimate) return;
+//       setState((prev) => ({ ...prev, hoveredIndex: index }));
+//     },
+//     [isTouchDevice, setState]
+//   );
+
+//   const handleMouseLeave = useCallback(() => {
+//     setState((prev) => ({ ...prev, hoveredIndex: null }));
+//     stopHoverAnimation();
+//   }, [setState, stopHoverAnimation]);
+
+//   return {
+//     getMode,
+//     userMode,
+//     setUserMode,
+//     handleMouseEnter,
+//     handleMouseLeave,
+//     scrubToFrame,
+//     startPlayAnimation,
+//     stopHoverAnimation,
+//     blockScrubBriefly,
+//   };
+// }
