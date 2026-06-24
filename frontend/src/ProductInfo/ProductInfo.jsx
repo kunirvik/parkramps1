@@ -11,8 +11,7 @@ export default function ProductInfo({
   imageData,
 }) {
   return (
-    // <div className="flex lg:flex-col bg-rgb(35, 35, 35)  w-full">
-    <div className="flex lg:flex-col w-full lg:w-[25%] lg:h-full lg:overflow-y-auto lg:flex-shrink-0">
+    <div className="flex lg:flex-col bg-rgb(35, 35, 35)  w-full">
       {/* DESKTOP */}
       <div className="hidden lg:block  w-full">
         <div

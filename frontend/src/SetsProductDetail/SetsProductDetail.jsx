@@ -163,16 +163,6 @@ const {
 
 
 // } = useHoverAnimation(isTouchDevice, setState);
-// const {
-//   getMode, userMode, setUserMode,
-//   handleMouseEnter: handleMouseEnterBase,
-//   handleMouseLeave,
-//   scrubToFrame,
-//   startPlayAnimation,
-//   stopHoverAnimation,
-//    blockScrubBriefly, // ← новый
-// } = useHoverAnimation(isTouchDevice, setState);
-
 const {
   getMode, userMode, setUserMode,
   handleMouseEnter: handleMouseEnterBase,
@@ -180,7 +170,7 @@ const {
   scrubToFrame,
   startPlayAnimation,
   stopHoverAnimation,
-   preloadAdjacentProducts,
+   blockScrubBriefly, // ← новый
 } = useHoverAnimation(isTouchDevice, setState);
 
 const {
@@ -369,7 +359,7 @@ const handleMouseEnter = useCallback(
     newIndices[oldIndex] = 0;
     return { ...prev, selectedImageIndices: newIndices };
   });
-  //  blockScrubBriefly(800); // задержка скраба после смены продукта
+   blockScrubBriefly(800); // задержка скраба после смены продукта
 
   if (isTouchDevice) return;
 
@@ -391,7 +381,7 @@ const handleMouseEnter = useCallback(
       //  startHoverAnimation,
   // stopHoverAnimation,
       isTouchDevice,
-      //  blockScrubBriefly // задержка скраба после смены продукта
+       blockScrubBriefly // задержка скраба после смены продукта
 
     ]
   );
@@ -412,10 +402,6 @@ const handleMouseEnter = useCallback(
   );
 
  
-useEffect(() => {
-  preloadAdjacentProducts(productCatalogSets, state.activeProductIndex);
-}, [state.activeProductIndex, preloadAdjacentProducts]); 
-
 
   // ─── Effects ──────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -545,9 +531,7 @@ useEffect(() => {
         >
           <div className="w-full hidden sm:block flex items-start mb-4" />
 
-          {/* <div className="w-full h-[50%] flex flex-col lg:flex-row relative"> */}
-          <div className="w-full flex flex-col lg:flex-row relative lg:items-start lg:h-screen lg:max-h-[calc(100vh-130px)]">
-
+          <div className="w-full h-[50%] flex flex-col lg:flex-row relative">
          
 <ProductInfo
   product={currentProduct}
@@ -588,7 +572,7 @@ userMode={userMode}
   getMode={getMode}
   scrubToFrame={scrubToFrame}
   startPlayAnimation={startPlayAnimation}
-  // blockScrubBriefly={blockScrubBriefly}
+  blockScrubBriefly={blockScrubBriefly}
    isTouchDevice={isTouchDevice}
 />
   
