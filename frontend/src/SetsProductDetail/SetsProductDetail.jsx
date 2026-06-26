@@ -362,7 +362,7 @@ const handleMouseEnter = useCallback(
     newIndices[oldIndex] = 0;
     return { ...prev, selectedImageIndices: newIndices };
   });
-   blockScrubBriefly(800); // задержка скраба после смены продукта
+  //  blockScrubBriefly(800); // задержка скраба после смены продукта
 
   if (isTouchDevice) return;
 
@@ -384,7 +384,7 @@ const handleMouseEnter = useCallback(
       //  startHoverAnimation,
   // stopHoverAnimation,
       isTouchDevice,
-       blockScrubBriefly // задержка скраба после смены продукта
+      //  blockScrubBriefly // задержка скраба после смены продукта
 
     ]
   );
@@ -575,7 +575,7 @@ userMode={userMode}
   getMode={getMode}
   scrubToFrame={scrubToFrame}
   startPlayAnimation={startPlayAnimation}
-  blockScrubBriefly={blockScrubBriefly}
+  // blockScrubBriefly={blockScrubBriefly}
    isTouchDevice={isTouchDevice}
 />
   
