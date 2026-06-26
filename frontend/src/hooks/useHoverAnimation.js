@@ -314,6 +314,58 @@
 //   };
 // }
 
+// import { useCallback, useRef } from "react";
+
+// export function useHoverAnimation(isTouchDevice, setState) {
+//   const playIntervalRef = useRef(null);
+
+//   const getTotalImages = (product) => 1 + (product?.altImages?.length || 0);
+
+//   const stopHoverAnimation = useCallback(() => {
+//     clearInterval(playIntervalRef.current);
+//     playIntervalRef.current = null;
+//   }, []);
+
+//   const startPlayAnimation = useCallback(
+//     (productIndex, product, speed = 450) => {
+//       if (isTouchDevice) return;
+//       stopHoverAnimation();
+//       const totalImages = getTotalImages(product);
+//       if (totalImages <= 1) return;
+//       playIntervalRef.current = setInterval(() => {
+//         setState((prev) => {
+//           const newIndices = [...prev.selectedImageIndices];
+//           const cur = newIndices[productIndex] ?? 0;
+//           newIndices[productIndex] = (cur + 1) % totalImages;
+//           return { ...prev, selectedImageIndices: newIndices };
+//         });
+//       }, speed);
+//     },
+//     [isTouchDevice, setState, stopHoverAnimation]
+//   );
+
+//   const handleMouseEnter = useCallback(
+//     (index, product, canAnimate = true) => {
+//       if (isTouchDevice || !canAnimate) return;
+//       setState((prev) => ({ ...prev, hoveredIndex: index }));
+//     },
+//     [isTouchDevice, setState]
+//   );
+
+//   const handleMouseLeave = useCallback(() => {
+//     setState((prev) => ({ ...prev, hoveredIndex: null }));
+//     stopHoverAnimation();
+//   }, [setState, stopHoverAnimation]);
+
+//   return {
+//     handleMouseEnter,
+//     handleMouseLeave,
+//     startPlayAnimation,
+//     stopHoverAnimation,
+//   };
+// }
+
+
 import { useCallback, useRef } from "react";
 
 export function useHoverAnimation(isTouchDevice, setState) {
@@ -322,9 +374,26 @@ export function useHoverAnimation(isTouchDevice, setState) {
   const getTotalImages = (product) => 1 + (product?.altImages?.length || 0);
 
   const stopHoverAnimation = useCallback(() => {
-    clearInterval(playIntervalRef.current);
+    if (playIntervalRef._stop) {
+      playIntervalRef._stop();
+      playIntervalRef._stop = null;
+    }
+    clearTimeout(playIntervalRef.current);
     playIntervalRef.current = null;
   }, []);
+
+  const getImageSrc = (product, frameIndex) => {
+    if (frameIndex === 0) return product.image;
+    return product.altImages?.[frameIndex - 1] ?? product.image;
+  };
+
+  const preloadImage = (src) =>
+    new Promise((resolve) => {
+      const img = new Image();
+      img.onload = resolve;
+      img.onerror = resolve;
+      img.src = src;
+    });
 
   const startPlayAnimation = useCallback(
     (productIndex, product, speed = 450) => {
@@ -332,14 +401,31 @@ export function useHoverAnimation(isTouchDevice, setState) {
       stopHoverAnimation();
       const totalImages = getTotalImages(product);
       if (totalImages <= 1) return;
-      playIntervalRef.current = setInterval(() => {
+
+      let currentFrame = 0;
+      let isRunning = true;
+      playIntervalRef._stop = () => { isRunning = false; };
+
+      const tick = async () => {
+        if (!isRunning) return;
+        const nextFrame = (currentFrame + 1) % totalImages;
+
+        // Ждём загрузки следующего кадра
+        await preloadImage(getImageSrc(product, nextFrame));
+
+        if (!isRunning) return;
+
+        currentFrame = nextFrame;
         setState((prev) => {
           const newIndices = [...prev.selectedImageIndices];
-          const cur = newIndices[productIndex] ?? 0;
-          newIndices[productIndex] = (cur + 1) % totalImages;
+          newIndices[productIndex] = currentFrame;
           return { ...prev, selectedImageIndices: newIndices };
         });
-      }, speed);
+
+        playIntervalRef.current = setTimeout(tick, speed);
+      };
+
+      playIntervalRef.current = setTimeout(tick, speed);
     },
     [isTouchDevice, setState, stopHoverAnimation]
   );
@@ -348,6 +434,13 @@ export function useHoverAnimation(isTouchDevice, setState) {
     (index, product, canAnimate = true) => {
       if (isTouchDevice || !canAnimate) return;
       setState((prev) => ({ ...prev, hoveredIndex: index }));
+
+      // Предзагружаем все кадры продукта при наведении
+      const srcs = [product.image, ...(product.altImages || [])];
+      srcs.forEach((src) => {
+        const img = new Image();
+        img.src = src;
+      });
     },
     [isTouchDevice, setState]
   );
