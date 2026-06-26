@@ -278,7 +278,7 @@ const playingProductRef = useRef(null);
 
   const startPlayAnimation = useCallback(
     (productIndex, product, speed = 450) => {
-      if (isTouchDevice) return;
+      // if (isTouchDevice) return;
       stopHoverAnimation();
       const totalImages = getTotalImages(product);
       if (totalImages <= 1) return;
