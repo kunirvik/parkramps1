@@ -989,10 +989,10 @@ useEffect(() => {
       // if (effectiveMode === "scrub" && allImages.length > 1) {
       if (allImages.length <= 1) {
         const frac = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-        scrubToFrame(state.activeProductIndex, Math.floor(frac * allImages.length), allImages.length);
+        // scrubToFrame(state.activeProductIndex, Math.floor(frac * allImages.length), allImages.length);
       }
     },
-    [allImages.length, scrubToFrame, state.activeProductIndex]
+    [allImages.length,  state.activeProductIndex]
   );
 
   // const handleStageClick = useCallback(() => {
@@ -1027,9 +1027,9 @@ const handleStageClick = useCallback(() => {
     (i) => {
       stopHoverAnimation();
       setIsPlaying(false);
-      scrubToFrame(state.activeProductIndex, i, allImages.length);
+      // scrubToFrame(state.activeProductIndex, i, allImages.length);
     },
-    [stopHoverAnimation, scrubToFrame, state.activeProductIndex, allImages.length]
+    [stopHoverAnimation,  state.activeProductIndex, allImages.length]
   );
 
   // Иконка курсора
