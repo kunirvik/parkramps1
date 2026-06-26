@@ -1206,7 +1206,7 @@ const handleStageClick = useCallback(() => {
 
         {/* Переключатель скраб/авто — только для продуктов с 10+ фото */}
         {/* {productMode === "scrub" && allImages.length > 1 && ( */}
-          <div className="flex items-center gap-2 mt-2">
+          {/* <div className="flex items-center gap-2 mt-2">
             <div
               className="flex overflow-hidden"
               style={{ border: "0.5px solid var(--color-border-secondary)", borderRadius: "var(--border-radius-md)" }}
@@ -1242,7 +1242,7 @@ const handleStageClick = useCallback(() => {
             <span className="text-[12px]" style={{ color: "var(--color-text-secondary)" }}>
               {userMode === "scrub" ? "мышь меняет кадр" : "клик запускает анимацию"}
             </span>
-          </div>
+          </div> */}
         {/* )} */}
 
         {/* Filmstrip */}
