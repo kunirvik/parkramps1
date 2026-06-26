@@ -100,7 +100,7 @@
 
 import { useMemo }          from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
-import FilmGallery          from "../components/FilmGallery";
+import FilmGallery          from "../FilmGallery";
 import productCatalogSets       from "../data/productCatalogSets";
 import productCatalogRamps      from "../data/productCatalogRamps";
 import productCatalogSkateparks from "../data/productCatalogSkateparks";
