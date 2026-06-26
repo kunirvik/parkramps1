@@ -231,44 +231,44 @@
 
 import { useCallback, useRef, useState } from "react";
 
-const SCRUB_THRESHOLD = 10;
+// const SCRUB_THRESHOLD = 10;
 
 export function useHoverAnimation(isTouchDevice, setState) {
   const playIntervalRef = useRef(null);
-  const scrubReadyRef = useRef(true); // задержка после смены продукта
-  const [userMode, setUserMode] = useState("scrub"); // "scrub" | "play"
+  // const scrubReadyRef = useRef(true); // задержка после смены продукта
+  // const [userMode, setUserMode] = useState("scrub"); // "scrub" | "play"
 
   const getTotalImages = (product) => 1 + (product?.altImages?.length || 0);
 
-  const getMode = useCallback(
-    (product) => (getTotalImages(product) >= SCRUB_THRESHOLD ? "scrub" : "play"),
-    []
-  );
+  // const getMode = useCallback(
+  //   (product) => (getTotalImages(product) >= SCRUB_THRESHOLD ? "scrub" : "play"),
+  //   []
+  // );
 
   // Заблокировать скраб на N мс (вызывать при смене продукта)
-  const blockScrubBriefly = useCallback((ms = 800) => {
-    scrubReadyRef.current = false;
-    setTimeout(() => { scrubReadyRef.current = true; }, ms);
-  }, []);
+  // const blockScrubBriefly = useCallback((ms = 800) => {
+  //   scrubReadyRef.current = false;
+  //   setTimeout(() => { scrubReadyRef.current = true; }, ms);
+  // }, []);
 
   const stopHoverAnimation = useCallback(() => {
     clearInterval(playIntervalRef.current);
     playIntervalRef.current = null;
   }, []);
 
-  const scrubToFrame = useCallback(
-    (productIndex, frameIndex, totalImages) => {
-      if (isTouchDevice || !scrubReadyRef.current) return;
-      setState((prev) => {
-        const newIndices = [...prev.selectedImageIndices];
-        const clamped = Math.max(0, Math.min(totalImages - 1, frameIndex));
-        if (newIndices[productIndex] === clamped) return prev;
-        newIndices[productIndex] = clamped;
-        return { ...prev, selectedImageIndices: newIndices };
-      });
-    },
-    [isTouchDevice, setState]
-  );
+  // const scrubToFrame = useCallback(
+  //   (productIndex, frameIndex, totalImages) => {
+  //     if (isTouchDevice || !scrubReadyRef.current) return;
+  //     setState((prev) => {
+  //       const newIndices = [...prev.selectedImageIndices];
+  //       const clamped = Math.max(0, Math.min(totalImages - 1, frameIndex));
+  //       if (newIndices[productIndex] === clamped) return prev;
+  //       newIndices[productIndex] = clamped;
+  //       return { ...prev, selectedImageIndices: newIndices };
+  //     });
+  //   },
+  //   [isTouchDevice, setState]
+  // );
 
   const startPlayAnimation = useCallback(
     (productIndex, product, speed = 450) => {
@@ -302,14 +302,14 @@ export function useHoverAnimation(isTouchDevice, setState) {
   }, [setState, stopHoverAnimation]);
 
   return {
-    getMode,
-    userMode,
-    setUserMode,
+    // getMode,
+    // userMode,
+    // setUserMode,
     handleMouseEnter,
     handleMouseLeave,
-    scrubToFrame,
+    // scrubToFrame,
     startPlayAnimation,
     stopHoverAnimation,
-    blockScrubBriefly,
+    // blockScrubBriefly,
   };
 }

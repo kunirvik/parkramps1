@@ -932,7 +932,8 @@ export default function ProductGallery({
   // Показывать ли авто-подсказку (один раз при открытии продукта)
   const [autoHintVisible, setAutoHintVisible] = useState(false);
   const autoHintTimerRef = useRef(null);
-  const hintSeenRef = useRef({ scrub: false, play: false }); // по типу продукта
+  // const hintSeenRef = useRef({ scrub: false, play: false }); // по типу продукта
+  const hintSeenRef = useRef(false);
   const stageRef = useRef(null);
 
   const currentProduct = products[state.activeProductIndex];
@@ -941,23 +942,38 @@ export default function ProductGallery({
     : [];
   const currentFrameIndex = state.selectedImageIndices[state.activeProductIndex] ?? 0;
 
-  const productMode = getMode(currentProduct); // "scrub" | "play"
+  // const productMode = getMode(currentProduct); // "scrub" | "play"
   // Итоговый режим: если продукт "play" — только play; если "scrub" — пользователь выбирает
-  const effectiveMode = productMode === "play" ? "play" : userMode;
+  // const effectiveMode = productMode === "play" ? "play" : userMode;
+useEffect(() => {
+    if (!hintSeenRef.current) {
+        hintSeenRef.current = true;
 
-  // Показываем авто-подсказку при смене продукта
-  useEffect(() => {
-    const key = productMode;
-    if (!hintSeenRef.current[key]) {
-      hintSeenRef.current[key] = true;
-      setAutoHintVisible(true);
-      clearTimeout(autoHintTimerRef.current);
-      autoHintTimerRef.current = setTimeout(() => setAutoHintVisible(false), 2800);
+        setAutoHintVisible(true);
+
+        clearTimeout(autoHintTimerRef.current);
+
+        autoHintTimerRef.current = setTimeout(() => {
+            setAutoHintVisible(false);
+        }, 2800);
     }
-    // Стоп при смене продукта
+
     setIsPlaying(false);
     stopHoverAnimation();
-  }, [state.activeProductIndex, productMode, stopHoverAnimation]);
+}, [state.activeProductIndex, stopHoverAnimation]);
+  // // Показываем авто-подсказку при смене продукта
+  // useEffect(() => {
+  //   const key = productMode;
+  //   if (!hintSeenRef.current[key]) {
+  //     hintSeenRef.current[key] = true;
+  //     setAutoHintVisible(true);
+  //     clearTimeout(autoHintTimerRef.current);
+  //     autoHintTimerRef.current = setTimeout(() => setAutoHintVisible(false), 2800);
+  //   }
+  //   // Стоп при смене продукта
+  //   setIsPlaying(false);
+  //   stopHoverAnimation();
+  // }, [state.activeProductIndex, productMode, stopHoverAnimation]);
 
   const hintText =
     effectiveMode === "scrub"
@@ -978,17 +994,34 @@ export default function ProductGallery({
     [effectiveMode, allImages.length, scrubToFrame, state.activeProductIndex]
   );
 
-  const handleStageClick = useCallback(() => {
-    if (effectiveMode !== "play" || allImages.length <= 1) return;
-    if (isPlaying) {
-      stopHoverAnimation();
-      setIsPlaying(false);
-    } else {
-      startPlayAnimation(state.activeProductIndex, currentProduct);
-      setIsPlaying(true);
-    }
-  }, [effectiveMode, allImages.length, isPlaying, stopHoverAnimation, startPlayAnimation, state.activeProductIndex, currentProduct]);
+  // const handleStageClick = useCallback(() => {
+  //   if (effectiveMode !== "play" || allImages.length <= 1) return;
+  //   if (isPlaying) {
+  //     stopHoverAnimation();
+  //     setIsPlaying(false);
+  //   } else {
+  //     startPlayAnimation(state.activeProductIndex, currentProduct);
+  //     setIsPlaying(true);
+  //   }
+  // }, [effectiveMode, allImages.length, isPlaying, stopHoverAnimation, startPlayAnimation, state.activeProductIndex, currentProduct]);
+const handleStageClick = useCallback(() => {
+    if (allImages.length <= 1) return;
 
+    if (isPlaying) {
+        stopHoverAnimation();
+        setIsPlaying(false);
+    } else {
+        startPlayAnimation(state.activeProductIndex, currentProduct);
+        setIsPlaying(true);
+    }
+}, [
+    allImages.length,
+    isPlaying,
+    stopHoverAnimation,
+    startPlayAnimation,
+    state.activeProductIndex,
+    currentProduct,
+]);
   const handleFrameSelect = useCallback(
     (i) => {
       stopHoverAnimation();
@@ -1024,7 +1057,17 @@ export default function ProductGallery({
           ref={stageRef}
           className="relative w-full"
           style={{ cursor: allImages.length > 1 ? "none" : "default" }}
-          onMouseMove={handleStageMouseMove}
+         onMouseMove={(e) => {
+    if (!stageRef.current) return;
+
+    const rect = stageRef.current.getBoundingClientRect();
+
+    setCursorPos({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+    });
+}}
+          // onMouseMove={handleStageMouseMove}
           onMouseEnter={() => { setIsHovering(true); onMouseEnter(state.activeProductIndex, currentProduct); }}
           onMouseLeave={() => {
             setIsHovering(false);
@@ -1154,7 +1197,7 @@ export default function ProductGallery({
         </div>
 
         {/* Переключатель скраб/авто — только для продуктов с 10+ фото */}
-        {productMode === "scrub" && allImages.length > 1 && (
+        {/* {productMode === "scrub" && allImages.length > 1 && ( */}
           <div className="flex items-center gap-2 mt-2">
             <div
               className="flex overflow-hidden"
@@ -1192,7 +1235,7 @@ export default function ProductGallery({
               {userMode === "scrub" ? "мышь меняет кадр" : "клик запускает анимацию"}
             </span>
           </div>
-        )}
+        {/* )} */}
 
         {/* Filmstrip */}
         <Filmstrip
