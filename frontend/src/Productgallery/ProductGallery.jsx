@@ -975,10 +975,10 @@ useEffect(() => {
   //   stopHoverAnimation();
   // }, [state.activeProductIndex, productMode, stopHoverAnimation]);
 
-  const hintText =
-    effectiveMode === "scrub"
-      ? "Двигайте мышью по фото для просмотра 360°"
-      : "Нажмите на фото — запустится анимация. Ещё раз — пауза";
+  const hintText ="Нажмите на фото — запустится анимация. Ещё раз — пауза"
+    // effectiveMode === "scrub"
+    //   ? "Двигайте мышью по фото для просмотра 360°"
+      // : "Нажмите на фото — запустится анимация. Ещё раз — пауза";
 
   const handleStageMouseMove = useCallback(
     (e) => {
@@ -986,12 +986,13 @@ useEffect(() => {
       const rect = stageRef.current.getBoundingClientRect();
       setCursorPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
 
-      if (effectiveMode === "scrub" && allImages.length > 1) {
+      // if (effectiveMode === "scrub" && allImages.length > 1) {
+      if (allImages.length <= 1) {
         const frac = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
         scrubToFrame(state.activeProductIndex, Math.floor(frac * allImages.length), allImages.length);
       }
     },
-    [effectiveMode, allImages.length, scrubToFrame, state.activeProductIndex]
+    [allImages.length, scrubToFrame, state.activeProductIndex]
   );
 
   // const handleStageClick = useCallback(() => {
@@ -1032,13 +1033,18 @@ const handleStageClick = useCallback(() => {
   );
 
   // Иконка курсора
-  const cursorIconClass =
-    effectiveMode === "scrub"
-      ? "ti ti-arrows-horizontal"
-      : isPlaying
-      ? "ti ti-player-pause"
-      : "ti ti-player-play";
+  // const cursorIconClass =
+  //   effectiveMode === "scrub"
+  //     ? "ti ti-arrows-horizontal"
+  //     : isPlaying
+  //     ? "ti ti-player-pause"
+  //     : "ti ti-player-play";
 
+  const cursorIconClass = isPlaying
+    ? "ti ti-player-pause"
+    : "ti ti-player-play"; 
+
+    
   const showHint = hintOpen || autoHintVisible;
 
   return (
@@ -1072,7 +1078,9 @@ const handleStageClick = useCallback(() => {
           onMouseLeave={() => {
             setIsHovering(false);
             onMouseLeave(state.activeProductIndex);
-            if (effectiveMode === "play") { stopHoverAnimation(); setIsPlaying(false); }
+            // if (effectiveMode === "play") { 
+              stopHoverAnimation(); setIsPlaying(false);
+            //  }
           }}
           onClick={handleStageClick}
         >
