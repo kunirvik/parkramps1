@@ -919,7 +919,6 @@ export default function ProductGallery({
 
   return (
     <div
-      ref={(el) => (refs.swiperContainer = el)}
       className="w-full lg:w-[75%] lg:h-[100%] mt-10 lg:mt-0 lg:content-center"
       style={{
         visibility: !imageData || animationState.complete ? "visible" : "hidden",
@@ -975,7 +974,7 @@ export default function ProductGallery({
 
         {/* Главная область */}
         <div
-          ref={stageRef}
+          ref={(el) => { stageRef.current = el; refs.swiperContainer = el; }}
           className="relative w-full"
           style={{ cursor: hasMultiple ? "none" : "default" }}
           onMouseMove={(e) => {
@@ -1111,7 +1110,6 @@ export default function ProductGallery({
     </div>
   );
 }
-
 // import { useRef, useState, useCallback, useEffect } from "react";
 // import { Swiper, SwiperSlide } from "swiper/react";
 // import { Pagination, Mousewheel, Thumbs } from "swiper/modules";
