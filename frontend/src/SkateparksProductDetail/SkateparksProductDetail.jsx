@@ -10,7 +10,7 @@ import productCatalogSkateparks from "../data/productCatalogSkateparks";
 import "swiper/css";
 import "swiper/css/pagination";
 import Accordion from "../Accordion/Accordion";
-import { useOpenGallery } from "../hooks/useOpenGallery";
+import  useOpenGallery  from "../hooks/useOpenGallery";
 import ContactButton from "../ContactButtons/ContactButton";
 import Footer from "../Footer/Footer";
 import ProductInfo from "../ProductInfo/ProductInfo";
