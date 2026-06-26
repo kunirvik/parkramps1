@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
 const THUMB_H = 68;
@@ -10,11 +10,26 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
   s.id = STYLE_ID;
   s.textContent = `
     @keyframes fg-spin { to { transform: rotate(360deg); } }
-    @keyframes fg-enter { from { opacity: 0; transform: scale(1.03); } to { opacity: 1; transform: scale(1); } }
-    @keyframes fg-slide-up { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes fg-slide-left { from { opacity: 0; transform: translateX(18px); } to { opacity: 1; transform: translateX(0); } }
-    @keyframes fg-slide-down { from { opacity: 0; transform: translateY(-18px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes fg-slide-right { from { opacity: 0; transform: translateX(-18px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes fg-enter {
+      from { opacity: 0; transform: scale(1.03); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    @keyframes fg-slide-up {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fg-slide-left {
+      from { opacity: 0; transform: translateX(18px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fg-slide-right {
+      from { opacity: 0; transform: translateX(-18px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fg-slide-down {
+      from { opacity: 0; transform: translateY(-18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
     .fg-enter       { animation: fg-enter      0.45s cubic-bezier(0.16,1,0.3,1) both; }
     .fg-slide-up    { animation: fg-slide-up   0.45s cubic-bezier(0.16,1,0.3,1) both; }
     .fg-slide-left  { animation: fg-slide-left  0.45s cubic-bezier(0.16,1,0.3,1) both; }
@@ -26,7 +41,7 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
   document.head.appendChild(s);
 }
 
-// ─── Спиннер ──────────────────────────────────────────────────────────────────
+// ─── Спиннер ─────────────────────────────────────────────────────────────────
 function Spinner() {
   return (
     <div className="absolute inset-0 flex items-center justify-center bg-neutral-950 z-10 pointer-events-none">
@@ -41,37 +56,78 @@ function Spinner() {
   );
 }
 
+// ─── Иконки кнопок ───────────────────────────────────────────────────────────
+function IconClose() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+      viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2.5" strokeLinecap="round">
+      <line x1="18" y1="6"  x2="6"  y2="18"/>
+      <line x1="6"  y1="6"  x2="18" y2="18"/>
+    </svg>
+  );
+}
+
+function IconGrid() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+      <rect x="0"    y="0"    width="4.5" height="4.5" rx="0.8"/>
+      <rect x="5.75" y="0"    width="4.5" height="4.5" rx="0.8"/>
+      <rect x="11.5" y="0"    width="4.5" height="4.5" rx="0.8"/>
+      <rect x="0"    y="5.75" width="4.5" height="4.5" rx="0.8"/>
+      <rect x="5.75" y="5.75" width="4.5" height="4.5" rx="0.8"/>
+      <rect x="11.5" y="5.75" width="4.5" height="4.5" rx="0.8"/>
+      <rect x="0"    y="11.5" width="4.5" height="4.5" rx="0.8"/>
+      <rect x="5.75" y="11.5" width="4.5" height="4.5" rx="0.8"/>
+      <rect x="11.5" y="11.5" width="4.5" height="4.5" rx="0.8"/>
+    </svg>
+  );
+}
+
+// Иконка "открыть страницу продукта" — стрелка вверх-вправо
+function IconOpenProduct() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15"
+      viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M7 17L17 7"/>
+      <path d="M7 7h10v10"/>
+    </svg>
+  );
+}
+
 // ─── Панель категорий СЛЕВА ───────────────────────────────────────────────────
 function CategoryPanel({ categories, activeCategory, onSelect }) {
   return (
     <div
-      className="fg-slide-right flex flex-col gap-1 py-3 px-2 bg-neutral-900 border-r border-neutral-800 overflow-y-auto fg-no-scroll"
-      style={{ minWidth: 110, maxWidth: 130, animationDelay: "0.15s" }}
+      className="fg-slide-right flex flex-col gap-0.5 py-3 px-2 bg-neutral-900
+                 border-r border-neutral-800 overflow-y-auto fg-no-scroll flex-shrink-0"
+      style={{ minWidth: 120, maxWidth: 140, animationDelay: "0.15s" }}
     >
-      {/* Кнопка «Все» */}
       <button
         onClick={() => onSelect(null)}
-        className={`text-left px-3 py-1.5 rounded-md text-xs font-mono transition-colors whitespace-nowrap ${
-          activeCategory === null
+        className={`text-left px-3 py-1.5 rounded-md transition-colors
+          font-futura text-xs tracking-wide
+          ${activeCategory === null
             ? "bg-yellow-400/20 text-yellow-300 border border-yellow-400/50"
-            : "text-white/50 hover:text-white/80 hover:bg-white/5"
-        }`}
+            : "text-white/40 hover:text-white/80 hover:bg-white/5"
+          }`}
       >
         All
       </button>
 
-      {/* Разделитель */}
-      <div className="h-px bg-neutral-700/60 my-1" />
+      <div className="h-px bg-neutral-700/50 my-1.5" />
 
       {categories.map((cat) => (
         <button
           key={cat.key}
           onClick={() => onSelect(cat.key)}
-          className={`text-left px-3 py-1.5 rounded-md text-xs font-mono transition-colors whitespace-nowrap ${
-            activeCategory === cat.key
+          className={`text-left px-3 py-1.5 rounded-md transition-colors
+            font-futura text-xs tracking-wide
+            ${activeCategory === cat.key
               ? "bg-yellow-400/20 text-yellow-300 border border-yellow-400/50"
-              : "text-white/50 hover:text-white/80 hover:bg-white/5"
-          }`}
+              : "text-white/40 hover:text-white/80 hover:bg-white/5"
+            }`}
         >
           {cat.label}
         </button>
@@ -80,12 +136,11 @@ function CategoryPanel({ categories, activeCategory, onSelect }) {
   );
 }
 
-// ─── Вертикальная лента СПРАВА (десктоп) ─────────────────────────────────────
+// ─── Вертикальная лента СПРАВА ────────────────────────────────────────────────
 function ThumbStripVertical({ slides, activeIndex, onSelect, highlightedIndices }) {
   const stripRef = useRef(null);
   const frameRef = useRef(null);
 
-  // Позиция рамки — по позиции activeIndex среди ВСЕХ слайдов
   useEffect(() => {
     if (!frameRef.current) return;
     const top = activeIndex * (THUMB_H + 4);
@@ -105,39 +160,26 @@ function ThumbStripVertical({ slides, activeIndex, onSelect, highlightedIndices 
       className="fg-no-scroll relative h-full overflow-y-auto bg-neutral-900 py-1 ml-2"
       style={{ width: 80 }}
     >
-      {/* Рамка-индикатор */}
       <div
         ref={frameRef}
-        className="absolute left-0.5 right-0.5 h-[68px] border-2 border-yellow-400/90 rounded-sm pointer-events-none z-50 transition-transform duration-300"
+        className="absolute left-0.5 right-0.5 h-[68px] border-2 border-yellow-400/90
+                   rounded-sm pointer-events-none z-50 transition-transform duration-300"
       />
       <div className="flex flex-col gap-1 px-0.5">
         {slides.map((slide, i) => {
-          // Подсветка: если highlightedIndices задан — тускнеют невыделенные
-          const isHighlighted =
-            highlightedIndices === null || highlightedIndices.has(i);
-          const isActive = i === activeIndex;
-
+          const isActive      = i === activeIndex;
+          const isHighlighted = highlightedIndices === null || highlightedIndices.has(i);
           return (
             <div
               key={i}
               onClick={() => onSelect(i)}
-              className="h-[68px] overflow-hidden cursor-pointer transition-opacity"
-              style={{
-                opacity: isActive ? 1 : isHighlighted ? 0.55 : 0.15,
-              }}
+              className="h-[68px] overflow-hidden cursor-pointer transition-opacity duration-300"
+              style={{ opacity: isActive ? 1 : isHighlighted ? 0.55 : 0.12 }}
             >
-              {slide.type === "video" ? (
-                <div className="w-full h-full bg-neutral-800 flex items-center justify-center text-white/60 text-sm">
-                  ▶
-                </div>
-              ) : (
-                <img
-                  src={slide.src}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                  alt=""
-                />
-              )}
+              {slide.type === "video"
+                ? <div className="w-full h-full bg-neutral-800 flex items-center justify-center text-white/60 text-sm">▶</div>
+                : <img src={slide.src} className="w-full h-full object-cover" loading="lazy" alt="" />
+              }
             </div>
           );
         })}
@@ -172,41 +214,25 @@ function ThumbStripHorizontal({ slides, activeIndex, onSelect, highlightedIndice
     >
       <div
         ref={frameRef}
-        className="absolute top-1.5 bottom-1.5 border-2 border-yellow-400/90 rounded-sm pointer-events-none z-50 transition-transform duration-300"
+        className="absolute top-1.5 bottom-1.5 border-2 border-yellow-400/90
+                   rounded-sm pointer-events-none z-50 transition-transform duration-300"
         style={{ width: THUMB_W, left: 12 }}
       />
-      <div
-        className="flex gap-1 h-full"
-        style={{ minWidth: slides.length * (THUMB_W + 4) }}
-      >
+      <div className="flex gap-1 h-full" style={{ minWidth: slides.length * (THUMB_W + 4) }}>
         {slides.map((slide, i) => {
-          const isHighlighted =
-            highlightedIndices === null || highlightedIndices.has(i);
-          const isActive = i === activeIndex;
-
+          const isActive      = i === activeIndex;
+          const isHighlighted = highlightedIndices === null || highlightedIndices.has(i);
           return (
             <div
               key={i}
               onClick={() => onSelect(i)}
-              className="flex-shrink-0 overflow-hidden cursor-pointer transition-opacity"
-              style={{
-                width: THUMB_W,
-                height: "100%",
-                opacity: isActive ? 1 : isHighlighted ? 0.55 : 0.15,
-              }}
+              className="flex-shrink-0 overflow-hidden cursor-pointer transition-opacity duration-300"
+              style={{ width: THUMB_W, height: "100%", opacity: isActive ? 1 : isHighlighted ? 0.55 : 0.12 }}
             >
-              {slide.type === "video" ? (
-                <div className="w-full h-full bg-neutral-800 flex items-center justify-center text-white/60 text-xs">
-                  ▶
-                </div>
-              ) : (
-                <img
-                  src={slide.src}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                  alt=""
-                />
-              )}
+              {slide.type === "video"
+                ? <div className="w-full h-full bg-neutral-800 flex items-center justify-center text-white/60 text-xs">▶</div>
+                : <img src={slide.src} className="w-full h-full object-cover" loading="lazy" alt="" />
+              }
             </div>
           );
         })}
@@ -217,49 +243,30 @@ function ThumbStripHorizontal({ slides, activeIndex, onSelect, highlightedIndice
 
 // ─── Главный вид ──────────────────────────────────────────────────────────────
 function MainView({ slide, index, total }) {
-  const videoRef = useRef(null);
+  const videoRef             = useRef(null);
   const [loading, setLoading] = useState(true);
   const [animKey, setAnimKey] = useState(0);
 
-  useEffect(() => {
-    setLoading(true);
-    setAnimKey((k) => k + 1);
-  }, [slide]);
-
-  useEffect(() => {
-    if (videoRef.current) videoRef.current.play().catch(() => {});
-  }, [slide]);
+  useEffect(() => { setLoading(true); setAnimKey((k) => k + 1); }, [slide]);
+  useEffect(() => { if (videoRef.current) videoRef.current.play().catch(() => {}); }, [slide]);
 
   if (!slide) return null;
 
   return (
-    <div
-      key={animKey}
-      className="fg-enter relative flex justify-center w-full h-full bg-neutral-950 overflow-hidden"
-    >
+    <div key={animKey} className="fg-enter relative flex justify-center w-full h-full bg-neutral-950 overflow-hidden">
       {loading && <Spinner />}
 
-      {slide.type === "video" ? (
-        <video
-          ref={videoRef}
-          src={slide.src}
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="w-auto h-full object-contain"
-          onCanPlay={() => setLoading(false)}
-        />
-      ) : (
-        <img
-          src={slide.src}
-          className="w-auto h-full object-contain"
-          style={{ opacity: loading ? 0 : 1, transition: "opacity 0.35s ease" }}
-          onLoad={() => setLoading(false)}
-          onError={() => setLoading(false)}
-          alt={slide.caption || ""}
-        />
-      )}
+      {slide.type === "video"
+        ? <video ref={videoRef} src={slide.src} autoPlay muted loop playsInline
+            className="w-auto h-full object-contain"
+            onCanPlay={() => setLoading(false)} />
+        : <img src={slide.src}
+            className="w-auto h-full object-contain"
+            style={{ opacity: loading ? 0 : 1, transition: "opacity 0.35s ease" }}
+            onLoad={() => setLoading(false)}
+            onError={() => setLoading(false)}
+            alt={slide.caption || ""} />
+      }
 
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(0,0,0,0.55)_100%)]" />
 
@@ -276,71 +283,71 @@ function MainView({ slide, index, total }) {
   );
 }
 
+// ─── Кнопка с тултипом ───────────────────────────────────────────────────────
+function IconButton({ onClick, label, children, disabled = false }) {
+  return (
+    <div className="relative group">
+      <button
+        onClick={onClick}
+        disabled={disabled}
+        aria-label={label}
+        className={`flex items-center justify-center w-9 h-9 rounded-full
+          bg-neutral-800/70 hover:bg-neutral-700 text-white/80 hover:text-white
+          transition-colors disabled:opacity-30 disabled:cursor-not-allowed`}
+      >
+        {children}
+      </button>
+      <div className="absolute right-11 top-1/2 -translate-y-1/2 pointer-events-none
+        opacity-0 group-hover:opacity-100 transition-opacity duration-150
+        bg-black/80 text-white/90 text-xs font-mono px-2 py-1 rounded whitespace-nowrap">
+        {label}
+      </div>
+    </div>
+  );
+}
+
 // ─── Основной компонент ───────────────────────────────────────────────────────
-//
-// Новый проп: extraCategories — массив произвольных категорий, которых нет
-// в продуктах. Формат:
-//   [
-//     { key: "foam_pit", label: "Поролон. яма", slides: [ { type:"image", src:"..." }, ... ] },
-//     { key: "events",   label: "Events",        slides: [ ... ] },
-//   ]
-//
-// Слайды extraCategories добавляются В КОНЕЦ общего массива при монтировании.
-// Категории из продуктов вычисляются по полю slide.productName (см. AllGalleryPage).
-//
 export default function FilmGallery({
   slides: slidesProp,
-  startIndex = 0,
-  onClose: onCloseProp,
-  extraCategories = [],   // <-- новый проп
+  startIndex    = 0,
+  onClose:  onCloseProp,
+  extraCategories = [],
+  initialCategory = null,  // автоматически активная при открытии (productName)
+  originPath    = "/",     // куда вернуться при закрытии
 }) {
   const navigate = useNavigate();
 
-  // ── Объединяем слайды: сначала переданные, потом из extraCategories ─────────
-  const allSlides = useRef(null);
-  if (!allSlides.current) {
+  // ── Объединяем слайды из props + extraCategories ──────────────────────────
+  const slides = useMemo(() => {
     const extra = extraCategories.flatMap((ec) =>
       ec.slides.map((s) => ({ ...s, _extraCat: ec.key }))
     );
-    allSlides.current = [...slidesProp, ...extra];
-  }
-  const slides = allSlides.current;
+    return [...slidesProp, ...extra];
+  }, [slidesProp, extraCategories]);
 
-  // ── Категории для панели ──────────────────────────────────────────────────
-  // 1. Категории из productName слайдов
-  const productCategories = useRef(null);
-  if (!productCategories.current) {
+  // ── Список категорий для панели ───────────────────────────────────────────
+  const categories = useMemo(() => {
+    // Из продуктов
     const seen = new Set();
-    const cats = [];
+    const fromProducts = [];
     slides.forEach((s) => {
-      const key = s.productName;
-      if (key && !seen.has(key)) {
-        seen.add(key);
-        cats.push({ key, label: key });
+      if (s.productName && !seen.has(s.productName)) {
+        seen.add(s.productName);
+        fromProducts.push({ key: s.productName, label: s.productName });
       }
     });
-    productCategories.current = cats;
-  }
-
-  // 2. Категории из extraCategories
-  const extraCats = extraCategories.map((ec) => ({
-    key: ec.key,
-    label: ec.label,
-  }));
-
-  const categories = [...productCategories.current, ...extraCats];
+    // Из extraCategories
+    const fromExtra = extraCategories.map((ec) => ({ key: ec.key, label: ec.label }));
+    return [...fromProducts, ...fromExtra];
+  }, [slides, extraCategories]);
 
   // ── Состояние ─────────────────────────────────────────────────────────────
   const [activeIndex, setActiveIndex]       = useState(startIndex);
-  const [activeCategory, setActiveCategory] = useState(null); // null = все
+  const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [mounted, setMounted]               = useState(false);
   const [isMobile, setIsMobile]             = useState(
     () => typeof window !== "undefined" && window.innerWidth < 768
   );
-
-  const containerRef = useRef(null);
-  const touchStartX  = useRef(null);
-  const touchStartY  = useRef(null);
 
   useEffect(() => {
     const id = requestAnimationFrame(() => setMounted(true));
@@ -353,46 +360,56 @@ export default function FilmGallery({
     return () => window.removeEventListener("resize", fn);
   }, []);
 
-  // ── Индексы слайдов текущей категории ────────────────────────────────────
-  // null = все подсвечены
-  const highlightedIndices = useRef(null);
-  if (activeCategory === null) {
-    highlightedIndices.current = null;
-  } else {
+  // ── Индексы подсвеченных миниатюр ────────────────────────────────────────
+  const highlightedIndices = useMemo(() => {
+    if (activeCategory === null) return null;
     const set = new Set();
     slides.forEach((s, i) => {
       const cat = s.productName || s._extraCat || null;
       if (cat === activeCategory) set.add(i);
     });
-    highlightedIndices.current = set;
-  }
+    return set;
+  }, [activeCategory, slides]);
 
-  // ── Клик на категорию ─────────────────────────────────────────────────────
-  const handleSelectCategory = useCallback(
-    (catKey) => {
-      setActiveCategory(catKey);
-      if (catKey === null) return; // просто снимаем фильтр, не прыгаем
+  // ── Автосмена категории при смене слайда ──────────────────────────────────
+  useEffect(() => {
+    const slide = slides[activeIndex];
+    if (!slide) return;
+    const cat = slide.productName || slide._extraCat || null;
+    setActiveCategory(cat);
+  }, [activeIndex, slides]);
 
-      // Переходим на первый слайд этой категории
-      const firstIdx = slides.findIndex((s) => {
-        const cat = s.productName || s._extraCat || null;
-        return cat === catKey;
-      });
-      if (firstIdx !== -1) setActiveIndex(firstIdx);
-    },
-    [slides]
-  );
+  // ── Клик на категорию → переход на первый слайд категории ─────────────────
+  const handleSelectCategory = useCallback((catKey) => {
+    setActiveCategory(catKey);
+    if (catKey === null) return;
+    const firstIdx = slides.findIndex((s) => {
+      const cat = s.productName || s._extraCat || null;
+      return cat === catKey;
+    });
+    if (firstIdx !== -1) setActiveIndex(firstIdx);
+  }, [slides]);
+
+  // ── Текущий слайд — данные для кнопки "відкрити виріб" ───────────────────
+  const currentSlide = slides[activeIndex];
+  const canOpenProduct = !!(currentSlide?.productType && currentSlide?.productId);
+
+  const handleOpenProduct = useCallback(() => {
+    if (!canOpenProduct) return;
+    // Навигируем на страницу продукта.
+    // Подставь сюда свой реальный маршрут продукта:
+    navigate(`/${currentSlide.productType}/${currentSlide.productId}`);
+  }, [canOpenProduct, currentSlide, navigate]);
 
   // ── Навигация ─────────────────────────────────────────────────────────────
   const handleClose = useCallback(
-    () => (onCloseProp ? onCloseProp() : navigate(-1)),
-    [onCloseProp, navigate]
+    () => (onCloseProp ? onCloseProp() : navigate(originPath)),
+    [onCloseProp, navigate, originPath]
   );
 
   const handleOpenAllGallery = useCallback(() => {
-    if (onCloseProp) onCloseProp();
-    else navigate("/gallery/all");
-  }, [onCloseProp, navigate]);
+    navigate("/gallery/all");
+  }, [navigate]);
 
   const goTo = useCallback(
     (idx) => setActiveIndex((idx + slides.length) % slides.length),
@@ -409,6 +426,8 @@ export default function FilmGallery({
     return () => window.removeEventListener("keydown", onKey);
   }, [handleClose, activeIndex, goTo]);
 
+  const containerRef = useRef(null);
+
   const handleWheel = useCallback(
     (e) => { e.preventDefault(); goTo(activeIndex + (e.deltaY > 0 ? 1 : -1)); },
     [activeIndex, goTo]
@@ -421,22 +440,43 @@ export default function FilmGallery({
     return () => el.removeEventListener("wheel", handleWheel);
   }, [handleWheel, isMobile]);
 
+  const touchStartX = useRef(null);
+  const touchStartY = useRef(null);
+
   const handleTouchStart = useCallback((e) => {
     touchStartX.current = e.touches[0].clientX;
     touchStartY.current = e.touches[0].clientY;
   }, []);
 
-  const handleTouchEnd = useCallback(
-    (e) => {
-      if (touchStartX.current === null) return;
-      const dx = e.changedTouches[0].clientX - touchStartX.current;
-      const dy = e.changedTouches[0].clientY - touchStartY.current;
-      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40)
-        goTo(activeIndex + (dx < 0 ? 1 : -1));
-      touchStartX.current = null;
-      touchStartY.current = null;
-    },
-    [activeIndex, goTo]
+  const handleTouchEnd = useCallback((e) => {
+    if (touchStartX.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    const dy = e.changedTouches[0].clientY - touchStartY.current;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40)
+      goTo(activeIndex + (dx < 0 ? 1 : -1));
+    touchStartX.current = null;
+    touchStartY.current = null;
+  }, [activeIndex, goTo]);
+
+  // ── Кнопки справа (десктоп) ───────────────────────────────────────────────
+  const DesktopButtons = (
+    <div className="flex flex-col items-center justify-start gap-2 px-2 py-3
+                    bg-neutral-950 border-l border-neutral-800">
+      <IconButton onClick={handleClose} label="Закрити">
+        <IconClose />
+      </IconButton>
+      <IconButton onClick={handleOpenAllGallery} label="Всі фото">
+        <IconGrid />
+      </IconButton>
+      <div className="h-px w-6 bg-neutral-700/60 my-0.5" />
+      <IconButton
+        onClick={handleOpenProduct}
+        label="Відкрити виріб"
+        disabled={!canOpenProduct}
+      >
+        <IconOpenProduct />
+      </IconButton>
+    </div>
   );
 
   return (
@@ -451,10 +491,9 @@ export default function FilmGallery({
       onTouchStart={isMobile ? handleTouchStart : undefined}
       onTouchEnd={isMobile   ? handleTouchEnd   : undefined}
     >
-      {/* ── Основная область ── */}
       <div className="flex flex-1 overflow-hidden min-h-0">
 
-        {/* ── Левая панель категорий (десктоп + мобилка) ── */}
+        {/* ── Категории СЛЕВА ── */}
         {categories.length > 0 && (
           <CategoryPanel
             categories={categories}
@@ -463,105 +502,54 @@ export default function FilmGallery({
           />
         )}
 
-        {/* Главный вид */}
+        {/* ── Главный вид ── */}
         <div className="flex-1 relative">
-          <MainView
-            slide={slides[activeIndex]}
-            index={activeIndex}
-            total={slides.length}
-          />
+          <MainView slide={currentSlide} index={activeIndex} total={slides.length} />
         </div>
 
-        {/* ── Правая панель (только десктоп): миниатюры + кнопки ── */}
+        {/* ── Миниатюры + кнопки СПРАВА (десктоп) ── */}
         {!isMobile && (
-          <div
-            className="flex items-stretch fg-slide-left"
-            style={{ animationDelay: "0.2s" }}
-          >
+          <div className="flex items-stretch fg-slide-left" style={{ animationDelay: "0.2s" }}>
             <ThumbStripVertical
               slides={slides}
               activeIndex={activeIndex}
               onSelect={goTo}
-              highlightedIndices={highlightedIndices.current}
+              highlightedIndices={highlightedIndices}
             />
-
-            <div className="flex flex-col items-center justify-start gap-2 px-2 py-3 bg-neutral-950 border-l border-neutral-800">
-              <button
-                onClick={handleClose}
-                aria-label="Закрыть галерею"
-                className="flex items-center justify-center w-9 h-9 rounded-full bg-neutral-800/70 hover:bg-neutral-700 text-white/80 hover:text-white transition-colors"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                  viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                  strokeWidth="2.5" strokeLinecap="round">
-                  <line x1="18" y1="6"  x2="6"  y2="18"/>
-                  <line x1="6"  y1="6"  x2="18" y2="18"/>
-                </svg>
-              </button>
-
-              <button
-                onClick={handleOpenAllGallery}
-                aria-label="All photos"
-                className="flex items-center justify-center w-9 h-9 rounded-full bg-neutral-800/70 hover:bg-neutral-700 text-white/80 hover:text-white transition-colors"
-              >
-                <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
-                  <rect x="0"    y="0"    width="4.5" height="4.5" rx="0.8"/>
-                  <rect x="5.75" y="0"    width="4.5" height="4.5" rx="0.8"/>
-                  <rect x="11.5" y="0"    width="4.5" height="4.5" rx="0.8"/>
-                  <rect x="0"    y="5.75" width="4.5" height="4.5" rx="0.8"/>
-                  <rect x="5.75" y="5.75" width="4.5" height="4.5" rx="0.8"/>
-                  <rect x="11.5" y="5.75" width="4.5" height="4.5" rx="0.8"/>
-                  <rect x="0"    y="11.5" width="4.5" height="4.5" rx="0.8"/>
-                  <rect x="5.75" y="11.5" width="4.5" height="4.5" rx="0.8"/>
-                  <rect x="11.5" y="11.5" width="4.5" height="4.5" rx="0.8"/>
-                </svg>
-              </button>
-            </div>
+            {DesktopButtons}
           </div>
         )}
       </div>
 
-      {/* Горизонтальная лента СНИЗУ — только мобилка */}
+      {/* ── Лента СНИЗУ (мобилка) ── */}
       {isMobile && (
         <div className="flex-none border-t border-neutral-800 fg-slide-up" style={{ animationDelay: "0.22s" }}>
           <ThumbStripHorizontal
             slides={slides}
             activeIndex={activeIndex}
             onSelect={goTo}
-            highlightedIndices={highlightedIndices.current}
+            highlightedIndices={highlightedIndices}
           />
         </div>
       )}
 
-      {/* Кнопки на мобилке — правый верхний угол */}
+      {/* ── Кнопки (мобилка) — правый верхний угол ── */}
       {isMobile && (
         <div className="absolute top-3 right-3 z-50 flex flex-col gap-2">
-          <button
-            onClick={handleClose}
-            className="flex items-center justify-center w-9 h-9 rounded-full bg-neutral-800/80 text-white/80 backdrop-blur-sm"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-              viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-              <line x1="18" y1="6"  x2="6"  y2="18"/>
-              <line x1="6"  y1="6"  x2="18" y2="18"/>
-            </svg>
+          <button onClick={handleClose}
+            className="flex items-center justify-center w-9 h-9 rounded-full bg-neutral-800/80 text-white/80 backdrop-blur-sm">
+            <IconClose />
           </button>
-          <button
-            onClick={handleOpenAllGallery}
-            className="flex items-center justify-center w-9 h-9 rounded-full bg-neutral-800/80 text-white/80 backdrop-blur-sm"
-          >
-            <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
-              <rect x="0"    y="0"    width="4.5" height="4.5" rx="0.8"/>
-              <rect x="5.75" y="0"    width="4.5" height="4.5" rx="0.8"/>
-              <rect x="11.5" y="0"    width="4.5" height="4.5" rx="0.8"/>
-              <rect x="0"    y="5.75" width="4.5" height="4.5" rx="0.8"/>
-              <rect x="5.75" y="5.75" width="4.5" height="4.5" rx="0.8"/>
-              <rect x="11.5" y="5.75" width="4.5" height="4.5" rx="0.8"/>
-              <rect x="0"    y="11.5" width="4.5" height="4.5" rx="0.8"/>
-              <rect x="5.75" y="11.5" width="4.5" height="4.5" rx="0.8"/>
-              <rect x="11.5" y="11.5" width="4.5" height="4.5" rx="0.8"/>
-            </svg>
+          <button onClick={handleOpenAllGallery}
+            className="flex items-center justify-center w-9 h-9 rounded-full bg-neutral-800/80 text-white/80 backdrop-blur-sm">
+            <IconGrid />
           </button>
+          {canOpenProduct && (
+            <button onClick={handleOpenProduct}
+              className="flex items-center justify-center w-9 h-9 rounded-full bg-neutral-800/80 text-white/80 backdrop-blur-sm">
+              <IconOpenProduct />
+            </button>
+          )}
         </div>
       )}
     </div>
