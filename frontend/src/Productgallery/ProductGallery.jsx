@@ -917,11 +917,11 @@ export default function ProductGallery({
   onTouchStart,
   onTouchEnd,
   stopHoverAnimation,
-  scrubToFrame,
+  // scrubToFrame,
   startPlayAnimation,
-  getMode,
-  userMode,        // "scrub" | "play" — выбор пользователя
-  setUserMode,     // переключатель
+  // getMode,
+  // userMode,        // "scrub" | "play" — выбор пользователя
+  // setUserMode,     // переключатель
   swiperConfig,
    isTouchDevice
 }) {

@@ -234,10 +234,11 @@ import { useCallback, useRef, useState } from "react";
 // const SCRUB_THRESHOLD = 10;
 
 export function useHoverAnimation(isTouchDevice, setState) {
-  const playIntervalRef = useRef(null);
+  // const playIntervalRef = useRef(null);
   // const scrubReadyRef = useRef(true); // задержка после смены продукта
   // const [userMode, setUserMode] = useState("scrub"); // "scrub" | "play"
-
+  const playTimeoutRef = useRef(null);
+const playingProductRef = useRef(null);
   const getTotalImages = (product) => 1 + (product?.altImages?.length || 0);
 
   // const getMode = useCallback(
@@ -251,10 +252,15 @@ export function useHoverAnimation(isTouchDevice, setState) {
   //   setTimeout(() => { scrubReadyRef.current = true; }, ms);
   // }, []);
 
+  // const stopHoverAnimation = useCallback(() => {
+  //   clearInterval(playIntervalRef.current);
+  //   playIntervalRef.current = null;
+  // }, []);
   const stopHoverAnimation = useCallback(() => {
-    clearInterval(playIntervalRef.current);
-    playIntervalRef.current = null;
-  }, []);
+  clearTimeout(playTimeoutRef.current);
+  playTimeoutRef.current = null;
+  playingProductRef.current = null;
+}, []);
 
   // const scrubToFrame = useCallback(
   //   (productIndex, frameIndex, totalImages) => {
@@ -276,16 +282,38 @@ export function useHoverAnimation(isTouchDevice, setState) {
       stopHoverAnimation();
       const totalImages = getTotalImages(product);
       if (totalImages <= 1) return;
-      playIntervalRef.current = setInterval(() => {
-        setState((prev) => {
-          const newIndices = [...prev.selectedImageIndices];
-          const cur = newIndices[productIndex] ?? 0;
-          newIndices[productIndex] = (cur + 1) % totalImages;
-          return { ...prev, selectedImageIndices: newIndices };
-        });
-      }, speed);
+          playingProductRef.current = productIndex;
+
+    const play = () => {
+      if (playingProductRef.current !== productIndex) return;
+
+      setState((prev) => {
+        const indices = [...prev.selectedImageIndices];
+
+        indices[productIndex] =
+          ((indices[productIndex] ?? 0) + 1) % totalImages;
+
+        return {
+          ...prev,
+          selectedImageIndices: indices,
+        };
+      });
+
+      playTimeoutRef.current = setTimeout(play, speed);
+    };
+
+ playTimeoutRef.current = setTimeout(play, speed);
+      // playIntervalRef.current = setInterval(() => {
+      //   setState((prev) => {
+      //     const newIndices = [...prev.selectedImageIndices];
+      //     const cur = newIndices[productIndex] ?? 0;
+      //     newIndices[productIndex] = (cur + 1) % totalImages;
+      //     return { ...prev, selectedImageIndices: newIndices };
+      //   });
+      // }, speed);
+    
     },
-    [isTouchDevice, setState, stopHoverAnimation]
+    [isTouchDevice, stopHoverAnimation, setState]
   );
 
   const handleMouseEnter = useCallback(

@@ -164,13 +164,13 @@ const {
 
 // } = useHoverAnimation(isTouchDevice, setState);
 const {
-  getMode, userMode, setUserMode,
+  // getMode, userMode, setUserMode,
   handleMouseEnter: handleMouseEnterBase,
   handleMouseLeave,
-  scrubToFrame,
+  // scrubToFrame,
   startPlayAnimation,
   stopHoverAnimation,
-   blockScrubBriefly, // ← новый
+  //  blockScrubBriefly, // ← новый
 } = useHoverAnimation(isTouchDevice, setState);
 
 const {
@@ -302,6 +302,8 @@ const handleMouseEnter = useCallback(
     async (swiper) => {
       socialButtonsRef.current?.close();
       const newIndex = swiper.activeIndex;
+      stopHoverAnimation();
+// setIsPlaying?.(false);
       if (newIndex === state.activeProductIndex || animationInProgressRef.current) return;
 
       const oldIndex = state.activeProductIndex;
@@ -327,6 +329,7 @@ const handleMouseEnter = useCallback(
       setState((prev) => {
         const newIndices = [...prev.selectedImageIndices];
         newIndices[newIndex] = 0;
+         newIndices[newIndex] = 0;
         return {
           ...prev,
           activeProductIndex: newIndex,
