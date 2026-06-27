@@ -31,7 +31,7 @@ function App() {
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/catalogue" element={<Catalogue />} />
      <Route path="/gallery/all" element={<GalleryRoute />} />    
-     <Route path="/gallery/:type/:id" element={<GalleryPage />} />
+     <Route path="/gallery/:type/:id" element={<GalleryRoute />} />
  
  
         <Route path="/product/sets/:id" element={<SetsProductDetail />} />
