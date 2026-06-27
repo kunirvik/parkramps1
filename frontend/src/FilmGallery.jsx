@@ -97,44 +97,44 @@ function IconOpenProduct() {
 }
 
 // ─── Панель категорий СЛЕВА ───────────────────────────────────────────────────
-function CategoryPanel({ categories, activeCategory, onSelect }) {
-  return (
-    <div
-      className="fg-slide-right flex flex-col gap-0.5 py-3 px-2 bg-neutral-900
-                 border-r border-neutral-800 overflow-y-auto fg-no-scroll flex-shrink-0"
-      style={{ minWidth: 120, maxWidth: 140, animationDelay: "0.15s" }}
-    >
-      <button
-        onClick={() => onSelect(null)}
-        className={`text-left px-3 py-1.5 rounded-md transition-colors
-          font-futura text-xs tracking-wide
-          ${activeCategory === null
-            ? "bg-yellow-400/20 text-yellow-300 border border-yellow-400/50"
-            : "text-white/40 hover:text-white/80 hover:bg-white/5"
-          }`}
-      >
-        All
-      </button>
+// function CategoryPanel({ categories, activeCategory, onSelect }) {
+//   return (
+//     <div
+//       className="fg-slide-right flex flex-col gap-0.5 py-3 px-2 bg-neutral-900
+//                  border-r border-neutral-800 overflow-y-auto fg-no-scroll flex-shrink-0"
+//       style={{ minWidth: 120, maxWidth: 140, animationDelay: "0.15s" }}
+//     >
+//       <button
+//         onClick={() => onSelect(null)}
+//         className={`text-left px-3 py-1.5 rounded-md transition-colors
+//           font-futura text-xs tracking-wide
+//           ${activeCategory === null
+//             ? "bg-yellow-400/20 text-yellow-300 border border-yellow-400/50"
+//             : "text-white/40 hover:text-white/80 hover:bg-white/5"
+//           }`}
+//       >
+//         All
+//       </button>
 
-      <div className="h-px bg-neutral-700/50 my-1.5" />
+//       <div className="h-px bg-neutral-700/50 my-1.5" />
 
-      {categories.map((cat) => (
-        <button
-          key={cat.key}
-          onClick={() => onSelect(cat.key)}
-          className={`text-left px-3 py-1.5 rounded-md transition-colors
-            font-futura text-xs tracking-wide
-            ${activeCategory === cat.key
-              ? "bg-yellow-400/20 text-yellow-300 border border-yellow-400/50"
-              : "text-white/40 hover:text-white/80 hover:bg-white/5"
-            }`}
-        >
-          {cat.label}
-        </button>
-      ))}
-    </div>
-  );
-}
+//       {categories.map((cat) => (
+//         <button
+//           key={cat.key}
+//           onClick={() => onSelect(cat.key)}
+//           className={`text-left px-3 py-1.5 rounded-md transition-colors
+//             font-futura text-xs tracking-wide
+//             ${activeCategory === cat.key
+//               ? "bg-yellow-400/20 text-yellow-300 border border-yellow-400/50"
+//               : "text-white/40 hover:text-white/80 hover:bg-white/5"
+//             }`}
+//         >
+//           {cat.label}
+//         </button>
+//       ))}
+//     </div>
+//   );
+// }
 
 // ─── Вертикальная лента СПРАВА ────────────────────────────────────────────────
 function ThumbStripVertical({ slides, activeIndex, onSelect, highlightedIndices }) {
