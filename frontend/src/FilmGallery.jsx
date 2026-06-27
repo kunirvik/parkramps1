@@ -334,15 +334,17 @@ function MobileThumbStrip({ slides, activeIndex, onSelect, highlightedIndices, i
   }, [activeIndex]);
 
   return (
-    <div
-      style={{
-        maxHeight:  isScrolling ? 0 : 60,
-        opacity:    isScrolling ? 0 : 1,
-        overflow:   "hidden",
-        flexShrink: 0,
-        transition: "max-height 0.35s ease, opacity 0.3s ease",
-      }}
-    >
+    // <div
+    //   style={{
+    //     maxHeight:  isScrolling ? 0 : 60,
+    //     opacity:    isScrolling ? 0 : 1,
+    //     overflow:   "hidden",
+    //     flexShrink: 0,
+    //     transition: "max-height 0.35s ease, opacity 0.3s ease",
+    //   }}
+    // >
+    // ✅ стало
+<div style={{ flexShrink: 0 }}>
       <div
         ref={stripRef}
         className="fg-no-scroll relative overflow-x-auto bg-neutral-900
@@ -674,13 +676,17 @@ export default function FilmGallery({
 {isMobile && (
   <>
     {/* Категории сверху */}
-    <div style={{
+    {/* <div style={{
       maxHeight:  isScrolling ? 0 : 56,
       opacity:    isScrolling ? 0 : 1,
       overflow:   "hidden",
       transition: "max-height 0.35s ease, opacity 0.3s ease",
       flexShrink: 0,
-    }}>
+    }}> */}
+    <div
+  ref={stripRef}
+  className="fg-no-scroll relative overflow-x-auto bg-neutral-900 border-t border-neutral-800"
+  style={{ height: 60, paddingLeft: 8, paddingRight: 8, flexShrink: 0 }}>
       <MobileCategoryBar
         categories={categories}
         activeCategory={activeCategory}
@@ -708,14 +714,15 @@ export default function FilmGallery({
     />
 
     {/* Кнопки */}
-    <div
+    {/* <div
       className="absolute top-14 right-1 z-50 flex flex-col gap-2"
       style={{
         opacity:       isScrolling ? 0 : 1,
         transition:    "opacity 0.25s ease",
         pointerEvents: isScrolling ? "none" : "auto",
       }}
-    >
+    > */}
+    <div className="absolute top-14 right-1 z-50 flex flex-col gap-2">
       <button onClick={handleClose}
         className="flex items-center justify-center w-8 h-8 rounded-full
                    bg-neutral-800/80 text-white/80 backdrop-blur-sm">
