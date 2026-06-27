@@ -249,68 +249,152 @@ function ThumbStripVertical({ slides, activeIndex, onSelect, highlightedIndices 
   );
 }
 
-// ─── Вертикальная лента для МОБИЛКИ ──────────────────────────────────────────
+// // ─── Вертикальная лента для МОБИЛКИ ──────────────────────────────────────────
+// function MobileThumbStrip({ slides, activeIndex, onSelect, highlightedIndices, isScrolling }) {
+//   const stripRef = useRef(null);
+//   const frameRef = useRef(null);
+//   const thumbSize = isScrolling ? MOBILE_THUMB_SMALL : MOBILE_THUMB_FULL;
+//   const gap = 3;
+
+//   useEffect(() => {
+//     if (!frameRef.current || !stripRef.current) return;
+//     const top = activeIndex * (thumbSize + gap);
+//     frameRef.current.style.transform = `translateY(${top}px)`;
+//     const containerH = stripRef.current.clientHeight;
+//     stripRef.current.scrollTo({
+//       top: top - containerH / 2 + thumbSize / 2,
+//       behavior: "smooth",
+//     });
+//   }, [activeIndex, thumbSize]);
+
+//   return (
+//     <div
+//       ref={stripRef}
+//       className="fg-no-scroll relative h-full overflow-y-auto bg-neutral-900/80
+//                  backdrop-blur-sm py-1 border-l border-neutral-800/50"
+//       style={{ width: 44 }}
+//     >
+//       <div
+//         ref={frameRef}
+//         className="absolute left-1 right-1 border border-yellow-400/80 rounded-sm
+//                    pointer-events-none z-50"
+//         style={{
+//           height: thumbSize,
+//           top: 4,
+//           transition: "transform 0.3s cubic-bezier(0.16,1,0.3,1), height 0.3s ease",
+//         }}
+//       />
+//       <div className="flex flex-col px-1" style={{ gap }}>
+//         {slides.map((slide, i) => {
+//           const isActive      = i === activeIndex;
+//           const isHighlighted = highlightedIndices === null || highlightedIndices.has(i);
+//           // используем productImage если есть, иначе src слайда
+//           const thumbSrc = slide.productImage || slide.src;
+
+//           return (
+//             <div
+//               key={i}
+//               onClick={() => onSelect(i)}
+//               className="flex-shrink-0 overflow-hidden cursor-pointer rounded-sm"
+//               style={{
+//                 width:      "100%",
+//                 height:     thumbSize,
+//                 opacity:    isActive ? 1 : isHighlighted ? 0.55 : 0.12,
+//                 transition: "height 0.3s ease, opacity 0.3s ease",
+//               }}
+//             >
+//               {slide.type === "video"
+//                 ? <div className="w-full h-full bg-neutral-800 flex items-center justify-center
+//                                   text-white/60 text-[8px]">▶</div>
+//                 : <img src={thumbSrc} className="w-full h-full object-cover" loading="lazy" alt="" />
+//               }
+//             </div>
+//           );
+//         })}
+//       </div>
+//     </div>
+//   );
+// }
+
+// ─── Горизонтальная лента СНИЗУ (мобилка) ────────────────────────────────────
 function MobileThumbStrip({ slides, activeIndex, onSelect, highlightedIndices, isScrolling }) {
   const stripRef = useRef(null);
   const frameRef = useRef(null);
-  const thumbSize = isScrolling ? MOBILE_THUMB_SMALL : MOBILE_THUMB_FULL;
-  const gap = 3;
+  const THUMB_W  = 56;
+  const gap      = 3;
 
   useEffect(() => {
     if (!frameRef.current || !stripRef.current) return;
-    const top = activeIndex * (thumbSize + gap);
-    frameRef.current.style.transform = `translateY(${top}px)`;
-    const containerH = stripRef.current.clientHeight;
+    const left = activeIndex * (THUMB_W + gap);
+    frameRef.current.style.transform = `translateX(${left}px)`;
     stripRef.current.scrollTo({
-      top: top - containerH / 2 + thumbSize / 2,
+      left: left - stripRef.current.clientWidth / 2 + THUMB_W / 2,
       behavior: "smooth",
     });
-  }, [activeIndex, thumbSize]);
+  }, [activeIndex]);
 
   return (
     <div
-      ref={stripRef}
-      className="fg-no-scroll relative h-full overflow-y-auto bg-neutral-900/80
-                 backdrop-blur-sm py-1 border-l border-neutral-800/50"
-      style={{ width: 44 }}
+      style={{
+        maxHeight:  isScrolling ? 0 : 60,
+        opacity:    isScrolling ? 0 : 1,
+        overflow:   "hidden",
+        flexShrink: 0,
+        transition: "max-height 0.35s ease, opacity 0.3s ease",
+      }}
     >
       <div
-        ref={frameRef}
-        className="absolute left-1 right-1 border border-yellow-400/80 rounded-sm
-                   pointer-events-none z-50"
-        style={{
-          height: thumbSize,
-          top: 4,
-          transition: "transform 0.3s cubic-bezier(0.16,1,0.3,1), height 0.3s ease",
-        }}
-      />
-      <div className="flex flex-col px-1" style={{ gap }}>
-        {slides.map((slide, i) => {
-          const isActive      = i === activeIndex;
-          const isHighlighted = highlightedIndices === null || highlightedIndices.has(i);
-          // используем productImage если есть, иначе src слайда
-          const thumbSrc = slide.productImage || slide.src;
+        ref={stripRef}
+        className="fg-no-scroll relative overflow-x-auto bg-neutral-900
+                   border-t border-neutral-800"
+        style={{ height: 60, paddingLeft: 8, paddingRight: 8 }}
+      >
+        {/* Рамка-индикатор */}
+        <div
+          ref={frameRef}
+          className="absolute top-1.5 bottom-1.5 border border-yellow-400/80
+                     rounded-sm pointer-events-none z-50"
+          style={{
+            width: THUMB_W,
+            left:  8,
+            transition: "transform 0.3s cubic-bezier(0.16,1,0.3,1)",
+          }}
+        />
 
-          return (
-            <div
-              key={i}
-              onClick={() => onSelect(i)}
-              className="flex-shrink-0 overflow-hidden cursor-pointer rounded-sm"
-              style={{
-                width:      "100%",
-                height:     thumbSize,
-                opacity:    isActive ? 1 : isHighlighted ? 0.55 : 0.12,
-                transition: "height 0.3s ease, opacity 0.3s ease",
-              }}
-            >
-              {slide.type === "video"
-                ? <div className="w-full h-full bg-neutral-800 flex items-center justify-center
-                                  text-white/60 text-[8px]">▶</div>
-                : <img src={thumbSrc} className="w-full h-full object-cover" loading="lazy" alt="" />
-              }
-            </div>
-          );
-        })}
+        <div
+          className="flex h-full"
+          style={{ gap, minWidth: slides.length * (THUMB_W + gap) }}
+        >
+          {slides.map((slide, i) => {
+            const isActive      = i === activeIndex;
+            const isHighlighted = highlightedIndices === null || highlightedIndices.has(i);
+
+            return (
+              <div
+                key={i}
+                onClick={() => onSelect(i)}
+                className="flex-shrink-0 overflow-hidden cursor-pointer rounded-sm"
+                style={{
+                  width:      THUMB_W,
+                  height:     "100%",
+                  opacity:    isActive ? 1 : isHighlighted ? 0.55 : 0.12,
+                  transition: "opacity 0.3s ease",
+                }}
+              >
+                {slide.type === "video"
+                  ? <div className="w-full h-full bg-neutral-800 flex items-center
+                                    justify-center text-white/60 text-xs">▶</div>
+                  : <img
+                      src={slide.src}  // ← именно src, не productImage
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                      alt=""
+                    />
+                }
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -586,85 +670,72 @@ export default function FilmGallery({
         </>
       )}
 
-      {/* ══ МОБИЛКА ══════════════════════════════════════════════════════════ */}
-      {isMobile && (
-        <>
-          {/* Категории сверху — горизонтальный скролл, прячется при свайпе */}
-          <div style={{
-            maxHeight: isScrolling ? 0 : 56,
-            opacity:   isScrolling ? 0 : 1,
-            overflow:  "hidden",
-            transition: "max-height 0.35s ease, opacity 0.3s ease",
-            flexShrink: 0,
-          }}>
-            <MobileCategoryBar
-              categories={categories}
-              activeCategory={activeCategory}
-              onSelect={handleSelectCategory}
-              slides={slides}
-            />
-          </div>
+{/* ══ МОБИЛКА ══════════════════════════════════════════════════════════ */}
+{isMobile && (
+  <>
+    {/* Категории сверху */}
+    <div style={{
+      maxHeight:  isScrolling ? 0 : 56,
+      opacity:    isScrolling ? 0 : 1,
+      overflow:   "hidden",
+      transition: "max-height 0.35s ease, opacity 0.3s ease",
+      flexShrink: 0,
+    }}>
+      <MobileCategoryBar
+        categories={categories}
+        activeCategory={activeCategory}
+        onSelect={handleSelectCategory}
+        slides={slides}
+      />
+    </div>
 
-          {/* Основная строка: левая лента | фото | правая лента */}
-          <div className="flex flex-1 overflow-hidden min-h-0">
+    {/* Главный вид */}
+    <div
+      className="flex-1 relative overflow-hidden"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
+      <MainView slide={currentSlide} index={activeIndex} total={slides.length} />
+    </div>
 
-            {/* Левая вертикальная лента */}
-            <MobileThumbStrip
-              slides={slides}
-              activeIndex={activeIndex}
-              onSelect={goTo}
-              highlightedIndices={highlightedIndices}
-              isScrolling={isScrolling}
-            />
+    {/* Горизонтальная лента снизу */}
+    <MobileThumbStrip
+      slides={slides}
+      activeIndex={activeIndex}
+      onSelect={goTo}
+      highlightedIndices={highlightedIndices}
+      isScrolling={isScrolling}
+    />
 
-            {/* Главный вид — свайп работает здесь */}
-            <div
-              className="flex-1 relative"
-              onTouchStart={handleTouchStart}
-              onTouchEnd={handleTouchEnd}
-            >
-              <MainView slide={currentSlide} index={activeIndex} total={slides.length} />
-            </div>
-
-            {/* Правая вертикальная лента */}
-            <MobileThumbStrip
-              slides={slides}
-              activeIndex={activeIndex}
-              onSelect={goTo}
-              highlightedIndices={highlightedIndices}
-              isScrolling={isScrolling}
-            />
-          </div>
-
-          {/* Кнопки — правый верхний угол */}
-          <div
-            className="absolute top-14 right-0 z-50 flex flex-col gap-2 px-1 py-2"
-            style={{
-              opacity:    isScrolling ? 0 : 1,
-              transition: "opacity 0.25s ease",
-              pointerEvents: isScrolling ? "none" : "auto",
-            }}
-          >
-            <button onClick={handleClose}
-              className="flex items-center justify-center w-8 h-8 rounded-full
-                         bg-neutral-800/80 text-white/80 backdrop-blur-sm">
-              <IconClose />
-            </button>
-            <button onClick={handleOpenAllGallery}
-              className="flex items-center justify-center w-8 h-8 rounded-full
-                         bg-neutral-800/80 text-white/80 backdrop-blur-sm">
-              <IconGrid />
-            </button>
-            {canOpenProduct && (
-              <button onClick={handleOpenProduct}
-                className="flex items-center justify-center w-8 h-8 rounded-full
-                           bg-neutral-800/80 text-white/80 backdrop-blur-sm">
-                <IconOpenProduct />
-              </button>
-            )}
-          </div>
-        </>
+    {/* Кнопки */}
+    <div
+      className="absolute top-14 right-1 z-50 flex flex-col gap-2"
+      style={{
+        opacity:       isScrolling ? 0 : 1,
+        transition:    "opacity 0.25s ease",
+        pointerEvents: isScrolling ? "none" : "auto",
+      }}
+    >
+      <button onClick={handleClose}
+        className="flex items-center justify-center w-8 h-8 rounded-full
+                   bg-neutral-800/80 text-white/80 backdrop-blur-sm">
+        <IconClose />
+      </button>
+      <button onClick={handleOpenAllGallery}
+        className="flex items-center justify-center w-8 h-8 rounded-full
+                   bg-neutral-800/80 text-white/80 backdrop-blur-sm">
+        <IconGrid />
+      </button>
+      {canOpenProduct && (
+        <button onClick={handleOpenProduct}
+          className="flex items-center justify-center w-8 h-8 rounded-full
+                     bg-neutral-800/80 text-white/80 backdrop-blur-sm">
+          <IconOpenProduct />
+        </button>
       )}
+    </div>
+  </>
+)}
     </div>
   );
 } 
