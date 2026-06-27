@@ -472,17 +472,7 @@ const location = useLocation();
 const [isScrolling, setIsScrolling]     = useState(false);
 const scrollTimerRef                    = useRef(null);
 
-// Вызывай при каждом goTo
-const goTo = useCallback((idx) => {
-  setActiveIndex((idx + slides.length) % slides.length);
 
-  // мобилка: показываем "scrolling" режим
-  if (isMobile) {
-    setIsScrolling(true);
-    clearTimeout(scrollTimerRef.current);
-    scrollTimerRef.current = setTimeout(() => setIsScrolling(false), 1200);
-  }
-}, [slides.length, isMobile]);
 
 useEffect(() => () => clearTimeout(scrollTimerRef.current), []);
 
@@ -579,11 +569,21 @@ const handleOpenProduct = useCallback(() => {
   const handleOpenAllGallery = useCallback(() => {
     navigate("/gallery/all");
   }, [navigate]);
+// Вызывай при каждом goTo
+const goTo = useCallback((idx) => {
+  setActiveIndex((idx + slides.length) % slides.length);
 
-  const goTo = useCallback(
-    (idx) => setActiveIndex((idx + slides.length) % slides.length),
-    [slides.length]
-  );
+  // мобилка: показываем "scrolling" режим
+  if (isMobile) {
+    setIsScrolling(true);
+    clearTimeout(scrollTimerRef.current);
+    scrollTimerRef.current = setTimeout(() => setIsScrolling(false), 1200);
+  }
+}, [slides.length, isMobile]);
+  // const goTo = useCallback(
+  //   (idx) => setActiveIndex((idx + slides.length) % slides.length),
+  //   [slides.length]
+  // );
 
   useEffect(() => {
     const onKey = (e) => {
