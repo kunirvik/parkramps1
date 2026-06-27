@@ -313,7 +313,7 @@ return (
             onMouseLeave={!isMobile ? handleMouseLeave : undefined} 
           /></div>
    {/* mobileTooltipProductId === product.id &&      */}
-      {isMobile && (
+      {isMobile && selectedProduct === null && (
             <div className="mobile-tooltip absolute left-1/2 -translate-x-1/2 
                text-white text-base sm:text-lg font-futura bg-black font-bold
               px-2 py-2  animate-fadeIn 
