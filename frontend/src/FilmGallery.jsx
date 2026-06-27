@@ -333,8 +333,10 @@ function CategoryPanel({ categories, activeCategory, onSelect, slides }) {
         // Первый слайд-изображение этой категории — для миниатюры
         const thumb = slides.find((s) => {
           const c = s.productName || s._extraCat || null;
-          return c === cat.key && s.type !== "video";
+          // return c === cat.key && s.type !== "video";
+            return c === cat.key;
         });
+        const thumbSrc = thumb?.productImage || thumb?.src;
 
         return (
           <button
@@ -351,7 +353,7 @@ function CategoryPanel({ categories, activeCategory, onSelect, slides }) {
             {thumb && (
               <div className="flex-shrink-0 w-8 h-8 rounded-sm overflow-hidden bg-neutral-800">
                 <img
-                  src={thumb.src}
+                   src={thumbSrc}  
                   className="w-full h-full object-cover"
                   loading="lazy"
                   alt=""

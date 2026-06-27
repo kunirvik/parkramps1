@@ -134,6 +134,7 @@ function buildAllSlides() {
       productName: p.name,
       productId:   p.id,
       productType: TYPE_MAP.get(p.id) ?? null,
+      productImage: p.image,   // ← добавь это
     }))
   );
 
