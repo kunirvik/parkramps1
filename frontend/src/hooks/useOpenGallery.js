@@ -45,7 +45,7 @@
 //   return openGallery;
 // }
 
-src/hooks/useOpenGallery.js
+
 import { useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import productCatalogSets       from "../data/productCatalogSets";

@@ -89,9 +89,9 @@
 // }
 // AllGalleryPage.jsx
 // src/pages/GalleryRoute.jsx  (или где у тебя роут /gallery/:type/:id)
-import { useMemo }          from "react";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
-import FilmGallery          from "./FilmGallery";
+import { useMemo } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import FilmGallery from "./FilmGallery";
 import productCatalogSets       from "./data/productCatalogSets";
 import productCatalogRamps      from "./data/productCatalogRamps";
 import productCatalogSkateparks from "./data/productCatalogSkateparks";
@@ -102,13 +102,12 @@ const ALL_CATALOGS = [
   ...productCatalogSkateparks,
 ];
 
-// ── Произвольные категории без страниц продуктов ──────────────────────────────
 export const EXTRA_CATEGORIES = [
   {
     key:   "foam_pit",
     label: "Поролон. яма",
     slides: [
-      { type: "image", src: "/images/foam/foam1.webp",  caption: "Поролонова яма" },
+      { type: "image", src: "/images/foam/foam1.webp", caption: "Поролонова яма" },
       { type: "image", src: "/images/foam/foam2.webp" },
     ],
   },
@@ -119,25 +118,27 @@ export const EXTRA_CATEGORIES = [
       { type: "image", src: "/images/events/ev1.webp", caption: "Змагання 2024" },
     ],
   },
-  // додавай нові блоки тут...
 ];
 
-// ── Собираем ВСЕ слайды: каталоги + extraCategories ──────────────────────────
+// productType вычисляется один раз при импорте модуля
+const TYPE_MAP = new Map([
+  ...productCatalogSets.map((p)       => [p.id, "sets"]),
+  ...productCatalogRamps.map((p)      => [p.id, "ramps"]),
+  ...productCatalogSkateparks.map((p) => [p.id, "skateparks"]),
+]);
+
 function buildAllSlides() {
   const fromCatalog = ALL_CATALOGS.flatMap((p) =>
     (p.sample || []).map((s) => ({
       ...s,
-      productName: p.name,   // для категорий
-      productId:   p.id,     // для кнопки "відкрити виріб"
-      productType: (() => {
-        if (productCatalogSets.find((x) => x.id === p.id))       return "sets";
-        if (productCatalogRamps.find((x) => x.id === p.id))      return "ramps";
-        if (productCatalogSkateparks.find((x) => x.id === p.id)) return "skateparks";
-        return null;
-      })(),
+      productName: p.name,
+      productId:   p.id,
+      productType: TYPE_MAP.get(p.id) ?? null,
     }))
   );
 
+  // extraCategories слайды — добавляем _extraCat, НЕ передаём в FilmGallery
+  // отдельно через extraCategories проп, чтобы не дублировались
   const fromExtra = EXTRA_CATEGORIES.flatMap((ec) =>
     ec.slides.map((s) => ({ ...s, _extraCat: ec.key }))
   );
@@ -148,22 +149,27 @@ function buildAllSlides() {
 export default function GalleryRoute() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { startIndex = 0, originPath = "/", productName = null } =
-    location.state || {};
 
+  const {
+    startIndex  = 0,
+    originPath  = "/",
+    productName = null,
+  } = location.state || {};
+
+  // allSlides уже содержат extraCategories слайды — передаём пустой массив
+  // в FilmGallery чтобы они не добавились второй раз
   const allSlides = useMemo(buildAllSlides, []);
 
-  // Закрыть → вернуться туда, откуда пришли
   const handleClose = () => navigate(originPath);
 
   return (
     <FilmGallery
       slides={allSlides}
       startIndex={startIndex}
-      initialCategory={productName}   // автоматически активная категория
+      initialCategory={productName}
       onClose={handleClose}
       extraCategories={EXTRA_CATEGORIES}
       originPath={originPath}
     />
   );
-}
+} 

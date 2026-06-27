@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,  useLocation } from "react-router-dom";
 
 const THUMB_H = 68;
 const THUMB_W = 96;
@@ -306,6 +306,65 @@ function IconButton({ onClick, label, children, disabled = false }) {
   );
 }
 
+function CategoryPanel({ categories, activeCategory, onSelect, slides }) {
+  return (
+    <div
+      className="fg-slide-right flex flex-col gap-0.5 py-3 px-2 bg-neutral-900
+                 border-r border-neutral-800 overflow-y-auto fg-no-scroll flex-shrink-0"
+      style={{ minWidth: 130, maxWidth: 150, animationDelay: "0.15s" }}
+    >
+      <button
+        onClick={() => onSelect(null)}
+        className={`text-left px-3 py-1.5 rounded-md transition-colors
+          font-futura text-xs tracking-wide
+          ${activeCategory === null
+            ? "bg-yellow-400/20 text-yellow-300 border border-yellow-400/50"
+            : "text-white/40 hover:text-white/80 hover:bg-white/5"
+          }`}
+      >
+        All
+      </button>
+
+      <div className="h-px bg-neutral-700/50 my-1.5" />
+
+      {categories.map((cat) => {
+        const isActive = activeCategory === cat.key;
+
+        // Первый слайд-изображение этой категории — для миниатюры
+        const thumb = slides.find((s) => {
+          const c = s.productName || s._extraCat || null;
+          return c === cat.key && s.type !== "video";
+        });
+
+        return (
+          <button
+            key={cat.key}
+            onClick={() => onSelect(cat.key)}
+            className={`flex items-center gap-2 w-full text-left px-2 py-1.5 rounded-md
+              transition-colors font-futura text-xs tracking-wide
+              ${isActive
+                ? "bg-yellow-400/20 text-yellow-300 border border-yellow-400/50"
+                : "text-white/40 hover:text-white/80 hover:bg-white/5"
+              }`}
+          >
+            {/* Миниатюра */}
+            {thumb && (
+              <div className="flex-shrink-0 w-8 h-8 rounded-sm overflow-hidden bg-neutral-800">
+                <img
+                  src={thumb.src}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                  alt=""
+                />
+              </div>
+            )}
+            <span className="truncate">{cat.label}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 // ─── Основной компонент ───────────────────────────────────────────────────────
 export default function FilmGallery({
   slides: slidesProp,
@@ -316,14 +375,23 @@ export default function FilmGallery({
   originPath    = "/",     // куда вернуться при закрытии
 }) {
   const navigate = useNavigate();
-
+const location = useLocation();
   // ── Объединяем слайды из props + extraCategories ──────────────────────────
+  // const slides = useMemo(() => {
+  //   const extra = extraCategories.flatMap((ec) =>
+  //     ec.slides.map((s) => ({ ...s, _extraCat: ec.key }))
+  //   );
+  //   return [...slidesProp, ...extra];
+  // }, [slidesProp, extraCategories]);
   const slides = useMemo(() => {
-    const extra = extraCategories.flatMap((ec) =>
-      ec.slides.map((s) => ({ ...s, _extraCat: ec.key }))
-    );
-    return [...slidesProp, ...extra];
-  }, [slidesProp, extraCategories]);
+  const extraKeys = new Set(slidesProp.map((s) => s._extraCat).filter(Boolean));
+  const extra = extraCategories
+    .filter((ec) => !extraKeys.has(ec.key)) // не дублируем
+    .flatMap((ec) => ec.slides.map((s) => ({ ...s, _extraCat: ec.key })));
+  return [...slidesProp, ...extra];
+}, [slidesProp, extraCategories]);
+
+
 
   // ── Список категорий для панели ───────────────────────────────────────────
   const categories = useMemo(() => {
@@ -394,12 +462,20 @@ export default function FilmGallery({
   const currentSlide = slides[activeIndex];
   const canOpenProduct = !!(currentSlide?.productType && currentSlide?.productId);
 
-  const handleOpenProduct = useCallback(() => {
-    if (!canOpenProduct) return;
-    // Навигируем на страницу продукта.
-    // Подставь сюда свой реальный маршрут продукта:
-    navigate(`/${currentSlide.productType}/${currentSlide.productId}`);
-  }, [canOpenProduct, currentSlide, navigate]);
+  // const handleOpenProduct = useCallback(() => {
+  //   if (!canOpenProduct) return;
+  //   // Навигируем на страницу продукта.
+  //   // Подставь сюда свой реальный маршрут продукта:
+  //   navigate(`/${currentSlide.productType}/${currentSlide.productId}`);
+  // }, [canOpenProduct, currentSlide, navigate]);
+const handleOpenProduct = useCallback(() => {
+  if (!canOpenProduct) return;
+  // маршрут такой же как в твоём приложении: /product/sets/1
+  navigate(`/product/${currentSlide.productType}/${currentSlide.productId}`, {
+    state: { originPath: location.pathname },
+  });
+}, [canOpenProduct, currentSlide, navigate]);
+
 
   // ── Навигация ─────────────────────────────────────────────────────────────
   const handleClose = useCallback(
@@ -499,6 +575,7 @@ export default function FilmGallery({
             categories={categories}
             activeCategory={activeCategory}
             onSelect={handleSelectCategory}
+            slides={slides}
           />
         )}
 
