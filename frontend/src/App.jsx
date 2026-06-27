@@ -12,7 +12,7 @@ import BlogPage from "./blog/components/BlogPage";
 import GalleryPage from "./GalleryPage/GalleryPage";
 import BlogPostModal from "./blog/components/BlogPostModal";
 import AdminPage from "./blog/components/Adminpage";
-import AllGalleryPage from "./Allgallerypage";
+import GalleryRoute from "./GalleryRoute";
 import MarketplacePage from "./Marketplacepage/Marketplacepage";
 
 
@@ -30,7 +30,7 @@ function App() {
         <Route path="/" element={<MenuPage />} />
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/catalogue" element={<Catalogue />} />
-     <Route path="/gallery/all" element={<AllGalleryPage />} />    
+     <Route path="/gallery/all" element={<GalleryRoute />} />    
      <Route path="/gallery/:type/:id" element={<GalleryPage />} />
  
  
