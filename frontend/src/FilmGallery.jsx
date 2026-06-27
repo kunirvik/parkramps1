@@ -188,49 +188,125 @@ function ThumbStripVertical({ slides, activeIndex, onSelect, highlightedIndices 
   );
 }
 
-// ─── Горизонтальная лента СНИЗУ (мобилка) ────────────────────────────────────
-function ThumbStripHorizontal({ slides, activeIndex, onSelect, highlightedIndices }) {
+// // ─── Горизонтальная лента СНИЗУ (мобилка) ────────────────────────────────────
+// function ThumbStripHorizontal({ slides, activeIndex, onSelect, highlightedIndices }) {
+//   const stripRef = useRef(null);
+//   const frameRef = useRef(null);
+
+//   useEffect(() => {
+//     if (!frameRef.current) return;
+//     const left = activeIndex * (THUMB_W + 4);
+//     frameRef.current.style.transform = `translateX(${left}px)`;
+//     if (stripRef.current) {
+//       const containerW = stripRef.current.clientWidth;
+//       stripRef.current.scrollTo({
+//         left: left - containerW / 2 + THUMB_W / 2,
+//         behavior: "smooth",
+//       });
+//     }
+//   }, [activeIndex]);
+
+//   return (
+//     <div
+//       ref={stripRef}
+//       className="fg-no-scroll relative overflow-x-auto bg-neutral-900"
+//       style={{ height: 64, paddingLeft: 12, paddingRight: 12 }}
+//     >
+//       <div
+//         ref={frameRef}
+//         className="absolute top-1.5 bottom-1.5 border-2 border-yellow-400/90
+//                    rounded-sm pointer-events-none z-50 transition-transform duration-300"
+//         style={{ width: THUMB_W, left: 12 }}
+//       />
+//       <div className="flex gap-1 h-full" style={{ minWidth: slides.length * (THUMB_W + 4) }}>
+//         {slides.map((slide, i) => {
+//           const isActive      = i === activeIndex;
+//           const isHighlighted = highlightedIndices === null || highlightedIndices.has(i);
+//           return (
+//             <div
+//               key={i}
+//               onClick={() => onSelect(i)}
+//               className="flex-shrink-0 overflow-hidden cursor-pointer transition-opacity duration-300"
+//               style={{ width: THUMB_W, height: "100%", opacity: isActive ? 1 : isHighlighted ? 0.55 : 0.12 }}
+//             >
+//               {slide.type === "video"
+//                 ? <div className="w-full h-full bg-neutral-800 flex items-center justify-center text-white/60 text-xs">▶</div>
+//                 : <img src={slide.src} className="w-full h-full object-cover" loading="lazy" alt="" />
+//               }
+//             </div>
+//           );
+//         })}
+//       </div>
+//     </div>
+//   );
+// }
+// ─── Вертикальная лента для МОБИЛКИ (левая и правая) ─────────────────────────
+const MOBILE_THUMB_FULL = 40;   // размер миниатюры в обычном режиме
+const MOBILE_THUMB_SMALL = 28;  // размер при скролле
+
+function MobileThumbStrip({ slides, activeIndex, onSelect, highlightedIndices, isScrolling, side }) {
   const stripRef = useRef(null);
   const frameRef = useRef(null);
 
+  const thumbSize = isScrolling ? MOBILE_THUMB_SMALL : MOBILE_THUMB_FULL;
+  const gap       = 3;
+
   useEffect(() => {
     if (!frameRef.current) return;
-    const left = activeIndex * (THUMB_W + 4);
-    frameRef.current.style.transform = `translateX(${left}px)`;
+    const top = activeIndex * (thumbSize + gap);
+    frameRef.current.style.transform = `translateY(${top}px)`;
     if (stripRef.current) {
-      const containerW = stripRef.current.clientWidth;
+      const containerH = stripRef.current.clientHeight;
       stripRef.current.scrollTo({
-        left: left - containerW / 2 + THUMB_W / 2,
+        top: top - containerH / 2 + thumbSize / 2,
         behavior: "smooth",
       });
     }
-  }, [activeIndex]);
+  }, [activeIndex, thumbSize]);
 
   return (
     <div
       ref={stripRef}
-      className="fg-no-scroll relative overflow-x-auto bg-neutral-900"
-      style={{ height: 64, paddingLeft: 12, paddingRight: 12 }}
+      className="fg-no-scroll relative h-full overflow-y-auto bg-neutral-900/80 backdrop-blur-sm py-1"
+      style={{
+        width: 44,
+        borderLeft:  side === "right" ? "1px solid rgba(255,255,255,0.06)" : "none",
+        borderRight: side === "left"  ? "1px solid rgba(255,255,255,0.06)" : "none",
+      }}
     >
+      {/* Рамка-индикатор */}
       <div
         ref={frameRef}
-        className="absolute top-1.5 bottom-1.5 border-2 border-yellow-400/90
-                   rounded-sm pointer-events-none z-50 transition-transform duration-300"
-        style={{ width: THUMB_W, left: 12 }}
+        className="absolute left-1 right-1 border border-yellow-400/80 rounded-sm pointer-events-none z-50"
+        style={{
+          height: thumbSize,
+          transition: "transform 0.3s cubic-bezier(0.16,1,0.3,1), height 0.3s ease",
+          top: 4,
+        }}
       />
-      <div className="flex gap-1 h-full" style={{ minWidth: slides.length * (THUMB_W + 4) }}>
+
+      <div
+        className="flex flex-col px-1"
+        style={{ gap }}
+      >
         {slides.map((slide, i) => {
           const isActive      = i === activeIndex;
           const isHighlighted = highlightedIndices === null || highlightedIndices.has(i);
+
           return (
             <div
               key={i}
               onClick={() => onSelect(i)}
-              className="flex-shrink-0 overflow-hidden cursor-pointer transition-opacity duration-300"
-              style={{ width: THUMB_W, height: "100%", opacity: isActive ? 1 : isHighlighted ? 0.55 : 0.12 }}
+              className="flex-shrink-0 overflow-hidden cursor-pointer rounded-sm"
+              style={{
+                width:      "100%",
+                height:     thumbSize,
+                opacity:    isActive ? 1 : isHighlighted ? 0.55 : 0.12,
+                transition: "height 0.3s ease, opacity 0.3s ease",
+              }}
             >
               {slide.type === "video"
-                ? <div className="w-full h-full bg-neutral-800 flex items-center justify-center text-white/60 text-xs">▶</div>
+                ? <div className="w-full h-full bg-neutral-800 flex items-center justify-center text-white/60 text-[8px]">▶</div>
                 : <img src={slide.src} className="w-full h-full object-cover" loading="lazy" alt="" />
               }
             </div>
@@ -240,7 +316,6 @@ function ThumbStripHorizontal({ slides, activeIndex, onSelect, highlightedIndice
     </div>
   );
 }
-
 // ─── Главный вид ──────────────────────────────────────────────────────────────
 function MainView({ slide, index, total }) {
   const videoRef             = useRef(null);
@@ -393,7 +468,23 @@ const location = useLocation();
   return [...slidesProp, ...extra];
 }, [slidesProp, extraCategories]);
 
+// ─── Добавь этот хук в тело FilmGallery ──────────────────────────────────────
+const [isScrolling, setIsScrolling]     = useState(false);
+const scrollTimerRef                    = useRef(null);
 
+// Вызывай при каждом goTo
+const goTo = useCallback((idx) => {
+  setActiveIndex((idx + slides.length) % slides.length);
+
+  // мобилка: показываем "scrolling" режим
+  if (isMobile) {
+    setIsScrolling(true);
+    clearTimeout(scrollTimerRef.current);
+    scrollTimerRef.current = setTimeout(() => setIsScrolling(false), 1200);
+  }
+}, [slides.length, isMobile]);
+
+useEffect(() => () => clearTimeout(scrollTimerRef.current), []);
 
   // ── Список категорий для панели ───────────────────────────────────────────
   const categories = useMemo(() => {
@@ -599,8 +690,114 @@ const handleOpenProduct = useCallback(() => {
           </div>
         )}
       </div>
+{/* ── МОБИЛКА: боковые вертикальные ленты ── */}
+{isMobile && (
+  <>
+    {/* Левая лента — категории (прячется при скролле) или миниатюры */}
+    <div
+      className="absolute left-0 top-0 bottom-0 z-30 flex"
+      style={{
+        // резервируем место всегда, просто меняем ширину
+        width: isScrolling ? 44 : 140,
+        transition: "width 0.35s cubic-bezier(0.16,1,0.3,1)",
+        overflow: "hidden",
+      }}
+    >
+      {/* Категории — видны когда не скроллим */}
+      <div
+        style={{
+          opacity:    isScrolling ? 0 : 1,
+          transform:  isScrolling ? "translateX(-20px)" : "translateX(0)",
+          transition: "opacity 0.3s ease, transform 0.3s ease",
+          width: 140,
+          flexShrink: 0,
+          pointerEvents: isScrolling ? "none" : "auto",
+        }}
+      >
+        {categories.length > 0 && (
+          <CategoryPanel
+            categories={categories}
+            activeCategory={activeCategory}
+            onSelect={handleSelectCategory}
+            slides={slides}
+          />
+        )}
+      </div>
 
-      {/* ── Лента СНИЗУ (мобилка) ── */}
+      {/* Левые миниатюры — видны когда скроллим */}
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          top: 0,
+          bottom: 0,
+          width: 44,
+          opacity:    isScrolling ? 1 : 0,
+          transform:  isScrolling ? "translateX(0)" : "translateX(-20px)",
+          transition: "opacity 0.3s ease, transform 0.3s ease",
+          pointerEvents: isScrolling ? "auto" : "none",
+        }}
+      >
+        <MobileThumbStrip
+          slides={slides}
+          activeIndex={activeIndex}
+          onSelect={goTo}
+          highlightedIndices={highlightedIndices}
+          isScrolling={isScrolling}
+          side="left"
+        />
+      </div>
+    </div>
+
+    {/* Правая вертикальная лента — всегда видна */}
+    <div
+      className="absolute right-0 top-0 bottom-0 z-30"
+      style={{ width: isScrolling ? 44 : 44 }}
+    >
+      <MobileThumbStrip
+        slides={slides}
+        activeIndex={activeIndex}
+        onSelect={goTo}
+        highlightedIndices={highlightedIndices}
+        isScrolling={isScrolling}
+        side="right"
+      />
+    </div>
+
+    {/* Кнопки — правый верхний угол, прячутся при скролле */}
+    <div
+      className="absolute top-3 right-14 z-50 flex flex-col gap-2"
+      style={{
+        opacity:    isScrolling ? 0 : 1,
+        transform:  isScrolling ? "translateY(-10px)" : "translateY(0)",
+        transition: "opacity 0.25s ease, transform 0.25s ease",
+        pointerEvents: isScrolling ? "none" : "auto",
+      }}
+    >
+      <button
+        onClick={handleClose}
+        className="flex items-center justify-center w-9 h-9 rounded-full bg-neutral-800/80 text-white/80 backdrop-blur-sm"
+      >
+        <IconClose />
+      </button>
+      <button
+        onClick={handleOpenAllGallery}
+        className="flex items-center justify-center w-9 h-9 rounded-full bg-neutral-800/80 text-white/80 backdrop-blur-sm"
+      >
+        <IconGrid />
+      </button>
+      {canOpenProduct && (
+        <button
+          onClick={handleOpenProduct}
+          className="flex items-center justify-center w-9 h-9 rounded-full bg-neutral-800/80 text-white/80 backdrop-blur-sm"
+        >
+          <IconOpenProduct />
+        </button>
+      )}
+    </div>
+  </>
+)}
+      {/* ── Лента СНИЗУ (мобилка) ──
       {isMobile && (
         <div className="flex-none border-t border-neutral-800 fg-slide-up" style={{ animationDelay: "0.22s" }}>
           <ThumbStripHorizontal
@@ -610,10 +807,10 @@ const handleOpenProduct = useCallback(() => {
             highlightedIndices={highlightedIndices}
           />
         </div>
-      )}
+      )} */}
 
       {/* ── Кнопки (мобилка) — правый верхний угол ── */}
-      {isMobile && (
+      {/* {isMobile && (
         <div className="absolute top-3 right-3 z-50 flex flex-col gap-2">
           <button onClick={handleClose}
             className="flex items-center justify-center w-9 h-9 rounded-full bg-neutral-800/80 text-white/80 backdrop-blur-sm">
@@ -630,7 +827,7 @@ const handleOpenProduct = useCallback(() => {
             </button>
           )}
         </div>
-      )}
+      )} */}
     </div>
   );
 }
