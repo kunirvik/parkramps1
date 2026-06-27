@@ -513,8 +513,12 @@ const handleMouseEnter = useCallback(
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
     <>
-      <div className="flex flex-col bg-center h-screen overflow-hidden
-    bg-no-repeat bg-[url('https://res.cloudinary.com/dbx6muxub/image/upload/v1780563482/project-brightness-50_fbitrl.png')]  ">
+      <div className="flex flex-col  min-h-screen overflow-hidden
+    
+    
+    relative bg-[rgba(0, 0, 0, 0.77)]   bg-cover
+    bg-center
+    bg-no-repeat bg-[url('https://res.cloudinary.com/dbx6muxub/image/upload/v1780563482/project-brightness-50_fbitrl.png')] w-full">
         <div className="z-50 flex-shrink-0">
           <SocialButtons
             ref={socialButtonsRef}
