@@ -1125,8 +1125,8 @@ const handleStageClick = useCallback(() => {
                     alt={product.name}
                     className="max-h-full w-auto object-contain"
                     draggable="false"
-                    onTouchStart={() => onTouchStart(index, product)}
-                    onTouchEnd={() => onTouchEnd(index)}
+                    // onTouchStart={() => onTouchStart(index, product)}
+                    // onTouchEnd={() => onTouchEnd(index)}
                   />
                 </div>
               </SwiperSlide>
@@ -1204,7 +1204,7 @@ const handleStageClick = useCallback(() => {
               <i className={cursorIconClass} style={{ fontSize: 15, color: "#fff" }} aria-hidden="true" />
             </div>
           )}
-        </div>
+      
 {/* Мобильная кнопка плей/пауза */}
 {allImages.length > 1 && isTouchDevice && (
   <button
@@ -1223,7 +1223,7 @@ const handleStageClick = useCallback(() => {
       aria-hidden="true"
     />
   </button>
-)}
+)}  </div>
         {/* Переключатель скраб/авто — только для продуктов с 10+ фото */}
         {/* {productMode === "scrub" && allImages.length > 1 && ( */}
           {/* <div className="flex items-center gap-2 mt-2">
