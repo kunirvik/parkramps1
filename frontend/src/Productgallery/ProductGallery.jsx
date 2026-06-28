@@ -1074,15 +1074,17 @@ const handleStageClick = useCallback(() => {
     });
 }}
           // onMouseMove={handleStageMouseMove}
-          onMouseEnter={() => { setIsHovering(true); onMouseEnter(state.activeProductIndex, currentProduct); }}
-          onMouseLeave={() => {
+           onMouseEnter={() => { if (!isTouchDevice) { setIsHovering(true); onMouseEnter(state.activeProductIndex, currentProduct); }}}
+          onMouseLeave={() => { if (!isTouchDevice)   {
             setIsHovering(false);
             onMouseLeave(state.activeProductIndex);
             // if (effectiveMode === "play") { 
               stopHoverAnimation(); setIsPlaying(false);
             //  }
-          }}
-          onClick={handleStageClick}
+            setIsPlaying(false);
+          }}}
+          // onClick={handleStageClick}
+            onClick={!isTouchDevice ? handleStageClick : undefined}
         >
           <Swiper
             className="custom-swiper h-[250px] sm:h-[300px] md:h-[350px]"
@@ -1183,7 +1185,7 @@ const handleStageClick = useCallback(() => {
           </div>
 
           {/* Кастомный курсор */}
-          {allImages.length > 1 && isHovering && (
+          {allImages.length > 1 && isHovering && !isTouchDevice && (
             <div
               className="absolute pointer-events-none z-20"
               style={{
@@ -1203,7 +1205,25 @@ const handleStageClick = useCallback(() => {
             </div>
           )}
         </div>
-
+{/* Мобильная кнопка плей/пауза */}
+{allImages.length > 1 && isTouchDevice && (
+  <button
+    className="absolute bottom-3 right-3 z-20 w-9 h-9 rounded-full flex items-center justify-center"
+    style={{
+      background: "rgba(0,0,0,0.38)",
+      backdropFilter: "blur(6px)",
+      border: "0.5px solid rgba(255,255,255,0.22)",
+    }}
+    onClick={(e) => { e.stopPropagation(); handleStageClick(); }}
+    aria-label={isPlaying ? "Пауза" : "Запустить анимацию"}
+  >
+    <i
+      className={isPlaying ? "ti ti-player-pause" : "ti ti-player-play"}
+      style={{ fontSize: 16, color: "#fff" }}
+      aria-hidden="true"
+    />
+  </button>
+)}
         {/* Переключатель скраб/авто — только для продуктов с 10+ фото */}
         {/* {productMode === "scrub" && allImages.length > 1 && ( */}
           {/* <div className="flex items-center gap-2 mt-2">
