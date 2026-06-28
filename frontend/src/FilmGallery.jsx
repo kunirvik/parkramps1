@@ -793,9 +793,10 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
   document.head.appendChild(s);
 }
 
-// ─── Утилита Cloudinary ───────────────────────────────────────────────────────
 function optimizeImg(url, width = 1200) {
   if (!url || !url.includes("cloudinary.com")) return url;
+  // уже оптимизирован — не трогаем
+  if (url.includes("/upload/w_") || url.includes("/upload/q_")) return url;
   return url.replace("/upload/", `/upload/w_${width},q_auto,f_auto,dpr_auto/`);
 }
 
@@ -1082,6 +1083,14 @@ const MainView = memo(function MainView({ slide, index, total }) {
   useEffect(() => { setLoading(true); }, [slide]);
   useEffect(() => { if (videoRef.current) videoRef.current.play().catch(() => {}); }, [slide]);
 
+  // ← ключевое: если картинка уже в кеше — complete=true сразу
+  useEffect(() => {
+    if (imgRef.current?.complete) {
+      setLoading(false);
+    }
+  }, [slide]);
+
+
   if (!slide) return null;
 
   return (
@@ -1106,7 +1115,7 @@ const MainView = memo(function MainView({ slide, index, total }) {
             onLoad={() => setLoading(false)}
             onError={() => setLoading(false)}
             decoding="async"
-            fetchpriority="high"
+            // fetchpriority="high"
             alt={slide.caption || ""}
           />
       }

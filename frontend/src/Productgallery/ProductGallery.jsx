@@ -1062,7 +1062,7 @@ const handleStageClick = useCallback(() => {
         <div
           ref={stageRef}
           className="relative w-full"
-          style={{ cursor: allImages.length > 1 ? "none" : "default" }}
+          style={{ cursor: allImages.length > 1  && !isTouchDevice ? "none" : "default" }}
          onMouseMove={(e) => {
     if (!stageRef.current) return;
 

@@ -313,7 +313,7 @@ const playingProductRef = useRef(null);
       // }, speed);
     
     },
-    [isTouchDevice, stopHoverAnimation, setState]
+    [ stopHoverAnimation, setState]
   );
 
   const handleMouseEnter = useCallback(
