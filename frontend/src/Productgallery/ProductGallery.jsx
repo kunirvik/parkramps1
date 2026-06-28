@@ -877,26 +877,9 @@ function Filmstrip({ product, currentFrameIndex, onFrameSelect }) {
         onMouseUp={() => { isDragging.current = false; trackRef.current.style.cursor = "grab"; }}
         onMouseLeave={() => { isDragging.current = false; }}
       >
-        {/* {allImages.map((src, i) => (
-          <div
-            key={i}
-            onClick={() => onFrameSelect(i)}
-            className="relative flex-shrink-0 overflow-hidden"
-            style={{ width: 60, height: 44, borderRight: "2px solid white" }}
-          >
-            <img src={src} alt="" draggable="false" className="w-full h-full object-cover" style={{ opacity: i === currentFrameIndex ? 1 : 0.48 }} />
-            {i === currentFrameIndex && (
-              <div className="absolute inset-0 border-2 border-white pointer-events-none" />
-            )}
-            {i !== currentFrameIndex && (
-              <div className="absolute inset-0 bg-black/25 pointer-events-none" />
-            )}
-          </div>
-        ))} */}
+
       </div>
-      {/* <p className="text-[11px] text-gray-400 mt-1 text-right">
-        {currentFrameIndex + 1} / {allImages.length}
-      </p> */}
+
     </div>
   );
 }
@@ -917,11 +900,9 @@ export default function ProductGallery({
   onTouchStart,
   onTouchEnd,
   stopHoverAnimation,
-  // scrubToFrame,
+
   startPlayAnimation,
-  // getMode,
-  // userMode,        // "scrub" | "play" — выбор пользователя
-  // setUserMode,     // переключатель
+
   swiperConfig,
    isTouchDevice
 }) {
@@ -932,7 +913,6 @@ export default function ProductGallery({
   // Показывать ли авто-подсказку (один раз при открытии продукта)
   const [autoHintVisible, setAutoHintVisible] = useState(false);
   const autoHintTimerRef = useRef(null);
-  // const hintSeenRef = useRef({ scrub: false, play: false }); // по типу продукта
   const hintSeenRef = useRef(false);
   const stageRef = useRef(null);
 
@@ -942,9 +922,7 @@ export default function ProductGallery({
     : [];
   const currentFrameIndex = state.selectedImageIndices[state.activeProductIndex] ?? 0;
 
-  // const productMode = getMode(currentProduct); // "scrub" | "play"
-  // Итоговый режим: если продукт "play" — только play; если "scrub" — пользователь выбирает
-  // const effectiveMode = productMode === "play" ? "play" : userMode;
+  
 useEffect(() => {
     if (!hintSeenRef.current) {
         hintSeenRef.current = true;
@@ -961,24 +939,11 @@ useEffect(() => {
     setIsPlaying(false);
     stopHoverAnimation();
 }, [state.activeProductIndex, stopHoverAnimation]);
-  // // Показываем авто-подсказку при смене продукта
-  // useEffect(() => {
-  //   const key = productMode;
-  //   if (!hintSeenRef.current[key]) {
-  //     hintSeenRef.current[key] = true;
-  //     setAutoHintVisible(true);
-  //     clearTimeout(autoHintTimerRef.current);
-  //     autoHintTimerRef.current = setTimeout(() => setAutoHintVisible(false), 2800);
-  //   }
-  //   // Стоп при смене продукта
-  //   setIsPlaying(false);
-  //   stopHoverAnimation();
-  // }, [state.activeProductIndex, productMode, stopHoverAnimation]);
+  
 
   const hintText ="Нажмите на фото — запустится анимация. Ещё раз — пауза"
-    // effectiveMode === "scrub"
-    //   ? "Двигайте мышью по фото для просмотра 360°"
-      // : "Нажмите на фото — запустится анимация. Ещё раз — пауза";
+  
+
 
   const handleStageMouseMove = useCallback(
     (e) => {
@@ -995,16 +960,7 @@ useEffect(() => {
     [allImages.length,  state.activeProductIndex]
   );
 
-  // const handleStageClick = useCallback(() => {
-  //   if (effectiveMode !== "play" || allImages.length <= 1) return;
-  //   if (isPlaying) {
-  //     stopHoverAnimation();
-  //     setIsPlaying(false);
-  //   } else {
-  //     startPlayAnimation(state.activeProductIndex, currentProduct);
-  //     setIsPlaying(true);
-  //   }
-  // }, [effectiveMode, allImages.length, isPlaying, stopHoverAnimation, startPlayAnimation, state.activeProductIndex, currentProduct]);
+  
 const handleStageClick = useCallback(() => {
     if (allImages.length <= 1) return;
 
@@ -1027,18 +983,11 @@ const handleStageClick = useCallback(() => {
     (i) => {
       stopHoverAnimation();
       setIsPlaying(false);
-      // scrubToFrame(state.activeProductIndex, i, allImages.length);
     },
     [stopHoverAnimation,  state.activeProductIndex, allImages.length]
   );
 
-  // Иконка курсора
-  // const cursorIconClass =
-  //   effectiveMode === "scrub"
-  //     ? "ti ti-arrows-horizontal"
-  //     : isPlaying
-  //     ? "ti ti-player-pause"
-  //     : "ti ti-player-play";
+  
 
   const cursorIconClass = isPlaying
     ? "ti ti-player-pause"
@@ -1224,46 +1173,7 @@ const handleStageClick = useCallback(() => {
     />
   </button>
 )}  </div>
-        {/* Переключатель скраб/авто — только для продуктов с 10+ фото */}
-        {/* {productMode === "scrub" && allImages.length > 1 && ( */}
-          {/* <div className="flex items-center gap-2 mt-2">
-            <div
-              className="flex overflow-hidden"
-              style={{ border: "0.5px solid var(--color-border-secondary)", borderRadius: "var(--border-radius-md)" }}
-            >
-              <button
-                className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] transition-colors"
-                style={{
-                  background: userMode === "scrub" ? "var(--color-background-secondary)" : "transparent",
-                  color: userMode === "scrub" ? "var(--color-text-primary)" : "var(--color-text-secondary)",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-                onClick={() => setUserMode("scrub")}
-              >
-                <i className="ti ti-arrows-horizontal" style={{ fontSize: 13 }} aria-hidden="true" />
-                скраб
-              </button>
-              <div style={{ width: "0.5px", background: "var(--color-border-secondary)" }} />
-              <button
-                className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] transition-colors"
-                style={{
-                  background: userMode === "play" ? "var(--color-background-secondary)" : "transparent",
-                  color: userMode === "play" ? "var(--color-text-primary)" : "var(--color-text-secondary)",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-                onClick={() => setUserMode("play")}
-              >
-                <i className="ti ti-player-play" style={{ fontSize: 13 }} aria-hidden="true" />
-                авто
-              </button>
-            </div>
-            <span className="text-[12px]" style={{ color: "var(--color-text-secondary)" }}>
-              {userMode === "scrub" ? "мышь меняет кадр" : "клик запускает анимацию"}
-            </span>
-          </div> */}
-        {/* )} */}
+     
 
         {/* Filmstrip */}
         <Filmstrip

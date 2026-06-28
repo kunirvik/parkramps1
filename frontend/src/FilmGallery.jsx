@@ -1074,28 +1074,27 @@ function MobileThumbStrip({ slides, activeIndex, onSelect, highlightedIndices })
   );
 }
 
-// ─── Главный вид — без анимации появления ────────────────────────────────────
 const MainView = memo(function MainView({ slide, index, total }) {
   const videoRef             = useRef(null);
+  const imgRef               = useRef(null);  // ← добавь это
   const [loading, setLoading] = useState(true);
 
-  // сбрасываем loading при смене слайда
   useEffect(() => { setLoading(true); }, [slide]);
-  useEffect(() => { if (videoRef.current) videoRef.current.play().catch(() => {}); }, [slide]);
 
-  // ← ключевое: если картинка уже в кеше — complete=true сразу
+  useEffect(() => {
+    if (videoRef.current) videoRef.current.play().catch(() => {});
+  }, [slide]);
+
+  // если картинка уже в кеше — complete=true, onLoad не стреляет
   useEffect(() => {
     if (imgRef.current?.complete) {
       setLoading(false);
     }
   }, [slide]);
 
-
   if (!slide) return null;
 
   return (
-    // НЕТ key — нет пересоздания DOM, нет анимации
-    // НЕТ fg-enter — нет анимации появления
     <div className="relative flex justify-center w-full h-full bg-neutral-950 overflow-hidden">
       {loading && <Spinner />}
 
@@ -1109,13 +1108,13 @@ const MainView = memo(function MainView({ slide, index, total }) {
             onCanPlay={() => setLoading(false)}
           />
         : <img
+            ref={imgRef}
             src={optimizeImg(slide.src, 1200)}
             className="w-auto h-full object-contain"
             style={{ opacity: loading ? 0 : 1, transition: "opacity 0.25s ease" }}
             onLoad={() => setLoading(false)}
             onError={() => setLoading(false)}
             decoding="async"
-            // fetchpriority="high"
             alt={slide.caption || ""}
           />
       }
@@ -1137,7 +1136,6 @@ const MainView = memo(function MainView({ slide, index, total }) {
     </div>
   );
 });
-
 // ─── Кнопка с тултипом (десктоп) ─────────────────────────────────────────────
 function IconButton({ onClick, label, children, disabled = false }) {
   return (
