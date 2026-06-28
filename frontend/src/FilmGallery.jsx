@@ -249,73 +249,6 @@ function ThumbStripVertical({ slides, activeIndex, onSelect, highlightedIndices 
   );
 }
 
-// // ─── Вертикальная лента для МОБИЛКИ ──────────────────────────────────────────
-// function MobileThumbStrip({ slides, activeIndex, onSelect, highlightedIndices, isScrolling }) {
-//   const stripRef = useRef(null);
-//   const frameRef = useRef(null);
-//   const thumbSize = isScrolling ? MOBILE_THUMB_SMALL : MOBILE_THUMB_FULL;
-//   const gap = 3;
-
-//   useEffect(() => {
-//     if (!frameRef.current || !stripRef.current) return;
-//     const top = activeIndex * (thumbSize + gap);
-//     frameRef.current.style.transform = `translateY(${top}px)`;
-//     const containerH = stripRef.current.clientHeight;
-//     stripRef.current.scrollTo({
-//       top: top - containerH / 2 + thumbSize / 2,
-//       behavior: "smooth",
-//     });
-//   }, [activeIndex, thumbSize]);
-
-//   return (
-//     <div
-//       ref={stripRef}
-//       className="fg-no-scroll relative h-full overflow-y-auto bg-neutral-900/80
-//                  backdrop-blur-sm py-1 border-l border-neutral-800/50"
-//       style={{ width: 44 }}
-//     >
-//       <div
-//         ref={frameRef}
-//         className="absolute left-1 right-1 border border-yellow-400/80 rounded-sm
-//                    pointer-events-none z-50"
-//         style={{
-//           height: thumbSize,
-//           top: 4,
-//           transition: "transform 0.3s cubic-bezier(0.16,1,0.3,1), height 0.3s ease",
-//         }}
-//       />
-//       <div className="flex flex-col px-1" style={{ gap }}>
-//         {slides.map((slide, i) => {
-//           const isActive      = i === activeIndex;
-//           const isHighlighted = highlightedIndices === null || highlightedIndices.has(i);
-//           // используем productImage если есть, иначе src слайда
-//           const thumbSrc = slide.productImage || slide.src;
-
-//           return (
-//             <div
-//               key={i}
-//               onClick={() => onSelect(i)}
-//               className="flex-shrink-0 overflow-hidden cursor-pointer rounded-sm"
-//               style={{
-//                 width:      "100%",
-//                 height:     thumbSize,
-//                 opacity:    isActive ? 1 : isHighlighted ? 0.55 : 0.12,
-//                 transition: "height 0.3s ease, opacity 0.3s ease",
-//               }}
-//             >
-//               {slide.type === "video"
-//                 ? <div className="w-full h-full bg-neutral-800 flex items-center justify-center
-//                                   text-white/60 text-[8px]">▶</div>
-//                 : <img src={thumbSrc} className="w-full h-full object-cover" loading="lazy" alt="" />
-//               }
-//             </div>
-//           );
-//         })}
-//       </div>
-//     </div>
-//   );
-// }
-
 // ─── Горизонтальная лента СНИЗУ (мобилка) ────────────────────────────────────
 function MobileThumbStrip({ slides, activeIndex, onSelect, highlightedIndices, isScrolling }) {
   const stripRef = useRef(null);
@@ -684,7 +617,7 @@ export default function FilmGallery({
       flexShrink: 0,
     }}> */}
     <div
-  ref={stripRef}
+  // ref={stripRef}
   className="fg-no-scroll relative overflow-x-auto bg-neutral-900 border-t border-neutral-800"
   style={{ height: 60, paddingLeft: 8, paddingRight: 8, flexShrink: 0 }}>
       <MobileCategoryBar
