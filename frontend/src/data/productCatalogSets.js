@@ -147,7 +147,7 @@ import { scale } from "framer-motion";
 // export default productCatalogSets
 
 
-const productCatalogSets = [
+
   // {
   //   id: 3,
   //   name: "diy box",
@@ -169,7 +169,7 @@ const productCatalogSets = [
   //   description: "Пиши нам у месенджер...",
   //   relatedProducts: [1, 2, 4, 5],
   // },
-
+const productCatalogSets = [
   {
     id:1,
     name: "jumpbox",

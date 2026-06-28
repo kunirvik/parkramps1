@@ -86,7 +86,8 @@ export function useOpenGallery() {
 
     navigate(`/gallery/${type}/${currentProduct.id}`, {
       state: {
-        startIndex,
+        // startIndex,
+         productId: currentProduct.id,
         // откуда пришли — чтобы вернуться при закрытии
         originPath:  location.pathname,
         // имя продукта — чтобы автоматически выставить активную категорию
