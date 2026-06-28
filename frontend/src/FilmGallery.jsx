@@ -409,15 +409,16 @@ import { useState, useEffect, useRef, useCallback, useMemo, memo } from "react";
 const MainView = memo(function MainView({ slide, index, total }) {
   const videoRef              = useRef(null);
   const [loading, setLoading]  = useState(true);
-  const [animKey, setAnimKey]  = useState(0);
+  // const [animKey, setAnimKey]  = useState(0);
 
-  useEffect(() => { setLoading(true); setAnimKey((k) => k + 1); }, [slide]);
+  // useEffect(() => { setLoading(true); setAnimKey((k) => k + 1); }, [slide]);
+  useEffect(() => { setLoading(true); }, [slide]);
   useEffect(() => { if (videoRef.current) videoRef.current.play().catch(() => {}); }, [slide]);
 
   if (!slide) return null;
 
   return (
-    <div key={animKey} className="fg-enter relative flex justify-center w-full h-full
+    <div key={animKey} className="relative flex justify-center w-full h-full
                                   bg-neutral-950 overflow-hidden">
       {loading && <Spinner />}
 
