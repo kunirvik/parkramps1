@@ -276,8 +276,9 @@ const playingProductRef = useRef(null);
       playTimeoutRef.current = setTimeout(play, speed);
     };
 
- playTimeoutRef.current = setTimeout(play, speed);
-    
+//  playTimeoutRef.current = setTimeout(play, speed);
+
+    play();
     },
     [ stopHoverAnimation, setState]
   );
