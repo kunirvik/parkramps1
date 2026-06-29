@@ -146,25 +146,43 @@ const TYPED_CATALOGS = [
 //   );
 
 
+// function buildAllSlides() {
+//   return TYPED_CATALOGS.flatMap((p) =>
+//     (p.sample || []).map((s) => ({
+//       ...s,
+//       productName:  p.name,
+//       productId:    p.id,
+//       productType:  p._type,   // всегда правильный тип
+//       productImage: p.image,
+//     }))
+//   );
+
+//   // extraCategories слайды — добавляем _extraCat, НЕ передаём в FilmGallery
+//   // отдельно через extraCategories проп, чтобы не дублировались
+//   const fromExtra = EXTRA_CATEGORIES.flatMap((ec) =>
+//     ec.slides.map((s) => ({ ...s, _extraCat: ec.key }))
+//   );
+
+//   return [...fromCatalog, ...fromExtra];
+// }
+
+// GalleryRoute.jsx
 function buildAllSlides() {
-  return TYPED_CATALOGS.flatMap((p) =>
+  const fromCatalog = TYPED_CATALOGS.flatMap((p) =>
     (p.sample || []).map((s) => ({
       ...s,
       productName:  p.name,
       productId:    p.id,
-      productType:  p._type,   // всегда правильный тип
+      productType:  p._type,
       productImage: p.image,
     }))
   );
 
-  // extraCategories слайды — добавляем _extraCat, НЕ передаём в FilmGallery
-  // отдельно через extraCategories проп, чтобы не дублировались
-  const fromExtra = EXTRA_CATEGORIES.flatMap((ec) =>
-    ec.slides.map((s) => ({ ...s, _extraCat: ec.key }))
-  );
+  // fromExtra не нужен — extraCategories передаются отдельным пропом
+  // FilmGallery сам добавит их через extraCategories проп
+  return fromCatalog;
+} 
 
-  return [...fromCatalog, ...fromExtra];
-}
 
 export default function GalleryRoute() {
   const navigate = useNavigate();
