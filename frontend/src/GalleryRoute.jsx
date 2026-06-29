@@ -156,7 +156,7 @@ function buildAllSlides() {
       productImage: p.image,
     }))
   );
-}
+
   // extraCategories слайды — добавляем _extraCat, НЕ передаём в FilmGallery
   // отдельно через extraCategories проп, чтобы не дублировались
   const fromExtra = EXTRA_CATEGORIES.flatMap((ec) =>
