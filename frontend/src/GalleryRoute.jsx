@@ -96,10 +96,16 @@ import productCatalogSets       from "./data/productCatalogSets";
 import productCatalogRamps      from "./data/productCatalogRamps";
 import productCatalogSkateparks from "./data/productCatalogSkateparks";
 
+// const ALL_CATALOGS = [
+//   ...productCatalogSets,
+//   ...productCatalogRamps,
+//   ...productCatalogSkateparks,
+// ];
+
 const ALL_CATALOGS = [
-  ...productCatalogSets,
-  ...productCatalogRamps,
-  ...productCatalogSkateparks,
+  ...productCatalogSets.map(p => ({ ...p, _type: "sets" })),
+  ...productCatalogRamps.map(p => ({ ...p, _type: "ramps" })),
+  ...productCatalogSkateparks.map(p => ({ ...p, _type: "skateparks" })),
 ];
 
 export const EXTRA_CATEGORIES = [
@@ -121,11 +127,11 @@ export const EXTRA_CATEGORIES = [
 ];
 
 // productType вычисляется один раз при импорте модуля
-const TYPE_MAP = new Map([
-  ...productCatalogSets.map((p)       => [p.id, "sets"]),
-  ...productCatalogRamps.map((p)      => [p.id, "ramps"]),
-  ...productCatalogSkateparks.map((p) => [p.id, "skateparks"]),
-]);
+// const TYPE_MAP = new Map([
+//   ...productCatalogSets.map((p)       => [p.id, "sets"]),
+//   ...productCatalogRamps.map((p)      => [p.id, "ramps"]),
+//   ...productCatalogSkateparks.map((p) => [p.id, "skateparks"]),
+// ]);
 
 function buildAllSlides() {
   const fromCatalog = ALL_CATALOGS.flatMap((p) =>
@@ -133,7 +139,8 @@ function buildAllSlides() {
       ...s,
       productName: p.name,
       productId:   p.id,
-      productType: TYPE_MAP.get(p.id) ?? null,
+      // productType: TYPE_MAP.get(p.id) ?? null,
+      productType:  p._type,
       productImage: p.image,   // ← добавь это
     }))
   );

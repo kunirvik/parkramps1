@@ -171,7 +171,7 @@ import { scale } from "framer-motion";
   // },
 const productCatalogSets = [
   {
-    id:1,
+    id: "sets_1",
     name: "jumpbox",
     image: "/images/sets/box360/160yolobox1.png",
     altImages: [ "/images/sets/box360/160yolobox2.webp", "/images/sets/box360/160yolobox3.webp", "/images/sets/box360/160yolobox4.webp", 
@@ -199,7 +199,7 @@ const productCatalogSets = [
   },
 
   {
-    id: 5,
+    id: "sets_5",
     name: "quater",
     image: "/images/sets/quaterr215h80w125d40.png",
     altImages: [
@@ -222,7 +222,7 @@ const productCatalogSets = [
   },
 
   {
-    id: 6,
+    id: "sets_6",
     name: "vertwall",
     image: "/images/sets/quaterwall.jpg",
     altImages: [

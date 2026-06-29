@@ -231,56 +231,52 @@
 
 import { useCallback, useRef, useState } from "react";
 
-
-
 export function useHoverAnimation(isTouchDevice, setState) {
-  
   const playTimeoutRef = useRef(null);
-const playingProductRef = useRef(null);
+  const playingProductRef = useRef(null);
+  const playSessionRef = useRef(0); // счётчик сессий — защита от гонок
+
   const getTotalImages = (product) => 1 + (product?.altImages?.length || 0);
 
- 
-
-  
   const stopHoverAnimation = useCallback(() => {
-  clearTimeout(playTimeoutRef.current);
-  playTimeoutRef.current = null;
-  playingProductRef.current = null;
-}, []);
-
-
+    playSessionRef.current += 1; // инвалидируем текущую сессию
+    clearTimeout(playTimeoutRef.current);
+    playTimeoutRef.current = null;
+    playingProductRef.current = null;
+  }, []);
 
   const startPlayAnimation = useCallback(
     (productIndex, product, speed = 450) => {
-      // if (isTouchDevice) return;
       stopHoverAnimation();
+
       const totalImages = getTotalImages(product);
       if (totalImages <= 1) return;
-          playingProductRef.current = productIndex;
 
-    const play = () => {
-      if (playingProductRef.current !== productIndex) return;
+      playingProductRef.current = productIndex;
+      const session = ++playSessionRef.current; // фиксируем сессию
 
-      setState((prev) => {
-        const indices = [...prev.selectedImageIndices];
+      const scheduleNext = () => {
+        playTimeoutRef.current = setTimeout(() => {
+          // прерываем если сессия устарела или продукт сменился
+          if (
+            playSessionRef.current !== session ||
+            playingProductRef.current !== productIndex
+          )
+            return;
 
-        indices[productIndex] =
-          ((indices[productIndex] ?? 0) + 1) % totalImages;
+          setState((prev) => {
+            const indices = [...prev.selectedImageIndices];
+            indices[productIndex] = ((indices[productIndex] ?? 0) + 1) % totalImages;
+            return { ...prev, selectedImageIndices: indices };
+          });
 
-        return {
-          ...prev,
-          selectedImageIndices: indices,
-        };
-      });
+          scheduleNext();
+        }, speed);
+      };
 
-      playTimeoutRef.current = setTimeout(play, speed);
-    };
-
-//  playTimeoutRef.current = setTimeout(play, speed);
-
-    play();
+      scheduleNext(); // первый кадр — тоже через timeout, без немедленного вызова
     },
-    [ stopHoverAnimation, setState]
+    [stopHoverAnimation, setState]
   );
 
   const handleMouseEnter = useCallback(
@@ -297,12 +293,87 @@ const playingProductRef = useRef(null);
   }, [setState, stopHoverAnimation]);
 
   return {
-
     handleMouseEnter,
     handleMouseLeave,
-  
     startPlayAnimation,
     stopHoverAnimation,
-  
   };
 }
+
+// import { useCallback, useRef, useState } from "react";
+
+
+
+// export function useHoverAnimation(isTouchDevice, setState) {
+  
+//   const playTimeoutRef = useRef(null);
+// const playingProductRef = useRef(null);
+//   const getTotalImages = (product) => 1 + (product?.altImages?.length || 0);
+
+ 
+
+  
+//   const stopHoverAnimation = useCallback(() => {
+//   clearTimeout(playTimeoutRef.current);
+//   playTimeoutRef.current = null;
+//   playingProductRef.current = null;
+// }, []);
+
+
+
+//   const startPlayAnimation = useCallback(
+//     (productIndex, product, speed = 450) => {
+//       // if (isTouchDevice) return;
+//       stopHoverAnimation();
+//       const totalImages = getTotalImages(product);
+//       if (totalImages <= 1) return;
+//           playingProductRef.current = productIndex;
+
+//     const play = () => {
+//       if (playingProductRef.current !== productIndex) return;
+
+//       setState((prev) => {
+//         const indices = [...prev.selectedImageIndices];
+
+//         indices[productIndex] =
+//           ((indices[productIndex] ?? 0) + 1) % totalImages;
+
+//         return {
+//           ...prev,
+//           selectedImageIndices: indices,
+//         };
+//       });
+
+//       playTimeoutRef.current = setTimeout(play, speed);
+//     };
+
+// //  playTimeoutRef.current = setTimeout(play, speed);
+
+//     play();
+//     },
+//     [ stopHoverAnimation, setState]
+//   );
+
+//   const handleMouseEnter = useCallback(
+//     (index, product, canAnimate = true) => {
+//       if (isTouchDevice || !canAnimate) return;
+//       setState((prev) => ({ ...prev, hoveredIndex: index }));
+//     },
+//     [isTouchDevice, setState]
+//   );
+
+//   const handleMouseLeave = useCallback(() => {
+//     setState((prev) => ({ ...prev, hoveredIndex: null }));
+//     stopHoverAnimation();
+//   }, [setState, stopHoverAnimation]);
+
+//   return {
+
+//     handleMouseEnter,
+//     handleMouseLeave,
+  
+//     startPlayAnimation,
+//     stopHoverAnimation,
+  
+//   };
+// }

@@ -106,7 +106,7 @@
 
 const productCatalogRamps = [
   {
-    id: 1,
+    id: "ramps_1",
     name: "ramp60",
     image: "/images/ramps/minir180h60w200d40alt.png",
     altImages: [
@@ -130,7 +130,7 @@ const productCatalogRamps = [
   },
 
   {
-    id: 2,
+    id: "ramps_2",
     name: "ramp95",
     image: "/images/ramps/webp/ramp95garagemain.webp",
     altImages: [
@@ -153,7 +153,7 @@ const productCatalogRamps = [
   },
 
   {
-    id: 3,
+    id: "ramps_3",
     name: "ramp125",
     image: "/images/ramps/webp/rampr250h125w375d125.webp",
     altImages: [
@@ -176,7 +176,7 @@ const productCatalogRamps = [
   },
 
   {
-    id: 4,
+    id: "ramps_4",
     name: "ramp125",
     image: "/images/ramps/webp/rampskl.webp",
     altImages: [
@@ -199,7 +199,7 @@ const productCatalogRamps = [
   },
 
   {
-    id: 5,
+    id: "ramps_5",
     name: "ramp180",
     image: "/images/ramps/webp/midiramp.webp",
     altImages: [
@@ -222,7 +222,7 @@ const productCatalogRamps = [
   },
 
   {
-    id: 6,
+    id: "ramps_6",
     name: "skatepark",
     image: "/images/skateparks/park.png",
     altImages: [
