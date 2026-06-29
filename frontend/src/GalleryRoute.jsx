@@ -96,16 +96,10 @@ import productCatalogSets       from "./data/productCatalogSets";
 import productCatalogRamps      from "./data/productCatalogRamps";
 import productCatalogSkateparks from "./data/productCatalogSkateparks";
 
-// const ALL_CATALOGS = [
-//   ...productCatalogSets,
-//   ...productCatalogRamps,
-//   ...productCatalogSkateparks,
-// ];
-
 const ALL_CATALOGS = [
-  ...productCatalogSets.map(p => ({ ...p, _type: "sets" })),
-  ...productCatalogRamps.map(p => ({ ...p, _type: "ramps" })),
-  ...productCatalogSkateparks.map(p => ({ ...p, _type: "skateparks" })),
+  ...productCatalogSets,
+  ...productCatalogRamps,
+  ...productCatalogSkateparks,
 ];
 
 export const EXTRA_CATEGORIES = [
@@ -133,18 +127,36 @@ export const EXTRA_CATEGORIES = [
 //   ...productCatalogSkateparks.map((p) => [p.id, "skateparks"]),
 // ]);
 
+const TYPED_CATALOGS = [
+  ...productCatalogSets.map((p)       => ({ ...p, _type: "sets" })),
+  ...productCatalogRamps.map((p)      => ({ ...p, _type: "ramps" })),
+  ...productCatalogSkateparks.map((p) => ({ ...p, _type: "skateparks" })),
+]; 
+
+
+// function buildAllSlides() {
+//   const fromCatalog = ALL_CATALOGS.flatMap((p) =>
+//     (p.sample || []).map((s) => ({
+//       ...s,
+//       productName: p.name,
+//       productId:   p.id,
+//       productType: TYPE_MAP.get(p.id) ?? null,
+//       productImage: p.image,   // ← добавь это
+//     }))
+//   );
+
+
 function buildAllSlides() {
-  const fromCatalog = ALL_CATALOGS.flatMap((p) =>
+  return TYPED_CATALOGS.flatMap((p) =>
     (p.sample || []).map((s) => ({
       ...s,
-      productName: p.name,
-      productId:   p.id,
-      // productType: TYPE_MAP.get(p.id) ?? null,
-      productType:  p._type,
-      productImage: p.image,   // ← добавь это
+      productName:  p.name,
+      productId:    p.id,
+      productType:  p._type,   // всегда правильный тип
+      productImage: p.image,
     }))
   );
-
+}
   // extraCategories слайды — добавляем _extraCat, НЕ передаём в FilmGallery
   // отдельно через extraCategories проп, чтобы не дублировались
   const fromExtra = EXTRA_CATEGORIES.flatMap((ec) =>

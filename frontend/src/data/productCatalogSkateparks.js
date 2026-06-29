@@ -74,7 +74,7 @@
 
 const productCatalogSkateparks = [
   {
-    id: "skateparks_2",
+    id: 2,
     name: "skatepark2",
     image: "/images/skateparks/park2right.png",
     altImages: [
@@ -99,7 +99,7 @@ const productCatalogSkateparks = [
   },
 
   {
-    id: "skateparks_3",
+    id: 1,
     name: "spot1",
     image: "/images/skateparks/spot/spot1.png",
     altImages: [
@@ -132,7 +132,7 @@ const productCatalogSkateparks = [
   },
 
   {
-    id: "skateparks_4",
+    id: 4,
     name: "skatepark4",
     image: "/images/skateparks/park4.png",
     altImages: [

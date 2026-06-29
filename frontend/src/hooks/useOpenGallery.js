@@ -64,6 +64,13 @@ const CATALOGS = {
   skateparks: productCatalogSkateparks,
 };
 
+
+const TYPED_CATALOGS = [
+  ...productCatalogSets.map((p)       => ({ ...p, _type: "sets" })),
+  ...productCatalogRamps.map((p)      => ({ ...p, _type: "ramps" })),
+  ...productCatalogSkateparks.map((p) => ({ ...p, _type: "skateparks" })),
+]; 
+
 export function useOpenGallery() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -75,14 +82,21 @@ export function useOpenGallery() {
     const currentProduct = catalog[activeProductIndex];
     if (!currentProduct) return;
 
-    const globalIndex = ALL_CATALOGS.findIndex(
-      (p) => p.id === currentProduct.id
-    );
+    // const globalIndex = ALL_CATALOGS.findIndex(
+    //   (p) => p.id === currentProduct.id
+    // );
+    const globalIndex = TYPED_CATALOGS.findIndex(
+  (p) => p.id === currentProduct.id && p._type === type  // ← добавить && p._type === type
+);
     if (globalIndex === -1) return;
 
-    const startIndex = ALL_CATALOGS
-      .slice(0, globalIndex)
-      .reduce((acc, p) => acc + (p.sample?.length || 0), 0);
+    // const startIndex = ALL_CATALOGS
+    //   .slice(0, globalIndex)
+    //   .reduce((acc, p) => acc + (p.sample?.length || 0), 0);
+
+    const startIndex = TYPED_CATALOGS
+  .slice(0, globalIndex)
+  .reduce((acc, p) => acc + (p.sample?.length || 0), 0);
 
     navigate(`/gallery/${type}/${currentProduct.id}`, {
       state: {

@@ -147,7 +147,7 @@ import { scale } from "framer-motion";
 // export default productCatalogSets
 
 
-
+const productCatalogSets = [
   // {
   //   id: 3,
   //   name: "diy box",
@@ -169,9 +169,9 @@ import { scale } from "framer-motion";
   //   description: "Пиши нам у месенджер...",
   //   relatedProducts: [1, 2, 4, 5],
   // },
-const productCatalogSets = [
+
   {
-    id: "sets_1",
+    id:1,
     name: "jumpbox",
     image: "/images/sets/box360/160yolobox1.png",
     altImages: [ "/images/sets/box360/160yolobox2.webp", "/images/sets/box360/160yolobox3.webp", "/images/sets/box360/160yolobox4.webp", 
@@ -199,7 +199,7 @@ const productCatalogSets = [
   },
 
   {
-    id: "sets_5",
+    id: 5,
     name: "quater",
     image: "/images/sets/quaterr215h80w125d40.png",
     altImages: [
@@ -222,7 +222,7 @@ const productCatalogSets = [
   },
 
   {
-    id: "sets_6",
+    id: 6,
     name: "vertwall",
     image: "/images/sets/quaterwall.jpg",
     altImages: [
