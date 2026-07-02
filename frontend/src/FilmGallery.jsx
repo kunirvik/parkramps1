@@ -874,17 +874,8 @@ function CategoryPanel({ categories, activeCategory, onSelect, slides }) {
                  border-r border-neutral-800 overflow-y-auto fg-no-scroll flex-shrink-0"
       style={{ minWidth: 130, maxWidth: 150, animationDelay: "0.15s" }}
     >
-      <button
-        onClick={() => onSelect(null)}
-        className={`text-left px-3 py-1.5 rounded-md transition-colors font-futura text-xs tracking-wide
-          ${activeCategory === null
-            ? "bg-yellow-400/20 text-yellow-300 border border-yellow-400/50"
-            : "text-white/40 hover:text-white/80 hover:bg-white/5"
-          }`}
-      >
-        All
-      </button>
-      <div className="h-px bg-neutral-700/50 my-1.5" />
+
+    
       {categories.map((cat) => {
         const isActive = activeCategory === cat.key;
         const thumb    = slides.find((s) => (s.productName || s._extraCat) === cat.key);
@@ -936,7 +927,10 @@ function MobileCategoryBar({ categories, activeCategory, onSelect, slides }) {
       </button>
       {categories.map((cat) => {
         const isActive = activeCategory === cat.key;
-        const thumb    = slides.find((s) => (s.productName || s._extraCat) === cat.key);
+        // const thumb    = slides.find((s) => (s.productName || s._extraCat) === cat.key);
+       const thumb = slides.find(
+  (s) => (s._categoryKey ?? s._extraCat) === cat.key
+);
         const thumbSrc = thumb?.productImage || thumb?.src;
         return (
           <button
@@ -1179,18 +1173,38 @@ export default function FilmGallery({
     return [...slidesProp, ...extra];
   }, [slidesProp, extraCategories]);
 
-  const categories = useMemo(() => {
-    const seen = new Set();
-    const fromProducts = [];
-    slides.forEach((s) => {
-      if (s.productName && !seen.has(s.productName)) {
-        seen.add(s.productName);
-        fromProducts.push({ key: s.productName, label: s.productName });
-      }
-    });
-    const fromExtra = extraCategories.map((ec) => ({ key: ec.key, label: ec.label }));
-    return [...fromProducts, ...fromExtra];
-  }, [slides, extraCategories]);
+  // const categories = useMemo(() => {
+  //   const seen = new Set();
+  //   const fromProducts = [];
+  //   slides.forEach((s) => {
+  //     if (s.productName && !seen.has(s.productName)) {
+  //       seen.add(s.productName);
+  //       fromProducts.push({ key: s.productName, label: s.productName });
+  //     }
+  //   });
+  //   const fromExtra = extraCategories.map((ec) => ({ key: ec.key, label: ec.label }));
+  //   return [...fromProducts, ...fromExtra];
+  // }, [slides, extraCategories]);
+
+  // Замінити useMemo для categories:
+const categories = useMemo(() => {
+  const seen = new Map(); // key → label
+  slides.forEach((s) => {
+    const key   = s._categoryKey ?? null;
+    const label = s._categoryLabel ?? s._categoryKey ?? null;
+    if (key && !seen.has(key)) seen.set(key, label);
+  });
+
+  // extra categories додаються окремо (вони вже мають key + label)
+  const fromExtra = extraCategories.map((ec) => ({ key: ec.key, label: ec.label }));
+
+  // fromProducts — унікальні типи з каталогу
+  const fromCatalog = [...seen.entries()].map(([key, label]) => ({ key, label }));
+
+  return [...fromCatalog, ...fromExtra];
+}, [slides, extraCategories]);
+
+
 
   const [activeIndex, setActiveIndex]       = useState(startIndex);
   const [activeCategory, setActiveCategory] = useState(initialCategory);
@@ -1214,31 +1228,61 @@ export default function FilmGallery({
     return () => window.removeEventListener("resize", fn);
   }, []);
 
-  const highlightedIndices = useMemo(() => {
-    if (activeCategory === null) return null;
-    const set = new Set();
-    slides.forEach((s, i) => {
-      const cat = s.productName || s._extraCat || null;
-      if (cat === activeCategory) set.add(i);
-    });
-    return set;
-  }, [activeCategory, slides]);
+  // const highlightedIndices = useMemo(() => {
+  //   if (activeCategory === null) return null;
+  //   const set = new Set();
+  //   slides.forEach((s, i) => {
+  //     const cat = s.productName || s._extraCat || null;
+  //     if (cat === activeCategory) set.add(i);
+  //   });
+  //   return set;
+  // }, [activeCategory, slides]);
+  // Замінити highlightedIndices:
+const highlightedIndices = useMemo(() => {
+  if (activeCategory === null) return null;
+  const set = new Set();
+  slides.forEach((s, i) => {
+    const cat = s._categoryKey ?? s._extraCat ?? null;
+    if (cat === activeCategory) set.add(i);
+  });
+  return set;
+}, [activeCategory, slides]);
 
-  useEffect(() => {
-    const slide = slides[activeIndex];
-    if (!slide) return;
-    const cat = slide.productName || slide._extraCat || null;
-    setActiveCategory(cat);
-  }, [activeIndex, slides]);
+  // useEffect(() => {
+  //   const slide = slides[activeIndex];
+  //   if (!slide) return;
+  //   const cat = slide.productName || slide._extraCat || null;
+  //   setActiveCategory(cat);
+  // }, [activeIndex, slides]);
 
-  const handleSelectCategory = useCallback((catKey) => {
-    setActiveCategory(catKey);
-    if (catKey === null) return;
-    const firstIdx = slides.findIndex((s) =>
-      (s.productName || s._extraCat || null) === catKey
-    );
-    if (firstIdx !== -1) setActiveIndex(firstIdx);
-  }, [slides]);
+  // Замінити useEffect що ставить activeCategory при зміні слайду:
+useEffect(() => {
+  const slide = slides[activeIndex];
+  if (!slide) return;
+  // тепер дивимось на _categoryKey, а не productName
+  const cat = slide._categoryKey ?? slide._extraCat ?? null;
+  setActiveCategory(cat);
+}, [activeIndex, slides]); 
+
+
+  // const handleSelectCategory = useCallback((catKey) => {
+  //   setActiveCategory(catKey);
+  //   if (catKey === null) return;
+  //   const firstIdx = slides.findIndex((s) =>
+  //     (s.productName || s._extraCat || null) === catKey
+  //   );
+  //   if (firstIdx !== -1) setActiveIndex(firstIdx);
+  // }, [slides]);
+
+  // Замінити handleSelectCategory:
+const handleSelectCategory = useCallback((catKey) => {
+  setActiveCategory(catKey);
+  if (catKey === null) return;
+  const firstIdx = slides.findIndex(
+    (s) => (s._categoryKey ?? s._extraCat ?? null) === catKey
+  );
+  if (firstIdx !== -1) setActiveIndex(firstIdx);
+}, [slides]);
 
   const currentSlide   = slides[activeIndex];
   usePreload(slides, activeIndex);

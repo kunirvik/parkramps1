@@ -101,7 +101,11 @@ const ALL_CATALOGS = [
   ...productCatalogRamps,
   ...productCatalogSkateparks,
 ];
-
+const CATALOG_LABELS = {
+  sets:       "Флайбокси",
+  ramps:      "Рампи",
+  skateparks: "Скейтпарки",
+}; 
 export const EXTRA_CATEGORIES = [
   {
     key:   "foam_pit",
@@ -167,21 +171,36 @@ const TYPED_CATALOGS = [
 // }
 
 // GalleryRoute.jsx
+// function buildAllSlides() {
+//   const fromCatalog = TYPED_CATALOGS.flatMap((p) =>
+//     (p.sample || []).map((s) => ({
+//       ...s,
+//       productName:  p.name,
+//       productId:    p.id,
+//       productType:  p._type,
+//       productImage: p.image,
+//     }))
+//   );
+
 function buildAllSlides() {
-  const fromCatalog = TYPED_CATALOGS.flatMap((p) =>
+  return TYPED_CATALOGS.flatMap((p) =>
     (p.sample || []).map((s) => ({
       ...s,
-      productName:  p.name,
+      // замість productName тепер передаємо людську назву категорії
+      _categoryKey:  p._type,              // "sets" | "ramps" | "skateparks"
+      _categoryLabel: CATALOG_LABELS[p._type] ?? p._type,
+      productName:  p.name,               // зберігаємо для кнопки відкрити виріб
       productId:    p.id,
       productType:  p._type,
       productImage: p.image,
     }))
   );
+} 
 
   // fromExtra не нужен — extraCategories передаются отдельным пропом
   // FilmGallery сам добавит их через extraCategories проп
-  return fromCatalog;
-} 
+//   return fromCatalog;
+// } 
 
 
 export default function GalleryRoute() {
@@ -191,7 +210,8 @@ export default function GalleryRoute() {
   const {
     startIndex  = 0,
     originPath  = "/",
-    productName = null,
+    // productName = null,
+     categoryKey   = null,   // ← тепер тип, не name продукту
   } = location.state || {};
 
   // allSlides уже содержат extraCategories слайды — передаём пустой массив
@@ -204,7 +224,8 @@ export default function GalleryRoute() {
     <FilmGallery
       slides={allSlides}
       startIndex={startIndex}
-      initialCategory={productName}
+        initialCategory={categoryKey}  
+      // initialCategory={productName}
       onClose={handleClose}
       extraCategories={EXTRA_CATEGORIES}
       originPath={originPath}

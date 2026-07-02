@@ -105,7 +105,8 @@ export function useOpenGallery() {
         // откуда пришли — чтобы вернуться при закрытии
         originPath:  location.pathname,
         // имя продукта — чтобы автоматически выставить активную категорию
-        productName: currentProduct.name,
+        // productName: currentProduct.name,
+          categoryKey: type, 
       },
     });
   }, [navigate, location.pathname]);
