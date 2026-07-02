@@ -758,7 +758,7 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo, memo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-
+import { ChevronRight } from "lucide-react";
 const THUMB_H = 68;
 
 const STYLE_ID = "film-gallery-styles";
@@ -867,41 +867,86 @@ function IconOpenProduct() {
 }
 
 // ─── Панель категорий (десктоп, слева) ───────────────────────────────────────
-function CategoryPanel({ categories, activeCategory, onSelect, slides }) {
-  return (
-    <div
-      className="fg-slide-right flex flex-col gap-0.5 py-3 px-2 bg-neutral-900
-                 border-r border-neutral-800 overflow-y-auto fg-no-scroll flex-shrink-0"
-      style={{ minWidth: 130, maxWidth: 150, animationDelay: "0.15s" }}
-    >
+// function CategoryPanel({ categories, activeCategory, onSelect, slides }) {
+//   return (
+//     <div
+//       className="fg-slide-right flex flex-col gap-0.5 py-3 px-2 bg-neutral-900
+//                  border-r border-neutral-800 overflow-y-auto fg-no-scroll flex-shrink-0"
+//       style={{ minWidth: 130, maxWidth: 150, animationDelay: "0.15s" }}
+//     >
 
     
+//       {categories.map((cat) => {
+//         const isActive = activeCategory === cat.key;
+//         const thumb    = slides.find((s) => (s.productName || s._extraCat) === cat.key);
+//         const thumbSrc = thumb?.productImage || thumb?.src;
+//         return (
+//           <button
+//             key={cat.key}
+//             onClick={() => onSelect(cat.key)}
+//             className={`flex items-center gap-2 w-full text-left px-2 py-1.5 rounded-md
+//               transition-colors font-futura text-xs tracking-wide
+//               ${isActive
+//                 ? "bg-yellow-400/20 text-yellow-300 border border-yellow-400/50"
+//                 : "text-white/40 hover:text-white/80 hover:bg-white/5"
+//               }`}
+//           >
+//             {thumbSrc && (
+//               <div className="flex-shrink-0 w-8 h-8 rounded-sm overflow-hidden bg-neutral-800">
+//                 <img
+//                   src={optimizeImg(thumbSrc, 80)}
+//                   className="w-full h-full object-cover"
+//                   loading="lazy"
+//                   alt=""
+//                 />
+//               </div>
+//             )}
+//             <span className="truncate">{cat.label}</span>
+//           </button>
+//         );
+//       })}
+//     </div>
+//   );
+// }
+
+function CategoryPanel({ categories, activeCategory, onSelect }) {
+  return (
+    <div
+      className="fg-slide-right flex flex-col py-3 px-3 bg-neutral-900
+                 border-r border-neutral-800 overflow-y-auto fg-no-scroll flex-shrink-0"
+      style={{ minWidth: 160, maxWidth: 180 }}
+    >
       {categories.map((cat) => {
         const isActive = activeCategory === cat.key;
-        const thumb    = slides.find((s) => (s.productName || s._extraCat) === cat.key);
-        const thumbSrc = thumb?.productImage || thumb?.src;
+
         return (
           <button
             key={cat.key}
             onClick={() => onSelect(cat.key)}
-            className={`flex items-center gap-2 w-full text-left px-2 py-1.5 rounded-md
-              transition-colors font-futura text-xs tracking-wide
-              ${isActive
-                ? "bg-yellow-400/20 text-yellow-300 border border-yellow-400/50"
-                : "text-white/40 hover:text-white/80 hover:bg-white/5"
-              }`}
+            className="w-full cursor-pointer flex justify-between items-center
+                       py-1 text-left transition-colors group"
           >
-            {thumbSrc && (
-              <div className="flex-shrink-0 w-8 h-8 rounded-sm overflow-hidden bg-neutral-800">
-                <img
-                  src={optimizeImg(thumbSrc, 80)}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                  alt=""
-                />
-              </div>
-            )}
-            <span className="truncate">{cat.label}</span>
+            <span
+              className="font-futura font-bold transition-colors duration-200"
+              style={{
+                fontSize: "clamp(22px, 2.5vw, 30px)",
+                color: isActive ? "#ffffff" : "#717171",
+              }}
+            >
+              {cat.label}
+            </span>
+
+            {/* стрілка як у акордеоні */}
+            <span
+              className="transition-all duration-300 flex-shrink-0 ml-1"
+              style={{
+                color: isActive ? "#ffffff" : "#717171",
+                opacity: isActive ? 1 : 0,
+                transform: isActive ? "translateX(0)" : "translateX(-4px)",
+              }}
+            >
+              <ChevronRight size={16} />
+            </span>
           </button>
         );
       })}
@@ -910,51 +955,133 @@ function CategoryPanel({ categories, activeCategory, onSelect, slides }) {
 }
 
 // ─── Панель категорий (мобилка, горизонтальная сверху) ───────────────────────
-function MobileCategoryBar({ categories, activeCategory, onSelect, slides }) {
+// function MobileCategoryBar({ categories, activeCategory, onSelect, slides }) {
+//   return (
+//     <div className="flex gap-1.5 px-2 py-1.5 overflow-x-auto fg-no-scroll
+//                     bg-neutral-900/90 backdrop-blur-sm border-b border-neutral-800 flex-shrink-0">
+//       <button
+//         onClick={() => onSelect(null)}
+//         className={`flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full
+//           font-futura text-[10px] tracking-wide transition-colors
+//           ${activeCategory === null
+//             ? "bg-yellow-400/20 text-yellow-300 border border-yellow-400/50"
+//             : "bg-neutral-800 text-white/50"
+//           }`}
+//       >
+//         All
+//       </button>
+//       {categories.map((cat) => {
+//         const isActive = activeCategory === cat.key;
+//         // const thumb    = slides.find((s) => (s.productName || s._extraCat) === cat.key);
+//        const thumb = slides.find(
+//   (s) => (s._categoryKey ?? s._extraCat) === cat.key
+// );
+//         const thumbSrc = thumb?.productImage || thumb?.src;
+//         return (
+//           <button
+//             key={cat.key}
+//             onClick={() => onSelect(cat.key)}
+//             className={`flex-shrink-0 flex items-center gap-1.5 px-2 py-1 rounded-full
+//               font-futura text-[10px] tracking-wide transition-colors
+//               ${isActive
+//                 ? "bg-yellow-400/20 text-yellow-300 border border-yellow-400/50"
+//                 : "bg-neutral-800 text-white/50"
+//               }`}
+//           >
+//             {thumbSrc && (
+//               <div className="w-5 h-5 rounded-full overflow-hidden bg-neutral-700 flex-shrink-0">
+//                 <img src={optimizeImg(thumbSrc, 40)} className="w-full h-full object-cover" loading="lazy" alt="" />
+//               </div>
+//             )}
+//             <span>{cat.label}</span>
+//           </button>
+//         );
+//       })}
+//     </div>
+//   );
+// }
+
+function MobileCategoryBar({ categories, activeCategory, onSelect }) {
+  // відстежуємо напрямок для sliding-анімації
+  const prevIndexRef = useRef(
+    categories.findIndex((c) => c.key === activeCategory)
+  );
+  const [direction, setDirection] = useState(1);
+
+  const handleSelect = (key) => {
+    const newIdx = categories.findIndex((c) => c.key === key);
+    const oldIdx = categories.findIndex((c) => c.key === activeCategory);
+    setDirection(newIdx > oldIdx ? 1 : -1);
+    prevIndexRef.current = newIdx;
+    onSelect(key);
+  };
+
   return (
-    <div className="flex gap-1.5 px-2 py-1.5 overflow-x-auto fg-no-scroll
-                    bg-neutral-900/90 backdrop-blur-sm border-b border-neutral-800 flex-shrink-0">
-      <button
-        onClick={() => onSelect(null)}
-        className={`flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full
-          font-futura text-[10px] tracking-wide transition-colors
-          ${activeCategory === null
-            ? "bg-yellow-400/20 text-yellow-300 border border-yellow-400/50"
-            : "bg-neutral-800 text-white/50"
-          }`}
+    <div className="flex-shrink-0 bg-neutral-900/90 backdrop-blur-sm
+                    border-b border-neutral-800">
+
+      {/* активна назва — sliding як в акордеоні */}
+      <div className="relative h-8 overflow-hidden px-3 pt-1">
+        {categories.map((cat) => {
+          const isActive = activeCategory === cat.key;
+          return (
+            <span
+              key={cat.key}
+              className="absolute left-3 top-1 font-futura font-bold
+                         transition-all duration-300 ease-out text-white"
+              style={{
+                fontSize: "clamp(13px, 2vw, 15px)",
+                opacity: isActive ? 1 : 0,
+                transform: isActive
+                  ? "translateX(0)"
+                  : direction === 1
+                    ? "translateX(-16px)"
+                    : "translateX(16px)",
+                pointerEvents: "none",
+              }}
+            >
+              {cat.label}
+            </span>
+          );
+        })}
+      </div>
+
+      {/* таби — grid як в акордеоні */}
+      <div
+        className="grid border-b border-neutral-800 px-1"
+        style={{ gridTemplateColumns: `repeat(${categories.length}, 1fr)` }}
       >
-        All
-      </button>
-      {categories.map((cat) => {
-        const isActive = activeCategory === cat.key;
-        // const thumb    = slides.find((s) => (s.productName || s._extraCat) === cat.key);
-       const thumb = slides.find(
-  (s) => (s._categoryKey ?? s._extraCat) === cat.key
-);
-        const thumbSrc = thumb?.productImage || thumb?.src;
-        return (
-          <button
-            key={cat.key}
-            onClick={() => onSelect(cat.key)}
-            className={`flex-shrink-0 flex items-center gap-1.5 px-2 py-1 rounded-full
-              font-futura text-[10px] tracking-wide transition-colors
-              ${isActive
-                ? "bg-yellow-400/20 text-yellow-300 border border-yellow-400/50"
-                : "bg-neutral-800 text-white/50"
-              }`}
-          >
-            {thumbSrc && (
-              <div className="w-5 h-5 rounded-full overflow-hidden bg-neutral-700 flex-shrink-0">
-                <img src={optimizeImg(thumbSrc, 40)} className="w-full h-full object-cover" loading="lazy" alt="" />
-              </div>
-            )}
-            <span>{cat.label}</span>
-          </button>
-        );
-      })}
+        {categories.map((cat) => {
+          const isActive = activeCategory === cat.key;
+          return (
+            <button
+              key={cat.key}
+              onClick={() => handleSelect(cat.key)}
+              className="relative cursor-pointer pb-2 px-1 pt-1
+                         font-futura font-bold text-center
+                         whitespace-nowrap overflow-hidden text-ellipsis
+                         transition-colors duration-200"
+              style={{
+                fontSize: "clamp(12px, 2.5vw, 15px)",
+                color: isActive ? "#f9a8d4" : "#717171", // pink-300 як в акордеоні
+              }}
+            >
+              {cat.label}
+
+              {/* підкреслення активного табу */}
+              {isActive && (
+                <span
+                  className="absolute left-0 bottom-0 w-full bg-neutral-500"
+                  style={{ height: 2 }}
+                />
+              )}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
-}
+} 
 
 // ─── Вертикальная лента миниатюр (десктоп, справа) ───────────────────────────
 function ThumbStripVertical({ slides, activeIndex, onSelect, highlightedIndices }) {
@@ -1362,7 +1489,7 @@ const handleSelectCategory = useCallback((catKey) => {
             categories={categories}
             activeCategory={activeCategory}
             onSelect={handleSelectCategory}
-            slides={slides}
+            // slides={slides}
           />
 
           <div className="flex-1 relative">
@@ -1397,7 +1524,7 @@ const handleSelectCategory = useCallback((catKey) => {
             categories={categories}
             activeCategory={activeCategory}
             onSelect={handleSelectCategory}
-            slides={slides}
+            // slides={slides}
           />
 
           {/* Фото — свайп только здесь */}

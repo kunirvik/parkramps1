@@ -222,7 +222,7 @@ export default function GalleryRoute() {
 
   return (
     <FilmGallery
-      slides={allSlides}
+      // slides={allSlides}
       startIndex={startIndex}
         initialCategory={categoryKey}  
       // initialCategory={productName}
