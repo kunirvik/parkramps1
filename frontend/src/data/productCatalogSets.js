@@ -147,7 +147,7 @@ import { scale } from "framer-motion";
 // export default productCatalogSets
 
 
-const productCatalogSets = [
+
   // {
   //   id: 3,
   //   name: "diy box",
@@ -170,15 +170,20 @@ const productCatalogSets = [
   //   relatedProducts: [1, 2, 4, 5],
   // },
 
+  const CLOUDINARY = import.meta.env.VITE_CLOUDINARY_BASE_URL; 
+
+const productCatalogSets = [
+
+
   {
     id:1,
     name: "jumpbox",
-    image: "/images/sets/box360/160yolobox1.png",
-    altImages: [ "/images/sets/box360/160yolobox2.webp", "/images/sets/box360/160yolobox3.webp", "/images/sets/box360/160yolobox4.webp", 
-          "/images/sets/box360/160yolobox5.webp","/images/sets/box360/160yolobox6.webp","/images/sets/box360/160yolobox7.webp",
-          "/images/sets/box360/160yolobox8.webp","/images/sets/box360/160yolobox9.webp","/images/sets/box360/160yolobox10.webp",
-           "/images/sets/box360/160yolobox11.webp", "/images/sets/box360/160yolobox12.webp", "/images/sets/box360/160yolobox13.webp", "/images/sets/box360/160yolobox14.webp",
-          "/images/sets/box360/160yolobox15.webp", "/images/sets/box360/160yolobox16.webp", "/images/sets/box360/160yolobox17.webp", "/images/sets/box360/160yolobox18.webp", ],
+    image: `${CLOUDINARY}v1783014340/160yolobox1_mdntbh.png`,
+    altImages: [ `${CLOUDINARY}v1783014446/160yolobox2_jxa1f2.webp`, `${CLOUDINARY}v1783014802/160yolobox3_hkhdi3.webp`, `${CLOUDINARY}v1783014448/160yolobox4_ztne6y.webp`, 
+          `${CLOUDINARY}v1783014449/160yolobox5_wi9a4n.webp`,`${CLOUDINARY}v1783014450/160yolobox6_hotl6y.webp`, `${CLOUDINARY}v1783014451/160yolobox7_ssfh5c.webp`,
+          `${CLOUDINARY}v1783014452/160yolobox8_yy6sm1.webp`, 
+          `${CLOUDINARY}v1783014452/160yolobox9_pfuf9h.webp`, `${CLOUDINARY}v1783014337/160yolobox10_o73ziy.webp`, `${CLOUDINARY}v1783014338/160yolobox11_r2t6vo.webp]`,`${CLOUDINARY}v1783014337/160yolobox12_yvu3pf.webp`,
+           `${CLOUDINARY}v1783014339/160yolobox13_hjf0fe.webp`, `${CLOUDINARY}v1783014341/160yolobox14_jndisi.webp`, `${CLOUDINARY}v1783014342/160yolobox15_prbk5t.webp`, `${CLOUDINARY}v1783014343/160yolobox16_raaywj.webp`, `${CLOUDINARY}v1783014390/160yolobox17_jrleu7.webp`, `${CLOUDINARY}v1783014445/160yolobox18_ksqwty.webp`] ,
 
     sample: [
       { type: "image", src: "/images/sample/jumpbox.webp" },

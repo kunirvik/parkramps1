@@ -854,7 +854,7 @@ function Filmstrip({ product, currentFrameIndex, onFrameSelect }) {
 
   return (
     <div className="w-full mt-3 select-none">
-      <div className="w-full h-[2px] bg-gray-200 rounded mb-1.5 overflow-hidden">
+      <div className="w-full h-[2px] bg-gray-500 rounded mb-1.5 overflow-hidden">
         <div
           className="h-full bg-black rounded transition-all duration-200"
           style={{ width: `${Math.round(((currentFrameIndex + 1) / allImages.length) * 100)}%` }}
