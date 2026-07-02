@@ -246,7 +246,7 @@ export function useHoverAnimation(isTouchDevice, setState) {
   }, []);
 
   const startPlayAnimation = useCallback(
-    (productIndex, product, speed = 450) => {
+    (productIndex, product, speed = 650) => {
       stopHoverAnimation();
 
       const totalImages = getTotalImages(product);
