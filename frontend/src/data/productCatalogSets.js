@@ -185,9 +185,9 @@ const productCatalogSets = [
   {
     id: 3,
     name: "diy box",
-    image: "/images/sets/box.png",
+    image: `${CLOUDINARY}v1783083844/box_121_diy1_jmoudd.webp`,
     scale:0.75,
-    altImages: ["/images/sets/box1.png", "/images/sets/box3.png"],
+    altImages: [`${CLOUDINARY}v1783062743/grindbox2_kymbjd.webp`, `${CLOUDINARY}v1783062742/grindbox_xhcxsp.webp`],
     sample: [
       { type: "image", src: `${CLOUDINARY}v1783062743/grindbox2_kymbjd.webp`, caption: "підпис 1" },
       { type: "image", src: `${CLOUDINARY}v1783062742/grindbox_xhcxsp.webp`, caption: "підпис 2" },
@@ -199,7 +199,7 @@ const productCatalogSets = [
     ],
     designer: "СкейтДизайн",
     year: 2024,
-    description2: "збери бокс сам, або закажи вже зібраним.",
+    description2: " каждый мечтает о своем споте это твоя игрушка на лето за 11 лет администрирования скейтпарка мы нашли формулу идеального бокса это наша версия разборного грайндбокса усилен каждый элемент, фанера пермиум класса, толстый профиль бокс удобен для переноски, помещается авто и в квартире, посдтавка для телека, лавочка, как тебе захочется все что тебе нужно - уже в комплектешурупы, отвертка и детали бокса заказывай как собранный так и в разборе Доставка новой почтой 840грн в любую точку Украины под дверь. збери бокс сам, або закажи вже зібраним.",
     description: "Пиши нам у месенджер...",
     relatedProducts: [1, 2, 4, 5],
   },
