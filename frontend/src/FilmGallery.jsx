@@ -1483,11 +1483,12 @@ const handleSelectCategory = useCallback((catKey) => {
         flexDirection: isMobile ? "column" : "row",
       }}
     >
-          <SocialButtons
-          buttonLabel="gallery"
-          onButtonClick={handleExit}
-          buttonAnimationProps={{ whileTap: { scale: 0.85, opacity: 0.6 } }}
-        />
+           <SocialButtons
+            ref={socialButtonsRef}
+            buttonLabel="shop"
+            onButtonClick={() => navigate("/catalogue")}
+            buttonAnimationProps={{ whileTap: { scale: 0.85, opacity: 0.6 } }}
+          />
        
       {/* ══ ДЕСКТОП ══════════════════════════════════════════════════════════ */}
       {!isMobile && (
