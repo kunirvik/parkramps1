@@ -266,12 +266,13 @@ return (
        
       </div>
  
- <div className="overflow-hidden flex-col items-center justify-center  "   style={{
+ <div className="flex-1 overflow-hidden flex flex-col items-center justify-center  "   style={{
   marginTop: "clamp(0px, 1vw, 60px)"}}>  
   <div className="grid grid-cols-1 md:grid-cols-2     "
         style={{
     maxHeight: "100vh",
     overflow: "auto",
+    
     // paddingTop: "clamp(50px, 3vw, 50px)", // отступ сверху
    
     gap: "clamp(10px, 3vw, 20px)", // min 10px, растет до 40px с экраном
