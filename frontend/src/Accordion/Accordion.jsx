@@ -1,6 +1,6 @@
 
 
-import { useState, useEffect } from "react";
+import { useState, useEffect,  useRef, useLayoutEffect, } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
 const Accordion = ({
@@ -250,6 +250,7 @@ const Accordion = ({
 //     </div>
   // );
   {/* ---------- Tab Content ---------- */}
+  return (
       <div className="relative overflow-hidden">
         {items.map((item, index) => {
           const isOpen = openIndex === index;
@@ -307,9 +308,12 @@ const Accordion = ({
                 </div>
               )}
             </div>
+            
           );
+
         })}
       </div>
+  )
 };
 
 
