@@ -759,7 +759,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo, memo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
-import SocialButtons from "./SocialButtons/SocialButtons";
+
 const THUMB_H = 68;
 
 const STYLE_ID = "film-gallery-styles";
@@ -1483,12 +1483,7 @@ const handleSelectCategory = useCallback((catKey) => {
         flexDirection: isMobile ? "column" : "row",
       }}
     >
-           <SocialButtons
-            ref={socialButtonsRef}
-            buttonLabel="shop"
-            onButtonClick={() => navigate("/catalogue")}
-            buttonAnimationProps={{ whileTap: { scale: 0.85, opacity: 0.6 } }}
-          />
+        
        
       {/* ══ ДЕСКТОП ══════════════════════════════════════════════════════════ */}
       {!isMobile && (
