@@ -5,6 +5,9 @@ import LoadingScreen from "../LoadingScreen/LodingScreen";
 import SocialButtons from "../SocialButtons/SocialButtons";
 import { gsap } from "gsap";
 import Footer from "../Footer/Footer";
+
+ const CLOUDINARY = import.meta.env.VITE_CLOUDINARY_BASE_URL; 
+ 
 const products = [
  
    {
@@ -12,7 +15,7 @@ const products = [
     // name: "фигуры и комплекты фигур которые вы сможете собрать своими руками, материал полностью размечен и подготовлен, так что вы сможете собрать фигуру без проблем по заранее подготовленному чертежу и обкатать её уже в считаные часы",
     category: "sets",
        name: "фiгури",
-    image: "/images/sets/box360/160yolobox1.png",
+    image: `${CLOUDINARY}v1783014340/160yolobox1_mdntbh.png`,
     hoverImage: ["/images/skateparks/park3.png", "/images/skateparks/park2.png"],
     description: "A bold design statement."
   },
