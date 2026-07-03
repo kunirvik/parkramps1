@@ -148,27 +148,7 @@ import { scale } from "framer-motion";
 
 
 
-  // {
-  //   id: 3,
-  //   name: "diy box",
-  //   image: "/images/sets/box.png",
-  //   scale:0.75,
-  //   altImages: ["/images/sets/box1.png", "/images/sets/box3.png"],
-  //   sample: [
-  //     { type: "image", src: "/images/sample/grindbox2.webp", caption: "підпис 1" },
-  //     { type: "image", src: "/images/sample/grindbox.webp", caption: "підпис 2" },
-  //     {
-  //       type: "video",
-  //       src: "https://res.cloudinary.com/dbx6muxub/video/upload/v1754506398/20220206_214037_qbp9jd.mp4",
-  //       caption: "підпис",
-  //     },
-  //   ],
-  //   designer: "СкейтДизайн",
-  //   year: 2024,
-  //   description2: "Міцний гриндбокс...",
-  //   description: "Пиши нам у месенджер...",
-  //   relatedProducts: [1, 2, 4, 5],
-  // },
+
 
   const CLOUDINARY = import.meta.env.VITE_CLOUDINARY_BASE_URL; 
 
@@ -182,16 +162,16 @@ const productCatalogSets = [
     altImages: [ `${CLOUDINARY}v1783014446/160yolobox2_jxa1f2.webp`, `${CLOUDINARY}v1783014802/160yolobox3_hkhdi3.webp`, `${CLOUDINARY}v1783014448/160yolobox4_ztne6y.webp`, 
           `${CLOUDINARY}v1783014449/160yolobox5_wi9a4n.webp`,`${CLOUDINARY}v1783014450/160yolobox6_hotl6y.webp`, `${CLOUDINARY}v1783014451/160yolobox7_ssfh5c.webp`,
           `${CLOUDINARY}v1783014452/160yolobox8_yy6sm1.webp`, 
-          `${CLOUDINARY}v1783014452/160yolobox9_pfuf9h.webp`, `${CLOUDINARY}v1783014337/160yolobox10_o73ziy.webp`, `${CLOUDINARY}v1783014338/160yolobox11_r2t6vo.webp]`,`${CLOUDINARY}v1783014337/160yolobox12_yvu3pf.webp`,
+          `${CLOUDINARY}v1783014452/160yolobox9_pfuf9h.webp`, `${CLOUDINARY}v1783014337/160yolobox10_o73ziy.webp`, `${CLOUDINARY}v1783014338/160yolobox11_r2t6vo.webp`,`${CLOUDINARY}v1783014337/160yolobox12_yvu3pf.webp`,
            `${CLOUDINARY}v1783014339/160yolobox13_hjf0fe.webp`, `${CLOUDINARY}v1783014341/160yolobox14_jndisi.webp`, `${CLOUDINARY}v1783014342/160yolobox15_prbk5t.webp`, `${CLOUDINARY}v1783014343/160yolobox16_raaywj.webp`, `${CLOUDINARY}v1783014390/160yolobox17_jrleu7.webp`, `${CLOUDINARY}v1783014445/160yolobox18_ksqwty.webp`] ,
 
     sample: [
-      { type: "image", src: "/images/sample/jumpbox.webp" },
-      { type: "image", src: "/images/sample/jumpbox1.webp" },
-      { type: "image", src: "/images/sample/jumpboxhatob.webp" },
+      { type: "image", src: `${CLOUDINARY}v1783061428/jumpbox_vdxh1y.webp` },
+      { type: "image", src: `${CLOUDINARY}v1783061429/jumpbox1_d01sig.webp` },
+      { type: "image", src: `${CLOUDINARY}v1783061430/jumpboxhatob_tyvaum.webp`},
       {
         type: "video",
-        src: "https://res.cloudinary.com/dbx6muxub/video/upload/v1754506398/20220206_214037_qbp9jd.mp4",
+        src: `${CLOUDINARY}v1754506398/20220206_214037_qbp9jd.mp4`,
         caption: "підпис",
       },
     ],
@@ -202,7 +182,27 @@ const productCatalogSets = [
     description: "Замовити можна через контакти або в будь-якому месенджері (Telegram / Viber / WhatsApp). Підберемо розміри, порахуємо вартість і зробимо проєкт під ваш майданчик.",
     relatedProducts: [1, 3, 4, 5],
   },
-
+  {
+    id: 3,
+    name: "diy box",
+    image: "/images/sets/box.png",
+    scale:0.75,
+    altImages: ["/images/sets/box1.png", "/images/sets/box3.png"],
+    sample: [
+      { type: "image", src: "/images/sample/grindbox2.webp", caption: "підпис 1" },
+      { type: "image", src: "/images/sample/grindbox.webp", caption: "підпис 2" },
+      {
+        type: "video",
+        src: "https://res.cloudinary.com/dbx6muxub/video/upload/v1754506398/20220206_214037_qbp9jd.mp4",
+        caption: "підпис",
+      },
+    ],
+    designer: "СкейтДизайн",
+    year: 2024,
+    description2: "збери бокс сам, або закажи вже зібраним.",
+    description: "Пиши нам у месенджер...",
+    relatedProducts: [1, 2, 4, 5],
+  },
   {
     id: 5,
     name: "quater",
@@ -235,10 +235,10 @@ const productCatalogSets = [
       "/images/sets/quaterr215h80w125d40top.png",
     ],
     sample: [
-      { type: "image", src: "/images/sample/vertwall1.webp", caption: "підпис 1" },
-      { type: "image", src: "/images/sample/vertwall2.1.webp", caption: "підпис 2" },
-      { type: "image", src: "/images/sample/vertwall2.webp", caption: "підпис 3" },
-      { type: "image", src: "/images/sample/vertwall3.webp", caption: "підпис 4" },
+      { type: "image", src: `${CLOUDINARY}v1783062355/vertwall2.1_ls0maz.webp`, caption: "підпис 1" },
+      { type: "image", src: `"/images/sample/vertwall2.1.webp"`, caption: "підпис 2" },
+      { type: "image", src: `${CLOUDINARY}v1783062464/vertwall2_ehot8p.webp`, caption: "підпис 3" },
+      { type: "image", src: `${CLOUDINARY}v1783062471/vertwall3_jtd7yu.webp`, caption: "підпис 4" },
     ],
     year: 2023,
     description: "Комплекты для самостоятельного строительства элементов.",

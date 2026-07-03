@@ -71,6 +71,7 @@
 // ]
 // export default productCatalogSkateparks
 
+  const CLOUDINARY = import.meta.env.VITE_CLOUDINARY_BASE_URL; 
 
 const productCatalogSkateparks = [
   {
@@ -101,25 +102,25 @@ const productCatalogSkateparks = [
   {
     id: 1,
     name: "spot1",
-    image: "/images/skateparks/spot/spot1.png",
+    image: `${CLOUDINARY}v1783014282/spot1_hj41go.png`,
     altImages: [
-      "/images/skateparks/spot/spot2.webp",
-      "/images/skateparks/spot/spot3.webp",
-      "/images/skateparks/spot/spot4.webp",
-      "/images/skateparks/spot/spot5.webp",
-      "/images/skateparks/spot/spot6.webp",
-      "/images/skateparks/spot/spot7.webp",
-      "/images/skateparks/spot/spot8.webp",
-      "/images/skateparks/spot/spot9.webp",
-      "/images/skateparks/spot/spot10.webp",  
-      "/images/skateparks/spot/spot11.webp",
-      "/images/skateparks/spot/spot12.webp",
-      "/images/skateparks/spot/spot13.webp",
-      "/images/skateparks/spot/spot14.webp",
-      "/images/skateparks/spot/spot15.webp",
-      "/images/skateparks/spot/spot16.webp",
-      "/images/skateparks/spot/spot17.webp",
-      "/images/skateparks/spot/spot18.webp",
+      `${CLOUDINARY}v1783014289/spot2_ojn9rf.webp`,
+      `${CLOUDINARY}v1783014290/spot3_wkrre7.webp`,
+      `${CLOUDINARY}v1783014291/spot4_tzd7tw.webp`,
+      `${CLOUDINARY}v1783014291/spot5_yhxcsz.webp`,
+      `${CLOUDINARY}v1783014292/spot6_g0m79g.webp`,
+      `${CLOUDINARY}v1783014293/spot7_tt0mdc.webp`,
+      `${CLOUDINARY}v1783014294/spot8_ban1kf.webp`,
+      `${CLOUDINARY}v1783014295/spot9_a1yw5i.webp`,
+      `${CLOUDINARY}v1783014281/spot10_rjnb0m.webp`,  
+      `${CLOUDINARY}v1783014283/spot11_up5weh.webp`,
+      `${CLOUDINARY}v1783014284/spot12_h5xqfq.webp`,
+      `${CLOUDINARY}v1783014284/spot13_hjl7gr.webp`,
+      `${CLOUDINARY}v1783014285/spot14_dqhg9m.webp`,
+     `${CLOUDINARY}v1783014286/spot15_dlwtux.webp`,
+      `${CLOUDINARY}v1783014287/spot16_fpjojt.webp`,
+      `${CLOUDINARY}v1783014288/spot17_bzoswc.webp`,
+      `${CLOUDINARY}v1783014288/spot18_ja9acj.webp`,
     ],
     sample: [],
     year: 2024,
