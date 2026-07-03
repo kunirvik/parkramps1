@@ -187,7 +187,7 @@ const productCatalogSets = [
     name: "diy box",
     image: `${CLOUDINARY}v1783083844/box_121_diy1_jmoudd.webp`,
     scale:0.75,
-    altImages: [`${CLOUDINARY}v1783062743/grindbox2_kymbjd.webp`, `${CLOUDINARY}v1783062742/grindbox_xhcxsp.webp`],
+    altImages: [`${CLOUDINARY}v1783083840/box_121_diy2_jkc9nu.webp`, `${CLOUDINARY}v1783083838/box_121_diy_dead8o.webp`],
     sample: [
       { type: "image", src: `${CLOUDINARY}v1783062743/grindbox2_kymbjd.webp`, caption: "підпис 1" },
       { type: "image", src: `${CLOUDINARY}v1783062742/grindbox_xhcxsp.webp`, caption: "підпис 2" },
@@ -206,10 +206,10 @@ const productCatalogSets = [
   {
     id: 5,
     name: "quater",
-    image: "/images/sets/quaterr215h80w125d40.png",
+    image: `${CLOUDINARY}v1783089479/quaterr215h80w125d40_og1s2o.png`,
     altImages: [
-      "/images/sets/quaterr215h80w125d40left.png",
-      "/images/sets/quaterr215h80w125d40top.png",
+     `${CLOUDINARY}v1783089479/quaterr215h80w125d40left_yf1nur.png`,
+      `${CLOUDINARY}v1783089479/quaterr215h80w125d40top_cxyb7i.png`,
     ],
     scale:0.75,
 
