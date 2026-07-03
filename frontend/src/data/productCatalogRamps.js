@@ -103,17 +103,18 @@
   
 // ]
 // export default productCatalogRamps
-
+const CLOUDINARY = import.meta.env.VITE_CLOUDINARY_BASE_URL; 
+ 
 const productCatalogRamps = [
   {
     id: 1,
     name: "ramp60",
-    image: "/images/ramps/minir180h60w200d40alt.png",
+    image: `${CLOUDINARY}v1783065914/minir180h60w200d40alt_gu3fkf.webp`,
     altImages: [
-      "/images/ramps/webp/minir180h60w200d40.webp",
+     ` "/images/ramps/webp/minir180h60w200d40.webp"`,
       "/images/ramps/webp/minir180h60w200d40frontalt.webp",
-      "/images/ramps/webp/minir180h60w200d40top.webp",
-      "/images/ramps/webp/minir180h60w200d40front.webp",
+      `${CLOUDINARY}v1783070408/minir180h60w200d40top_vqigeg.webp`,
+      `${CLOUDINARY}v1783065931/minir180h60w200d40frontalt_vv0u3h.webp`,
     ],
     sample: [
       { type: "image", src: "/images/sample1.jpg" },
@@ -132,10 +133,10 @@ const productCatalogRamps = [
   {
     id: 2,
     name: "ramp95",
-    image: "/images/ramps/webp/ramp95garagemain.webp",
+    image: `${CLOUDINARY}v1783081997/ramp95garagemain_f9qynq.webp`,
     altImages: [
-      "/images/ramps/webp/ramp95garagetop.webp",
-      "/images/ramps/webp/ramp95garage.webp",
+      `${CLOUDINARY}v1783082001/ramp95garagetop_jsjk7m.webp`,
+      `${CLOUDINARY}v1783081994/ramp95garage_dgrjv7.webp`,
     ],
     sample: [
       { type: "image", src: "/images/sample1.jpg" },
@@ -155,10 +156,10 @@ const productCatalogRamps = [
   {
     id: 3,
     name: "ramp125",
-    image: "/images/ramps/webp/rampr250h125w375d125.webp",
+    image: `${CLOUDINARY}v1783081903/rampr250h125w375d125_bufljg.webp`,
     altImages: [
-      "/images/ramps/webp/rampr250h125w375d125top.webp",
-      "/images/ramps/webp/rampr250h125w375d125front.webp",
+      `${CLOUDINARY}v1783081900/rampr250h125w375d125top_mgndpe.webp`,
+      `${CLOUDINARY}v1783081897/rampr250h125w375d125front_vltlhx.webp`,
     ],
     sample: [
       { type: "image", src: "/images/sample1.jpg" },
@@ -178,10 +179,10 @@ const productCatalogRamps = [
   {
     id: 4,
     name: "ramp125",
-    image: "/images/ramps/webp/rampskl.webp",
+    image: `${CLOUDINARY}v1783081688/rampskl_jc8h6k.webp`,
     altImages: [
-      "/images/ramps/webp/rampsklfront.webp",
-      "/images/ramps/webp/rampskltop.webp",
+      `${CLOUDINARY}v1783081688/rampsklfront_ayuxqi.webp`,
+     `${CLOUDINARY}v1783081688/rampskltop_ayuxqi.webp`,
     ],
     sample: [
       { type: "image", src: "/images/sample1.jpg" },
@@ -201,10 +202,10 @@ const productCatalogRamps = [
   {
     id: 5,
     name: "ramp180",
-    image: "/images/ramps/webp/midiramp.webp",
+    image: `${CLOUDINARY}v1783081610/midiramp_oyrfpm.webp`,
     altImages: [
-      "/images/ramps/webp/midiramptop.webp",
-      "/images/ramps/webp/midirampfront.webp",
+      `${CLOUDINARY}v1783065928/midiramptop_gio5ap.webp`,
+      `${CLOUDINARY}v1783081609/midirampfront_t43qas.webp`,
     ],
     sample: [
       { type: "image", src: "/images/sample1.jpg" },

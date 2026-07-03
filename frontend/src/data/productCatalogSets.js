@@ -189,11 +189,11 @@ const productCatalogSets = [
     scale:0.75,
     altImages: ["/images/sets/box1.png", "/images/sets/box3.png"],
     sample: [
-      { type: "image", src: "/images/sample/grindbox2.webp", caption: "підпис 1" },
-      { type: "image", src: "/images/sample/grindbox.webp", caption: "підпис 2" },
+      { type: "image", src: `${CLOUDINARY}v1783062743/grindbox2_kymbjd.webp`, caption: "підпис 1" },
+      { type: "image", src: `${CLOUDINARY}v1783062742/grindbox_xhcxsp.webp`, caption: "підпис 2" },
       {
         type: "video",
-        src: "https://res.cloudinary.com/dbx6muxub/video/upload/v1754506398/20220206_214037_qbp9jd.mp4",
+        src: `${CLOUDINARY}v1754506398/20220206_214037_qbp9jd.mp4`,
         caption: "підпис",
       },
     ],
