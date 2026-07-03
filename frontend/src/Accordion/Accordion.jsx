@@ -1,6 +1,6 @@
 
 
-import { useState, useEffect,  useRef, useLayoutEffect, } from "react";
+import { useState, useEffect } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
 const Accordion = ({
@@ -24,29 +24,6 @@ const Accordion = ({
 
   // 👉 направление анимации
   const [direction, setDirection] = useState(1);
-
-
-  // 👉 добавляем состояние для "ще"
-  const [mobileExpanded, setMobileExpanded] = useState(false);
-  const [needsExpand, setNeedsExpand] = useState(true); // по умолчанию считаем, что обрезано, чтобы не было "вспышки"
-  const mobileContentRef = useRef(null);
-
-  const COLLAPSE_HEIGHT = 100; // px
-
-  // сброс "ще" при смене таба
-  useEffect(() => {
-    setMobileExpanded(false);
-  }, [openIndex]);
-
-  // замер реальной высоты контента активного таба
-  useLayoutEffect(() => {
-    if (isDesktop) return;
-    const el = mobileContentRef.current;
-    if (el) {
-      setNeedsExpand(el.scrollHeight > COLLAPSE_HEIGHT + 4);
-    }
-  }, [openIndex, items, isDesktop]); 
-
 
   /* -------------------- RESIZE -------------------- */
   useEffect(() => {
@@ -154,104 +131,66 @@ const Accordion = ({
   /* =====================================================
      ================= MOBILE TABS =======================
      ===================================================== */
-//   return (
-//     <div className="w-full">
-//       ---------- Active Product Title ----------
-//       <div className="relative  mb-3 overflow-hidden ">
-//         {items.map((item, index) => {
-//           const isActive = openIndex === index;
-
-//           return (
-//             <span
-//               key={index}
-//               className={`
-//                 absolute left-0 top-0
-//                 font-futura font-bold text-lg
-//                 transition-all duration-300 ease-out
-//                 ${
-//                   isActive
-//                     ? "opacity-100 translate-x-0"
-//                     : direction === 1
-//                       ? "-translate-x-6 opacity-0"
-//                       : "translate-x-6 opacity-0"
-//                 }
-//               `}
-//             >
-//               {item.title}
-//             </span>
-//           );
-//         })}
-//       </div>
-
-    
-// <div className="mb-4">
-//   <div className="grid grid-cols-3 border-b">
-//     {items.map((item, index) => {
-//       const isActive = openIndex === index;
-
-//       return (
-//         <button
-//           key={index}
-//           onClick={() => toggleAccordion(index)}
-//           className={`
-//             relative cursor-pointer pb-2 px-2
-//             font-futura font-bold text-[clamp(20px,3vw,26px)]
-//             text-center whitespace-nowrap overflow-hidden text-ellipsis
-//             transition-colors
-//             ${isActive ? "text-pink-300" : "text-gray-400"}
-//           `}
-//         >
-//           {item.title}
-//           {isActive && (
-//             <span className="absolute left-0 bottom-0 w-full h-[2px] bg-gray-500" />
-//           )}
-//         </button>
-//       );
-//     })}
-//   </div>
-// </div>
-     
-//       <div className="relative  min-h-[120px]  overflow-hidden">
-//         {items.map((item, index) => {
-//           const isOpen = openIndex === index;
-
-//           return (
-//             <div
-//               key={index}
-//               className={`
-//                 absolute inset-0
-//                 transition-all duration-300 ease-out
-//                 ${
-//                   isOpen
-//                     ? "opacity-100 translate-x-0"
-//                     : direction === 1
-//                       ? "-translate-x-8 opacity-0"
-//                       : "translate-x-8 opacity-0"
-//                 }
-//               `}
-//             >
-//               <div
-//   className="text-sm text-[#717171]"
-//   style={{
-//     background: "rgba(255, 255, 255, 0.12)",
-//     backdropFilter: "blur(16px)",
-//     WebkitBackdropFilter: "blur(16px)",
-//     border: "1px solid rgba(255, 255, 255, 0.2)",
-//     borderRadius: "10px",
-//     padding: "14px 18px",
-//   }}
-// >
-//   {item.content}
-// </div>
-//             </div>
-//           );
-//         })}
-//       </div>
-//     </div>
-  // );
-  {/* ---------- Tab Content ---------- */}
   return (
-      <div className="relative overflow-hidden">
+    <div className="w-full">
+      {/* ---------- Active Product Title ---------- */}
+      <div className="relative  mb-3 overflow-hidden ">
+        {items.map((item, index) => {
+          const isActive = openIndex === index;
+
+          return (
+            <span
+              key={index}
+              className={`
+                absolute left-0 top-0
+                font-futura font-bold text-lg
+                transition-all duration-300 ease-out
+                ${
+                  isActive
+                    ? "opacity-100 translate-x-0"
+                    : direction === 1
+                      ? "-translate-x-6 opacity-0"
+                      : "translate-x-6 opacity-0"
+                }
+              `}
+            >
+              {item.title}
+            </span>
+          );
+        })}
+      </div>
+
+      {/* ---------- Tabs Navigation ----------
+   
+{/* ---------- Tabs Navigation ---------- */}
+<div className="mb-4">
+  <div className="grid grid-cols-3 border-b">
+    {items.map((item, index) => {
+      const isActive = openIndex === index;
+
+      return (
+        <button
+          key={index}
+          onClick={() => toggleAccordion(index)}
+          className={`
+            relative cursor-pointer pb-2 px-2
+            font-futura font-bold text-[clamp(20px,3vw,26px)]
+            text-center whitespace-nowrap overflow-hidden text-ellipsis
+            transition-colors
+            ${isActive ? "text-pink-300" : "text-gray-400"}
+          `}
+        >
+          {item.title}
+          {isActive && (
+            <span className="absolute left-0 bottom-0 w-full h-[2px] bg-gray-500" />
+          )}
+        </button>
+      );
+    })}
+  </div>
+</div>
+      {/* ---------- Tab Content ---------- */}
+      <div className="relative  min-h-[120px]  overflow-hidden">
         {items.map((item, index) => {
           const isOpen = openIndex === index;
 
@@ -259,62 +198,37 @@ const Accordion = ({
             <div
               key={index}
               className={`
+                absolute inset-0
                 transition-all duration-300 ease-out
                 ${
                   isOpen
-                    ? "relative opacity-100 translate-x-0"
-                    : `absolute inset-0 opacity-0 pointer-events-none ${
-                        direction === 1 ? "-translate-x-8" : "translate-x-8"
-                      }`
+                    ? "opacity-100 translate-x-0"
+                    : direction === 1
+                      ? "-translate-x-8 opacity-0"
+                      : "translate-x-8 opacity-0"
                 }
               `}
             >
               <div
-                ref={isOpen ? mobileContentRef : null}
-                className="text-sm text-[#717171] overflow-hidden transition-[max-height] duration-300 ease-out"
-                style={{
-                  background: "rgba(255, 255, 255, 0.12)",
-                  backdropFilter: "blur(16px)",
-                  WebkitBackdropFilter: "blur(16px)",
-                  border: "1px solid rgba(255, 255, 255, 0.2)",
-                  borderRadius: "10px",
-                  padding: "14px 18px",
-                  maxHeight:
-                    isOpen && needsExpand && !mobileExpanded
-                      ? `${COLLAPSE_HEIGHT}px`
-                      : "2000px",
-                }}
-              >
-                {item.content}
-              </div>
-
-              {isOpen && needsExpand && (
-                <div className="relative">
-                  {!mobileExpanded && (
-                    <div
-                      className="pointer-events-none absolute -top-10 left-0 right-0 h-10 rounded-b-[10px]"
-                      style={{
-                        background:
-                          "linear-gradient(to top, rgba(35,35,35,0.9), transparent)",
-                      }}
-                    />
-                  )}
-                  <button
-                    onClick={() => setMobileExpanded((prev) => !prev)}
-                    className="relative z-10 mt-2 text-xs font-bold text-pink-300 underline"
-                  >
-                    {mobileExpanded ? "згорнути" : "ще"}
-                  </button>
-                </div>
-              )}
+  className="text-sm text-[#717171]"
+  style={{
+    background: "rgba(255, 255, 255, 0.12)",
+    backdropFilter: "blur(16px)",
+    WebkitBackdropFilter: "blur(16px)",
+    border: "1px solid rgba(255, 255, 255, 0.2)",
+    borderRadius: "10px",
+    padding: "14px 18px",
+  }}
+>
+  {item.content}
+</div>
             </div>
-            
           );
-
         })}
       </div>
-  )
+    </div>
+  );
 };
 
-
 export default Accordion;
+
