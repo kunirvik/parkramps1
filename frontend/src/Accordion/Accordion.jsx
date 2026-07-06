@@ -280,7 +280,8 @@
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
-const MOBILE_CLAMP = 100; // px — высота, до которой схлопывается текст на мобилке
+const MOBILE_CLAMP = 100;      // px — высота, до которой схлопывается текст
+const OVERFLOW_TOLERANCE = 20; // px — если текст выше клампа не более чем на это значение, кнопку не показываем
 
 const Accordion = ({
   items,
@@ -300,16 +301,15 @@ const Accordion = ({
 
   const [pendingIndex, setPendingIndex] = useState(null);
   const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= 1024);
-
-  // 👉 направление анимации
   const [direction, setDirection] = useState(1);
 
   const contentRefs = useRef({});
   const [overflowMap, setOverflowMap] = useState({});
   const [expandedMap, setExpandedMap] = useState({});
-  // 👉 флаг "уже измерено" — пока не измерили, ничего не показываем клампнутым/полным,
-  // чтобы не было "мигания" полным текстом перед сжатием
   const [measuredMap, setMeasuredMap] = useState({});
+
+  // 👉 плавная смена контента при смене forceCloseTrigger (смена товара)
+  const [contentVisible, setContentVisible] = useState(true);
 
   /* -------------------- RESIZE -------------------- */
   useEffect(() => {
@@ -331,28 +331,41 @@ const Accordion = ({
     return () => window.removeEventListener("resize", handleResize);
   }, [openIndex, defaultOpenIndexDesktop, controlled, setOpenIndex]);
 
-  /* -------------------- FORCE CLOSE -------------------- */
+  /* -------------------- FORCE CLOSE / СМЕНА ТОВАРА -------------------- */
   useEffect(() => {
-    if (!controlled) {
-      setOpenIndex(isDesktop ? defaultOpenIndexDesktop : null);
-      setPendingIndex(null);
-    }
-  }, [forceCloseTrigger, isDesktop, defaultOpenIndexDesktop, controlled, setOpenIndex]);
+    // плавно скрываем текущий контент
+    setContentVisible(false);
 
-  /* -------------------- MEASURE OVERFLOW (mobile) --------------------
-     useLayoutEffect выполняется СИНХРОННО ДО отрисовки кадра браузером,
-     поэтому пользователь никогда не увидит "полный текст, потом сжатие" */
+    const timeout = setTimeout(() => {
+      if (!controlled) {
+        setOpenIndex(isDesktop ? defaultOpenIndexDesktop : null);
+      }
+      setPendingIndex(null);
+      setExpandedMap({});
+      setMeasuredMap({});
+      // и сразу после смены даём контенту появиться заново
+      setContentVisible(true);
+    }, 180); // должно быть меньше/равно длительности fade-transition ниже
+
+    return () => clearTimeout(timeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [forceCloseTrigger]);
+
+  /* -------------------- MEASURE OVERFLOW (mobile) -------------------- */
   useLayoutEffect(() => {
     if (isDesktop || openIndex === null) return;
     const el = contentRefs.current[openIndex];
     if (el) {
       const fullHeight = el.scrollHeight;
-      setOverflowMap((prev) => ({ ...prev, [openIndex]: fullHeight > MOBILE_CLAMP }));
+      setOverflowMap((prev) => ({
+        ...prev,
+        [openIndex]: fullHeight > MOBILE_CLAMP + OVERFLOW_TOLERANCE,
+      }));
       setMeasuredMap((prev) => ({ ...prev, [openIndex]: true }));
     }
-  }, [openIndex, isDesktop, items]);
+  }, [openIndex, isDesktop, items, contentVisible]);
 
-  /* -------------------- RESET ON TAB CHANGE -------------------- */
+  /* -------------------- RESET ПРИ СМЕНЕ ТАБА -------------------- */
   useEffect(() => {
     setExpandedMap({});
     setMeasuredMap({});
@@ -364,7 +377,6 @@ const Accordion = ({
       setDirection(index > openIndex ? 1 : -1);
     }
 
-    // DESKTOP (как было)
     if (isDesktop) {
       if (openIndex === index) {
         setOpenIndex(null);
@@ -382,7 +394,6 @@ const Accordion = ({
       return;
     }
 
-    // MOBILE
     setOpenIndex(openIndex === index ? null : index);
   };
 
@@ -496,14 +507,18 @@ const Accordion = ({
       {/* ---------- Tab Content ---------- */}
       <div className="relative overflow-hidden">
         {items.map((item, index) => {
-          if (openIndex !== index) return null; // рендерим только активный таб — даёт "отъезд" страницы
+          if (openIndex !== index) return null;
 
           const isOverflowing = overflowMap[index];
           const isExpanded = expandedMap[index];
           const isMeasured = measuredMap[index];
 
           return (
-            <div key={index} className="transition-all duration-300 ease-out opacity-100 translate-x-0">
+            <div
+              key={index}
+              className="transition-opacity duration-200 ease-out"
+              style={{ opacity: contentVisible ? 1 : 0 }}
+            >
               <div
                 ref={(el) => (contentRefs.current[index] = el)}
                 className="text-sm text-[#717171]"
@@ -514,8 +529,6 @@ const Accordion = ({
                   border: "1px solid rgba(255, 255, 255, 0.2)",
                   borderRadius: "10px",
                   padding: "14px 18px",
-                  // 👉 пока не измерено — сразу клампим (безопасный дефолт),
-                  // чтобы не мигнуть полным текстом на первом кадре
                   maxHeight: !isMeasured
                     ? `${MOBILE_CLAMP}px`
                     : isOverflowing && !isExpanded
