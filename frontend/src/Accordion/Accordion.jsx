@@ -25,6 +25,10 @@ const Accordion = ({
   // 👉 направление анимации
   const [direction, setDirection] = useState(1);
 
+
+  const contentRefs = useRef({});
+  const [overflowMap, setOverflowMap] = useState({});
+  const [expandedMap, setExpandedMap] = useState({}); 
   /* -------------------- RESIZE -------------------- */
   useEffect(() => {
     const handleResize = () => {
@@ -58,6 +62,22 @@ const Accordion = ({
     if (!isDesktop && openIndex !== null) {
       setDirection(index > openIndex ? 1 : -1);
     }
+
+
+
+ useEffect(() => {
+    if (isDesktop || openIndex === null) return;
+    const el = contentRefs.current[openIndex];
+    if (el) {
+      const fullHeight = el.scrollHeight;
+      setOverflowMap((prev) => ({ ...prev, [openIndex]: fullHeight > MOBILE_CLAMP }));
+    }
+  }, [openIndex, isDesktop, items]); 
+
+   useEffect(() => {
+    setExpandedMap({});
+  }, [openIndex]); 
+
 
     // DESKTOP (как было)
     if (isDesktop) {
@@ -190,38 +210,63 @@ const Accordion = ({
   </div>
 </div>
       {/* ---------- Tab Content ---------- */}
-      <div className="relative  min-h-[120px]  overflow-hidden">
+ <div className="relative overflow-hidden">
         {items.map((item, index) => {
-          const isOpen = openIndex === index;
+          if (openIndex !== index) return null; // рендерим только активный таб — это и даёт "отъезд" страницы
+
+          const isOverflowing = overflowMap[index];
+          const isExpanded = expandedMap[index];
 
           return (
             <div
               key={index}
               className={`
-                absolute inset-0
                 transition-all duration-300 ease-out
-                ${
-                  isOpen
-                    ? "opacity-100 translate-x-0"
-                    : direction === 1
-                      ? "-translate-x-8 opacity-0"
-                      : "translate-x-8 opacity-0"
-                }
+                opacity-100 translate-x-0
               `}
             >
               <div
-  className="text-sm text-[#717171]"
-  style={{
-    background: "rgba(255, 255, 255, 0.12)",
-    backdropFilter: "blur(16px)",
-    WebkitBackdropFilter: "blur(16px)",
-    border: "1px solid rgba(255, 255, 255, 0.2)",
-    borderRadius: "10px",
-    padding: "14px 18px",
-  }}
->
-  {item.content}
-</div>
+                ref={(el) => (contentRefs.current[index] = el)}
+                className="text-sm text-[#717171]"
+                style={{
+                  background: "rgba(255, 255, 255, 0.12)",
+                  backdropFilter: "blur(16px)",
+                  WebkitBackdropFilter: "blur(16px)",
+                  border: "1px solid rgba(255, 255, 255, 0.2)",
+                  borderRadius: "10px",
+                  padding: "14px 18px",
+                  maxHeight: isOverflowing && !isExpanded ? `${MOBILE_CLAMP}px` : "2000px",
+                  overflow: "hidden",
+                  transition: "max-height 300ms ease",
+                  position: "relative",
+                }}
+              >
+                {item.content}
+
+                {/* градиент-затемнение снизу, когда текст обрезан */}
+                {isOverflowing && !isExpanded && (
+                  <div
+                    className="absolute bottom-0 left-0 w-full h-8 pointer-events-none"
+                    style={{
+                      background:
+                        "linear-gradient(to bottom, transparent, rgba(20,20,20,0.9))",
+                      borderBottomLeftRadius: "10px",
+                      borderBottomRightRadius: "10px",
+                    }}
+                  />
+                )}
+              </div>
+
+              {isOverflowing && (
+                <button
+                  onClick={() =>
+                    setExpandedMap((prev) => ({ ...prev, [index]: !prev[index] }))
+                  }
+                  className="w-full flex justify-center py-2 cursor-pointer"
+                >
+                  {isExpanded ? <ChevronUp /> : <ChevronDown />}
+                </button>
+              )}
             </div>
           );
         })}
@@ -231,4 +276,3 @@ const Accordion = ({
 };
 
 export default Accordion;
-
