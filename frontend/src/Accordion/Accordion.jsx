@@ -277,7 +277,7 @@
 
 // export default Accordion;
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
 const MOBILE_CLAMP = 100; // px — высота, до которой схлопывается текст на мобилке
@@ -307,6 +307,9 @@ const Accordion = ({
   const contentRefs = useRef({});
   const [overflowMap, setOverflowMap] = useState({});
   const [expandedMap, setExpandedMap] = useState({});
+  // 👉 флаг "уже измерено" — пока не измерили, ничего не показываем клампнутым/полным,
+  // чтобы не было "мигания" полным текстом перед сжатием
+  const [measuredMap, setMeasuredMap] = useState({});
 
   /* -------------------- RESIZE -------------------- */
   useEffect(() => {
@@ -336,19 +339,23 @@ const Accordion = ({
     }
   }, [forceCloseTrigger, isDesktop, defaultOpenIndexDesktop, controlled, setOpenIndex]);
 
-  /* -------------------- MEASURE OVERFLOW (mobile) -------------------- */
-  useEffect(() => {
+  /* -------------------- MEASURE OVERFLOW (mobile) --------------------
+     useLayoutEffect выполняется СИНХРОННО ДО отрисовки кадра браузером,
+     поэтому пользователь никогда не увидит "полный текст, потом сжатие" */
+  useLayoutEffect(() => {
     if (isDesktop || openIndex === null) return;
     const el = contentRefs.current[openIndex];
     if (el) {
       const fullHeight = el.scrollHeight;
       setOverflowMap((prev) => ({ ...prev, [openIndex]: fullHeight > MOBILE_CLAMP }));
+      setMeasuredMap((prev) => ({ ...prev, [openIndex]: true }));
     }
   }, [openIndex, isDesktop, items]);
 
-  /* -------------------- RESET EXPANDED ON TAB CHANGE -------------------- */
+  /* -------------------- RESET ON TAB CHANGE -------------------- */
   useEffect(() => {
     setExpandedMap({});
+    setMeasuredMap({});
   }, [openIndex]);
 
   /* -------------------- TOGGLE -------------------- */
@@ -493,6 +500,7 @@ const Accordion = ({
 
           const isOverflowing = overflowMap[index];
           const isExpanded = expandedMap[index];
+          const isMeasured = measuredMap[index];
 
           return (
             <div key={index} className="transition-all duration-300 ease-out opacity-100 translate-x-0">
@@ -506,7 +514,13 @@ const Accordion = ({
                   border: "1px solid rgba(255, 255, 255, 0.2)",
                   borderRadius: "10px",
                   padding: "14px 18px",
-                  maxHeight: isOverflowing && !isExpanded ? `${MOBILE_CLAMP}px` : "2000px",
+                  // 👉 пока не измерено — сразу клампим (безопасный дефолт),
+                  // чтобы не мигнуть полным текстом на первом кадре
+                  maxHeight: !isMeasured
+                    ? `${MOBILE_CLAMP}px`
+                    : isOverflowing && !isExpanded
+                      ? `${MOBILE_CLAMP}px`
+                      : "2000px",
                   overflow: "hidden",
                   transition: "max-height 300ms ease",
                   position: "relative",
@@ -514,7 +528,7 @@ const Accordion = ({
               >
                 {item.content}
 
-                {isOverflowing && !isExpanded && (
+                {(!isMeasured || (isOverflowing && !isExpanded)) && (
                   <div
                     className="absolute bottom-0 left-0 w-full h-8 pointer-events-none"
                     style={{
@@ -531,9 +545,16 @@ const Accordion = ({
                   onClick={() =>
                     setExpandedMap((prev) => ({ ...prev, [index]: !prev[index] }))
                   }
-                  className="w-full flex justify-center py-2 cursor-pointer"
+                  className="w-full flex items-center justify-center gap-1 py-2 cursor-pointer text-xs text-[#a0a0a0]"
                 >
-                  {isExpanded ? <ChevronUp /> : <ChevronDown />}
+                  <span>{isExpanded ? "Згорнути" : "Показати більше"}</span>
+                  <ChevronDown
+                    size={16}
+                    style={{
+                      transition: "transform 300ms ease",
+                      transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
+                    }}
+                  />
                 </button>
               )}
             </div>
