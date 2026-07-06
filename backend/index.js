@@ -252,6 +252,27 @@ return res.json(post)
   }
 })
 
+app.patch("/api/blog/:id/approve", auth, async (req, res) => {
+  try {
+    const post = await Post.findOneAndUpdate(
+      { id: req.params.id },
+      { status: "published", },
+      { returnDocument: "after" }
+    )
+
+    if (!post) {
+      return res.status(404).json({ error: "Not found" })
+    }
+
+    await invalidatePostCache(req.params.id)
+    await invalidateBlogCache() // список постов тоже меняется (pending -> published)
+
+    return res.json(post)
+  } catch (e) {
+    return res.status(500).json({ error: e.message })
+  }
+}) 
+
 // Забанить пользователя
 app.post("/api/admin/ban-user", auth, async (req, res) => {
   try {

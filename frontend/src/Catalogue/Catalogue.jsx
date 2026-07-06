@@ -272,10 +272,10 @@ return (
         style={{
     maxHeight: "100vh",
     overflow: "auto",
-    
+
     // paddingTop: "clamp(50px, 3vw, 50px)", // отступ сверху
    
-    gap: "clamp(10px, 3vw, 20px)", // min 10px, растет до 40px с экраном
+    gap: "clamp(10px, 3vw, 40px)", // min 10px, растет до 40px с экраном
     // padding: "clamp(20px, 1vw, 20px)", // тоже динамически для отступов
   }}>
    
@@ -312,6 +312,7 @@ return (
           <img
             src={product.image}
             alt={product.name}
+            
             className="w-full h-full object-contain transition-all duration-300"
             onMouseMove={!isMobile ? (e) => handleMouseMove(e, product.id) : undefined}
             onMouseLeave={!isMobile ? handleMouseLeave : undefined} 

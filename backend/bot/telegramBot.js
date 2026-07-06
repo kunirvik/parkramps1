@@ -192,6 +192,7 @@ async function processAlbum(bot, group) {
       excerpt: title.slice(0, 120),
       source:  "telegram",
       telegramUrl: makeTelegramUrl(originMsgId),  
+        status: "pending", 
     })
   } catch (e) {
     console.error("❌ Album error:", e.message)
