@@ -235,7 +235,7 @@ export function useHoverAnimation(isTouchDevice, setState) {
   const playingProductRef = useRef(null);
   const playSessionRef = useRef(0);
   const currentFrameRef = useRef(0); // источник истины для текущего кадра
-
+const frameRefs = useRef({});
   const getTotalImages = (product) => 1 + (product?.altImages?.length || 0);
 
   const stopHoverAnimation = useCallback(() => {
@@ -254,13 +254,13 @@ export function useHoverAnimation(isTouchDevice, setState) {
 
       playingProductRef.current = productIndex;
       const session = ++playSessionRef.current;
-
+ let frame = frameRefs.current[product.id] ?? 0;
       // читаем текущий кадр из стейта один раз через setState-callback
       // и стартуем цикл от него
-      setState((prev) => {
-        currentFrameRef.current = prev.selectedImageIndices[productIndex] ?? 0;
-        return prev; // стейт не меняем, просто читаем
-      });
+      // setState((prev) => {
+      //   currentFrameRef.current = prev.selectedImageIndices[productIndex] ?? 0;
+      //   return prev; // стейт не меняем, просто читаем
+      // });
 
       const scheduleNext = () => {
         playTimeoutRef.current = setTimeout(() => {
@@ -269,10 +269,11 @@ export function useHoverAnimation(isTouchDevice, setState) {
             playingProductRef.current !== productIndex
           )
             return;
-
-          // инкрементируем реф синхронно — без зависимости от prev
-          currentFrameRef.current = (currentFrameRef.current + 1) % totalImages;
-          const nextFrame = currentFrameRef.current;
+        frame = (frame + 1) % totalImages;
+        frameRefs.current[product.id] = frame;
+          // // инкрементируем реф синхронно — без зависимости от prev
+          // currentFrameRef.current = (currentFrameRef.current + 1) % totalImages;
+          // const nextFrame = currentFrameRef.current;
 
           setState((prev) => {
             // двойная проверка — если сессия уже не та, не обновляем

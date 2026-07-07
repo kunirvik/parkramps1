@@ -915,14 +915,18 @@ export default function ProductGallery({
   const autoHintTimerRef = useRef(null);
   const hintSeenRef = useRef(false);
   const stageRef = useRef(null);
-
+const liveIndexRef = useRef(state.activeProductIndex);
   const currentProduct = products[state.activeProductIndex];
   const allImages = currentProduct
     ? [currentProduct.image, ...(currentProduct.altImages || [])]
     : [];
   const currentFrameIndex = state.selectedImageIndices[state.activeProductIndex] ?? 0;
 
-  
+  useEffect(() => {
+  liveIndexRef.current = state.activeProductIndex;
+}, [state.activeProductIndex]); 
+
+
 useEffect(() => {
     if (!hintSeenRef.current) {
         hintSeenRef.current = true;
@@ -962,7 +966,14 @@ useEffect(() => {
 
   
 const handleStageClick = useCallback(() => {
-    if (allImages.length <= 1) return;
+    const liveIndex = liveIndexRef.current;
+  const liveProduct = products[liveIndex];
+  if (!liveProduct) return;
+  const total = 1 + (liveProduct.altImages?.length || 0);
+  if (total <= 1) return;
+
+
+    // if (allImages.length <= 1) return;
 
     if (isPlaying) {
         stopHoverAnimation();
@@ -972,12 +983,13 @@ const handleStageClick = useCallback(() => {
         setIsPlaying(true);
     }
 }, [
-    allImages.length,
+    // allImages.length,
     isPlaying,
     stopHoverAnimation,
     startPlayAnimation,
-    state.activeProductIndex,
-    currentProduct,
+    // state.activeProductIndex,
+    // currentProduct,
+    products
 ]);
   const handleFrameSelect = useCallback(
     (i) => {
@@ -1054,7 +1066,8 @@ const handleStageClick = useCallback(() => {
             preventClicks={false}
             preventClicksPropagation={false}
             touchStartPreventDefault={false}
-            onSlideChangeTransitionStart={() => {
+            onSlideChangeTransitionStart={(swiper) => {
+              liveIndexRef.current = swiper.activeIndex; 
               stopHoverAnimation();
               setIsPlaying(false);
             }}
