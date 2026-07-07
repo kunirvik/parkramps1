@@ -272,8 +272,8 @@ const frameRefs = useRef({});
         frame = (frame + 1) % totalImages;
         frameRefs.current[product.id] = frame;
           // // инкрементируем реф синхронно — без зависимости от prev
-          // currentFrameRef.current = (currentFrameRef.current + 1) % totalImages;
-          // const nextFrame = currentFrameRef.current;
+          currentFrameRef.current = (currentFrameRef.current + 1) % totalImages;
+          const nextFrame = currentFrameRef.current;
 
           setState((prev) => {
             // двойная проверка — если сессия уже не та, не обновляем
