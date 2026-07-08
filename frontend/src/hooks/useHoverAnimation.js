@@ -234,8 +234,8 @@ export function useHoverAnimation(isTouchDevice, setState) {
   const playTimeoutRef = useRef(null);
   const playingProductRef = useRef(null);
   const playSessionRef = useRef(0);
-  const currentFrameRef = useRef(0); // источник истины для текущего кадра
-const frameRefs = useRef({});
+//   const currentFrameRef = useRef(0); // источник истины для текущего кадра
+// const frameRefs = useRef({});
   const getTotalImages = (product) => 1 + (product?.altImages?.length || 0);
 
   const stopHoverAnimation = useCallback(() => {
@@ -245,52 +245,92 @@ const frameRefs = useRef({});
     playingProductRef.current = null;
   }, []);
 
-  const startPlayAnimation = useCallback(
-    (productIndex, product, speed = 650) => {
-      stopHoverAnimation();
+  const startFrame = state.selectedImageIndices[liveIndex] ?? 0;
+startPlayAnimation(liveIndex, liveProduct, startFrame);
 
-      const totalImages = getTotalImages(product);
-      if (totalImages <= 1) return;
+//   const startPlayAnimation = useCallback(
+//     (productIndex, product, speed = 650) => {
+//       stopHoverAnimation();
 
-      playingProductRef.current = productIndex;
-      const session = ++playSessionRef.current;
- let frame = frameRefs.current[product.id] ?? 0;
-      // читаем текущий кадр из стейта один раз через setState-callback
-      // и стартуем цикл от него
-      // setState((prev) => {
-      //   currentFrameRef.current = prev.selectedImageIndices[productIndex] ?? 0;
-      //   return prev; // стейт не меняем, просто читаем
-      // });
+//       const totalImages = getTotalImages(product);
+//       if (totalImages <= 1) return;
 
-      const scheduleNext = () => {
-        playTimeoutRef.current = setTimeout(() => {
-          if (
-            playSessionRef.current !== session ||
-            playingProductRef.current !== productIndex
-          )
-            return;
+//       playingProductRef.current = productIndex;
+//       const session = ++playSessionRef.current;
+//  let frame = frameRefs.current[product.id] ?? 0;
+//       // читаем текущий кадр из стейта один раз через setState-callback
+//       // и стартуем цикл от него
+//       // setState((prev) => {
+//       //   currentFrameRef.current = prev.selectedImageIndices[productIndex] ?? 0;
+//       //   return prev; // стейт не меняем, просто читаем
+//       // });
+
+//       const scheduleNext = () => {
+//         playTimeoutRef.current = setTimeout(() => {
+//           if (
+//             playSessionRef.current !== session ||
+//             playingProductRef.current !== productIndex
+//           )
+//             return;
+//         frame = (frame + 1) % totalImages;
+//         frameRefs.current[product.id] = frame;
+//           // // инкрементируем реф синхронно — без зависимости от prev
+//           currentFrameRef.current = (currentFrameRef.current + 1) % totalImages;
+//           const nextFrame = currentFrameRef.current;
+
+//           setState((prev) => {
+//             // двойная проверка — если сессия уже не та, не обновляем
+//             if (playSessionRef.current !== session) return prev;
+//             const indices = [...prev.selectedImageIndices];
+//             indices[productIndex] = nextFrame;
+//             return { ...prev, selectedImageIndices: indices };
+//           });
+
+//           scheduleNext();
+//         }, speed);
+//       };
+
+//       scheduleNext();
+//     },
+//     [stopHoverAnimation, setState]
+//   );
+
+
+// useHoverAnimation.js
+const startPlayAnimation = useCallback(
+  (productIndex, product, startFrame = 0, speed = 650) => {
+    stopHoverAnimation();
+
+    const totalImages = getTotalImages(product);
+    if (totalImages <= 1) return;
+
+    playingProductRef.current = productIndex;
+    const session = ++playSessionRef.current;
+
+    let frame = startFrame % totalImages;
+
+    const scheduleNext = () => {
+      playTimeoutRef.current = setTimeout(() => {
+        if (playSessionRef.current !== session || playingProductRef.current !== productIndex) return;
+
         frame = (frame + 1) % totalImages;
-        frameRefs.current[product.id] = frame;
-          // // инкрементируем реф синхронно — без зависимости от prev
-          currentFrameRef.current = (currentFrameRef.current + 1) % totalImages;
-          const nextFrame = currentFrameRef.current;
 
-          setState((prev) => {
-            // двойная проверка — если сессия уже не та, не обновляем
-            if (playSessionRef.current !== session) return prev;
-            const indices = [...prev.selectedImageIndices];
-            indices[productIndex] = nextFrame;
-            return { ...prev, selectedImageIndices: indices };
-          });
+        setState((prev) => {
+          if (playSessionRef.current !== session) return prev;
+          const indices = [...prev.selectedImageIndices];
+          indices[productIndex] = frame;
+          return { ...prev, selectedImageIndices: indices };
+        });
 
-          scheduleNext();
-        }, speed);
-      };
+        scheduleNext();
+      }, speed);
+    };
 
-      scheduleNext();
-    },
-    [stopHoverAnimation, setState]
-  );
+    scheduleNext();
+  },
+  [stopHoverAnimation, setState]
+); 
+
 
   const handleMouseEnter = useCallback(
     (index, product, canAnimate = true) => {

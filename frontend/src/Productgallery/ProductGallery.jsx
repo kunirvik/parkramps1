@@ -965,32 +965,51 @@ useEffect(() => {
   );
 
   
+// const handleStageClick = useCallback(() => {
+//     const liveIndex = liveIndexRef.current;
+//   const liveProduct = products[liveIndex];
+//   if (!liveProduct) return;
+//   const total = 1 + (liveProduct.altImages?.length || 0);
+//   if (total <= 1) return;
+
+
+//     // if (allImages.length <= 1) return;
+
+//     if (isPlaying) {
+//         stopHoverAnimation();
+//         setIsPlaying(false);
+//     } else {
+//         startPlayAnimation(state.activeProductIndex, currentProduct);
+//         setIsPlaying(true);
+//     }
+// }, [
+//     // allImages.length,
+//     isPlaying,
+//     stopHoverAnimation,
+//     startPlayAnimation,
+//     // state.activeProductIndex,
+//     // currentProduct,
+//     products
+// ]);
+
+
 const handleStageClick = useCallback(() => {
     const liveIndex = liveIndexRef.current;
-  const liveProduct = products[liveIndex];
-  if (!liveProduct) return;
-  const total = 1 + (liveProduct.altImages?.length || 0);
-  if (total <= 1) return;
-
-
-    // if (allImages.length <= 1) return;
+    const liveProduct = products[liveIndex];
+    if (!liveProduct) return;
+    const total = 1 + (liveProduct.altImages?.length || 0);
+    if (total <= 1) return;
 
     if (isPlaying) {
         stopHoverAnimation();
         setIsPlaying(false);
     } else {
-        startPlayAnimation(state.activeProductIndex, currentProduct);
+        startPlayAnimation(liveIndex, liveProduct); // используем live-значения
         setIsPlaying(true);
     }
-}, [
-    // allImages.length,
-    isPlaying,
-    stopHoverAnimation,
-    startPlayAnimation,
-    // state.activeProductIndex,
-    // currentProduct,
-    products
-]);
+}, [isPlaying, stopHoverAnimation, startPlayAnimation, products]); 
+
+
   const handleFrameSelect = useCallback(
     (i) => {
       stopHoverAnimation();

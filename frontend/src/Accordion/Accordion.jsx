@@ -529,6 +529,7 @@ const Accordion = ({
                   border: "1px solid rgba(255, 255, 255, 0.2)",
                   borderRadius: "10px",
                   padding: "14px 18px",
+                  minHeight: `${MOBILE_CLAMP}px`,
                   maxHeight: !isMeasured
                     ? `${MOBILE_CLAMP}px`
                     : isOverflowing && !isExpanded
