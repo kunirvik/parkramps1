@@ -1004,10 +1004,13 @@ const handleStageClick = useCallback(() => {
         stopHoverAnimation();
         setIsPlaying(false);
     } else {
-        startPlayAnimation(liveIndex, liveProduct); // используем live-значения
+        // startPlayAnimation(liveIndex, liveProduct); // используем live-значения
+        // setIsPlaying(true);
+          const startFrame = state.selectedImageIndices[liveIndex] ?? 0; // ← сюда
+        startPlayAnimation(liveIndex, liveProduct, startFrame);
         setIsPlaying(true);
     }
-}, [isPlaying, stopHoverAnimation, startPlayAnimation, products]); 
+}, [isPlaying, stopHoverAnimation, startPlayAnimation, products, state.selectedImageIndices]); 
 
 
   const handleFrameSelect = useCallback(

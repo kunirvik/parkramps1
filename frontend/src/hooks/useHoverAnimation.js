@@ -245,58 +245,8 @@ export function useHoverAnimation(isTouchDevice, setState) {
     playingProductRef.current = null;
   }, []);
 
-  const startFrame = state.selectedImageIndices[liveIndex] ?? 0;
-startPlayAnimation(liveIndex, liveProduct, startFrame);
-
-//   const startPlayAnimation = useCallback(
-//     (productIndex, product, speed = 650) => {
-//       stopHoverAnimation();
-
-//       const totalImages = getTotalImages(product);
-//       if (totalImages <= 1) return;
-
-//       playingProductRef.current = productIndex;
-//       const session = ++playSessionRef.current;
-//  let frame = frameRefs.current[product.id] ?? 0;
-//       // читаем текущий кадр из стейта один раз через setState-callback
-//       // и стартуем цикл от него
-//       // setState((prev) => {
-//       //   currentFrameRef.current = prev.selectedImageIndices[productIndex] ?? 0;
-//       //   return prev; // стейт не меняем, просто читаем
-//       // });
-
-//       const scheduleNext = () => {
-//         playTimeoutRef.current = setTimeout(() => {
-//           if (
-//             playSessionRef.current !== session ||
-//             playingProductRef.current !== productIndex
-//           )
-//             return;
-//         frame = (frame + 1) % totalImages;
-//         frameRefs.current[product.id] = frame;
-//           // // инкрементируем реф синхронно — без зависимости от prev
-//           currentFrameRef.current = (currentFrameRef.current + 1) % totalImages;
-//           const nextFrame = currentFrameRef.current;
-
-//           setState((prev) => {
-//             // двойная проверка — если сессия уже не та, не обновляем
-//             if (playSessionRef.current !== session) return prev;
-//             const indices = [...prev.selectedImageIndices];
-//             indices[productIndex] = nextFrame;
-//             return { ...prev, selectedImageIndices: indices };
-//           });
-
-//           scheduleNext();
-//         }, speed);
-//       };
-
-//       scheduleNext();
-//     },
-//     [stopHoverAnimation, setState]
-//   );
 
 
-// useHoverAnimation.js
 const startPlayAnimation = useCallback(
   (productIndex, product, startFrame = 0, speed = 650) => {
     stopHoverAnimation();
