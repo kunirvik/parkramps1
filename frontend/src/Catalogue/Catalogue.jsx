@@ -274,8 +274,9 @@ return (
     overflow: "auto",
 
     // paddingTop: "clamp(50px, 3vw, 50px)", // отступ сверху
-   
-    gap: "clamp(10px, 3vw, 40px)", // min 10px, растет до 40px с экраном
+ columnGap: "clamp(10px, 8vw, 140px)", // между фигурами и рампами, растёт быстрее
+    rowGap: "clamp(10px, 3vw, 40px)",     // вертикальный отступ (до скейтпарков) как было   
+    // gap: "clamp(10px, 3vw, 40px)", // min 10px, растет до 40px с экраном
     // padding: "clamp(20px, 1vw, 20px)", // тоже динамически для отступов
   }}>
    

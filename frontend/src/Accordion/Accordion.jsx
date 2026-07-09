@@ -302,7 +302,7 @@ const Accordion = ({
   const [pendingIndex, setPendingIndex] = useState(null);
   const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= 1024);
   const [direction, setDirection] = useState(1);
-
+  const isFirstMount = useRef(true);
   const contentRefs = useRef({});
   const [overflowMap, setOverflowMap] = useState({});
   const [expandedMap, setExpandedMap] = useState({});
@@ -331,25 +331,49 @@ const Accordion = ({
     return () => window.removeEventListener("resize", handleResize);
   }, [openIndex, defaultOpenIndexDesktop, controlled, setOpenIndex]);
 
-  /* -------------------- FORCE CLOSE / СМЕНА ТОВАРА -------------------- */
-  useEffect(() => {
-    // плавно скрываем текущий контент
-    setContentVisible(false);
+  // /* -------------------- FORCE CLOSE / СМЕНА ТОВАРА -------------------- */
+  // useEffect(() => {
+  //   // плавно скрываем текущий контент
+  //   setContentVisible(false);
 
-    const timeout = setTimeout(() => {
-      if (!controlled) {
-        setOpenIndex(isDesktop ? defaultOpenIndexDesktop : null);
-      }
-      setPendingIndex(null);
-      setExpandedMap({});
-      setMeasuredMap({});
-      // и сразу после смены даём контенту появиться заново
-      setContentVisible(true);
-    }, 180); // должно быть меньше/равно длительности fade-transition ниже
+  //   const timeout = setTimeout(() => {
+  //     if (!controlled) {
+  //       setOpenIndex(isDesktop ? defaultOpenIndexDesktop : null);
+  //     }
+  //     setPendingIndex(null);
+  //     setExpandedMap({});
+  //     setMeasuredMap({});
+  //     // и сразу после смены даём контенту появиться заново
+  //     setContentVisible(true);
+  //   }, 180); // должно быть меньше/равно длительности fade-transition ниже
 
-    return () => clearTimeout(timeout);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [forceCloseTrigger]);
+  //   return () => clearTimeout(timeout);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [forceCloseTrigger]);
+
+
+
+useEffect(() => {
+  if (isFirstMount.current) {
+    isFirstMount.current = false;
+    return; // при монтировании ничего скрывать не нужно
+  }
+
+  setContentVisible(false);
+
+  const timeout = setTimeout(() => {
+    if (!controlled) {
+      setOpenIndex(isDesktop ? defaultOpenIndexDesktop : null);
+    }
+    setPendingIndex(null);
+    setExpandedMap({});
+    setMeasuredMap({});
+    setContentVisible(true);
+  }, 180);
+
+  return () => clearTimeout(timeout);
+}, [forceCloseTrigger]);
+
 
   /* -------------------- MEASURE OVERFLOW (mobile) -------------------- */
   useLayoutEffect(() => {

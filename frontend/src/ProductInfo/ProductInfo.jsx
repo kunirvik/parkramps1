@@ -84,7 +84,7 @@ export default function ProductInfo({
       </div>
 
       {/* MOBILE */}
-      <div className="block lg:hidden w-full">
+      {/* <div className="block lg:hidden w-full">
         <Accordion
           key={state.activeProductIndex}
           items={[
@@ -120,7 +120,62 @@ export default function ProductInfo({
             else if (index === 2) onAccordionToggle("virobi")(0);
           }}
         />
-      </div>
+      </div> 
+      */}
+      {/* MOBILE */}
+<div
+  className="block lg:hidden w-full"
+  style={{
+    opacity:
+      animationState.slideChanging ||
+      (!animationState.complete && imageData)
+        ? 0
+        : 1,
+    transform:
+      animationState.slideChanging ||
+      (!animationState.complete && imageData)
+        ? "translateY(20px)"
+        : "translateY(0)",
+    transition: "opacity 0.3s ease, transform 0.3s ease",
+    pointerEvents: animationState.slideChanging ? "none" : "auto",
+  }}
+>
+  <Accordion
+    key={state.activeProductIndex}
+    items={[
+      {
+        title: "замовити",
+        content: (
+          <>
+            {product.description}
+            <ContactButton />
+          </>
+        ),
+      },
+      {
+        title: product.name,
+        content: product.description2,
+      },
+      { title: "вироби", content: null },
+    ]}
+    mobileMode={true}
+    controlled={true}
+    openIndex={
+      accordionState.purchase === 0
+        ? 0
+        : accordionState.product === 0
+        ? 1
+        : accordionState.virobi === 0
+        ? 2
+        : null
+    }
+    onToggle={(index) => {
+      if (index === 0) onAccordionToggle("purchase")(0);
+      else if (index === 1) onAccordionToggle("product")(0);
+      else if (index === 2) onAccordionToggle("virobi")(0);
+    }}
+  />
+</div>
     </div>
   );
 }
