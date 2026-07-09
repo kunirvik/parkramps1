@@ -965,33 +965,6 @@ useEffect(() => {
   );
 
   
-// const handleStageClick = useCallback(() => {
-//     const liveIndex = liveIndexRef.current;
-//   const liveProduct = products[liveIndex];
-//   if (!liveProduct) return;
-//   const total = 1 + (liveProduct.altImages?.length || 0);
-//   if (total <= 1) return;
-
-
-//     // if (allImages.length <= 1) return;
-
-//     if (isPlaying) {
-//         stopHoverAnimation();
-//         setIsPlaying(false);
-//     } else {
-//         startPlayAnimation(state.activeProductIndex, currentProduct);
-//         setIsPlaying(true);
-//     }
-// }, [
-//     // allImages.length,
-//     isPlaying,
-//     stopHoverAnimation,
-//     startPlayAnimation,
-//     // state.activeProductIndex,
-//     // currentProduct,
-//     products
-// ]);
-
 
 const handleStageClick = useCallback(() => {
     const liveIndex = liveIndexRef.current;
@@ -1033,7 +1006,8 @@ const handleStageClick = useCallback(() => {
   return (
     <div
       ref={(el) => (refs.swiperContainer = el)}
-      className="w-full lg:w-[75%] lg:h-[100%] mt-10 lg:mt-0 lg:content-center"
+      // className="w-full lg:w-[75%] lg:h-[100%] mt-10 lg:mt-0 lg:content-center"
+      className="w-full lg:w-[75%] lg:h-[100%] mt-10 lg:mt-0 lg:content-center order-1 lg:order-2"
       style={{
         visibility: !imageData || animationState.complete ? "visible" : "hidden",
         opacity: !imageData || animationState.complete ? 1 : 0,

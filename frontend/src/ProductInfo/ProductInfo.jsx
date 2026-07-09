@@ -11,7 +11,8 @@ export default function ProductInfo({
   imageData,
 }) {
   return (
-    <div className="flex lg:flex-col bg-rgb(35, 35, 35)  w-full">
+    // <div className="flex lg:flex-col bg-rgb(35, 35, 35)  w-full">
+    <div className="flex lg:flex-col bg-rgb(35, 35, 35) w-full order-2 lg:order-1">
       {/* DESKTOP */}
       <div className="hidden lg:block  w-full">
         <div
@@ -83,45 +84,7 @@ export default function ProductInfo({
         </div>
       </div>
 
-      {/* MOBILE */}
-      {/* <div className="block lg:hidden w-full">
-        <Accordion
-          key={state.activeProductIndex}
-          items={[
-            {
-              title: "замовити",
-              content: (
-                <>
-                  {product.description}
-                  <ContactButton />
-                </>
-              ),
-            },
-            {
-              title: product.name,
-              content: product.description2,
-            },
-            { title: "вироби", content: null },
-          ]}
-          mobileMode={true}
-          controlled={true}
-          openIndex={
-            accordionState.purchase === 0
-              ? 0
-              : accordionState.product === 0
-              ? 1
-              : accordionState.virobi === 0
-              ? 2
-              : null
-          }
-          onToggle={(index) => {
-            if (index === 0) onAccordionToggle("purchase")(0);
-            else if (index === 1) onAccordionToggle("product")(0);
-            else if (index === 2) onAccordionToggle("virobi")(0);
-          }}
-        />
-      </div> 
-      */}
+   
       {/* MOBILE */}
 <div
   className="block lg:hidden w-full"
