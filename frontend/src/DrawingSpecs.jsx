@@ -1,66 +1,80 @@
+const LINE = "1px solid rgba(255,255,255,0.35)";
+const LINE_SOFT = "1px solid rgba(255,255,255,0.18)";
+
 export default function DrawingSpecs({ product }) {
   if (!product?.specs?.length) return null;
 
   return (
     <div
-      className="w-full rounded-lg overflow-hidden"
+      className="w-full"
       style={{
-        background: "rgba(30,30,30,0.45)",
-        backdropFilter: "blur(14px)",
-        border: "0.5px solid rgba(255,255,255,0.14)",
+        background: "rgba(20,20,20,0.55)",
+        border: LINE,
+        borderRadius: 0,
       }}
     >
-      {/* Название детали */}
-      <div
-        className="grid grid-cols-[1fr_auto]"
-        style={{ borderBottom: "0.5px solid rgba(255,255,255,0.14)" }}
-      >
-        <div
-          className="px-3 py-2.5"
-          style={{ borderRight: "0.5px solid rgba(255,255,255,0.14)" }}
-        >
-          <div className="text-[9px] uppercase tracking-wider text-white/40 leading-none mb-1">
-            Назва
+      {/* Верхний блок: назва / номер / масштаб */}
+      <div className="grid grid-cols-[1fr_auto_auto]" style={{ borderBottom: LINE }}>
+        <div className="px-3 py-2.5" style={{ borderRight: LINE_SOFT }}>
+          <div className="text-[9px] uppercase tracking-widest text-white/40 leading-none mb-1 font-mono">
+            Найменування
           </div>
-          <div className="text-sm sm:text-base font-medium text-white/90 leading-tight uppercase">
+          <div className="text-sm sm:text-base font-semibold text-white uppercase tracking-wide leading-tight font-mono">
             {product.name}
           </div>
         </div>
-        <div className="px-3 py-2.5 flex flex-col items-center justify-center min-w-[64px]">
-          <div className="text-[9px] uppercase text-white/40 leading-none mb-1">
+
+        <div
+          className="px-3 py-2.5 flex flex-col items-center justify-center"
+          style={{ borderRight: LINE_SOFT, minWidth: 64 }}
+        >
+          <div className="text-[9px] uppercase text-white/40 leading-none mb-1 font-mono">
+            Масштаб
+          </div>
+          <div className="text-sm text-white font-mono font-medium">
+            {product.scale ? `1:${(1 / product.scale).toFixed(2).replace(/\.?0+$/, "")}` : "1:1"}
+          </div>
+        </div>
+
+        <div className="px-3 py-2.5 flex flex-col items-center justify-center" style={{ minWidth: 56 }}>
+          <div className="text-[9px] uppercase text-white/40 leading-none mb-1 font-mono">
             Рік
           </div>
-          <div className="text-sm text-white/90 font-medium">{product.year}</div>
+          <div className="text-sm text-white font-mono font-medium">{product.year}</div>
         </div>
       </div>
 
-      {/* Сетка характеристик */}
+      {/* Сетка характеристик — жёсткие ячейки */}
       <div className="grid grid-cols-2 sm:grid-cols-3">
-        {product.specs.map((spec, i) => (
-          <div
-            key={i}
-            className="px-3 py-2.5"
-            style={{
-              borderBottom: "0.5px solid rgba(255,255,255,0.1)",
-              borderRight: "0.5px solid rgba(255,255,255,0.1)",
-            }}
-          >
-            <div className="text-[9px] sm:text-[10px] uppercase tracking-wider text-white/40 leading-none mb-1">
-              {spec.label}
+        {product.specs.map((spec, i) => {
+          const cols = 3; // sm breakpoint columns
+          const isLastInRowSm = (i + 1) % cols === 0;
+          return (
+            <div
+              key={i}
+              className="px-3 py-2.5"
+              style={{
+                borderBottom: LINE_SOFT,
+                borderRight: isLastInRowSm ? "none" : LINE_SOFT,
+              }}
+            >
+              <div className="text-[9px] sm:text-[10px] uppercase tracking-widest text-white/40 leading-none mb-1 font-mono">
+                {spec.label}
+              </div>
+              <div className="text-xs sm:text-sm font-medium text-white font-mono leading-tight">
+                {spec.value}
+              </div>
             </div>
-            <div className="text-xs sm:text-sm font-medium text-white/90 font-mono leading-tight">
-              {spec.value}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
-      {/* Нижняя подпись */}
-      <div className="px-3 py-2 flex items-center justify-between">
-        <span className="text-[9px] sm:text-[10px] text-white/35 font-mono">
+      {/* Нижняя строка — номер креслення */}
+      <div className="px-3 py-2 flex items-center justify-between" style={{ borderTop: LINE }}>
+        <span className="text-[9px] sm:text-[10px] text-white/50 font-mono tracking-wide">
           {product.drawingNumber || "SAMUTIA"}
         </span>
-        <span className="text-[9px] sm:text-[10px] text-white/25 uppercase tracking-wider">
+        <span className="text-[9px] sm:text-[10px] text-white/30 uppercase tracking-widest font-mono">
           engineering
         </span>
       </div>

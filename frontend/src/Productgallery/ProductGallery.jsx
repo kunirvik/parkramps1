@@ -839,7 +839,6 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Mousewheel, Thumbs } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
-import ProductDrawing from "../ProductDrawing"
 
 const SCRUB_THRESHOLD = 10;
 
@@ -1016,8 +1015,7 @@ const handleStageClick = useCallback(() => {
       }}
     >
       <div className="w-full flex flex-col">
-           <ProductDrawing product={currentProduct} />  
-
+       
         {/* Главная область */}
         <div
           ref={stageRef}
