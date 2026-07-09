@@ -175,7 +175,12 @@ const productCatalogSets = [
         caption: "підпис",
       },
     ],
-      
+         specs: [
+    { label: "Висота", value: "80 см" },
+    { label: "Ширина", value: "125 см" },
+    { label: "Матеріал", value: "Сталь / фанера" },
+    { label: "Товщина металу", value: "3 мм" },
+  ],
 
     year: 2024,
     description2: "Комбінований елемент з двома заїздами та центральною платформою. Призначений для стрибків, трансферів та контролю приземлення. Формує базову “повітряну” зону в лінії парку та підходить для прогресивного навчання трюків",
@@ -226,6 +231,12 @@ const productCatalogSets = [
       { type: "image", src: "/images/sample/quater.webp", caption: "підпис 1" },
       { type: "image", src: "/images/sample/box.webp", caption: "підпис 2" },
     ],
+       specs: [
+    { label: "Висота", value: "80 см" },
+    { label: "Ширина", value: "125 см" },
+    { label: "Матеріал", value: "Сталь / фанера" },
+    { label: "Товщина металу", value: "3 мм" },
+  ],
     year: 2023,
     description:
       "пиши нам у месенджер або кидай заявку...",
@@ -249,6 +260,12 @@ const productCatalogSets = [
       { type: "image", src: `${CLOUDINARY}v1783062464/vertwall2_ehot8p.webp`, caption: "підпис 3" },
       { type: "image", src: `${CLOUDINARY}v1783062471/vertwall3_jtd7yu.webp`, caption: "підпис 4" },
     ],
+       specs: [
+    { label: "Висота", value: "80 см" },
+    { label: "Ширина", value: "125 см" },
+    { label: "Матеріал", value: "Сталь / фанера" },
+    { label: "Товщина металу", value: "3 мм" },
+  ],
     year: 2023,
     description: "Комплекты для самостоятельного строительства элементов.",
     description2:
