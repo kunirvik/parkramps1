@@ -558,7 +558,7 @@ const handleMouseEnter = useCallback(
     imageRef={(el) => (refs.current.transitionImage = el)}
   />
 )}
-    <ProductDrawing product={currentProduct} />   
+  
 <ProductGallery
   products={productCatalogSets}
   state={state}

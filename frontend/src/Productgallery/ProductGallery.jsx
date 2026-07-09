@@ -839,6 +839,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Mousewheel, Thumbs } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
+import ProductDrawing from "../ProductDrawing"
 
 const SCRUB_THRESHOLD = 10;
 
@@ -1004,6 +1005,7 @@ const handleStageClick = useCallback(() => {
   const showHint = hintOpen || autoHintVisible;
 
   return (
+    
     <div
       ref={(el) => (refs.swiperContainer = el)}
       // className="w-full lg:w-[75%] lg:h-[100%] mt-10 lg:mt-0 lg:content-center"
@@ -1014,6 +1016,7 @@ const handleStageClick = useCallback(() => {
       }}
     >
       <div className="w-full flex flex-col">
+           <ProductDrawing product={currentProduct} />  
 
         {/* Главная область */}
         <div
