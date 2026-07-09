@@ -537,10 +537,10 @@ const handleMouseEnter = useCallback(
               shouldShowLoading && !loadingState.isCompleted ? 0 : 1,
           }}
         >
-              <ProductDrawing product={currentProduct} />  
+             
 
           <div className="w-full hidden sm:block flex items-start mb-4" />
-
+ <ProductDrawing product={currentProduct} />  
           <div className="w-full h-[50%] flex flex-col lg:flex-row relative">
          
 <ProductInfo
