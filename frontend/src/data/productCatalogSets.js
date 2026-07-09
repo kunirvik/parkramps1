@@ -191,7 +191,7 @@ const productCatalogSets = [
     id: 3,
     name: "diy box",
     image: `${CLOUDINARY}v1783083844/box_121_diy1_jmoudd.webp`,
-    // scale:0.75,
+    scale:2.5,
     altImages: [`${CLOUDINARY}v1783083840/box_121_diy2_jkc9nu.webp`, `${CLOUDINARY}v1783083838/box_121_diy_dead8o.webp`],
 
     sample: [
