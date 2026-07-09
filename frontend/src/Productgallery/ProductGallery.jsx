@@ -839,7 +839,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Mousewheel, Thumbs } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
-
+import ProductDrawing from "../ProductDrawing";
 const SCRUB_THRESHOLD = 10;
 
 // Filmstrip-лента без миниатюр продуктов
@@ -1163,7 +1163,8 @@ const handleStageClick = useCallback(() => {
               <i className={cursorIconClass} style={{ fontSize: 15, color: "#fff" }} aria-hidden="true" />
             </div>
           )}
-      
+    <ProductDrawing product={currentProduct} />   
+
 {/* Мобильная кнопка плей/пауза */}
 {allImages.length > 1 && isTouchDevice && (
   <button
