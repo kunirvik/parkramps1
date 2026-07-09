@@ -201,10 +201,8 @@ const productCatalogSets = [
     ],
 
     specs: [
-    { label: "Радіус", value: "215 см" },
     { label: "Висота", value: "80 см" },
     { label: "Ширина", value: "125 см" },
-    { label: "Виліт", value: "40 см" },
     { label: "Матеріал", value: "Сталь / фанера" },
     { label: "Товщина металу", value: "3 мм" },
   ],
