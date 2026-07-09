@@ -20,6 +20,7 @@ import { useHoverAnimation } from "../hooks/useHoverAnimation";
 import { useSlideAnimation } from "../hooks/useSlideAnimation";
 import TransitionImage from "../TransitionImage/Transitionimage";
 import ProductGallery from "../Productgallery/ProductGallery";
+import ProductDrawing from "../ProductDrawing";
 // Константы
 const ANIMATION_CONFIG = {
   DURATION: 0.6,
@@ -557,6 +558,7 @@ const handleMouseEnter = useCallback(
     imageRef={(el) => (refs.current.transitionImage = el)}
   />
 )}
+    <ProductDrawing product={currentProduct} />   
 <ProductGallery
   products={productCatalogSets}
   state={state}

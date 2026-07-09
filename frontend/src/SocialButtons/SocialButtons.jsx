@@ -44,11 +44,11 @@ const SocialButtons = forwardRef(function SocialButtons(props, ref) {
       link: "https://t.me/parkramps",
       label: "Telegram",
     },
-    {
-      icon: <Mail size={20} className="text-[#919191]" />,
-      onClick: () => alert("Открыть модалку"),
-      label: "Email",
-    },
+    // {
+    //   icon: <Mail size={20} className="text-[#919191]" />,
+    //   onClick: () => alert("Открыть модалку"),
+    //   label: "Email",
+    // },
     {
       icon: (
         <svg className="w-8 h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 320">
