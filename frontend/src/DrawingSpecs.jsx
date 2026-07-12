@@ -15,16 +15,16 @@ export default function DrawingSpecs({ product }) {
     >
       {/* Верхний блок: назва / номер / масштаб */}
       <div className="grid grid-cols-[1fr_auto_auto]" style={{ borderBottom: LINE }}>
-        <div className="px-3 py-2.5" style={{ borderRight: LINE_SOFT }}>
+        {/* <div className="px-3 py-2.5" style={{ borderRight: LINE_SOFT }}>
           <div className="text-[9px] uppercase tracking-widest text-white/40 leading-none mb-1 font-mono">
             Найменування
           </div>
           <div className="text-sm sm:text-base font-semibold text-white uppercase tracking-wide leading-tight font-mono">
             {product.name}
           </div>
-        </div>
+        </div> */}
 
-        <div
+        {/* <div
           className="px-3 py-2.5 flex flex-col items-center justify-center"
           style={{ borderRight: LINE_SOFT, minWidth: 64 }}
         >
@@ -34,14 +34,14 @@ export default function DrawingSpecs({ product }) {
           <div className="text-sm text-white font-mono font-medium">
             {product.scale ? `1:${(1 / product.scale).toFixed(2).replace(/\.?0+$/, "")}` : "1:1"}
           </div>
-        </div>
+        </div> */}
 
-        <div className="px-3 py-2.5 flex flex-col items-center justify-center" style={{ minWidth: 56 }}>
+        {/* <div className="px-3 py-2.5 flex flex-col items-center justify-center" style={{ minWidth: 56 }}>
           <div className="text-[9px] uppercase text-white/40 leading-none mb-1 font-mono">
             Рік
           </div>
           <div className="text-sm text-white font-mono font-medium">{product.year}</div>
-        </div>
+        </div> */}
       </div>
 
       {/* Сетка характеристик — жёсткие ячейки */}
@@ -70,14 +70,14 @@ export default function DrawingSpecs({ product }) {
       </div>
 
       {/* Нижняя строка — номер креслення */}
-      <div className="px-3 py-2 flex items-center justify-between" style={{ borderTop: LINE }}>
+      {/* <div className="px-3 py-2 flex items-center justify-between" style={{ borderTop: LINE }}>
         <span className="text-[9px] sm:text-[10px] text-white/50 font-mono tracking-wide">
           {product.drawingNumber || "SAMUTIA"}
         </span>
         <span className="text-[9px] sm:text-[10px] text-white/30 uppercase tracking-widest font-mono">
           engineering
         </span>
-      </div>
+      </div> */}
     </div>
   );
 }
