@@ -45,7 +45,7 @@ export default function DrawingSpecs({ product }) {
       </div>
 
       {/* Сетка характеристик — жёсткие ячейки */}
-      <div className="grid grid-cols-2 sm:grid-cols-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3">
         {product.specs.map((spec, i) => {
           const cols = 3; // sm breakpoint columns
           const isLastInRowSm = (i + 1) % cols === 0;
