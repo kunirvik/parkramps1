@@ -1015,7 +1015,8 @@ const handleStageClick = useCallback(() => {
       }}
     >
       <div className="w-full flex flex-col">
-       
+       <ProductDrawing product={currentProduct} />   
+
         {/* Главная область */}
         <div
           ref={stageRef}
@@ -1163,8 +1164,7 @@ const handleStageClick = useCallback(() => {
               <i className={cursorIconClass} style={{ fontSize: 15, color: "#fff" }} aria-hidden="true" />
             </div>
           )}
-    <ProductDrawing product={currentProduct} />   
-
+    
 {/* Мобильная кнопка плей/пауза */}
 {allImages.length > 1 && isTouchDevice && (
   <button
