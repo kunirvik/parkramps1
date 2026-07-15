@@ -282,7 +282,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 
 const MOBILE_CLAMP = 100;      // px — высота, до которой схлопывается текст
 const OVERFLOW_TOLERANCE = 20; // px — если текст выше клампа не более чем на это значение, кнопку не показываем
-const DESKTOP_CLAMP = 300;      // 👈 новый лимит для десктопа
+const DESKTOP_CLAMP = 200;      // 👈 новый лимит для десктопа
 
 const Accordion = ({
   items,
