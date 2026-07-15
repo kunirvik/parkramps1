@@ -1015,7 +1015,8 @@ const handleStageClick = useCallback(() => {
       }}
     >
       <div className="w-full flex flex-col">
-       <ProductDrawing product={currentProduct} />   
+        <div className="order-3 lg:order-1">
+       <ProductDrawing product={currentProduct} />   </div>
 
         {/* Главная область */}
         <div
@@ -1044,7 +1045,7 @@ const handleStageClick = useCallback(() => {
           }}}
           // onClick={handleStageClick}
             onClick={!isTouchDevice ? handleStageClick : undefined}
-        >
+        ><div className="order-2 lg:order-2">
           <Swiper
             className="custom-swiper h-[250px] sm:h-[300px] md:h-[350px]"
             modules={[Pagination, Mousewheel, Thumbs]}
@@ -1092,7 +1093,7 @@ const handleStageClick = useCallback(() => {
               </SwiperSlide>
             ))}
           </Swiper>
-
+</div>
           {/* Счётчик кадров */}
           {allImages.length > 1 && (
             <div className="absolute top-2.5 right-3 z-10 pointer-events-none">
@@ -1185,18 +1186,18 @@ const handleStageClick = useCallback(() => {
   </button>
 )}  </div>
      
-
+<div className="order-1 lg:order-3">
         {/* Filmstrip */}
         <Filmstrip
           product={currentProduct}
           currentFrameIndex={currentFrameIndex}
           onFrameSelect={handleFrameSelect}
         />
-
+</div>
         {/* Thumbs навигации между продуктами */}
         <div
           ref={(el) => (refs.thumbs = el)}
-          className="w-full mt-5 lg:mt-8"
+          className="w-full mt-5 lg:mt-8 order-4"
           style={{ opacity: state.thumbsShown ? 1 : 0 }}
         >
           <Swiper
