@@ -35,6 +35,7 @@ export default function ProductInfo({
           }}
         >
           <Accordion
+          key={`product-${state.activeProductIndex}`}
             items={[
               {
                 title: product.name,
@@ -53,6 +54,7 @@ export default function ProductInfo({
           style={{ opacity: state.purchaseShown ? 1 : 0 }}
         >
           <Accordion
+          key={`purchase-${state.activeProductIndex}`}
             items={[
               {
                 title: "замовити",
@@ -76,6 +78,7 @@ export default function ProductInfo({
           style={{ opacity: state.productionShown ? 1 : 0 }}
         >
           <Accordion
+          key={`virobi-${state.activeProductIndex}`}
             items={[{ title: "вироби" }]}
             controlled={true}
             openIndex={accordionState.virobi}
