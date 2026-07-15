@@ -282,6 +282,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 
 const MOBILE_CLAMP = 100;      // px — высота, до которой схлопывается текст
 const OVERFLOW_TOLERANCE = 20; // px — если текст выше клампа не более чем на это значение, кнопку не показываем
+const DESKTOP_CLAMP = 300;      // 👈 новый лимит для десктопа
 
 const Accordion = ({
   items,
@@ -376,18 +377,34 @@ useEffect(() => {
 
 
   /* -------------------- MEASURE OVERFLOW (mobile) -------------------- */
+  // useLayoutEffect(() => {
+  //   if (isDesktop || openIndex === null) return;
+  //   const el = contentRefs.current[openIndex];
+  //   if (el) {
+  //     const fullHeight = el.scrollHeight;
+  //     setOverflowMap((prev) => ({
+  //       ...prev,
+  //       [openIndex]: fullHeight > MOBILE_CLAMP + OVERFLOW_TOLERANCE,
+  //     }));
+  //     setMeasuredMap((prev) => ({ ...prev, [openIndex]: true }));
+  //   }
+  // }, [openIndex, isDesktop, items, contentVisible]);
+
   useLayoutEffect(() => {
-    if (isDesktop || openIndex === null) return;
-    const el = contentRefs.current[openIndex];
-    if (el) {
-      const fullHeight = el.scrollHeight;
-      setOverflowMap((prev) => ({
-        ...prev,
-        [openIndex]: fullHeight > MOBILE_CLAMP + OVERFLOW_TOLERANCE,
-      }));
-      setMeasuredMap((prev) => ({ ...prev, [openIndex]: true }));
-    }
-  }, [openIndex, isDesktop, items, contentVisible]);
+  if (openIndex === null) return;
+  const el = contentRefs.current[openIndex];
+  if (el) {
+    const fullHeight = el.scrollHeight;
+    const clamp = isDesktop ? DESKTOP_CLAMP : MOBILE_CLAMP;
+    setOverflowMap((prev) => ({
+      ...prev,
+      [openIndex]: fullHeight > clamp + OVERFLOW_TOLERANCE,
+    }));
+    setMeasuredMap((prev) => ({ ...prev, [openIndex]: true }));
+  }
+}, [openIndex, isDesktop, items, contentVisible]);
+
+
 
   /* -------------------- RESET ПРИ СМЕНЕ ТАБА -------------------- */
   useEffect(() => {
@@ -424,49 +441,129 @@ useEffect(() => {
   /* =====================================================
      =================== DESKTOP =========================
      ===================================================== */
+  // if (isDesktop) {
+  //   return (
+  //     <div className="w-full z-100000000">
+  //       {items.map((item, index) => {
+  //         const isOpen = openIndex === index;
+
+  //         return (
+  //           <div key={index} className="w-full">
+  //             <button
+  //               className="w-full cursor-pointer flex justify-between items-center py-1 text-left transition-colors"
+  //               onClick={() => toggleAccordion(index)}
+  //             >
+  //               <span className="font-futura text-[clamp(40px,5vw,50px)] font-bold text-[#717171]">
+  //                 {item.title}
+  //               </span>
+  //               {isOpen ? <ChevronUp /> : <ChevronDown />}
+  //             </button>
+
+  //             <div
+  //               className={`transition-all duration-300 overflow-hidden bg-[rgba(57, 57, 57, 0.84)] ${
+  //                 isOpen ? "min-h-[200px] w-[90%] opacity-100" : "max-h-0  opacity-0"
+  //               }`}
+  //             >
+  //               <div
+  //                 className="text-[#717171] text-[clamp(15px,2vw,17px)]"
+  //                 style={{
+  //                   background: "rgba(255, 255, 255, 0.12)",
+  //                   backdropFilter: "blur(16px)",
+  //                   WebkitBackdropFilter: "blur(16px)",
+  //                   border: "1px solid rgba(255, 255, 255, 0.2)",
+  //                   borderRadius: "12px",
+  //                   padding: "20px 24px",
+  //                 }}
+  //               >
+  //                 {item.content}
+  //               </div>
+  //             </div>
+  //           </div>
+  //         );
+  //       })}
+  //     </div>
+  //   );
+  // }
+
   if (isDesktop) {
-    return (
-      <div className="w-full z-100000000">
-        {items.map((item, index) => {
-          const isOpen = openIndex === index;
+  return (
+    <div className="w-full z-100000000">
+      {items.map((item, index) => {
+        const isOpen = openIndex === index;
+        const isOverflowing = overflowMap[index];
+        const isExpanded = expandedMap[index];
+        const isMeasured = measuredMap[index];
 
-          return (
-            <div key={index} className="w-full">
-              <button
-                className="w-full cursor-pointer flex justify-between items-center py-1 text-left transition-colors"
-                onClick={() => toggleAccordion(index)}
-              >
-                <span className="font-futura text-[clamp(40px,5vw,50px)] font-bold text-[#717171]">
-                  {item.title}
-                </span>
-                {isOpen ? <ChevronUp /> : <ChevronDown />}
-              </button>
+        return (
+          <div key={index} className="w-full">
+            <button
+              className="w-full cursor-pointer flex justify-between items-center py-1 text-left transition-colors"
+              onClick={() => toggleAccordion(index)}
+            >
+              <span className="font-futura text-[clamp(40px,5vw,50px)] font-bold text-[#717171]">
+                {item.title}
+              </span>
+              {isOpen ? <ChevronUp /> : <ChevronDown />}
+            </button>
 
+            <div
+              className={`transition-all duration-300 overflow-hidden bg-[rgba(57, 57, 57, 0.84)] ${
+                isOpen ? "min-h-[200px] w-[90%] opacity-100" : "max-h-0  opacity-0"
+              }`}
+            >
               <div
-                className={`transition-all duration-300 overflow-hidden bg-[rgba(57, 57, 57, 0.84)] ${
-                  isOpen ? "min-h-[200px] w-[90%] opacity-100" : "max-h-0  opacity-0"
-                }`}
+                ref={(el) => (contentRefs.current[index] = el)}
+                className="text-[#717171] text-[clamp(15px,2vw,17px)]"
+                style={{
+                  background: "rgba(255, 255, 255, 0.12)",
+                  backdropFilter: "blur(16px)",
+                  WebkitBackdropFilter: "blur(16px)",
+                  border: "1px solid rgba(255, 255, 255, 0.2)",
+                  borderRadius: "12px",
+                  padding: "20px 24px",
+                  maxHeight: !isMeasured
+                    ? `${DESKTOP_CLAMP}px`
+                    : isOverflowing && !isExpanded
+                      ? `${DESKTOP_CLAMP}px`
+                      : "3000px",
+                  overflow: "hidden",
+                  transition: "max-height 300ms ease",
+                  position: "relative",
+                }}
               >
-                <div
-                  className="text-[#717171] text-[clamp(15px,2vw,17px)]"
-                  style={{
-                    background: "rgba(255, 255, 255, 0.12)",
-                    backdropFilter: "blur(16px)",
-                    WebkitBackdropFilter: "blur(16px)",
-                    border: "1px solid rgba(255, 255, 255, 0.2)",
-                    borderRadius: "12px",
-                    padding: "20px 24px",
-                  }}
-                >
-                  {item.content}
-                </div>
+                {item.content}
+
+                {(!isMeasured || (isOverflowing && !isExpanded)) && (
+                  <div
+                    className="absolute bottom-0 left-0 w-full h-10 pointer-events-none"
+                    style={{
+                      background:
+                        "linear-gradient(to bottom, transparent, rgba(20,20,20,0.9))",
+                      borderBottomLeftRadius: "12px",
+                      borderBottomRightRadius: "12px",
+                    }}
+                  />
+                )}
               </div>
+
+              {isOverflowing && !isExpanded && (
+                <button
+                  onClick={() =>
+                    setExpandedMap((prev) => ({ ...prev, [index]: true }))
+                  }
+                  className="w-full flex items-center justify-center gap-1 py-2 cursor-pointer text-xs text-[#a0a0a0]"
+                >
+                  <span>Показати повністю</span>
+                  <ChevronDown size={16} />
+                </button>
+              )}
             </div>
-          );
-        })}
-      </div>
-    );
-  }
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
   /* =====================================================
      ================= MOBILE TABS =======================
