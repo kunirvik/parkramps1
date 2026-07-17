@@ -47,7 +47,7 @@ export default function ProductInfo({
             openIndex={accordionState.product}
             onToggle={onAccordionToggle("product")}
           />
-          <ProductDrawing product={currentProduct} />   </div>
+          <ProductDrawing product={currentProduct} />  
         </div>
 
         <div
