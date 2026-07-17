@@ -10,6 +10,7 @@ export default function ProductInfo({
   animationState,
   imageData,
 }) {
+   const currentProduct = products[state.activeProductIndex];
   return (
     // <div className="flex lg:flex-col bg-rgb(35, 35, 35)  w-full">
     <div className="flex lg:flex-col bg-rgb(35, 35, 35) w-full order-2 lg:order-1">
