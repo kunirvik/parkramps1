@@ -36,14 +36,14 @@ export default function ProductInfo({
               ? "none"
               : "auto",
           }}
-        > <ProductDrawing product={currentProduct} />  
+        > 
           <Accordion
           key={`product-${state.activeProductIndex}`}
             items={[
               {
                 title: product.name,
-                content: product.description2,
-              },
+                content: product.description2, 
+              }, <ProductDrawing product={currentProduct} /> 
             ]}
             controlled={true}
             openIndex={accordionState.product}
