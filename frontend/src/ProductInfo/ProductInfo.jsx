@@ -42,7 +42,7 @@ export default function ProductInfo({
             items={[
               {
                 title: product.name,
-                content:(<><ProductDrawing product={currentProduct}/> {product.description2}</> ),
+                content:(<ProductDrawing product={currentProduct}/>, <>{product.description2}</> ),
               }
             ]}
             controlled={true}
