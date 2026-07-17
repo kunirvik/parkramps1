@@ -21,6 +21,7 @@ import { useSlideAnimation } from "../hooks/useSlideAnimation";
 import TransitionImage from "../TransitionImage/Transitionimage";
 import ProductGallery from "../Productgallery/ProductGallery";
 import ProductDrawing from "../ProductDrawing";
+import { useIsDesktop } from "../hooks/useIsDesktop";
 // Константы
 const ANIMATION_CONFIG = {
   DURATION: 0.6,
