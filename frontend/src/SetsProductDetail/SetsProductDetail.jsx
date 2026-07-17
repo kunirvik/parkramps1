@@ -545,6 +545,7 @@ const handleMouseEnter = useCallback(
          
 <ProductInfo
   product={currentProduct}
+    products={productCatalogSets}
   state={state}
   accordionState={accordionState}
   onAccordionToggle={handleAccordionToggle}

@@ -2,6 +2,7 @@ import Accordion from "../Accordion/Accordion";
 import ContactButton from "../ContactButtons/ContactButton";
 import ProductDrawing from "../ProductDrawing";
 export default function ProductInfo({
+  products,
   product,
   state,
   accordionState,
