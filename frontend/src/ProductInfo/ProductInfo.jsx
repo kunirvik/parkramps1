@@ -42,7 +42,7 @@ export default function ProductInfo({
             items={[
               {
                 title: product.name,
-                content:(<><ProductDrawing product={currentProduct}/>, {product.description2}</> ),
+                content: product.description2,
               }
             ]}
             controlled={true}
@@ -124,6 +124,7 @@ export default function ProductInfo({
       },
       {
         title: product.name,
+        // content: (<><ProductDrawing product={currentProduct}/>, {product.description2}</> ),
         content: product.description2,
       },
       { title: "вироби", content: null },
