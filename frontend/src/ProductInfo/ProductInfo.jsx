@@ -36,7 +36,7 @@ export default function ProductInfo({
               ? "none"
               : "auto",
           }}
-        >
+        > <ProductDrawing product={currentProduct} />  
           <Accordion
           key={`product-${state.activeProductIndex}`}
             items={[
@@ -49,7 +49,7 @@ export default function ProductInfo({
             openIndex={accordionState.product}
             onToggle={onAccordionToggle("product")}
           />
-          <ProductDrawing product={currentProduct} />  
+         
         </div>
 
         <div
