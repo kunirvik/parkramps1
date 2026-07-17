@@ -1339,7 +1339,8 @@ const handleStageClick = useCallback(() => {
             ))}
           </Swiper>
         </div> */}
-{isDesktop && (
+
+      </div>{isDesktop && (
   <div className="mt-8">
     <ProductThumbs
       products={products}
@@ -1352,7 +1353,6 @@ const handleStageClick = useCallback(() => {
     />
   </div>
 )}
-      </div>
     </div>
   );
 }

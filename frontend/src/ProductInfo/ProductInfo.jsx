@@ -42,11 +42,8 @@ export default function ProductInfo({
             items={[
               {
                 title: product.name,
-                content: product.description2, 
-              }, {
-    title: "Характерестики",
-    content: <ProductDrawing product={currentProduct} />,
-  }, 
+                content:(<><ProductDrawing product={currentProduct}/> {product.description2}</> ),
+              }
             ]}
             controlled={true}
             openIndex={accordionState.product}
