@@ -43,7 +43,7 @@ export default function SetsProductDetail() {
   const [searchParams] = useSearchParams();
  // ─── Gallery ──────────────────────────────────────────────────────────────
   const openGallery = useOpenGallery();
-  const useIsDesktop = useIsDesktop();
+  const isDesktop = useIsDesktop();
   const isTouchDevice =
     typeof window !== "undefined" &&
     ("ontouchstart" in window || navigator.maxTouchPoints > 0);
@@ -54,7 +54,7 @@ const imageData = imageDataRef.current;
 
   const slideIndexParam = Number(searchParams.get("view")) || 0;
 
-  const isDesktop = () => window.innerWidth >= 1024;
+  // const isDesktop = () => window.innerWidth >= 1024;
 
 
   const shouldShowLoading = useMemo(() => !imageData, [imageData]);
@@ -580,7 +580,7 @@ const handleMouseEnter = useCallback(
   onTouchEnd={handleTouchEnd}
   stopHoverAnimation={stopHoverAnimation}
   swiperConfig={SWIPER_CONFIG}
-  isDesktop={useIsDesktop()}
+  isDesktop={isDesktop}
 // userMode={userMode}
   // setUserMode={setUserMode}
   // getMode={getMode}
