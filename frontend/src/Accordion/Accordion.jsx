@@ -470,8 +470,9 @@ useEffect(() => {
 
               {isOverflowing && !isExpanded && (
                 <button
-                  onClick={() =>
-                    setExpandedMap((prev) => ({ ...prev, [index]: true }))
+                  onClick={() =>{
+                    console.log("hit", index);
+                    setExpandedMap((prev) => ({ ...prev, [index]: true }))}
                   }
                   className="w-full flex items-center justify-center gap-1 py-2 cursor-pointer text-xs text-[#a0a0a0]"
                 >

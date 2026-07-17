@@ -840,6 +840,7 @@ import { Pagination, Mousewheel, Thumbs } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import ProductDrawing from "../ProductDrawing";
+import ProductThumbs from "../ProductThumbs/ProductThumbs";
 const SCRUB_THRESHOLD = 10;
 
 // Filmstrip-лента без миниатюр продуктов
@@ -886,6 +887,7 @@ function Filmstrip({ product, currentFrameIndex, onFrameSelect }) {
 
 export default function ProductGallery({
   products,
+  isDesktop,
   state,
   swiperInstances,
   setSwiperInstances,
@@ -916,6 +918,10 @@ export default function ProductGallery({
   const hintSeenRef = useRef(false);
   const stageRef = useRef(null);
 const liveIndexRef = useRef(state.activeProductIndex);
+
+const hintCloseTimerRef = useRef(null); 
+
+
   const currentProduct = products[state.activeProductIndex];
   const allImages = currentProduct
     ? [currentProduct.image, ...(currentProduct.altImages || [])]
@@ -925,6 +931,39 @@ const liveIndexRef = useRef(state.activeProductIndex);
   useEffect(() => {
   liveIndexRef.current = state.activeProductIndex;
 }, [state.activeProductIndex]); 
+
+
+useEffect(() => {
+  return () => {
+    clearTimeout(autoHintTimerRef.current);
+    clearTimeout(hintCloseTimerRef.current);
+  };
+}, []);
+
+const closeHint = useCallback(() => {
+  clearTimeout(autoHintTimerRef.current);
+  clearTimeout(hintCloseTimerRef.current);
+  setAutoHintVisible(false);
+  setHintOpen(false);
+}, []);
+
+const toggleHint = useCallback((e) => {
+  e.stopPropagation();
+  clearTimeout(autoHintTimerRef.current);
+  clearTimeout(hintCloseTimerRef.current);
+  setAutoHintVisible(false);
+
+  setHintOpen((prev) => {
+    const next = !prev;
+    if (next && isTouchDevice) {
+      hintCloseTimerRef.current = setTimeout(() => setHintOpen(false), 2800);
+    }
+    return next;
+  });
+}, [isTouchDevice]); 
+
+
+
 
 
 useEffect(() => {
@@ -945,7 +984,10 @@ useEffect(() => {
 }, [state.activeProductIndex, stopHoverAnimation]);
   
 
-  const hintText ="Нажмите на фото — запустится анимация. Ещё раз — пауза"
+const HINT_TEXT_DESKTOP = "Нажмите на фото — запустится анимация. Ещё раз — пауза";
+const HINT_TEXT_MOBILE = "Натисніть — запуститься анімація"; // или "" чтобы вообще скрыть текст
+
+const hintText = isTouchDevice ? HINT_TEXT_MOBILE : HINT_TEXT_DESKTOP;
   
 
 
@@ -1045,7 +1087,16 @@ const handleStageClick = useCallback(() => {
             setIsPlaying(false);
           }}}
           // onClick={handleStageClick}
-            onClick={!isTouchDevice ? handleStageClick : undefined}
+            // onClick={!isTouchDevice ? handleStageClick : undefined}
+            onClick={(e) => {
+  if (isTouchDevice) {
+    if (hintOpen || autoHintVisible) {
+      closeHint();
+    }
+    return;
+  }
+  handleStageClick();
+}} 
         ><div className="order-2 lg:order-2">
           <Swiper
             className="custom-swiper h-[250px] sm:h-[300px] md:h-[350px]"
@@ -1108,7 +1159,7 @@ const handleStageClick = useCallback(() => {
           )}
 
           {/* Кнопка (i) — стеклянная */}
-          {allImages.length > 1 && (
+          {/* {allImages.length > 1 && (
             <button
               className="absolute top-2.5 left-3 z-20 w-7 h-7 rounded-full flex items-center justify-center"
               style={{
@@ -1121,10 +1172,26 @@ const handleStageClick = useCallback(() => {
             >
               <i className="ti ti-info-circle" style={{ fontSize: 15, color: "rgba(255,255,255,0.88)" }} aria-hidden="true" />
             </button>
-          )}
+          )} */}
+
+          {allImages.length > 1 && !isTouchDevice && (
+  <button
+    type="button"
+    className="absolute top-2.5 left-3 z-20 w-7 h-7 rounded-full flex items-center justify-center"
+    style={{
+      background: "rgba(120,120,120,0.28)",
+      backdropFilter: "blur(8px)",
+      border: "0.5px solid rgba(255,255,255,0.22)",
+    }}
+    onClick={toggleHint}
+    aria-label="Подсказка по управлению"
+  >
+    <i className="ti ti-info-circle" style={{ fontSize: 15, color: "rgba(255,255,255,0.88)" }} aria-hidden="true" />
+  </button>
+)}
 
           {/* Popup-подсказка (авто + по клику на i) */}
-          <div
+          {/* <div
             className="absolute z-30 pointer-events-none"
             style={{
               top: 44,
@@ -1144,7 +1211,36 @@ const handleStageClick = useCallback(() => {
             <p style={{ fontSize: 12, color: "rgba(255,255,255,0.88)", lineHeight: 1.5 }}>
               {hintText}
             </p>
-          </div>
+          </div> */}
+
+          <div
+  className="absolute z-30 pointer-events-none"
+  style={{
+    ...(isTouchDevice
+      ? { bottom: 50, right: 12 }
+      : { top: 44, left: 10 }),
+    minWidth: 190,
+    maxWidth: 230,
+    background: "rgba(25,25,25,0.6)",
+    backdropFilter: "blur(10px)",
+    border: "0.5px solid rgba(255,255,255,0.16)",
+    borderRadius: 12,
+    padding: "10px 14px",
+    opacity: showHint ? 1 : 0,
+    transform: showHint
+      ? "translateY(0)"
+      : isTouchDevice
+      ? "translateY(6px)"
+      : "translateY(-4px)",
+    transition: "opacity 0.22s, transform 0.22s",
+  }}
+>
+  {hintText && (
+    <p style={{ fontSize: 12, color: "rgba(255,255,255,0.88)", lineHeight: 1.5 }}>
+      {hintText}
+    </p>
+  )}
+</div>
 
           {/* Кастомный курсор */}
           {allImages.length > 1 && isHovering && !isTouchDevice && (
@@ -1176,7 +1272,15 @@ const handleStageClick = useCallback(() => {
       backdropFilter: "blur(6px)",
       border: "0.5px solid rgba(255,255,255,0.22)",
     }}
-    onClick={(e) => { e.stopPropagation(); handleStageClick(); }}
+    // onClick={(e) => { e.stopPropagation(); handleStageClick(); }}
+        onClick={(e) => {
+      e.stopPropagation();
+      if (hintOpen || autoHintVisible) {
+        closeHint();
+        return;
+      }
+      handleStageClick();
+    }}
     aria-label={isPlaying ? "Пауза" : "Запустить анимацию"}
   >
     <i
@@ -1195,7 +1299,7 @@ const handleStageClick = useCallback(() => {
           onFrameSelect={handleFrameSelect}
         />
 </div>
-        {/* Thumbs навигации между продуктами */}
+        {/* Thumbs навигации между продуктами
         <div
           ref={(el) => (refs.thumbs = el)}
           className="w-full mt-5 lg:mt-8 order-4"
@@ -1234,8 +1338,20 @@ const handleStageClick = useCallback(() => {
               </SwiperSlide>
             ))}
           </Swiper>
-        </div>
-
+        </div> */}
+{isDesktop && (
+  <div className="mt-8">
+    <ProductThumbs
+      products={products}
+      state={state}
+      setSwiperInstances={setSwiperInstances}
+      onThumbnailClick={onThumbnailClick}
+      swiperConfig={swiperConfig}
+      thumbsRef={(el) => (refs.thumbs = el)}
+      visible={state.thumbsShown}
+    />
+  </div>
+)}
       </div>
     </div>
   );
