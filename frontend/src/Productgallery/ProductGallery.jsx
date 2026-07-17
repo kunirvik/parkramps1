@@ -1204,7 +1204,7 @@ const handleStageClick = useCallback(() => {
             modules={[Thumbs]}
             direction="horizontal"
             onSwiper={(swiper) => setSwiperInstances((prev) => ({ ...prev, thumbs: swiper }))}
-            slidesPerView="auto"
+            slidesPerView="5"
             spaceBetween={10}
             watchSlidesProgress={true}
             slideToClickedSlide={true}

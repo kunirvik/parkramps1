@@ -167,7 +167,7 @@ function handleMediaGroup(bot, msg) {
   group.timer = setTimeout(async () => {
     await processAlbum(bot, group)
     delete mediaGroups[groupId]
-  }, 1500)
+  }, 4500)
 }
 
 async function processAlbum(bot, group) {
@@ -179,9 +179,21 @@ async function processAlbum(bot, group) {
     const id    = makeAlbumId(groupId)   // стабильный ID альбома
 
     // Загружаем все фото (дедупликация через file_unique_id)
-    const cdnUrls = await Promise.all(photos.map(ph => getCloudinaryUrl(bot, ph)))
+    // const cdnUrls = await Promise.all(photos.map(ph => getCloudinaryUrl(bot, ph)))
     const [cover, ...restPhotos] = cdnUrls
 
+      const existing = await Post.findOne({ id }).lean()
+    const existingPhotos = existing
+      ? [existing.cover, ...(existing.photos || [])].filter(Boolean)
+      : []
+    const merged = [...new Set([...existingPhotos, ...cdnUrls])] // без дублей
+
+    const [cover, ...restPhotos] = merged
+
+ 
+
+
+    
     await savePost({
       id, title, type: "company", date,
       tags:    extractTags(text),

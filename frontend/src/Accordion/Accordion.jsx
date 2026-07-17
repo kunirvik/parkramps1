@@ -332,26 +332,7 @@ const Accordion = ({
     return () => window.removeEventListener("resize", handleResize);
   }, [openIndex, defaultOpenIndexDesktop, controlled, setOpenIndex]);
 
-  // /* -------------------- FORCE CLOSE / СМЕНА ТОВАРА -------------------- */
-  // useEffect(() => {
-  //   // плавно скрываем текущий контент
-  //   setContentVisible(false);
-
-  //   const timeout = setTimeout(() => {
-  //     if (!controlled) {
-  //       setOpenIndex(isDesktop ? defaultOpenIndexDesktop : null);
-  //     }
-  //     setPendingIndex(null);
-  //     setExpandedMap({});
-  //     setMeasuredMap({});
-  //     // и сразу после смены даём контенту появиться заново
-  //     setContentVisible(true);
-  //   }, 180); // должно быть меньше/равно длительности fade-transition ниже
-
-  //   return () => clearTimeout(timeout);
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [forceCloseTrigger]);
-
+  
 
 
 useEffect(() => {
@@ -376,19 +357,6 @@ useEffect(() => {
 }, [forceCloseTrigger]);
 
 
-  /* -------------------- MEASURE OVERFLOW (mobile) -------------------- */
-  // useLayoutEffect(() => {
-  //   if (isDesktop || openIndex === null) return;
-  //   const el = contentRefs.current[openIndex];
-  //   if (el) {
-  //     const fullHeight = el.scrollHeight;
-  //     setOverflowMap((prev) => ({
-  //       ...prev,
-  //       [openIndex]: fullHeight > MOBILE_CLAMP + OVERFLOW_TOLERANCE,
-  //     }));
-  //     setMeasuredMap((prev) => ({ ...prev, [openIndex]: true }));
-  //   }
-  // }, [openIndex, isDesktop, items, contentVisible]);
 
   useLayoutEffect(() => {
   if (openIndex === null) return;
@@ -438,52 +406,6 @@ useEffect(() => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
-  /* =====================================================
-     =================== DESKTOP =========================
-     ===================================================== */
-  // if (isDesktop) {
-  //   return (
-  //     <div className="w-full z-100000000">
-  //       {items.map((item, index) => {
-  //         const isOpen = openIndex === index;
-
-  //         return (
-  //           <div key={index} className="w-full">
-  //             <button
-  //               className="w-full cursor-pointer flex justify-between items-center py-1 text-left transition-colors"
-  //               onClick={() => toggleAccordion(index)}
-  //             >
-  //               <span className="font-futura text-[clamp(40px,5vw,50px)] font-bold text-[#717171]">
-  //                 {item.title}
-  //               </span>
-  //               {isOpen ? <ChevronUp /> : <ChevronDown />}
-  //             </button>
-
-  //             <div
-  //               className={`transition-all duration-300 overflow-hidden bg-[rgba(57, 57, 57, 0.84)] ${
-  //                 isOpen ? "min-h-[200px] w-[90%] opacity-100" : "max-h-0  opacity-0"
-  //               }`}
-  //             >
-  //               <div
-  //                 className="text-[#717171] text-[clamp(15px,2vw,17px)]"
-  //                 style={{
-  //                   background: "rgba(255, 255, 255, 0.12)",
-  //                   backdropFilter: "blur(16px)",
-  //                   WebkitBackdropFilter: "blur(16px)",
-  //                   border: "1px solid rgba(255, 255, 255, 0.2)",
-  //                   borderRadius: "12px",
-  //                   padding: "20px 24px",
-  //                 }}
-  //               >
-  //                 {item.content}
-  //               </div>
-  //             </div>
-  //           </div>
-  //         );
-  //       })}
-  //     </div>
-  //   );
-  // }
 
   if (isDesktop) {
   return (
