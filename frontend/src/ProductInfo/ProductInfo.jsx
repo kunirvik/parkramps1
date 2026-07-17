@@ -43,7 +43,10 @@ export default function ProductInfo({
               {
                 title: product.name,
                 content: product.description2, 
-              }, <ProductDrawing product={currentProduct} /> 
+              }, {
+    title: "Характерестики",
+    content: <ProductDrawing product={currentProduct} />,
+  }, 
             ]}
             controlled={true}
             openIndex={accordionState.product}
