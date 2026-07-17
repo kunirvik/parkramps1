@@ -1,6 +1,6 @@
 import Accordion from "../Accordion/Accordion";
 import ContactButton from "../ContactButtons/ContactButton";
-
+import ProductDrawing from "../ProductDrawing";
 export default function ProductInfo({
   product,
   state,
@@ -13,6 +13,7 @@ export default function ProductInfo({
   return (
     // <div className="flex lg:flex-col bg-rgb(35, 35, 35)  w-full">
     <div className="flex lg:flex-col bg-rgb(35, 35, 35) w-full order-2 lg:order-1">
+
       {/* DESKTOP */}
       <div className="hidden lg:block  w-full">
         <div
@@ -46,6 +47,7 @@ export default function ProductInfo({
             openIndex={accordionState.product}
             onToggle={onAccordionToggle("product")}
           />
+          <ProductDrawing product={currentProduct} />   </div>
         </div>
 
         <div
