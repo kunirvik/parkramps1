@@ -22,6 +22,7 @@ import TransitionImage from "../TransitionImage/Transitionimage";
 import ProductGallery from "../Productgallery/ProductGallery";
 import ProductDrawing from "../ProductDrawing";
 import { useIsDesktop } from "../hooks/useIsDesktop";
+import ProductThumbs from "../ProductThumbs/ProductThumbs";
 // Константы
 const ANIMATION_CONFIG = {
   DURATION: 0.6,
@@ -593,6 +594,17 @@ const handleMouseEnter = useCallback(
   
 
           </div>
+            <div className="mt-8">
+              <ProductThumbs
+                products={products}
+                state={state}
+                setSwiperInstances={setSwiperInstances}
+                onThumbnailClick={onThumbnailClick}
+                swiperConfig={swiperConfig}
+                thumbsRef={(el) => (refs.thumbs = el)}
+                visible={state.thumbsShown}
+              />
+            </div>
         </div>
 
         <Footer />
