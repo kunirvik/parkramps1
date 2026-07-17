@@ -596,7 +596,7 @@ const handleMouseEnter = useCallback(
           </div>
             <div className="mt-8">
               <ProductThumbs
-                products={products}
+                products={productCatalogSets}
                 state={state}
                 setSwiperInstances={setSwiperInstances}
                 onThumbnailClick={onThumbnailClick}
