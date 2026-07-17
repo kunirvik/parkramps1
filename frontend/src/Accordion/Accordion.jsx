@@ -367,6 +367,7 @@ useEffect(() => {
     setOverflowMap((prev) => ({
       ...prev,
       [openIndex]: fullHeight > clamp + OVERFLOW_TOLERANCE,
+      
     }));
     setMeasuredMap((prev) => ({ ...prev, [openIndex]: true }));
   }
@@ -377,7 +378,7 @@ useEffect(() => {
   /* -------------------- RESET ПРИ СМЕНЕ ТАБА -------------------- */
   useEffect(() => {
     setExpandedMap({});
-    setMeasuredMap({});
+    // setMeasuredMap({});
   }, [openIndex]);
 
   /* -------------------- TOGGLE -------------------- */
