@@ -1050,7 +1050,7 @@ const handleStageClick = useCallback(() => {
     <div
       ref={(el) => (refs.swiperContainer = el)}
       // className="w-full lg:w-[75%] lg:h-[100%] mt-10 lg:mt-0 lg:content-center"
-      className="w-full lg:w-[75%] lg:h-[100%] mt-10 lg:mt-0 lg:content-center order-1 lg:order-2"
+      className="w-full lg:w-[75%] lg:h-[100%] mt-0 lg:mt-0 lg:content-center order-1 lg:order-2"
       style={{
         visibility: !imageData || animationState.complete ? "visible" : "hidden",
         opacity: !imageData || animationState.complete ? 1 : 0,
