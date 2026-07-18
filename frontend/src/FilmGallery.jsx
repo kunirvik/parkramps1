@@ -1518,7 +1518,7 @@ const handleSelectCategory = useCallback((catKey) => {
               onSelect={goTo}
               highlightedIndices={highlightedIndices}
             />
-            <div className="flex flex-col items-center justify-start gap-2 px-2 py-3
+            <div className="flex flex-col items-center justify-start gap-2 mt-10 px-2 py-3
                             bg-neutral-950 border-l border-neutral-800">
               <IconButton onClick={handleClose} label="Закрити"><IconClose /></IconButton>
               <IconButton onClick={handleOpenAllGallery} label="Всі фото"><IconGrid /></IconButton>
