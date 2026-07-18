@@ -21,6 +21,7 @@ import { useSlideAnimation } from "../hooks/useSlideAnimation";
 import TransitionImage from "../TransitionImage/Transitionimage";
 import ProductGallery from "../Productgallery/ProductGallery";
 import ProductDrawing from "../ProductDrawing";
+import ProductThumbs from "../ProductThumbs/ProductThumbs";
 import { useIsDesktop } from "../hooks/useIsDesktop";
 // import ProductThumbs from "../ProductThumbs/ProductThumbs";
 // Константы
