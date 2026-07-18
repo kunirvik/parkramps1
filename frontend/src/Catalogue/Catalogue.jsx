@@ -309,7 +309,7 @@ return (
   >    {/* dashed frame */} {/* INNER CLEAN AREA */}
  
         <div onClick={(e) => handleClick(product, e)} 
-        className={`flex flex-col items-center w-full h-full relative   ${index === 2 ?  "scale-200 md:scale-180" : ""}  ${index === 1 ? "scale-100 md:scale-90" : ""}`}>
+        className={`flex flex-col items-center w-full h-full relative   ${index === 2 ?  "scale-190 md:scale-180" : ""}  ${index === 1 ? "scale-100 md:scale-90" : ""}`}>
           <img
             src={product.image}
             alt={product.name}

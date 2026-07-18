@@ -61,8 +61,7 @@ const otherSingleLabels = {
     skateparks: "скейтпарки",
     ramps: "рампи",
     sets: "фігури",
-    gallery: "галерея",
-    blog: "блог",
+  
   };
 
   if (singleLabels[category] || otherSingleLabels[categoryOther]) {
@@ -93,4 +92,4 @@ const otherSingleLabels = {
       ))}
     </div>
   );
-}
+} 

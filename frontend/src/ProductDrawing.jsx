@@ -1,5 +1,5 @@
 import { useState } from "react";
-import DrawingSpecs from "./DrawingSpecs";
+import DrawingSpecs from "./DrawingSpecs/DrawingSpecs";
 
 const LINE = "1px solid rgba(255,255,255,0.35)";
 const LINE_SOFT = "1px solid rgba(255,255,255,0.18)";
@@ -13,13 +13,14 @@ export default function ProductDrawing({ product }) {
   if (!drawingImages.length && !product.specs?.length) return null;
 
   return (
-    <div className="w-full mb-4 flex flex-col sm:flex-row gap-3">
-
-
-      {/* Штамп */}
-      <div className="w-full sm:w-2/5">
-        <DrawingSpecs product={product} />
-      </div>
-    </div>
+<div className="w-full mb-4 flex justify-end">
+  <div
+    style={{
+      width: "clamp(320px, 72vw, 1100px)",
+    }}
+  >
+    <DrawingSpecs product={product} />
+  </div>
+</div>
   );
 }

@@ -47,28 +47,34 @@ export default function DrawingSpecs({ product }) {
       {/* Сетка характеристик — жёсткие ячейки */}
       {/* <div className="grid grid-cols-1 sm:grid-cols-3"> */}
       
-      <div
+<div
   className="grid"
   style={{
-    gridTemplateColumns: `repeat(${product.specs.length}, minmax(150px, 1fr))`,
+    gridTemplateColumns: `repeat(auto-fit,minmax(clamp(110px,14vw,170px),1fr))`,
   }}
 >
+
         {product.specs.map((spec, i) => {
           const cols = 3; // sm breakpoint columns
           const isLastInRowSm = (i + 1) % cols === 0;
           return (
             <div
               key={i}
-              className="px-3 py-2.5"
-              style={{
+       
+              style={{ padding: "clamp(8px,1vw,14px)",
                 borderBottom: LINE_SOFT,
                 borderRight: isLastInRowSm ? "none" : LINE_SOFT,
               }}
             >
-              <div className="text-[9px] sm:text-[10px] uppercase tracking-widest text-white/40 leading-none mb-1 font-mono">
+              <div style={{
+  fontSize: "clamp(8px,.7vw,10px)",
+  letterSpacing: ".15em",
+}} className=" uppercase tracking-widest text-white/40 leading-none mb-1 font-mono">
                 {spec.label}
               </div>
-              <div className="text-xs sm:text-sm font-medium text-white font-mono leading-tight">
+              <div style={{
+  fontSize: "clamp(11px,1vw,15px)",
+}} className=" font-medium text-white font-mono leading-tight">
                 {spec.value}
               </div>
             </div>
