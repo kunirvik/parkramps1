@@ -11,6 +11,7 @@ const SocialButtons = forwardRef(function SocialButtons(props, ref) {
   const mobileMenuRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
+ const { category } = props; 
 
   useImperativeHandle(ref, () => ({
     close: () => setOpen(false),
@@ -72,7 +73,7 @@ const SocialButtons = forwardRef(function SocialButtons(props, ref) {
         <Link to="/catalogue">
           <img src="/logo.png" alt="Logo" className="opacity-50 max-h-15" />
         </Link>
-        <ServicesBar page={location.pathname} />
+      
 
         <div ref={menuRef} className="flex items-center gap-2 relative">
           <AnimatePresence>
@@ -104,7 +105,7 @@ const SocialButtons = forwardRef(function SocialButtons(props, ref) {
           >
             <MoreVertical size={28} className="text-[#919191]" />
           </button>
-        </div>
+        </div>  <ServicesBar page={location.pathname} category={category} />
       </div>
 
       {/* ───────────── MOBILE ───────────── */}

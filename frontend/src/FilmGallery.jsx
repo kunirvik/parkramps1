@@ -1511,12 +1511,13 @@ const handleSelectCategory = useCallback((catKey) => {
           buttonLabel="shop"
           onButtonClick={() => navigate("/catalogue")}
           buttonAnimationProps={{ whileTap: { scale: 0.85, opacity: 0.6 } }}
+         
         />
       </div>
     </div>
  
       {/* ══ ДЕСКТОП ══════════════════════════════════════════════════════════ */}
-      {!isMobile && (
+      {/* {!isMobile && (
         <>
           <CategoryPanel
             categories={categories}
@@ -1547,7 +1548,7 @@ const handleSelectCategory = useCallback((catKey) => {
             </div>
           </div>
         </>
-      )}
+      )} */}
 
       {/* ══ МОБИЛКА ══════════════════════════════════════════════════════════ */}
       {isMobile && (
