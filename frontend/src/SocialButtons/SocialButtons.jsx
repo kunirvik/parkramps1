@@ -69,7 +69,7 @@ const SocialButtons = forwardRef(function SocialButtons(props, ref) {
   return (
     <>
       {/* ───────────── DESKTOP ───────────── */}
-      <div className="hidden md:flex fixed top-0 left-0 w-full h-12 bg-black items-center justify-between px-4 z-50">
+      {/* <div className="hidden md:flex fixed top-0 left-0 w-full h-12 bg-black items-center justify-between px-4 z-50">
         <Link to="/catalogue">
           <img src="/logo.png" alt="Logo" className="opacity-50 max-h-15" />
         </Link>
@@ -106,8 +106,51 @@ const SocialButtons = forwardRef(function SocialButtons(props, ref) {
             <MoreVertical size={28} className="text-[#919191]" />
           </button>
         </div>  <ServicesBar page={location.pathname} category={category} />
-      </div>
+      </div> */}
+<div className="hidden md:flex fixed top-0 left-0 w-full h-12 bg-black items-center px-4 z-50">
+  {/* Левая группа: лого + категория, растягивается на всё доступное место */}
+  <div className="flex items-center gap-4 flex-1 min-w-0">
+    <Link to="/catalogue" className="flex-shrink-0">
+      <img src="/logo.png" alt="Logo" className="opacity-50 max-h-15" />
+    </Link>
+    <div className="flex-1 min-w-0">
+      <ServicesBar page={location.pathname} category={category} />
+    </div>
+  </div>
 
+  {/* Правая группа: точки + раскрывающееся меню, всегда справа */}
+  <div ref={menuRef} className="flex items-center gap-2 relative flex-shrink-0">
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ width: 0, opacity: 0 }}
+          animate={{ width: "auto", opacity: 1 }}
+          exit={{ width: 0, opacity: 0 }}
+          transition={{ duration: 0.25, ease: "easeInOut" }}
+          className="flex gap-2 overflow-hidden"
+        >
+          {buttons.map((btn, i) => (
+            <button
+              key={i}
+              onClick={btn.onClick || (() => window.open(btn.link, "_blank"))}
+              title={btn.label}
+              className="w-9 h-9 flex items-center justify-center rounded opacity-60"
+            >
+              {btn.icon}
+            </button>
+          ))}
+        </motion.div>
+      )}
+    </AnimatePresence>
+
+    <button
+      onClick={() => setOpen(!open)}
+      className="w-9 h-9 flex cursor-pointer items-center justify-center rounded transition opacity-60 hover:opacity-100"
+    >
+      <MoreVertical size={28} className="text-[#919191]" />
+    </button>
+  </div>
+</div>
       {/* ───────────── MOBILE ───────────── */}
       <div className="md:hidden">
 
