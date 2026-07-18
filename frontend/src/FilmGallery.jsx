@@ -1517,14 +1517,14 @@ const handleSelectCategory = useCallback((catKey) => {
     </div>
  
       {/* ══ ДЕСКТОП ══════════════════════════════════════════════════════════ */}
-      {/* {!isMobile && (
+      {!isMobile && (
         <>
-          <CategoryPanel
+          {/* <CategoryPanel
             categories={categories}
             activeCategory={activeCategory}
             onSelect={handleSelectCategory}
             // slides={slides}
-          />
+          /> */}
 
           <div className="flex-1 relative">
             <MainView slide={currentSlide} index={activeIndex} total={slides.length} />
@@ -1548,7 +1548,7 @@ const handleSelectCategory = useCallback((catKey) => {
             </div>
           </div>
         </>
-      )} */}
+      )}
 
       {/* ══ МОБИЛКА ══════════════════════════════════════════════════════════ */}
       {isMobile && (
