@@ -914,7 +914,7 @@ function IconOpenProduct() {
 function CategoryPanel({ categories, activeCategory, onSelect }) {
   return (
     <div
-      className="fg-slide-right flex flex-col py-3 px-3 bg-neutral-900
+      className="fg-slide-right flex flex-col mt-10 py-3 px-3 bg-neutral-900
                  border-r border-neutral-800 overflow-y-auto fg-no-scroll flex-shrink-0"
       style={{ minWidth: 160, maxWidth: 180 }}
     >

@@ -8,7 +8,7 @@ export default function DrawingSpecs({ product }) {
     <div
       className="w-full"
       style={{
-        background: "rgba(20,20,20,0.55)",
+        background: "rgba(255, 255, 255, 0.12)",
         border: LINE,
         borderRadius: 0,
       }}
@@ -50,7 +50,7 @@ export default function DrawingSpecs({ product }) {
       <div
   className="grid"
   style={{
-    gridTemplateColumns: `repeat(${product.specs.length}, minmax(120px, 1fr))`,
+    gridTemplateColumns: `repeat(${product.specs.length}, minmax(150px, 1fr))`,
   }}
 >
         {product.specs.map((spec, i) => {

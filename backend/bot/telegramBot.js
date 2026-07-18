@@ -170,19 +170,60 @@ function handleMediaGroup(bot, msg) {
   }, 4500)
 }
 
+// async function processAlbum(bot, group) {
+//   try {
+//     const { photos, caption, rawDate, groupId, originMsgId} = group
+//     const text  = caption || ""
+//     const title = getTitle(text) || "Без заголовка"
+//     const date  = new Date(rawDate * 1000).toISOString().slice(0, 10)
+//     const id    = makeAlbumId(groupId)   // стабильный ID альбома
+
+//     // Загружаем все фото (дедупликация через file_unique_id)
+//     // const cdnUrls = await Promise.all(photos.map(ph => getCloudinaryUrl(bot, ph)))
+//     const [cover, ...restPhotos] = cdnUrls
+
+//       const existing = await Post.findOne({ id }).lean()
+//     const existingPhotos = existing
+//       ? [existing.cover, ...(existing.photos || [])].filter(Boolean)
+//       : []
+//     const merged = [...new Set([...existingPhotos, ...cdnUrls])] // без дублей
+
+//     const [cover, ...restPhotos] = merged
+
+ 
+
+
+
+    
+//     await savePost({
+//       id, title, type: "company", date,
+//       tags:    extractTags(text),
+//       cover,
+//       photos:  restPhotos,
+//       url:     detectVideoUrl(text),
+//       content: getBody(text),
+//       excerpt: title.slice(0, 120),
+//       source:  "telegram",
+//       telegramUrl: makeTelegramUrl(originMsgId),  
+//         status: "pending", 
+//     })
+//   } catch (e) {
+//     console.error("❌ Album error:", e.message)
+//   }
+// }
+
 async function processAlbum(bot, group) {
   try {
-    const { photos, caption, rawDate, groupId, originMsgId} = group
+    const { photos, caption, rawDate, groupId, originMsgId } = group
     const text  = caption || ""
     const title = getTitle(text) || "Без заголовка"
     const date  = new Date(rawDate * 1000).toISOString().slice(0, 10)
-    const id    = makeAlbumId(groupId)   // стабильный ID альбома
+    const id    = makeAlbumId(groupId)
 
     // Загружаем все фото (дедупликация через file_unique_id)
-    // const cdnUrls = await Promise.all(photos.map(ph => getCloudinaryUrl(bot, ph)))
-    const [cover, ...restPhotos] = cdnUrls
+    const cdnUrls = await Promise.all(photos.map(ph => getCloudinaryUrl(bot, ph)))
 
-      const existing = await Post.findOne({ id }).lean()
+    const existing = await Post.findOne({ id }).lean()
     const existingPhotos = existing
       ? [existing.cover, ...(existing.photos || [])].filter(Boolean)
       : []
@@ -190,10 +231,6 @@ async function processAlbum(bot, group) {
 
     const [cover, ...restPhotos] = merged
 
- 
-
-
-    
     await savePost({
       id, title, type: "company", date,
       tags:    extractTags(text),
@@ -203,14 +240,13 @@ async function processAlbum(bot, group) {
       content: getBody(text),
       excerpt: title.slice(0, 120),
       source:  "telegram",
-      telegramUrl: makeTelegramUrl(originMsgId),  
-        status: "pending", 
+      telegramUrl: makeTelegramUrl(originMsgId),
+      status: "pending",
     })
   } catch (e) {
     console.error("❌ Album error:", e.message)
   }
 }
-
 // ── Bot factory ───────────────────────────────────────────────────────────
 
 function isTelegramAdmin(msg) {
