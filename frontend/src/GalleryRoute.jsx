@@ -106,6 +106,20 @@ const CATALOG_LABELS = {
   ramps:      "Рампи",
   skateparks: "Скейтпарки",
 }; 
+
+const PRODUCT_CATEGORY_OVERRIDES = {
+  3: { key: "boxes",    label: "Бокси" },     // diy box (id: 3)
+  5: { key: "quarters", label: "Квотери" },   // quater (id: 5)
+  6: { key: "quarters", label: "Квотери" },   // vertwall (id: 6)
+};
+
+// самостоятельные фото для "Квотери", без привязки к продукту
+const QUARTERS_EXTRA_SLIDES = [
+  { type: "image", src: "/images/quarters/extra1.webp", caption: "Квотер у парку" },
+  { type: "image", src: "/images/quarters/extra2.webp" },
+]; 
+
+
 export const EXTRA_CATEGORIES = [
   {
     key:   "foam_pit",
@@ -182,20 +196,52 @@ const TYPED_CATALOGS = [
 //     }))
 //   );
 
+// function buildAllSlides() {
+//   return TYPED_CATALOGS.flatMap((p) =>
+//     (p.sample || []).map((s) => ({
+//       ...s,
+//       // замість productName тепер передаємо людську назву категорії
+//       _categoryKey:  p._type,              // "sets" | "ramps" | "skateparks"
+//       _categoryLabel: CATALOG_LABELS[p._type] ?? p._type,
+//       productName:  p.name,               // зберігаємо для кнопки відкрити виріб
+//       productId:    p.id,
+//       productType:  p._type,
+//       productImage: p.image,
+//     }))
+//   );
+// } 
+
 function buildAllSlides() {
-  return TYPED_CATALOGS.flatMap((p) =>
-    (p.sample || []).map((s) => ({
+  const fromCatalog = TYPED_CATALOGS.flatMap((p) => {
+    const override = PRODUCT_CATEGORY_OVERRIDES[p.id];
+    const categoryKey   = override?.key   ?? p._type;
+    const categoryLabel = override?.label ?? (CATALOG_LABELS[p._type] ?? p._type);
+
+    return (p.sample || []).map((s) => ({
       ...s,
-      // замість productName тепер передаємо людську назву категорії
-      _categoryKey:  p._type,              // "sets" | "ramps" | "skateparks"
-      _categoryLabel: CATALOG_LABELS[p._type] ?? p._type,
-      productName:  p.name,               // зберігаємо для кнопки відкрити виріб
+      _categoryKey:  categoryKey,
+      _categoryLabel: categoryLabel,
+      productName:  p.name,
       productId:    p.id,
       productType:  p._type,
       productImage: p.image,
-    }))
-  );
+    }));
+  });
+
+  const fromQuartersExtra = QUARTERS_EXTRA_SLIDES.map((s) => ({
+    ...s,
+    _categoryKey:   "quarters",
+    _categoryLabel: "Квотери",
+  }));
+
+  return [...fromCatalog, ...fromQuartersExtra];
 } 
+
+
+
+
+
+
 
   // fromExtra не нужен — extraCategories передаются отдельным пропом
   // FilmGallery сам добавит их через extraCategories проп
