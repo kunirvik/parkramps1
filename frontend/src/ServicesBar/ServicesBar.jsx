@@ -38,16 +38,37 @@ const services = [
 ];
 
 const SingleLabel = ({ text }) => (
-  <div className="w-full bg-black border-b border-[#1a1a1a] px-6 py-2 flex items-center font-futura font-light z-50">
-    <span className="w-2 h-2 rounded-full bg-[#2a2a2a] mr-3 flex-shrink-0" />
+  // <div className="w-full bg-black border-b border-[#1a1a1a] px-6 py-2 flex items-center font-futura font-light z-50">
+  //   <span className="w-2 h-2 rounded-full bg-[#2a2a2a] mr-3 flex-shrink-0" />
 
-    <span className="text-[17px] tracking-wide px-3 py-1 text-[#555]">
-      {text}
-    </span>
-  </div>
+  //   <span className="text-[17px] tracking-wide px-3 py-1 text-[#555]">
+  //     {text}
+  //   </span>
+  // </div>
+    <div className="flex items-center font-futura font-light">
+    <span className="w-2 h-2 rounded-full bg-[#2a2a2a] mr-3 flex-shrink-0" />
+    <span className="text-[17px] tracking-wide text-[#555] truncate">{text}</span>
+  </div> 
 );
 const AnimatedLabel = ({ text }) => (
-  <div className="w-full bg-black border-b border-[#1a1a1a] px-6 py-2 flex items-center font-futura font-light z-50 overflow-hidden">
+  // <div className="w-full bg-black border-b border-[#1a1a1a] px-6 py-2 flex items-center font-futura font-light z-50 overflow-hidden">
+  //   <span className="w-2 h-2 rounded-full bg-[#2a2a2a] mr-3 flex-shrink-0" />
+  //   <div className="relative h-6 flex-1 overflow-hidden">
+  //     <AnimatePresence mode="wait">
+  //       <motion.span
+  //         key={text}
+  //         initial={{ y: 12, opacity: 0 }}
+  //         animate={{ y: 0, opacity: 1 }}
+  //         exit={{ y: -12, opacity: 0 }}
+  //         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+  //         className="absolute left-0 top-1 text-[17px] tracking-wide text-[#555] whitespace-nowrap"
+  //       >
+  //         {text}
+  //       </motion.span>
+  //     </AnimatePresence>
+  //   </div>
+  // </div>
+  <div className="flex items-center font-futura font-light overflow-hidden">
     <span className="w-2 h-2 rounded-full bg-[#2a2a2a] mr-3 flex-shrink-0" />
     <div className="relative h-6 flex-1 overflow-hidden">
       <AnimatePresence mode="wait">
