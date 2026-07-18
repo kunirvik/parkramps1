@@ -1560,7 +1560,7 @@ const handleSelectCategory = useCallback((catKey) => {
           />
 
           {/* Кнопки */}
-          <div className="absolute top-14 right-1 z-50 flex flex-col gap-2">
+          <div className="absolute top-20 right-1 z-50 flex flex-col gap-2">
             <button onClick={handleClose}
               className="flex items-center justify-center w-8 h-8 rounded-full
                          bg-neutral-800/80 text-white/80 backdrop-blur-sm">

@@ -111,8 +111,9 @@ const SocialButtons = forwardRef(function SocialButtons(props, ref) {
       <div className="md:hidden">
 
         {/* Шапка */}
+         
         <div className="w-full h-12 bg-black flex items-center justify-center fixed top-0 left-0 z-50">
-          <img src="/logo.png" alt="Logo" className="opacity-50 max-h-12" />
+        <Link to="/catalogue"> <img src="/logo.png" alt="Logo" className="opacity-50 max-h-12" /></Link> 
         </div>
 
         {/* Спейсер */}
@@ -162,10 +163,10 @@ const SocialButtons = forwardRef(function SocialButtons(props, ref) {
             {open ? (
               <>
                 <span className="text-base leading-none">✕</span>
-                <span>Закрыть</span>
+                <span>Закрити</span>
               </>
             ) : (
-              <span className="text-xl leading-none tracking-widest">···</span>
+              <span className="font-futura font-bold leading-none tracking-widest">···</span>
             )}
           </button>
 

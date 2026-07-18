@@ -54,6 +54,8 @@ export default function ServicesBar({ page }) {
     skateparks: "скейтпарки",
     ramps: "рампи",
     sets: "фігури",
+    gallery: "галерея",
+    blog: "блог",
   };
 
   if (singleLabels[category]) {
