@@ -65,7 +65,7 @@ const AnimatedLabel = ({ text }) => (
     </div>
   </div>
 ); 
-export default function ServicesBar({ page }) {
+export default function ServicesBar({ page, category }) {
   // const category = page?.split("/")[2];
      
       const  productCategory = page?.split("/")[2];
