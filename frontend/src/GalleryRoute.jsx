@@ -89,7 +89,7 @@
 // }
 // AllGalleryPage.jsx
 // src/pages/GalleryRoute.jsx  (или где у тебя роут /gallery/:type/:id)
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import FilmGallery from "./FilmGallery";
 import productCatalogSets       from "./data/productCatalogSets";
@@ -253,6 +253,7 @@ export default function GalleryRoute() {
   const navigate = useNavigate();
   const location = useLocation();
 
+
   const {
     startIndex  = 0,
     originPath  = "/",
@@ -263,7 +264,7 @@ export default function GalleryRoute() {
   // allSlides уже содержат extraCategories слайды — передаём пустой массив
   // в FilmGallery чтобы они не добавились второй раз
   const allSlides = useMemo(buildAllSlides, []);
-
+const [galleryCategory, setGalleryCategory] = useState("");
   const handleClose = () => navigate(originPath);
 
   return (
@@ -275,6 +276,7 @@ export default function GalleryRoute() {
       onClose={handleClose}
       extraCategories={EXTRA_CATEGORIES}
       originPath={originPath}
+        onCategoryChange={setGalleryCategory}
     />
   );
 } 

@@ -1290,6 +1290,7 @@ export default function FilmGallery({
   extraCategories = [],
   initialCategory = null,
   originPath      = "/",
+    onCategoryChange,
 }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -1346,6 +1347,9 @@ const categories = useMemo(() => {
   const touchStartX  = useRef(null);
   const touchStartY  = useRef(null);
 
+const activeCategoryLabel =
+  categories.find(c => c.key === activeCategory)?.label || "";
+  
   useEffect(() => {
     const id = requestAnimationFrame(() => setMounted(true));
     return () => cancelAnimationFrame(id);
@@ -1385,14 +1389,27 @@ const highlightedIndices = useMemo(() => {
   // }, [activeIndex, slides]);
 
   // Замінити useEffect що ставить activeCategory при зміні слайду:
+// useEffect(() => {
+//   const slide = slides[activeIndex];
+//   if (!slide) return;
+//   // тепер дивимось на _categoryKey, а не productName
+//   const cat = slide._categoryKey ?? slide._extraCat ?? null;
+//   setActiveCategory(cat);
+// }, [activeIndex, slides]); 
 useEffect(() => {
   const slide = slides[activeIndex];
   if (!slide) return;
-  // тепер дивимось на _categoryKey, а не productName
-  const cat = slide._categoryKey ?? slide._extraCat ?? null;
-  setActiveCategory(cat);
-}, [activeIndex, slides]); 
 
+  const key = slide._categoryKey ?? slide._extraCat ?? null;
+  setActiveCategory(key);
+
+  const label =
+    slide._categoryLabel ??
+    categories.find(c => c.key === key)?.label ??
+    "";
+
+  onCategoryChange?.(label);
+}, [activeIndex, slides, categories, onCategoryChange]);
 
   // const handleSelectCategory = useCallback((catKey) => {
   //   setActiveCategory(catKey);
@@ -1490,6 +1507,7 @@ const handleSelectCategory = useCallback((catKey) => {
       <div className="pointer-events-auto">
         <SocialButtons
           ref={socialButtonsRef}
+           category={activeCategoryLabel}
           buttonLabel="shop"
           onButtonClick={() => navigate("/catalogue")}
           buttonAnimationProps={{ whileTap: { scale: 0.85, opacity: 0.6 } }}
