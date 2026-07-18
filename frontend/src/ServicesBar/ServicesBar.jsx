@@ -49,7 +49,14 @@ const SingleLabel = ({ text }) => (
 
 export default function ServicesBar({ page }) {
   const category = page?.split("/")[2];
+const categoryOther = page?.split("/")[1];
+const otherSingleLabels = {
+ 
+    gallery: "галерея",
+    blog: "блог",
+  }; 
 
+  
   const singleLabels = {
     skateparks: "скейтпарки",
     ramps: "рампи",
@@ -58,8 +65,8 @@ export default function ServicesBar({ page }) {
     blog: "блог",
   };
 
-  if (singleLabels[category]) {
-    return <SingleLabel text={singleLabels[category]} />;
+  if (singleLabels[category] || otherSingleLabels[categoryOther]) {
+    return <SingleLabel text={singleLabels[category] || otherSingleLabels[categoryOther]} />;
   }
 
   return (
