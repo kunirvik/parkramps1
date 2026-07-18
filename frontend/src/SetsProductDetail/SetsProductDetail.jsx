@@ -594,19 +594,19 @@ const handleMouseEnter = useCallback(
   
 
           </div>
-            {/* <div className="mt-8">
+           
+        </div>  {isMobile  &&  (
+ <div className="mt-8">
               <ProductThumbs
                 products={productCatalogSets}
                 state={state}
                 setSwiperInstances={setSwiperInstances}
-                onThumbnailClick={onThumbnailClick}
-                swiperConfig={swiperConfig}
+                onThumbnailClick={handleThumbnailClick}
+                swiperConfig={SWIPER_CONFIG}
                 thumbsRef={(el) => (refs.thumbs = el)}
                 visible={state.thumbsShown}
               />
-            </div> */}
-        </div>
-
+            </div>)}
         <Footer />
       </div>
     </>
