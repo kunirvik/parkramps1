@@ -67,7 +67,8 @@ const AnimatedLabel = ({ text }) => (
 ); 
 export default function ServicesBar({ page }) {
   const category = page?.split("/")[2];
-const categoryOther = page?.split("/")[1];
+// const categoryOther = page?.split("/")[1];
+ const section = page?.split("/")[1];
 const otherSingleLabels = {
  
     // gallery: "галерея",
