@@ -595,18 +595,19 @@ const handleMouseEnter = useCallback(
 
           </div>
            
-        </div>  {isMobile  &&  (
- <div className="mt-8">
-              <ProductThumbs
-                products={productCatalogSets}
-                state={state}
-                setSwiperInstances={setSwiperInstances}
-                onThumbnailClick={handleThumbnailClick}
-                swiperConfig={SWIPER_CONFIG}
-                thumbsRef={(el) => (refs.thumbs = el)}
-                visible={state.thumbsShown}
-              />
-            </div>)}
+        </div>  {!isDesktop && (
+  <div className="mt-8">
+    <ProductThumbs
+      products={productCatalogSets}
+      state={state}
+      setSwiperInstances={setSwiperInstances}
+      onThumbnailClick={handleThumbnailClick}
+      swiperConfig={SWIPER_CONFIG}
+      thumbsRef={(el) => (refs.current.thumbs = el)}
+      visible={state.thumbsShown}
+    />
+  </div>
+)}
         <Footer />
       </div>
     </>

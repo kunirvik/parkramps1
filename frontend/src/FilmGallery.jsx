@@ -756,7 +756,7 @@
 //   );
 // } 
 
-import { useState, useEffect, useRef, useCallback, useMemo, memo, useRef } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo, memo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 import SocialButtons from "./SocialButtons/SocialButtons";
@@ -1484,14 +1484,17 @@ const handleSelectCategory = useCallback((catKey) => {
         flexDirection: isMobile ? "column" : "row",
       }}
     >
-  <div className="z-50 flex-shrink-0">
-          <SocialButtons
-            ref={socialButtonsRef}
-            buttonLabel="shop"
-            onButtonClick={() => navigate("/catalogue")}
-            buttonAnimationProps={{ whileTap: { scale: 0.85, opacity: 0.6 } }}
-          />
-        </div>
+    {/* SocialButtons вынесен из flex-потока — просто оверлей поверх */}
+    <div className="fixed top-0 left-0 w-full z-[60] pointer-events-none">
+      <div className="pointer-events-auto">
+        <SocialButtons
+          ref={socialButtonsRef}
+          buttonLabel="shop"
+          onButtonClick={() => navigate("/catalogue")}
+          buttonAnimationProps={{ whileTap: { scale: 0.85, opacity: 0.6 } }}
+        />
+      </div>
+    </div>
  
       {/* ══ ДЕСКТОП ══════════════════════════════════════════════════════════ */}
       {!isMobile && (
