@@ -979,8 +979,8 @@ useEffect(() => {
         }, 2800);
     }
 
-    setIsPlaying(false);
-    stopHoverAnimation();
+    // setIsPlaying(false);
+    // stopHoverAnimation();
 }, [state.activeProductIndex, stopHoverAnimation]);
   
 

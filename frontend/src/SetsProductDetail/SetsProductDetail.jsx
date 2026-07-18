@@ -255,14 +255,14 @@ const handleMouseEnter = useCallback(
 
 
   const handleTouchStart = useCallback(() => {
-    if (!isDesktop()) return;
-  }, []);
+    if (!isDesktop) return;
+  }, [isDesktop]);
 
   const handleTouchEnd = useCallback(() => {
-    if (!isDesktop()) return;
+    if (!isDesktop) return;
    
     stopHoverAnimation();
-  }, []);
+  }, [isDesktop, stopHoverAnimation]);
 
  
 
