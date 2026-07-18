@@ -756,7 +756,7 @@
 //   );
 // } 
 
-import { useState, useEffect, useRef, useCallback, useMemo, memo } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo, memo, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 import SocialButtons from "./SocialButtons/SocialButtons";
@@ -1292,7 +1292,7 @@ export default function FilmGallery({
 }) {
   const navigate = useNavigate();
   const location = useLocation();
-
+ const socialButtonsRef = useRef(null);
   const slides = useMemo(() => {
     const extraKeys = new Set(slidesProp.map((s) => s._extraCat).filter(Boolean));
     const extra = extraCategories
