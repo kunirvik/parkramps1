@@ -16,7 +16,7 @@ export default function ProductDrawing({ product }) {
 <div className="w-full mb-4 flex justify-end">
   <div
     style={{
-      width: "clamp(320px, 72vw, 1100px)",
+      width: "clamp(320px, 52vw, 600px)",
     }}
   >
     <DrawingSpecs product={product} />
