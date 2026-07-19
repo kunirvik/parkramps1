@@ -178,8 +178,8 @@ const productCatalogSets = [
          specs: [
     { label: "Висота", value: "80 см" },
     { label: "Ширина", value: "125 см" },
-    { label: "Матеріал", value: "Сталь / фанера" },
-    { label: "Товщина металу", value: "3 мм" },
+    { label: "Матеріал", value: " фанера / брус / cталь " },
+
   ],
 
     year: 2024,
@@ -208,8 +208,8 @@ const productCatalogSets = [
     specs: [
     { label: "Висота", value: "80 см" },
     { label: "Ширина", value: "125 см" },
-    { label: "Матеріал", value: "Сталь / фанера" },
-    { label: "Товщина металу", value: "3 мм" },
+    { label: "Матеріал", value: " фанера / брус / cталь " },
+    // { label: "Товщина металу", value: "3 мм" },
   ],
     designer: "СкейтДизайн",
     year: 2024,
@@ -234,8 +234,8 @@ const productCatalogSets = [
        specs: [
     { label: "Висота", value: "80 см" },
     { label: "Ширина", value: "125 см" },
-    { label: "Матеріал", value: "Сталь / фанера" },
-    { label: "Товщина металу", value: "3 мм" },
+    { label: "Матеріал", value: " фанера / брус / cталь " },
+    // { label: "Товщина металу", value: "3 мм" },
   ],
     year: 2023,
     description:
@@ -263,7 +263,7 @@ const productCatalogSets = [
        specs: [
     { label: "Висота", value: "80 см" },
     { label: "Ширина", value: "125 см" },
-    { label: "Матеріал", value: "Сталь / фанера" },
+    { label: "Матеріал", value: " фанера / брус / cталь " },
     // { label: "Товщина металу", value: "3 мм" },
   ],
     year: 2023,

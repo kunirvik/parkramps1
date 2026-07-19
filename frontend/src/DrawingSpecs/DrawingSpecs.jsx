@@ -63,7 +63,8 @@ export default function DrawingSpecs({ product }) {
        
               style={{ padding: "clamp(8px,1vw,14px)",
                 borderBottom: LINE_SOFT,
-                borderRight: isLastInRowSm ? "none" : LINE_SOFT,
+                // borderRight: isLastInRowSm ? "none" : LINE_SOFT,
+                borderRight: LINE_SOFT,
               }}
             >
               <div style={{
