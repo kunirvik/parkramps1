@@ -38,7 +38,7 @@ export default function ProductInfo({
           }}
         > 
           <Accordion
-          key={`product-${state.activeProductIndex}`}
+          // key={`product-${state.activeProductIndex}`}
             items={[
               {
                 title: product.name,
@@ -48,6 +48,7 @@ export default function ProductInfo({
             controlled={true}
             openIndex={accordionState.product}
             onToggle={onAccordionToggle("product")}
+             forceCloseTrigger={state.activeProductIndex}
           />
          
         </div>
@@ -58,7 +59,7 @@ export default function ProductInfo({
           style={{ opacity: state.purchaseShown ? 1 : 0 }}
         >
           <Accordion
-          key={`purchase-${state.activeProductIndex}`}
+          // key={`purchase-${state.activeProductIndex}`}
             items={[
               {
                 title: "замовити",
@@ -73,6 +74,7 @@ export default function ProductInfo({
             controlled={true}
             openIndex={accordionState.purchase}
             onToggle={onAccordionToggle("purchase")}
+             forceCloseTrigger={state.activeProductIndex}
           />
         </div>
 
@@ -82,11 +84,12 @@ export default function ProductInfo({
           style={{ opacity: state.productionShown ? 1 : 0 }}
         >
           <Accordion
-          key={`virobi-${state.activeProductIndex}`}
+          // key={`virobi-${state.activeProductIndex}`}
             items={[{ title: "вироби" }]}
             controlled={true}
             openIndex={accordionState.virobi}
             onToggle={onAccordionToggle("virobi")}
+             forceCloseTrigger={state.activeProductIndex}
           />
         </div>
       </div>
@@ -111,7 +114,7 @@ export default function ProductInfo({
   }}
 >
   <Accordion
-    key={state.activeProductIndex}
+    // key={state.activeProductIndex}
     items={[
       {
         title: "замовити",
@@ -145,6 +148,7 @@ export default function ProductInfo({
       else if (index === 1) onAccordionToggle("product")(0);
       else if (index === 2) onAccordionToggle("virobi")(0);
     }}
+     forceCloseTrigger={state.activeProductIndex}
   />
 </div>
     </div>

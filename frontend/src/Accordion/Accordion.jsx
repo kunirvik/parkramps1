@@ -313,26 +313,43 @@ const Accordion = ({
   const [contentVisible, setContentVisible] = useState(true);
 
   /* -------------------- RESIZE -------------------- */
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     const desktop = window.innerWidth >= 1024;
+  //     setIsDesktop(desktop);
+
+  //     if (!controlled) {
+  //       if (desktop && openIndex === null) {
+  //         setOpenIndex(defaultOpenIndexDesktop);
+  //       }
+  //       if (!desktop && openIndex !== null) {
+  //         setOpenIndex(null);
+  //       }
+  //     }
+  //   };
+
+  //   window.addEventListener("resize", handleResize);
+  //   return () => window.removeEventListener("resize", handleResize);
+  // }, [openIndex, defaultOpenIndexDesktop, controlled, setOpenIndex]);
+
   useEffect(() => {
-    const handleResize = () => {
-      const desktop = window.innerWidth >= 1024;
-      setIsDesktop(desktop);
+  const handleResize = () => {
+    const desktop = window.innerWidth >= 1024;
+    setIsDesktop(desktop);
+    setClampSize(desktop ? getDesktopClamp() : getMobileClamp());
+    setMeasuredMap({}); // форсируем ремер текущего открытого пункта
 
-      if (!controlled) {
-        if (desktop && openIndex === null) {
-          setOpenIndex(defaultOpenIndexDesktop);
-        }
-        if (!desktop && openIndex !== null) {
-          setOpenIndex(null);
-        }
-      }
-    };
+    if (!controlled) {
+      if (desktop && openIndex === null) setOpenIndex(defaultOpenIndexDesktop);
+      if (!desktop && openIndex !== null) setOpenIndex(null);
+    }
+  };
 
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [openIndex, defaultOpenIndexDesktop, controlled, setOpenIndex]);
+  window.addEventListener("resize", handleResize);
+  return () => window.removeEventListener("resize", handleResize);
+}, [openIndex, defaultOpenIndexDesktop, controlled, setOpenIndex]);
 
-  
+
 
 
 useEffect(() => {
