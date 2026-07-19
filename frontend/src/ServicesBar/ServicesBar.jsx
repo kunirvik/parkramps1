@@ -78,7 +78,8 @@ const AnimatedLabel = ({ text }) => (
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -12, opacity: 0 }}
           transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-          className="absolute left-0 top-1 text-[17px] tracking-wide text-[#555] whitespace-nowrap"
+          // className="absolute left-0 top-1 text-[17px] tracking-wide text-[#555] whitespace-nowrap"
+          className="text-[17px] tracking-wide text-[#555] truncate"
         >
           {text}
         </motion.span>

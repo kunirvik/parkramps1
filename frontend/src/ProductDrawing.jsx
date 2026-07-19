@@ -13,7 +13,7 @@ export default function ProductDrawing({ product }) {
   if (!drawingImages.length && !product.specs?.length) return null;
 
   return (
-<div className="w-full mb-4 flex justify-end">
+<div className="w-full mb-4 flex  md:justify-end justify-center">
   <div
     style={{
       width: "clamp(320px, 52vw, 600px)",
