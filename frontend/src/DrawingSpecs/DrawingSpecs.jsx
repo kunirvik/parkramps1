@@ -50,7 +50,7 @@ export default function DrawingSpecs({ product }) {
 <div
   className="grid"
   style={{
-    gridTemplateColumns: `repeat(auto-fit,minmax(clamp(110px,14vw,170px),1fr))`,
+    gridTemplateColumns: `repeat(auto-fit,minmax(clamp(50px,10vw,70px),1fr))`,
   }}
 >
 
