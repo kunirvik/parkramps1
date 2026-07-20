@@ -171,7 +171,7 @@ const productCatalogSets = [
       { type: "image", src: `${CLOUDINARY}v1783061430/jumpboxhatob_tyvaum.webp`},
       {
         type: "video",
-        src: `${CLOUDINARY}v1754506398/20220206_214037_qbp9jd.mp4`,
+        src: `${CLOUDINARY_VIDEO}v1754506398/20220206_214037_qbp9jd.mp4`,
         caption: "підпис",
       },
     ],
