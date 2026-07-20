@@ -940,12 +940,22 @@ useEffect(() => {
   };
 }, []);
 
+
+
+useEffect(() => {
+  stopHoverAnimation();
+  setIsPlaying(false);
+}, [state.activeProductIndex]); 
+
 const closeHint = useCallback(() => {
   clearTimeout(autoHintTimerRef.current);
   clearTimeout(hintCloseTimerRef.current);
   setAutoHintVisible(false);
   setHintOpen(false);
 }, []);
+useEffect(() => {
+  return () => stopHoverAnimation();
+}, [stopHoverAnimation]); 
 
 const toggleHint = useCallback((e) => {
   e.stopPropagation();

@@ -12,7 +12,7 @@ export default function ProductThumbs({
   className = "",
 }) {
   return (
-    <div ref={thumbsRef} className={`w-full ${className}`} style={{ opacity: visible ? 1 : 0 }}>
+    <div ref={thumbsRef} className={`w-full ${className}`}>
       <Swiper
         modules={[Thumbs]}
         direction="horizontal"
