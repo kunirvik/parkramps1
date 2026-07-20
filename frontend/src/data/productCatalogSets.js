@@ -151,7 +151,7 @@ import { scale } from "framer-motion";
 
 
   const CLOUDINARY = import.meta.env.VITE_CLOUDINARY_BASE_URL; 
-
+const CLOUDINARY_VIDEO = import.meta.env.VITE_CLOUDINARY_BASE_VIDEO_URL;
 const productCatalogSets = [
 
 
@@ -200,7 +200,7 @@ const productCatalogSets = [
 
       {
         type: "video",
-        src: `${CLOUDINARY}v1754506398/20220206_214037_qbp9jd.mp4`,
+        src: `${CLOUDINARY_VIDEO}v1754506398/20220206_214037_qbp9jd.mp4`,
         caption: "підпис",
       },
     ],

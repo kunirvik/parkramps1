@@ -96,6 +96,7 @@ import productCatalogSets       from "./data/productCatalogSets";
 import productCatalogRamps      from "./data/productCatalogRamps";
 import productCatalogSkateparks from "./data/productCatalogSkateparks";
 const CLOUDINARY = import.meta.env.VITE_CLOUDINARY_BASE_URL; 
+const CLOUDINARY_VIDEO = import.meta.env.VITE_CLOUDINARY_BASE_VIDEO_URL;
 const ALL_CATALOGS = [
   ...productCatalogSets,
   ...productCatalogRamps,
@@ -117,7 +118,7 @@ const PRODUCT_CATEGORY_OVERRIDES = {
 const QUARTERS_EXTRA_SLIDES = [
   { type: "image", src: `${CLOUDINARY}v1784562318/DSC02879_e4exjb.webp`, caption: "Квотер у парку" },
   { type: "image", src: `${CLOUDINARY}v1784205745/DSC02873_w91eia.webp` },
-  { type: "video", src: `${CLOUDINARY}v1784562197/20260517_104126_byl3x3.mp4` }
+  { type: "video", src: `${CLOUDINARY_VIDEO}v1784562197/20260517_104126_byl3x3.mp4` }
 ]; 
 
 
