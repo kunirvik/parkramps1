@@ -568,6 +568,7 @@ const handleMouseEnter = useCallback(
   
 <ProductGallery
   products={productCatalogSets}
+  
   state={state}
   swiperInstances={swiperInstances}
   setSwiperInstances={setSwiperInstances}

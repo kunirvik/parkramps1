@@ -918,7 +918,7 @@ export default function ProductGallery({
   const hintSeenRef = useRef(false);
   const stageRef = useRef(null);
 const liveIndexRef = useRef(state.activeProductIndex);
-
+const isInteractionBlocked =  animationState.inProgress || animationState.slideChanging; 
 const hintCloseTimerRef = useRef(null); 
 
 
@@ -1022,6 +1022,8 @@ const hintText = isTouchDevice ? HINT_TEXT_MOBILE : HINT_TEXT_DESKTOP;
   
 
 const handleStageClick = useCallback(() => {
+  if (animationState.inProgress || animationState.slideChanging) return;
+
   const liveIndex = liveIndexRef.current;
   const liveProduct = products[liveIndex];
   if (!liveProduct) return;
@@ -1044,7 +1046,8 @@ const handleStageClick = useCallback(() => {
       stopHoverAnimation();
       setIsPlaying(false);
     },
-    [stopHoverAnimation,  state.activeProductIndex, allImages.length]
+    [ animationState.inProgress,
+  animationState.slideChanging, stopHoverAnimation,  state.activeProductIndex, allImages.length]
   );
 
   
@@ -1076,7 +1079,15 @@ const handleStageClick = useCallback(() => {
         <div
           ref={stageRef}
           className="relative w-full"
-          style={{ cursor: allImages.length > 1  && !isTouchDevice ? "none" : "default" }}
+          // style={{ cursor: allImages.length > 1  && !isTouchDevice ? "none" : "default" }}
+            style={{
+    cursor: isInteractionBlocked
+      ? "default"
+      : allImages.length > 1 && !isTouchDevice
+      ? "none"
+      : "default",
+    pointerEvents: isInteractionBlocked ? "none" : "auto",
+  }}
          onMouseMove={(e) => {
     if (!stageRef.current) return;
 
@@ -1221,7 +1232,7 @@ const handleStageClick = useCallback(() => {
 </div>
 
           {/* Кастомный курсор */}
-          {allImages.length > 1 && isHovering && !isTouchDevice && (
+          {allImages.length > 1 && isHovering && !isTouchDevice && !isInteractionBlocked && (
             <div
               className="absolute pointer-events-none z-20"
               style={{
