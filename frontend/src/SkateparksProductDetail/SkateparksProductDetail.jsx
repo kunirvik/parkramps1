@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { useLocation, useParams, useNavigate, useSearchParams } from "react-router-dom";
 import gsap from "gsap";
@@ -19,6 +20,10 @@ import { useHoverAnimation } from "../hooks/useHoverAnimation";
 import { useSlideAnimation } from "../hooks/useSlideAnimation";
 import TransitionImage from "../TransitionImage/Transitionimage";
 import ProductGallery from "../Productgallery/ProductGallery";
+import ProductDrawing from "../ProductDrawing";
+import ProductThumbs from "../ProductThumbs/ProductThumbs";
+import { useIsDesktop } from "../hooks/useIsDesktop";
+// import ProductThumbs from "../ProductThumbs/ProductThumbs";
 // Константы
 const ANIMATION_CONFIG = {
   DURATION: 0.6,
@@ -41,7 +46,7 @@ export default function SkateparksProductDetail() {
   const [searchParams] = useSearchParams();
  // ─── Gallery ──────────────────────────────────────────────────────────────
   const openGallery = useOpenGallery();
-
+  const isDesktop = useIsDesktop();
   const isTouchDevice =
     typeof window !== "undefined" &&
     ("ontouchstart" in window || navigator.maxTouchPoints > 0);
@@ -52,7 +57,8 @@ const imageData = imageDataRef.current;
 
   const slideIndexParam = Number(searchParams.get("view")) || 0;
 
-  const isDesktop = () => window.innerWidth >= 1024;
+  // const isDesktop = () => window.innerWidth >= 1024;
+
 
   const shouldShowLoading = useMemo(() => !imageData, [imageData]);
 
@@ -60,9 +66,11 @@ const imageData = imageDataRef.current;
   const [state, setState] = useState(() => ({
     activeProductIndex: Math.max(
       0,
-      productCatalogSkateparks.findIndex((p) => p.id === Number(id))
+      productCatalogSkateparks
+    .findIndex((p) => p.id === Number(id))
     ),
-    selectedImageIndices: productCatalogSkateparks.map(() => 0),
+    selectedImageIndices: productCatalogSkateparks
+  .map(() => 0),
     hoveredIndex: null,
     isGalleryOpen: false,
     galleryStartIndex: 0,
@@ -70,6 +78,8 @@ const imageData = imageDataRef.current;
     purchaseShown: false,
     productionShown: false,
   }));
+
+
 
 
 
@@ -104,7 +114,8 @@ const imageData = imageDataRef.current;
 
   // ─── Мемо ────────────────────────────────────────────────────────────────
   const currentProduct = useMemo(
-    () => productCatalogSkateparks[state.activeProductIndex],
+    () => productCatalogSkateparks
+  [state.activeProductIndex],
     [state.activeProductIndex]
   );
 
@@ -148,12 +159,26 @@ const {
   setAccordionState,
   handleAccordionToggle,
 } = useProductAccordion(openGallery, "skateparks", state.activeProductIndex);
+// const {
+//   handleMouseEnter: handleMouseEnterBase,
+//   handleMouseLeave,
+
+//   startHoverAnimation,
+//   stopHoverAnimation,
+//   scrubToFrame, 
+//   setSpeed
+  
+
+
+// } = useHoverAnimation(isTouchDevice, setState);
 const {
+  // getMode, userMode, setUserMode,
   handleMouseEnter: handleMouseEnterBase,
   handleMouseLeave,
-  startHoverAnimation,
+  // scrubToFrame,
+  startPlayAnimation,
   stopHoverAnimation,
-
+  //  blockScrubBriefly, // ← новый
 } = useHoverAnimation(isTouchDevice, setState);
 
 const {
@@ -234,14 +259,14 @@ const handleMouseEnter = useCallback(
 
 
   const handleTouchStart = useCallback(() => {
-    if (!isDesktop()) return;
-  }, []);
+    if (!isDesktop) return;
+  }, [isDesktop]);
 
   const handleTouchEnd = useCallback(() => {
-    if (!isDesktop()) return;
+    if (!isDesktop) return;
    
     stopHoverAnimation();
-  }, []);
+  }, [isDesktop, stopHoverAnimation]);
 
  
 
@@ -285,11 +310,15 @@ const handleMouseEnter = useCallback(
     async (swiper) => {
       socialButtonsRef.current?.close();
       const newIndex = swiper.activeIndex;
+      stopHoverAnimation();
+// setIsPlaying?.(false);
       if (newIndex === state.activeProductIndex || animationInProgressRef.current) return;
 
       const oldIndex = state.activeProductIndex;
       animationInProgressRef.current = true;
       updateAnimationState({ slideChanging: true, inProgress: true });
+
+      
 
       const isMobile = window.innerWidth < 1024;
 
@@ -308,6 +337,7 @@ const handleMouseEnter = useCallback(
       setState((prev) => {
         const newIndices = [...prev.selectedImageIndices];
         newIndices[newIndex] = 0;
+         newIndices[newIndex] = 0;
         return {
           ...prev,
           activeProductIndex: newIndex,
@@ -315,7 +345,8 @@ const handleMouseEnter = useCallback(
         };
       });
 
-      updateUrl(productCatalogSkateparks[newIndex].id);
+      updateUrl(productCatalogSkateparks
+      [newIndex].id);
 
       if (swiperInstances.thumbs) {
         swiperInstances.thumbs.slideTo(newIndex);
@@ -340,13 +371,15 @@ const handleMouseEnter = useCallback(
     newIndices[oldIndex] = 0;
     return { ...prev, selectedImageIndices: newIndices };
   });
+  //  blockScrubBriefly(800); // задержка скраба после смены продукта
 
   if (isTouchDevice) return;
 
-  if (isPointerOverSwiper()) {
-    const product = productCatalogSkateparks[newIndex];
-    startHoverAnimation(newIndex, product);
-  }
+  // if (isPointerOverSwiper()) {
+  //   const product = productCatalogSkateparks
+  //[newIndex];
+  //   startHoverAnimation(newIndex, product);
+  // }
 }, SWIPER_CONFIG.SPEED);
 
     },
@@ -358,9 +391,10 @@ const handleMouseEnter = useCallback(
       updateAnimationState,
       isPointerOverSwiper,
       // startHoverInterval,
-       startHoverAnimation,
-  stopHoverAnimation,
+      //  startHoverAnimation,
+  // stopHoverAnimation,
       isTouchDevice,
+      //  blockScrubBriefly // задержка скраба после смены продукта
 
     ]
   );
@@ -456,26 +490,27 @@ const handleMouseEnter = useCallback(
     };
   }, [stopHoverAnimation]);
 
-  useEffect(() => {
-    const swiper = swiperInstances.main;
-    if (!swiper || animationInProgressRef.current) return;
+  // useEffect(() => {
+  //   const swiper = swiperInstances.main;
+  //   if (!swiper || animationInProgressRef.current) return;
 
-    const newIndex = swiper.activeIndex;
-    if (newIndex !== state.activeProductIndex) {
-      updateState({ activeProductIndex: newIndex });
-      updateUrl(productCatalogSkateparks[newIndex].id);
+  //   const newIndex = swiper.activeIndex;
+  //   if (newIndex !== state.activeProductIndex) {
+  //     updateState({ activeProductIndex: newIndex });
+  //     updateUrl(productCatalogSkateparks
+  //[newIndex].id);
 
-      if (swiperInstances.thumbs) {
-        swiperInstances.thumbs.slideTo(newIndex);
-      }
-    }
-  }, [
-    swiperInstances.main?.activeIndex,
-    state.activeProductIndex,
-    updateState,
-    updateUrl,
-    swiperInstances.thumbs,
-  ]);
+  //     if (swiperInstances.thumbs) {
+  //       swiperInstances.thumbs.slideTo(newIndex);
+  //     }
+  //   }
+  // }, [
+  //   swiperInstances.main?.activeIndex,
+  //   state.activeProductIndex,
+  //   updateState,
+  //   updateUrl,
+  //   swiperInstances.thumbs,
+  // ]);
 
   // ─── Early returns ────────────────────────────────────────────────────────
   if (!currentProduct) {
@@ -489,8 +524,12 @@ const handleMouseEnter = useCallback(
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
     <>
-      <div className="flex flex-col bg-center h-screen overflow-hidden
-    bg-no-repeat bg-[url('https://res.cloudinary.com/dbx6muxub/image/upload/v1780563482/project-brightness-50_fbitrl.png')]  ">
+      <div className="flex flex-col  min-h-screen overflow-hidden
+    
+    
+    relative bg-[rgba(0, 0, 0, 0.77)]   bg-cover
+    bg-center
+    bg-no-repeat bg-[url('https://res.cloudinary.com/dbx6muxub/image/upload/v1780563482/project-brightness-50_fbitrl.png')] w-full">
         <div className="z-50 flex-shrink-0">
           <SocialButtons
             ref={socialButtonsRef}
@@ -508,12 +547,17 @@ const handleMouseEnter = useCallback(
               shouldShowLoading && !loadingState.isCompleted ? 0 : 1,
           }}
         >
-          <div className="w-full hidden sm:block flex items-start mb-4" />
+             
 
+          <div className="w-full hidden sm:block flex items-start mb-4" />
+ {/* <ProductDrawing product={currentProduct} />   */}
           <div className="w-full h-[50%] flex flex-col lg:flex-row relative">
          
 <ProductInfo
   product={currentProduct}
+    products={productCatalogSkateparks
+    
+    }
   state={state}
   accordionState={accordionState}
   onAccordionToggle={handleAccordionToggle}
@@ -529,8 +573,12 @@ const handleMouseEnter = useCallback(
     imageRef={(el) => (refs.current.transitionImage = el)}
   />
 )}
+  
 <ProductGallery
-  products={productCatalogSkateparks}
+  products={productCatalogSkateparks
+  
+  }
+  
   state={state}
   swiperInstances={swiperInstances}
   setSwiperInstances={setSwiperInstances}
@@ -546,14 +594,37 @@ const handleMouseEnter = useCallback(
   onTouchEnd={handleTouchEnd}
   stopHoverAnimation={stopHoverAnimation}
   swiperConfig={SWIPER_CONFIG}
+  isDesktop={isDesktop}
+// userMode={userMode}
+  // setUserMode={setUserMode}
+  // getMode={getMode}
+  // scrubToFrame={scrubToFrame}
+  startPlayAnimation={startPlayAnimation}
+  // blockScrubBriefly={blockScrubBriefly}
+   isTouchDevice={isTouchDevice}
 />
   
 
           </div>
-        </div>
-
+           
+        </div>  {!isDesktop && (
+  <div className="mt-8">
+    <ProductThumbs
+      products={productCatalogSkateparks
+      
+      }
+      state={state}
+      setSwiperInstances={setSwiperInstances}
+      onThumbnailClick={handleThumbnailClick}
+      swiperConfig={SWIPER_CONFIG}
+      thumbsRef={(el) => (refs.current.thumbs = el)}
+      visible={state.thumbsShown}
+    />
+  </div>
+)}
         <Footer />
       </div>
     </>
   );
 }
+
