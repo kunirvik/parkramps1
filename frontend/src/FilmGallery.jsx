@@ -1089,7 +1089,13 @@ function MobileCategoryBar({ categories, activeCategory, onSelect }) {
 function ThumbStripVertical({ slides, activeIndex, onSelect, highlightedIndices }) {
   const stripRef = useRef(null);
   const frameRef = useRef(null);
+function getVideoThumbnail(videoUrl) {
+  if (!videoUrl || !videoUrl.includes("/video/upload/")) return null;
 
+  return videoUrl
+    .replace("/video/upload/", "/video/upload/so_0/")
+    .replace(/\.mp4$/, ".jpg");
+}
   useEffect(() => {
     if (!frameRef.current) return;
     const top = activeIndex * (THUMB_H + 4);
@@ -1122,16 +1128,20 @@ function ThumbStripVertical({ slides, activeIndex, onSelect, highlightedIndices 
               className="h-[68px] overflow-hidden cursor-pointer transition-opacity duration-300"
               style={{ opacity: isActive ? 1 : isHighlighted ? 0.55 : 0.12 }}
             >
-              {slide.type === "video"
-                ? <div className="w-full h-full bg-neutral-800 flex items-center justify-center text-white/60 text-sm">▶</div>
-                : <img
-                    src={slide.srcThumb || optimizeImg(slide.src, 160)}
-                    className="w-full h-full object-cover"
-                    loading={Math.abs(i - activeIndex) <= 4 ? "eager" : "lazy"}
-                    decoding="async"
-                    alt=""
-                  />
-              }
+             {slide.type === "video"
+  ? <img
+      src={getVideoThumbnail(slide.src)}
+      className="w-full h-full object-cover"
+      loading="lazy"
+      alt=""
+    />
+  : <img
+      src={slide.srcThumb || optimizeImg(slide.src, 160)}
+      className="w-full h-full object-cover"
+      loading="lazy"
+      alt=""
+    />
+}
             </div>
           );
         })}
@@ -1179,16 +1189,20 @@ function MobileThumbStrip({ slides, activeIndex, onSelect, highlightedIndices })
               className="flex-shrink-0 overflow-hidden cursor-pointer rounded-sm transition-opacity duration-300"
               style={{ width: THUMB_W, height: "100%", opacity: isActive ? 1 : isHighlighted ? 0.55 : 0.12 }}
             >
-              {slide.type === "video"
-                ? <div className="w-full h-full bg-neutral-800 flex items-center justify-center text-white/60 text-xs">▶</div>
-                : <img
-                    src={slide.srcThumb || optimizeImg(slide.src, 120)}
-                    className="w-full h-full object-cover"
-                    loading={Math.abs(i - activeIndex) <= 5 ? "eager" : "lazy"}
-                    decoding="async"
-                    alt=""
-                  />
-              }
+            {slide.type === "video"
+  ? <img
+      src={getVideoThumbnail(slide.src)}
+      className="w-full h-full object-cover"
+      loading="lazy"
+      alt=""
+    />
+  : <img
+      src={slide.srcThumb || optimizeImg(slide.src, 160)}
+      className="w-full h-full object-cover"
+      loading="lazy"
+      alt=""
+    />
+}
             </div>
           );
         })}
