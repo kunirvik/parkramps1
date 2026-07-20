@@ -834,7 +834,6 @@
 //   );
 // }
 
-
 import { useRef, useState, useCallback, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Mousewheel, Thumbs } from "swiper/modules";
@@ -929,8 +928,11 @@ const hintCloseTimerRef = useRef(null);
     : [];
   const currentFrameIndex = state.selectedImageIndices[state.activeProductIndex] ?? 0;
 
+
+
   useEffect(() => {
   liveIndexRef.current = state.activeProductIndex;
+
 }, [state.activeProductIndex]); 
 
 
@@ -941,12 +943,22 @@ useEffect(() => {
   };
 }, []);
 
+
+
+useEffect(() => {
+  stopHoverAnimation();
+  setIsPlaying(false);
+}, [state.activeProductIndex]); 
+
 const closeHint = useCallback(() => {
   clearTimeout(autoHintTimerRef.current);
   clearTimeout(hintCloseTimerRef.current);
   setAutoHintVisible(false);
   setHintOpen(false);
 }, []);
+useEffect(() => {
+  return () => stopHoverAnimation();
+}, [stopHoverAnimation]); 
 
 const toggleHint = useCallback((e) => {
   e.stopPropagation();
@@ -1009,25 +1021,42 @@ const hintText = isTouchDevice ? HINT_TEXT_MOBILE : HINT_TEXT_DESKTOP;
 
   
 
+// const handleStageClick = useCallback(() => {
+//     const liveIndex = liveIndexRef.current;
+//     const liveProduct = products[liveIndex];
+//     if (!liveProduct) return;
+//     const total = 1 + (liveProduct.altImages?.length || 0);
+//     if (total <= 1) return;
+
+//     if (isPlaying) {
+//         stopHoverAnimation();
+//         setIsPlaying(false);
+//     } else {
+//         // startPlayAnimation(liveIndex, liveProduct); // используем live-значения
+//         // setIsPlaying(true);
+//           const startFrame = state.selectedImageIndices[liveIndex] ?? 0; // ← сюда
+//         startPlayAnimation(liveIndex, liveProduct, startFrame);
+//         setIsPlaying(true);
+//     }
+// }, [isPlaying, stopHoverAnimation, startPlayAnimation, products, state.selectedImageIndices]); 
+// ProductGallery.jsx
 const handleStageClick = useCallback(() => {
-    const liveIndex = liveIndexRef.current;
-    const liveProduct = products[liveIndex];
-    if (!liveProduct) return;
-    const total = 1 + (liveProduct.altImages?.length || 0);
-    if (total <= 1) return;
+  const liveIndex = liveIndexRef.current;
+  const liveProduct = products[liveIndex];
+  if (!liveProduct) return;
+  const total = 1 + (liveProduct.altImages?.length || 0);
+  if (total <= 1) return;
 
-    if (isPlaying) {
-        stopHoverAnimation();
-        setIsPlaying(false);
-    } else {
-        // startPlayAnimation(liveIndex, liveProduct); // используем live-значения
-        // setIsPlaying(true);
-          const startFrame = state.selectedImageIndices[liveIndex] ?? 0; // ← сюда
-        startPlayAnimation(liveIndex, liveProduct, startFrame);
-        setIsPlaying(true);
+  setIsPlaying((wasPlaying) => {
+    if (wasPlaying) {
+      stopHoverAnimation();
+      return false;
     }
-}, [isPlaying, stopHoverAnimation, startPlayAnimation, products, state.selectedImageIndices]); 
-
+    const startFrame = state.selectedImageIndices[liveIndex] ?? 0;
+    startPlayAnimation(liveIndex, liveProduct, startFrame);
+    return true;
+  });
+}, [stopHoverAnimation, startPlayAnimation, products, state.selectedImageIndices]);
 
   const handleFrameSelect = useCallback(
     (i) => {
@@ -1079,16 +1108,15 @@ const handleStageClick = useCallback(() => {
 }}
           // onMouseMove={handleStageMouseMove}
            onMouseEnter={() => { if (!isTouchDevice) { setIsHovering(true); onMouseEnter(state.activeProductIndex, currentProduct); }}}
-          onMouseLeave={() => {
-            if (!isTouchDevice) {
-              setIsHovering(false);
-              onMouseLeave(state.activeProductIndex);
-              // Анимация больше не останавливается при уходе курсора —
-              // play/pause теперь полностью управляется кликом (handleStageClick),
-              // поэтому свайп мышью по Swiper (при котором курсор уходит
-              // за пределы stageRef) больше не обрывает проигрывание.
-            }
-          }}
+          onMouseLeave={() => { if (!isTouchDevice)   {
+            setIsHovering(false);
+            onMouseLeave(state.activeProductIndex);
+            // if (effectiveMode === "play") { 
+              stopHoverAnimation();
+               setIsPlaying(false);
+            //  }
+            
+          }}}
           // onClick={handleStageClick}
             // onClick={!isTouchDevice ? handleStageClick : undefined}
             onClick={(e) => {
@@ -1117,13 +1145,14 @@ const handleStageClick = useCallback(() => {
             resistanceRatio={swiperConfig.RESISTANCE_RATIO}
             onInit={onSwiperInit}
             onSlideChange={onSlideChange}
+  
             preventClicks={false}
             preventClicksPropagation={false}
             touchStartPreventDefault={false}
             onSlideChangeTransitionStart={(swiper) => {
               liveIndexRef.current = swiper.activeIndex; 
-              stopHoverAnimation();
-              setIsPlaying(false);
+              // stopHoverAnimation();
+              // setIsPlaying(false);
             }}
           >
             {products.map((product, index) => (
@@ -1161,6 +1190,22 @@ const handleStageClick = useCallback(() => {
             </div>
           )}
 
+          {/* Кнопка (i) — стеклянная */}
+          {/* {allImages.length > 1 && (
+            <button
+              className="absolute top-2.5 left-3 z-20 w-7 h-7 rounded-full flex items-center justify-center"
+              style={{
+                background: "rgba(120,120,120,0.28)",
+                backdropFilter: "blur(8px)",
+                border: "0.5px solid rgba(255,255,255,0.22)",
+              }}
+              onClick={(e) => { e.stopPropagation(); setHintOpen((v) => !v); setAutoHintVisible(false); }}
+              aria-label="Подсказка по управлению"
+            >
+              <i className="ti ti-info-circle" style={{ fontSize: 15, color: "rgba(255,255,255,0.88)" }} aria-hidden="true" />
+            </button>
+          )} */}
+
           {allImages.length > 1 && !isTouchDevice && (
   <button
     type="button"
@@ -1176,6 +1221,29 @@ const handleStageClick = useCallback(() => {
     <i className="ti ti-info-circle" style={{ fontSize: 15, color: "rgba(255,255,255,0.88)" }} aria-hidden="true" />
   </button>
 )}
+
+          {/* Popup-подсказка (авто + по клику на i) */}
+          {/* <div
+            className="absolute z-30 pointer-events-none"
+            style={{
+              top: 44,
+             left: 10,
+              minWidth: 190,
+              maxWidth: 230,
+              background: "rgba(25,25,25,0.6)",
+              backdropFilter: "blur(10px)",
+              border: "0.5px solid rgba(255,255,255,0.16)",
+              borderRadius: 12,
+              padding: "10px 14px",
+              opacity: showHint ? 1 : 0,
+              transform: showHint ? "translateY(0)" : "translateY(-4px)",
+              transition: "opacity 0.22s, transform 0.22s",
+            }}
+          >
+            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.88)", lineHeight: 1.5 }}>
+              {hintText}
+            </p>
+          </div> */}
 
           <div
   className="absolute z-30 pointer-events-none"
@@ -1236,6 +1304,7 @@ const handleStageClick = useCallback(() => {
       backdropFilter: "blur(6px)",
       border: "0.5px solid rgba(255,255,255,0.22)",
     }}
+    // onClick={(e) => { e.stopPropagation(); handleStageClick(); }}
         onClick={(e) => {
       e.stopPropagation();
       if (hintOpen || autoHintVisible) {
@@ -1262,6 +1331,46 @@ const handleStageClick = useCallback(() => {
           onFrameSelect={handleFrameSelect}
         />
 </div>
+        {/* Thumbs навигации между продуктами
+        <div
+          ref={(el) => (refs.thumbs = el)}
+          className="w-full mt-5 lg:mt-8 order-4"
+          style={{ opacity: state.thumbsShown ? 1 : 0 }}
+        >
+          <Swiper
+            modules={[Thumbs]}
+            direction="horizontal"
+            onSwiper={(swiper) => setSwiperInstances((prev) => ({ ...prev, thumbs: swiper }))}
+            slidesPerView="5"
+            spaceBetween={10}
+            watchSlidesProgress={true}
+            slideToClickedSlide={true}
+            initialSlide={state.activeProductIndex}
+            speed={swiperConfig.SPEED}
+            preventClicks={false}
+            preventClicksPropagation={false}
+            observer={true}
+            observeParents={true}
+            resistance={false}
+            resistanceRatio={0}
+          >
+            {products.map((product, index) => (
+              <SwiperSlide key={product.id} className="!w-[120px] sm:!w-[140px] lg:!w-[200px]">
+                <img
+                  src={product.image}
+                  onClick={() => onThumbnailClick(index)}
+                  className={`cursor-pointer transition-all duration-300 rounded-lg px-3 w-full h-20 sm:h-24 lg:h-28 object-contain ${
+                    index === state.activeProductIndex
+                      ? "opacity-100 scale-105"
+                      : "grayscale opacity-60 hover:opacity-100"
+                  }`}
+                  alt={product.name}
+                  draggable="false"
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div> */}
 
       </div>{isDesktop && (
   <div className="mt-8">
@@ -1279,562 +1388,3 @@ const handleStageClick = useCallback(() => {
     </div>
   );
 }
-
-// import { useRef, useState, useCallback, useEffect } from "react";
-// import { Swiper, SwiperSlide } from "swiper/react";
-// import { Pagination, Mousewheel, Thumbs } from "swiper/modules";
-// import "swiper/css";
-// import "swiper/css/pagination";
-// import ProductDrawing from "../ProductDrawing";
-// import ProductThumbs from "../ProductThumbs/ProductThumbs";
-// const SCRUB_THRESHOLD = 10;
-
-// // Filmstrip-лента без миниатюр продуктов
-// function Filmstrip({ product, currentFrameIndex, onFrameSelect }) {
-//   const allImages = product ? [product.image, ...(product.altImages || [])] : [];
-//   const trackRef = useRef(null);
-//   const isDragging = useRef(false);
-//   const dragStartX = useRef(0);
-//   const dragScrollLeft = useRef(0);
-
-//   if (allImages.length <= 1) return null;
-
-//   return (
-//     <div className="w-full mt-3 select-none">
-//       <div className="w-full h-[2px] bg-gray-500 rounded mb-1.5 overflow-hidden">
-//         <div
-//           className="h-full bg-black rounded transition-all duration-200"
-//           style={{ width: `${Math.round(((currentFrameIndex + 1) / allImages.length) * 100)}%` }}
-//         />
-//       </div>
-//       <div
-//         ref={trackRef}
-//         className="flex overflow-x-hidden cursor-grab"
-//         style={{ scrollbarWidth: "none" }}
-//         onMouseDown={(e) => {
-//           isDragging.current = true;
-//           dragStartX.current = e.clientX;
-//           dragScrollLeft.current = trackRef.current.scrollLeft;
-//           trackRef.current.style.cursor = "grabbing";
-//         }}
-//         onMouseMove={(e) => {
-//           if (!isDragging.current) return;
-//           trackRef.current.scrollLeft = dragScrollLeft.current - (e.clientX - dragStartX.current);
-//         }}
-//         onMouseUp={() => { isDragging.current = false; trackRef.current.style.cursor = "grab"; }}
-//         onMouseLeave={() => { isDragging.current = false; }}
-//       >
-
-//       </div>
-
-//     </div>
-//   );
-// }
-
-// export default function ProductGallery({
-//   products,
-//   isDesktop,
-//   state,
-//   swiperInstances,
-//   setSwiperInstances,
-//   refs,
-//   imageData,
-//   animationState,
-//   onSwiperInit,
-//   onSlideChange,
-//   onThumbnailClick,
-//   onMouseEnter,
-//   onMouseLeave,
-//   onTouchStart,
-//   onTouchEnd,
-//   stopHoverAnimation,
-
-//   startPlayAnimation,
-
-//   swiperConfig,
-//    isTouchDevice
-// }) {
-//   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
-//   const [isPlaying, setIsPlaying] = useState(false);
-//   const [isHovering, setIsHovering] = useState(false);
-//   const [hintOpen, setHintOpen] = useState(false);
-//   // Показывать ли авто-подсказку (один раз при открытии продукта)
-//   const [autoHintVisible, setAutoHintVisible] = useState(false);
-//   const autoHintTimerRef = useRef(null);
-//   const hintSeenRef = useRef(false);
-//   const stageRef = useRef(null);
-// const liveIndexRef = useRef(state.activeProductIndex);
-
-// const hintCloseTimerRef = useRef(null); 
-
-
-//   const currentProduct = products[state.activeProductIndex];
-//   const allImages = currentProduct
-//     ? [currentProduct.image, ...(currentProduct.altImages || [])]
-//     : [];
-//   const currentFrameIndex = state.selectedImageIndices[state.activeProductIndex] ?? 0;
-
-
-
-//   useEffect(() => {
-//   liveIndexRef.current = state.activeProductIndex;
-
-// }, [state.activeProductIndex]); 
-
-
-// useEffect(() => {
-//   return () => {
-//     clearTimeout(autoHintTimerRef.current);
-//     clearTimeout(hintCloseTimerRef.current);
-//   };
-// }, []);
-
-
-
-// useEffect(() => {
-//   stopHoverAnimation();
-//   setIsPlaying(false);
-// }, [state.activeProductIndex]); 
-
-// const closeHint = useCallback(() => {
-//   clearTimeout(autoHintTimerRef.current);
-//   clearTimeout(hintCloseTimerRef.current);
-//   setAutoHintVisible(false);
-//   setHintOpen(false);
-// }, []);
-// useEffect(() => {
-//   return () => stopHoverAnimation();
-// }, [stopHoverAnimation]); 
-
-// const toggleHint = useCallback((e) => {
-//   e.stopPropagation();
-//   clearTimeout(autoHintTimerRef.current);
-//   clearTimeout(hintCloseTimerRef.current);
-//   setAutoHintVisible(false);
-
-//   setHintOpen((prev) => {
-//     const next = !prev;
-//     if (next && isTouchDevice) {
-//       hintCloseTimerRef.current = setTimeout(() => setHintOpen(false), 2800);
-//     }
-//     return next;
-//   });
-// }, [isTouchDevice]); 
-
-
-
-
-
-// useEffect(() => {
-//     if (!hintSeenRef.current) {
-//         hintSeenRef.current = true;
-
-//         setAutoHintVisible(true);
-
-//         clearTimeout(autoHintTimerRef.current);
-
-//         autoHintTimerRef.current = setTimeout(() => {
-//             setAutoHintVisible(false);
-//         }, 2800);
-//     }
-
-//     // setIsPlaying(false);
-//     // stopHoverAnimation();
-// }, [state.activeProductIndex, stopHoverAnimation]);
-  
-
-// const HINT_TEXT_DESKTOP = "Нажмите на фото — запустится анимация. Ещё раз — пауза";
-// const HINT_TEXT_MOBILE = "Натисніть — запуститься анімація"; // или "" чтобы вообще скрыть текст
-
-// const hintText = isTouchDevice ? HINT_TEXT_MOBILE : HINT_TEXT_DESKTOP;
-  
-
-
-//   const handleStageMouseMove = useCallback(
-//     (e) => {
-//       if (!stageRef.current) return;
-//       const rect = stageRef.current.getBoundingClientRect();
-//       setCursorPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-
-//       // if (effectiveMode === "scrub" && allImages.length > 1) {
-//       if (allImages.length <= 1) {
-//         const frac = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-//         // scrubToFrame(state.activeProductIndex, Math.floor(frac * allImages.length), allImages.length);
-//       }
-//     },
-//     [allImages.length,  state.activeProductIndex]
-//   );
-
-  
-
-// // const handleStageClick = useCallback(() => {
-// //     const liveIndex = liveIndexRef.current;
-// //     const liveProduct = products[liveIndex];
-// //     if (!liveProduct) return;
-// //     const total = 1 + (liveProduct.altImages?.length || 0);
-// //     if (total <= 1) return;
-
-// //     if (isPlaying) {
-// //         stopHoverAnimation();
-// //         setIsPlaying(false);
-// //     } else {
-// //         // startPlayAnimation(liveIndex, liveProduct); // используем live-значения
-// //         // setIsPlaying(true);
-// //           const startFrame = state.selectedImageIndices[liveIndex] ?? 0; // ← сюда
-// //         startPlayAnimation(liveIndex, liveProduct, startFrame);
-// //         setIsPlaying(true);
-// //     }
-// // }, [isPlaying, stopHoverAnimation, startPlayAnimation, products, state.selectedImageIndices]); 
-// // ProductGallery.jsx
-// const handleStageClick = useCallback(() => {
-//   const liveIndex = liveIndexRef.current;
-//   const liveProduct = products[liveIndex];
-//   if (!liveProduct) return;
-//   const total = 1 + (liveProduct.altImages?.length || 0);
-//   if (total <= 1) return;
-
-//   setIsPlaying((wasPlaying) => {
-//     if (wasPlaying) {
-//       stopHoverAnimation();
-//       return false;
-//     }
-//     const startFrame = state.selectedImageIndices[liveIndex] ?? 0;
-//     startPlayAnimation(liveIndex, liveProduct, startFrame);
-//     return true;
-//   });
-// }, [stopHoverAnimation, startPlayAnimation, products, state.selectedImageIndices]);
-
-//   const handleFrameSelect = useCallback(
-//     (i) => {
-//       stopHoverAnimation();
-//       setIsPlaying(false);
-//     },
-//     [stopHoverAnimation,  state.activeProductIndex, allImages.length]
-//   );
-
-  
-
-//   const cursorIconClass = isPlaying
-//     ? "ti ti-player-pause"
-//     : "ti ti-player-play"; 
-
-    
-//   const showHint = hintOpen || autoHintVisible;
-
-//   return (
-    
-//     <div
-//       ref={(el) => (refs.swiperContainer = el)}
-//       // className="w-full lg:w-[75%] lg:h-[100%] mt-10 lg:mt-0 lg:content-center"
-//       className="w-full lg:w-[75%] lg:h-[100%] mt-0 lg:mt-0 lg:content-center order-1 lg:order-2"
-//       style={{
-//         visibility: !imageData || animationState.complete ? "visible" : "hidden",
-//         opacity: !imageData || animationState.complete ? 1 : 0,
-//       }}
-//     >
-//       <div className="w-full flex flex-col">
-//         <div className="order-3 lg:order-1">
-//        <ProductDrawing product={currentProduct} />  
-//        </div> 
-
-//         {/* Главная область */}
-//         <div
-//           ref={stageRef}
-//           className="relative w-full"
-//           style={{ cursor: allImages.length > 1  && !isTouchDevice ? "none" : "default" }}
-//          onMouseMove={(e) => {
-//     if (!stageRef.current) return;
-
-//     const rect = stageRef.current.getBoundingClientRect();
-
-//     setCursorPos({
-//         x: e.clientX - rect.left,
-//         y: e.clientY - rect.top,
-//     });
-// }}
-//           // onMouseMove={handleStageMouseMove}
-//            onMouseEnter={() => { if (!isTouchDevice) { setIsHovering(true); onMouseEnter(state.activeProductIndex, currentProduct); }}}
-//           onMouseLeave={() => { if (!isTouchDevice)   {
-//             setIsHovering(false);
-//             onMouseLeave(state.activeProductIndex);
-//             // if (effectiveMode === "play") { 
-//               stopHoverAnimation();
-//                setIsPlaying(false);
-//             //  }
-            
-//           }}}
-//           // onClick={handleStageClick}
-//             // onClick={!isTouchDevice ? handleStageClick : undefined}
-//             onClick={(e) => {
-//   if (isTouchDevice) {
-//     if (hintOpen || autoHintVisible) {
-//       closeHint();
-//     }
-//     return;
-//   }
-//   handleStageClick();
-// }} 
-//         ><div className="order-2 lg:order-2">
-//           <Swiper
-//             className="custom-swiper h-[250px] sm:h-[300px] md:h-[350px]"
-//             modules={[Pagination, Mousewheel, Thumbs]}
-//             pagination={{ clickable: true, el: ".custom-swiper-pagination" }}
-//             mousewheel={true}
-//             direction="horizontal"
-//             centeredSlides={true}
-//             thumbs={{ swiper: swiperInstances.thumbs }}
-//             spaceBetween={20}
-//             initialSlide={state.activeProductIndex}
-//             speed={swiperConfig.SPEED}
-//             threshold={swiperConfig.THRESHOLD}
-//             resistance={true}
-//             resistanceRatio={swiperConfig.RESISTANCE_RATIO}
-//             onInit={onSwiperInit}
-//             onSlideChange={onSlideChange}
-//             onSlideChangeTransitionStart={(swiper) => {
-//   liveIndexRef.current = swiper.activeIndex;
-//   // stopHoverAnimation() и setIsPlaying(false) убраны —
-//   // остановку теперь делает единственный useEffect ниже, синхронно с activeProductIndex
-// }}
-//             preventClicks={false}
-//             preventClicksPropagation={false}
-//             touchStartPreventDefault={false}
-//             onSlideChangeTransitionStart={(swiper) => {
-//               liveIndexRef.current = swiper.activeIndex; 
-//               stopHoverAnimation();
-//               setIsPlaying(false);
-//             }}
-//           >
-//             {products.map((product, index) => (
-//               <SwiperSlide
-//                 key={product.id}
-//                 style={{ height: "100%", transform: `scale(${product.scale || 1})` }}
-//               >
-//                 <div className="w-full h-full flex items-center justify-center">
-//                   <img
-//                     src={
-//                       state.selectedImageIndices[index] === 0
-//                         ? product.image
-//                         : product.altImages[state.selectedImageIndices[index] - 1]
-//                     }
-//                     alt={product.name}
-//                     className="max-h-full w-auto object-contain"
-//                     draggable="false"
-//                     // onTouchStart={() => onTouchStart(index, product)}
-//                     // onTouchEnd={() => onTouchEnd(index)}
-//                   />
-//                 </div>
-//               </SwiperSlide>
-//             ))}
-//           </Swiper>
-// </div>
-//           {/* Счётчик кадров */}
-//           {allImages.length > 1 && (
-//             <div className="absolute top-2.5 right-3 z-10 pointer-events-none">
-//               <span
-//                 className="text-[11px] text-white px-2.5 py-1 rounded-full"
-//                 style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(6px)" }}
-//               >
-//                 {currentFrameIndex + 1} / {allImages.length}
-//               </span>
-//             </div>
-//           )}
-
-//           {/* Кнопка (i) — стеклянная */}
-//           {/* {allImages.length > 1 && (
-//             <button
-//               className="absolute top-2.5 left-3 z-20 w-7 h-7 rounded-full flex items-center justify-center"
-//               style={{
-//                 background: "rgba(120,120,120,0.28)",
-//                 backdropFilter: "blur(8px)",
-//                 border: "0.5px solid rgba(255,255,255,0.22)",
-//               }}
-//               onClick={(e) => { e.stopPropagation(); setHintOpen((v) => !v); setAutoHintVisible(false); }}
-//               aria-label="Подсказка по управлению"
-//             >
-//               <i className="ti ti-info-circle" style={{ fontSize: 15, color: "rgba(255,255,255,0.88)" }} aria-hidden="true" />
-//             </button>
-//           )} */}
-
-//           {allImages.length > 1 && !isTouchDevice && (
-//   <button
-//     type="button"
-//     className="absolute top-2.5 left-3 z-20 w-7 h-7 rounded-full flex items-center justify-center"
-//     style={{
-//       background: "rgba(120,120,120,0.28)",
-//       backdropFilter: "blur(8px)",
-//       border: "0.5px solid rgba(255,255,255,0.22)",
-//     }}
-//     onClick={toggleHint}
-//     aria-label="Подсказка по управлению"
-//   >
-//     <i className="ti ti-info-circle" style={{ fontSize: 15, color: "rgba(255,255,255,0.88)" }} aria-hidden="true" />
-//   </button>
-// )}
-
-//           {/* Popup-подсказка (авто + по клику на i) */}
-//           {/* <div
-//             className="absolute z-30 pointer-events-none"
-//             style={{
-//               top: 44,
-//              left: 10,
-//               minWidth: 190,
-//               maxWidth: 230,
-//               background: "rgba(25,25,25,0.6)",
-//               backdropFilter: "blur(10px)",
-//               border: "0.5px solid rgba(255,255,255,0.16)",
-//               borderRadius: 12,
-//               padding: "10px 14px",
-//               opacity: showHint ? 1 : 0,
-//               transform: showHint ? "translateY(0)" : "translateY(-4px)",
-//               transition: "opacity 0.22s, transform 0.22s",
-//             }}
-//           >
-//             <p style={{ fontSize: 12, color: "rgba(255,255,255,0.88)", lineHeight: 1.5 }}>
-//               {hintText}
-//             </p>
-//           </div> */}
-
-//           <div
-//   className="absolute z-30 pointer-events-none"
-//   style={{
-//     ...(isTouchDevice
-//       ? { bottom: 50, right: 12 }
-//       : { top: 44, left: 10 }),
-//     minWidth: 190,
-//     maxWidth: 230,
-//     background: "rgba(25,25,25,0.6)",
-//     backdropFilter: "blur(10px)",
-//     border: "0.5px solid rgba(255,255,255,0.16)",
-//     borderRadius: 12,
-//     padding: "10px 14px",
-//     opacity: showHint ? 1 : 0,
-//     transform: showHint
-//       ? "translateY(0)"
-//       : isTouchDevice
-//       ? "translateY(6px)"
-//       : "translateY(-4px)",
-//     transition: "opacity 0.22s, transform 0.22s",
-//   }}
-// >
-//   {hintText && (
-//     <p style={{ fontSize: 12, color: "rgba(255,255,255,0.88)", lineHeight: 1.5 }}>
-//       {hintText}
-//     </p>
-//   )}
-// </div>
-
-//           {/* Кастомный курсор */}
-//           {allImages.length > 1 && isHovering && !isTouchDevice && (
-//             <div
-//               className="absolute pointer-events-none z-20"
-//               style={{
-//                 left: cursorPos.x,
-//                 top: cursorPos.y,
-//                 transform: "translate(-50%, -50%)",
-//                 width: 36,
-//                 height: 36,
-//                 borderRadius: "50%",
-//                 background: "rgba(0,0,0,0.38)",
-//                 display: "flex",
-//                 alignItems: "center",
-//                 justifyContent: "center",
-//               }}
-//             >
-//               <i className={cursorIconClass} style={{ fontSize: 15, color: "#fff" }} aria-hidden="true" />
-//             </div>
-//           )}
-    
-// {/* Мобильная кнопка плей/пауза */}
-// {allImages.length > 1 && isTouchDevice && (
-//   <button
-//     className="absolute bottom-3 right-3 z-20 w-9 h-9 rounded-full flex items-center justify-center"
-//     style={{
-//       background: "rgba(0,0,0,0.38)",
-//       backdropFilter: "blur(6px)",
-//       border: "0.5px solid rgba(255,255,255,0.22)",
-//     }}
-//     // onClick={(e) => { e.stopPropagation(); handleStageClick(); }}
-//         onClick={(e) => {
-//       e.stopPropagation();
-//       if (hintOpen || autoHintVisible) {
-//         closeHint();
-//         return;
-//       }
-//       handleStageClick();
-//     }}
-//     aria-label={isPlaying ? "Пауза" : "Запустить анимацию"}
-//   >
-//     <i
-//       className={isPlaying ? "ti ti-player-pause" : "ti ti-player-play"}
-//       style={{ fontSize: 16, color: "#fff" }}
-//       aria-hidden="true"
-//     />
-//   </button>
-// )}  </div>
-     
-// <div className="order-1 lg:order-3">
-//         {/* Filmstrip */}
-//         <Filmstrip
-//           product={currentProduct}
-//           currentFrameIndex={currentFrameIndex}
-//           onFrameSelect={handleFrameSelect}
-//         />
-// </div>
-//         {/* Thumbs навигации между продуктами
-//         <div
-//           ref={(el) => (refs.thumbs = el)}
-//           className="w-full mt-5 lg:mt-8 order-4"
-//           style={{ opacity: state.thumbsShown ? 1 : 0 }}
-//         >
-//           <Swiper
-//             modules={[Thumbs]}
-//             direction="horizontal"
-//             onSwiper={(swiper) => setSwiperInstances((prev) => ({ ...prev, thumbs: swiper }))}
-//             slidesPerView="5"
-//             spaceBetween={10}
-//             watchSlidesProgress={true}
-//             slideToClickedSlide={true}
-//             initialSlide={state.activeProductIndex}
-//             speed={swiperConfig.SPEED}
-//             preventClicks={false}
-//             preventClicksPropagation={false}
-//             observer={true}
-//             observeParents={true}
-//             resistance={false}
-//             resistanceRatio={0}
-//           >
-//             {products.map((product, index) => (
-//               <SwiperSlide key={product.id} className="!w-[120px] sm:!w-[140px] lg:!w-[200px]">
-//                 <img
-//                   src={product.image}
-//                   onClick={() => onThumbnailClick(index)}
-//                   className={`cursor-pointer transition-all duration-300 rounded-lg px-3 w-full h-20 sm:h-24 lg:h-28 object-contain ${
-//                     index === state.activeProductIndex
-//                       ? "opacity-100 scale-105"
-//                       : "grayscale opacity-60 hover:opacity-100"
-//                   }`}
-//                   alt={product.name}
-//                   draggable="false"
-//                 />
-//               </SwiperSlide>
-//             ))}
-//           </Swiper>
-//         </div> */}
-
-//       </div>{isDesktop && (
-//   <div className="mt-8">
-//     <ProductThumbs
-//       products={products}
-//       state={state}
-//       setSwiperInstances={setSwiperInstances}
-//       onThumbnailClick={onThumbnailClick}
-//       swiperConfig={swiperConfig}
-//       thumbsRef={(el) => (refs.thumbs = el)}
-//       visible={state.thumbsShown}
-//     />
-//   </div>
-// )}
-//     </div>
-//   );
-// }
