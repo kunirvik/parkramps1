@@ -239,7 +239,7 @@ export function useHoverAnimation(isTouchDevice, setState) {
   const getTotalImages = (product) => 1 + (product?.altImages?.length || 0);
 
   const stopHoverAnimation = useCallback(() => {
-    playSessionRef.current += 1;
+    // playSessionRef.current += 1;
     clearTimeout(playTimeoutRef.current);
     playTimeoutRef.current = null;
     playingProductRef.current = null;

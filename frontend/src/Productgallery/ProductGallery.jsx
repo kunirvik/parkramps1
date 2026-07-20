@@ -1021,25 +1021,6 @@ const hintText = isTouchDevice ? HINT_TEXT_MOBILE : HINT_TEXT_DESKTOP;
 
   
 
-// const handleStageClick = useCallback(() => {
-//     const liveIndex = liveIndexRef.current;
-//     const liveProduct = products[liveIndex];
-//     if (!liveProduct) return;
-//     const total = 1 + (liveProduct.altImages?.length || 0);
-//     if (total <= 1) return;
-
-//     if (isPlaying) {
-//         stopHoverAnimation();
-//         setIsPlaying(false);
-//     } else {
-//         // startPlayAnimation(liveIndex, liveProduct); // используем live-значения
-//         // setIsPlaying(true);
-//           const startFrame = state.selectedImageIndices[liveIndex] ?? 0; // ← сюда
-//         startPlayAnimation(liveIndex, liveProduct, startFrame);
-//         setIsPlaying(true);
-//     }
-// }, [isPlaying, stopHoverAnimation, startPlayAnimation, products, state.selectedImageIndices]); 
-// ProductGallery.jsx
 const handleStageClick = useCallback(() => {
   const liveIndex = liveIndexRef.current;
   const liveProduct = products[liveIndex];
@@ -1190,21 +1171,7 @@ const handleStageClick = useCallback(() => {
             </div>
           )}
 
-          {/* Кнопка (i) — стеклянная */}
-          {/* {allImages.length > 1 && (
-            <button
-              className="absolute top-2.5 left-3 z-20 w-7 h-7 rounded-full flex items-center justify-center"
-              style={{
-                background: "rgba(120,120,120,0.28)",
-                backdropFilter: "blur(8px)",
-                border: "0.5px solid rgba(255,255,255,0.22)",
-              }}
-              onClick={(e) => { e.stopPropagation(); setHintOpen((v) => !v); setAutoHintVisible(false); }}
-              aria-label="Подсказка по управлению"
-            >
-              <i className="ti ti-info-circle" style={{ fontSize: 15, color: "rgba(255,255,255,0.88)" }} aria-hidden="true" />
-            </button>
-          )} */}
+  
 
           {allImages.length > 1 && !isTouchDevice && (
   <button
@@ -1222,28 +1189,7 @@ const handleStageClick = useCallback(() => {
   </button>
 )}
 
-          {/* Popup-подсказка (авто + по клику на i) */}
-          {/* <div
-            className="absolute z-30 pointer-events-none"
-            style={{
-              top: 44,
-             left: 10,
-              minWidth: 190,
-              maxWidth: 230,
-              background: "rgba(25,25,25,0.6)",
-              backdropFilter: "blur(10px)",
-              border: "0.5px solid rgba(255,255,255,0.16)",
-              borderRadius: 12,
-              padding: "10px 14px",
-              opacity: showHint ? 1 : 0,
-              transform: showHint ? "translateY(0)" : "translateY(-4px)",
-              transition: "opacity 0.22s, transform 0.22s",
-            }}
-          >
-            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.88)", lineHeight: 1.5 }}>
-              {hintText}
-            </p>
-          </div> */}
+   
 
           <div
   className="absolute z-30 pointer-events-none"
@@ -1331,46 +1277,7 @@ const handleStageClick = useCallback(() => {
           onFrameSelect={handleFrameSelect}
         />
 </div>
-        {/* Thumbs навигации между продуктами
-        <div
-          ref={(el) => (refs.thumbs = el)}
-          className="w-full mt-5 lg:mt-8 order-4"
-          style={{ opacity: state.thumbsShown ? 1 : 0 }}
-        >
-          <Swiper
-            modules={[Thumbs]}
-            direction="horizontal"
-            onSwiper={(swiper) => setSwiperInstances((prev) => ({ ...prev, thumbs: swiper }))}
-            slidesPerView="5"
-            spaceBetween={10}
-            watchSlidesProgress={true}
-            slideToClickedSlide={true}
-            initialSlide={state.activeProductIndex}
-            speed={swiperConfig.SPEED}
-            preventClicks={false}
-            preventClicksPropagation={false}
-            observer={true}
-            observeParents={true}
-            resistance={false}
-            resistanceRatio={0}
-          >
-            {products.map((product, index) => (
-              <SwiperSlide key={product.id} className="!w-[120px] sm:!w-[140px] lg:!w-[200px]">
-                <img
-                  src={product.image}
-                  onClick={() => onThumbnailClick(index)}
-                  className={`cursor-pointer transition-all duration-300 rounded-lg px-3 w-full h-20 sm:h-24 lg:h-28 object-contain ${
-                    index === state.activeProductIndex
-                      ? "opacity-100 scale-105"
-                      : "grayscale opacity-60 hover:opacity-100"
-                  }`}
-                  alt={product.name}
-                  draggable="false"
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </div> */}
+  
 
       </div>{isDesktop && (
   <div className="mt-8">
