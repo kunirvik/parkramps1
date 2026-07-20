@@ -485,26 +485,26 @@ const handleMouseEnter = useCallback(
     };
   }, [stopHoverAnimation]);
 
-  useEffect(() => {
-    const swiper = swiperInstances.main;
-    if (!swiper || animationInProgressRef.current) return;
+  // useEffect(() => {
+  //   const swiper = swiperInstances.main;
+  //   if (!swiper || animationInProgressRef.current) return;
 
-    const newIndex = swiper.activeIndex;
-    if (newIndex !== state.activeProductIndex) {
-      updateState({ activeProductIndex: newIndex });
-      updateUrl(productCatalogSets[newIndex].id);
+  //   const newIndex = swiper.activeIndex;
+  //   if (newIndex !== state.activeProductIndex) {
+  //     updateState({ activeProductIndex: newIndex });
+  //     updateUrl(productCatalogSets[newIndex].id);
 
-      if (swiperInstances.thumbs) {
-        swiperInstances.thumbs.slideTo(newIndex);
-      }
-    }
-  }, [
-    swiperInstances.main?.activeIndex,
-    state.activeProductIndex,
-    updateState,
-    updateUrl,
-    swiperInstances.thumbs,
-  ]);
+  //     if (swiperInstances.thumbs) {
+  //       swiperInstances.thumbs.slideTo(newIndex);
+  //     }
+  //   }
+  // }, [
+  //   swiperInstances.main?.activeIndex,
+  //   state.activeProductIndex,
+  //   updateState,
+  //   updateUrl,
+  //   swiperInstances.thumbs,
+  // ]);
 
   // ─── Early returns ────────────────────────────────────────────────────────
   if (!currentProduct) {
