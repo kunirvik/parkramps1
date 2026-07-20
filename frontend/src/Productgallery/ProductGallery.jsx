@@ -928,8 +928,11 @@ const hintCloseTimerRef = useRef(null);
     : [];
   const currentFrameIndex = state.selectedImageIndices[state.activeProductIndex] ?? 0;
 
+
+
   useEffect(() => {
   liveIndexRef.current = state.activeProductIndex;
+
 }, [state.activeProductIndex]); 
 
 
@@ -1018,25 +1021,42 @@ const hintText = isTouchDevice ? HINT_TEXT_MOBILE : HINT_TEXT_DESKTOP;
 
   
 
+// const handleStageClick = useCallback(() => {
+//     const liveIndex = liveIndexRef.current;
+//     const liveProduct = products[liveIndex];
+//     if (!liveProduct) return;
+//     const total = 1 + (liveProduct.altImages?.length || 0);
+//     if (total <= 1) return;
+
+//     if (isPlaying) {
+//         stopHoverAnimation();
+//         setIsPlaying(false);
+//     } else {
+//         // startPlayAnimation(liveIndex, liveProduct); // используем live-значения
+//         // setIsPlaying(true);
+//           const startFrame = state.selectedImageIndices[liveIndex] ?? 0; // ← сюда
+//         startPlayAnimation(liveIndex, liveProduct, startFrame);
+//         setIsPlaying(true);
+//     }
+// }, [isPlaying, stopHoverAnimation, startPlayAnimation, products, state.selectedImageIndices]); 
+// ProductGallery.jsx
 const handleStageClick = useCallback(() => {
-    const liveIndex = liveIndexRef.current;
-    const liveProduct = products[liveIndex];
-    if (!liveProduct) return;
-    const total = 1 + (liveProduct.altImages?.length || 0);
-    if (total <= 1) return;
+  const liveIndex = liveIndexRef.current;
+  const liveProduct = products[liveIndex];
+  if (!liveProduct) return;
+  const total = 1 + (liveProduct.altImages?.length || 0);
+  if (total <= 1) return;
 
-    if (isPlaying) {
-        stopHoverAnimation();
-        setIsPlaying(false);
-    } else {
-        // startPlayAnimation(liveIndex, liveProduct); // используем live-значения
-        // setIsPlaying(true);
-          const startFrame = state.selectedImageIndices[liveIndex] ?? 0; // ← сюда
-        startPlayAnimation(liveIndex, liveProduct, startFrame);
-        setIsPlaying(true);
+  setIsPlaying((wasPlaying) => {
+    if (wasPlaying) {
+      stopHoverAnimation();
+      return false;
     }
-}, [isPlaying, stopHoverAnimation, startPlayAnimation, products, state.selectedImageIndices]); 
-
+    const startFrame = state.selectedImageIndices[liveIndex] ?? 0;
+    startPlayAnimation(liveIndex, liveProduct, startFrame);
+    return true;
+  });
+}, [stopHoverAnimation, startPlayAnimation, products, state.selectedImageIndices]);
 
   const handleFrameSelect = useCallback(
     (i) => {
@@ -1092,9 +1112,10 @@ const handleStageClick = useCallback(() => {
             setIsHovering(false);
             onMouseLeave(state.activeProductIndex);
             // if (effectiveMode === "play") { 
-              stopHoverAnimation(); setIsPlaying(false);
+              stopHoverAnimation();
+               setIsPlaying(false);
             //  }
-            setIsPlaying(false);
+            
           }}}
           // onClick={handleStageClick}
             // onClick={!isTouchDevice ? handleStageClick : undefined}
@@ -1124,6 +1145,11 @@ const handleStageClick = useCallback(() => {
             resistanceRatio={swiperConfig.RESISTANCE_RATIO}
             onInit={onSwiperInit}
             onSlideChange={onSlideChange}
+            onSlideChangeTransitionStart={(swiper) => {
+  liveIndexRef.current = swiper.activeIndex;
+  // stopHoverAnimation() и setIsPlaying(false) убраны —
+  // остановку теперь делает единственный useEffect ниже, синхронно с activeProductIndex
+}}
             preventClicks={false}
             preventClicksPropagation={false}
             touchStartPreventDefault={false}
