@@ -278,7 +278,7 @@
 // export default Accordion;
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
-
+import { useIsDesktop } from "../hooks/useIsDesktop";
 const OVERFLOW_TOLERANCE = 20; // px — если текст выше клампа не более чем на это значение, кнопку не показываем
 
 // Клемп зависит от высоты вьюпорта, а не от фиксированных пикселей
