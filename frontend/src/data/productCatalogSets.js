@@ -208,6 +208,7 @@ const productCatalogSets = [
     specs: [
     { label: "Висота", value: "80 см" },
     { label: "Ширина", value: "125 см" },
+     { label: "Довжина", value: "125 см" },
     { label: "Матеріал", value: " фанера / брус / cталь " },
     // { label: "Товщина металу", value: "3 мм" },
   ],
