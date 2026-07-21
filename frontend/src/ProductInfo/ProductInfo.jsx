@@ -1,6 +1,7 @@
 import Accordion from "../Accordion/Accordion";
 import ContactButton from "../ContactButtons/ContactButton";
 import ProductDrawing from "../ProductDrawing";
+import { useIsDesktop } from "../hooks/useIsDesktop";
 export default function ProductInfo({
   products,
   product,
@@ -11,6 +12,7 @@ export default function ProductInfo({
   animationState,
   imageData,
 }) {
+  const isDesktop = useIsDesktop();
    const currentProduct = products[state.activeProductIndex];
   return (
     // <div className="flex lg:flex-col bg-rgb(35, 35, 35)  w-full">
@@ -38,6 +40,7 @@ export default function ProductInfo({
           }}
         > 
           <Accordion
+          isDesktop={isDesktop}
           // key={`product-${state.activeProductIndex}`}
             items={[
               {
@@ -59,6 +62,7 @@ export default function ProductInfo({
           style={{ opacity: state.purchaseShown ? 1 : 0 }}
         >
           <Accordion
+          isDesktop={isDesktop}
           // key={`purchase-${state.activeProductIndex}`}
             items={[
               {
@@ -84,6 +88,7 @@ export default function ProductInfo({
           style={{ opacity: state.productionShown ? 1 : 0 }}
         >
           <Accordion
+          isDesktop={isDesktop}
           // key={`virobi-${state.activeProductIndex}`}
             items={[{ title: "вироби" }]}
             controlled={true}
@@ -114,6 +119,7 @@ export default function ProductInfo({
   }}
 >
   <Accordion
+  isDesktop={isDesktop}
     // key={state.activeProductIndex}
     items={[
       {

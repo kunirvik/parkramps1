@@ -296,6 +296,7 @@ const Accordion = ({
   openIndex: externalOpenIndex,
   onToggle,
   mobileMode = false,
+  isDesktop: isDesktopProp,
 }) => {
   const [internalOpenIndex, setInternalOpenIndex] = useState(() =>
     window.innerWidth >= 1024 ? defaultOpenIndexDesktop : null
@@ -305,7 +306,9 @@ const Accordion = ({
   const setOpenIndex = controlled ? onToggle : setInternalOpenIndex;
 
   const [pendingIndex, setPendingIndex] = useState(null);
-  const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= 1024);
+  // const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= 1024);
+   const internalIsDesktop = useIsDesktop(); // тот же хук, как фолбэк если проп не передан
+  const isDesktop = isDesktopProp ?? internalIsDesktop;
   const [clampSize, setClampSize] = useState(() =>
     window.innerWidth >= 1024 ? getDesktopClamp() : getMobileClamp()
   );
@@ -332,7 +335,7 @@ const Accordion = ({
   useEffect(() => {
     const handleResize = () => {
       const desktop = window.innerWidth >= 1024;
-      setIsDesktop(desktop);
+      // setIsDesktop(desktop);
       setClampSize(desktop ? getDesktopClamp() : getMobileClamp());
 
       if (!controlled) {
@@ -370,7 +373,7 @@ const Accordion = ({
 
     const timeout = setTimeout(() => {
       if (!controlled) {
-        setOpenIndex(isDesktop ? defaultOpenIndexDesktop : null);
+        // setOpenIndex(isDesktop ? defaultOpenIndexDesktop : null);
       }
       setPendingIndex(null);
       // measuredMap НЕ сбрасываем — скрытый измеритель держит его актуальным всегда
