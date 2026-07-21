@@ -763,6 +763,14 @@ import SocialButtons from "./SocialButtons/SocialButtons";
 
 const THUMB_H = 68;
 
+function getVideoThumbnail(videoUrl) {
+  if (!videoUrl || !videoUrl.includes("/video/upload/")) return null;
+
+  return videoUrl
+    .replace("/video/upload/", "/video/upload/so_0/")
+    .replace(/\.mp4$/, ".jpg");
+}
+
 const STYLE_ID = "film-gallery-styles";
 if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
   const s = document.createElement("style");
@@ -1089,13 +1097,9 @@ function MobileCategoryBar({ categories, activeCategory, onSelect }) {
 function ThumbStripVertical({ slides, activeIndex, onSelect, highlightedIndices }) {
   const stripRef = useRef(null);
   const frameRef = useRef(null);
-function getVideoThumbnail(videoUrl) {
-  if (!videoUrl || !videoUrl.includes("/video/upload/")) return null;
 
-  return videoUrl
-    .replace("/video/upload/", "/video/upload/so_0/")
-    .replace(/\.mp4$/, ".jpg");
-}
+
+
   useEffect(() => {
     if (!frameRef.current) return;
     const top = activeIndex * (THUMB_H + 4);
