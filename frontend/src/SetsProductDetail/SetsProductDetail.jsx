@@ -23,6 +23,9 @@ import ProductGallery from "../Productgallery/ProductGallery";
 import ProductDrawing from "../ProductDrawing";
 import ProductThumbs from "../ProductThumbs/ProductThumbs";
 import { useIsDesktop } from "../hooks/useIsDesktop";
+
+const CLOUDINARY = import.meta.env.VITE_CLOUDINARY_BASE_URL; 
+ 
 // import ProductThumbs from "../ProductThumbs/ProductThumbs";
 // Константы
 const ANIMATION_CONFIG = {
@@ -525,7 +528,7 @@ const handleMouseEnter = useCallback(
     className="hidden lg:block fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat"
     style={{
       backgroundImage:
-        "url('https://res.cloudinary.com/dbx6muxub/image/upload/v1780563482/project-brightness-50_fbitrl.png')",
+        `url('${CLOUDINARY}v1780563482/project-brightness-50_fbitrl.png')`,
     }}
   />
   
@@ -533,7 +536,7 @@ const handleMouseEnter = useCallback(
     className="lg:hidden absolute inset-0 -z-10 bg-cover bg-center bg-no-repeat"
     style={{
       backgroundImage:
-        "url('https://res.cloudinary.com/dbx6muxub/image/upload/v1780563482/project-brightness-50_fbitrl.png')",
+        `url('${CLOUDINARY}v1784653098/project2_qewlhy.webp')`,
       minHeight: "100%",
     }}
   />
