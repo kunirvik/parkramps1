@@ -518,14 +518,34 @@ const handleMouseEnter = useCallback(
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
     <>
-      <div className="flex flex-col  min-h-screen overflow-hidden relative w-full">
+   
+<div className="flex flex-col min-h-screen overflow-hidden relative w-full">
+ 
+  <div
+    className="hidden lg:block fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat"
+    style={{
+      backgroundImage:
+        "url('https://res.cloudinary.com/dbx6muxub/image/upload/v1780563482/project-brightness-50_fbitrl.png')",
+    }}
+  />
+  
+  <div
+    className="lg:hidden absolute inset-0 -z-10 bg-cover bg-center bg-no-repeat"
+    style={{
+      backgroundImage:
+        "url('https://res.cloudinary.com/dbx6muxub/image/upload/v1780563482/project-brightness-50_fbitrl.png')",
+      minHeight: "100%",
+    }}
+  />
+
+      {/* <div className="flex flex-col  min-h-screen overflow-hidden relative w-full">
           <div
     className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat"
     style={{
       backgroundImage:
         "url('https://res.cloudinary.com/dbx6muxub/image/upload/v1780563482/project-brightness-50_fbitrl.png')",
     }}
-  />
+  /> */}
 
         <div className="z-50 flex-shrink-0">
           <SocialButtons
