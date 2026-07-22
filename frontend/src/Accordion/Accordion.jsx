@@ -527,12 +527,13 @@ const Accordion = ({
                   )}
                 </div>
 
-                {isOverflowing && !isExpanded && (
+                {contentVisible && isOverflowing && !isExpanded && (
                   <button
                     onClick={() =>
                       setExpandedMap((prev) => ({ ...prev, [index]: true }))
                     }
                     className="w-full flex items-center justify-center gap-1 py-2 cursor-pointer text-xs text-[#a0a0a0]"
+                      style={{ transition: "opacity 200ms ease" }}
                   >
                     <span>Показати повністю</span>
                     <ChevronDown size={16} />
@@ -666,12 +667,13 @@ const Accordion = ({
                 )}
               </div>
 
-              {isOverflowing && (
+              {contentVisible &&  isOverflowing && (
                 <button
                   onClick={() =>
                     setExpandedMap((prev) => ({ ...prev, [index]: !prev[index] }))
                   }
                   className="w-full flex items-center justify-center gap-1 py-2 cursor-pointer text-xs text-[#a0a0a0]"
+                  
                 >
                   <span>{isExpanded ? "Згорнути" : "Показати більше"}</span>
                   <ChevronDown

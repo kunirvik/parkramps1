@@ -1152,7 +1152,7 @@ const handleStageClick = useCallback(() => {
                 key={product.id}
                 style={{ height: "100%", transform: `scale(${product.scale || 1})` }}
               >
-                <div className="w-full h-full flex items-center z-555555555 mt-10 justify-center">
+                <div className="w-full h-full flex items-center z-555555555 mt-0 lg:mt-10 justify-center">
                   <img
                     src={
                       state.selectedImageIndices[index] === 0

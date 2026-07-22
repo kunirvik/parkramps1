@@ -532,14 +532,15 @@ const handleMouseEnter = useCallback(
     }}
   />
   
-  <div
-    className="lg:hidden absolute inset-0 -z-10 bg-cover bg-center bg-no-repeat"
-    style={{
-      backgroundImage:
-        `url('${CLOUDINARY}v1784653098/project2_qewlhy.webp')`,
-      minHeight: "100%",
-    }}
-  />
+ <div
+  className="lg:hidden fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat"
+  style={{
+    backgroundImage:
+      `url('${CLOUDINARY}v1784653098/project2_qewlhy.webp')`,
+    height: "100dvh",
+    width: "100vw",
+  }}
+/>
 
       {/* <div className="flex flex-col  min-h-screen overflow-hidden relative w-full">
           <div
