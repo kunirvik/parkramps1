@@ -5,7 +5,7 @@ const productCatalogRamps = [
   {
     id: 1,
     name: "ramp60",
-    image: `${CLOUDINARY}v1783065914/minir180h60w200d40alt_gu3fkf.webp`,
+    image: `${CLOUDINARY}v1784729679/minir180h60w200d40alt_fzqqxg.png`,
     altImages: [
      ` "/images/ramps/webp/minir180h60w200d40.webp"`,
       "/images/ramps/webp/minir180h60w200d40frontalt.webp",
@@ -155,11 +155,6 @@ const productCatalogRamps = [
     altImages: [
       "/images/skateparks/parkfront.png",
       "/images/skateparks/parktop.png",
-    ],
-    specs: [
-      { label: "Висота", value: "80 см" },
-      { label: "Ширина", value: "125 см" },
-      { label: "Матеріал", value: " фанера / брус / cталь " },
     ],
     sample: [
       { type: "image", src: "/images/sample/skateparks/skatepark1.jpg" },
