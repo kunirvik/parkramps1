@@ -132,6 +132,12 @@ const productCatalogRamps = [
     //   { type: "image", src: "/images/sample2.jpg" },
     //   { type: "image", src: "/images/sample3.jpg" },
     // ],
+         specs: [
+    { label: "Висота", value: "80 см" },
+    { label: "Ширина", value: "125 см" },
+    { label: "Матеріал", value: " фанера / брус / cталь " },
+
+  ],
     designer: "DIY Workshop",
     year: 2023,
     description:
@@ -149,6 +155,11 @@ const productCatalogRamps = [
     altImages: [
       "/images/skateparks/parkfront.png",
       "/images/skateparks/parktop.png",
+    ],
+    specs: [
+      { label: "Висота", value: "80 см" },
+      { label: "Ширина", value: "125 см" },
+      { label: "Матеріал", value: " фанера / брус / cталь " },
     ],
     sample: [
       { type: "image", src: "/images/sample/skateparks/skatepark1.jpg" },
