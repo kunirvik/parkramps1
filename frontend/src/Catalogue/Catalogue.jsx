@@ -24,7 +24,7 @@ const products = [
   {
     id: 2,
       category: "ramps",  
-      image: "/images/ramps/minir180h60w200d40alt.png",
+      image: `${CLOUDINARY}v1784729679/minir180h60w200d40alt_fzqqxg.png`,
     name: "рампи",
     hoverImage:  ["/images/skateparks/park3.png", "/images/skateparks/park2.png"],
     description: "An iconic pop-art sofa."
@@ -34,7 +34,7 @@ const products = [
     id: 1,
      category: "skateparks",
     name: "скейтпарки",
-    image:"/images/skateparks/spot/spot1.png",
+    image:`${CLOUDINARY}v1783014282/spot1_hj41go.png`,
     hoverImage:  ["/images/skateparks/spot/spot1.webp", "/images/skateparks/park2.png"],
     description: "An iconic pop-art sofa."
   },  

@@ -29,7 +29,7 @@ const productCatalogRamps = [
   {
     id: 2,
     name: "ramp95",
-    image: `${CLOUDINARY}v1783081997/ramp95garagemain_f9qynq.webp`,
+    image: `${CLOUDINARY}v1784729679/minir180h60w200d40alt_fzqqxg.png`,
     altImages: [
       `${CLOUDINARY}v1783082001/ramp95garagetop_jsjk7m.webp`,
       `${CLOUDINARY}v1783081994/ramp95garage_dgrjv7.webp`,
