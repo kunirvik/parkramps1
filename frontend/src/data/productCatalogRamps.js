@@ -17,6 +17,12 @@ const productCatalogRamps = [
       // { type: "image", src: "/images/sample2.jpg" },
       // { type: "image", src: "/images/sample3.jpg" },
     // ],
+     specs: [
+    { label: "Висота", value: "80 см" },
+    { label: "Ширина", value: "125 см" },
+    { label: "Матеріал", value: " фанера / брус / cталь " },
+
+  ],
     designer: "",
     year: 2023,
         description: "Замовити можна за посиланням нижче. Підберемо розміри, порахуємо вартість і зробимо проєкт під ваш майданчик.",
@@ -34,6 +40,12 @@ const productCatalogRamps = [
       `${CLOUDINARY}v1783082001/ramp95garagetop_jsjk7m.webp`,
       `${CLOUDINARY}v1783081994/ramp95garage_dgrjv7.webp`,
     ],
+     specs: [
+    { label: "Висота", value: "80 см" },
+    { label: "Ширина", value: "125 см" },
+    { label: "Матеріал", value: " фанера / брус / cталь " },
+
+  ],
     // sample: [
     //   { type: "image", src: "/images/sample1.jpg" },
     //   { type: "image", src: "/images/sample2.jpg" },
@@ -57,6 +69,12 @@ const productCatalogRamps = [
       `${CLOUDINARY}v1783081900/rampr250h125w375d125top_mgndpe.webp`,
       `${CLOUDINARY}v1783081897/rampr250h125w375d125front_vltlhx.webp`,
     ],
+     specs: [
+    { label: "Висота", value: "80 см" },
+    { label: "Ширина", value: "125 см" },
+    { label: "Матеріал", value: " фанера / брус / cталь " },
+
+  ],
     // sample: [
     //   { type: "image", src: "/images/sample1.jpg" },
     //   { type: "image", src: "/images/sample2.jpg" },
@@ -80,6 +98,12 @@ const productCatalogRamps = [
       `${CLOUDINARY}v1783081688/rampsklfront_ayuxqi.webp`,
      `${CLOUDINARY}v1783081688/rampskltop_ayuxqi.webp`,
     ],
+     specs: [
+    { label: "Висота", value: "80 см" },
+    { label: "Ширина", value: "125 см" },
+    { label: "Матеріал", value: " фанера / брус / cталь " },
+
+  ],
     // sample: [
     //   { type: "image", src: "/images/sample1.jpg" },
     //   { type: "image", src: "/images/sample2.jpg" },
