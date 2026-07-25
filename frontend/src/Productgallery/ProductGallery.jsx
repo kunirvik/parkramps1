@@ -1122,7 +1122,7 @@ const handleStageClick = useCallback(() => {
 }} 
         ><div className="order-2 lg:order-2">
           <Swiper
-            className="custom-swiper h-[250px] sm:h-[300px] md:h-[350px]"
+            className="custom-swiper  h-[clamp(250px,45vw,550px)]"
             modules={[Pagination, Mousewheel, Thumbs]}
             pagination={{ clickable: true, el: ".custom-swiper-pagination" }}
             mousewheel={true}
