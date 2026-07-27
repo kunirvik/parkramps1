@@ -319,9 +319,19 @@ const handleMouseEnter = useCallback(
       updateAnimationState({ slideChanging: true, inProgress: true });
 
       
-
+   await animateInfo("out");
       const isMobile = window.innerWidth < 1024;
 
+   setState((prev) => {
+        const newIndices = [...prev.selectedImageIndices];
+        newIndices[newIndex] = 0;
+        //  newIndices[newIndex] = 0;
+        return {
+          ...prev,
+          activeProductIndex: newIndex,
+          selectedImageIndices: newIndices,
+        };
+      });
       if (isMobile) {
         setAccordionState({ purchase: null, product: null, virobi: null });
       } else {
@@ -332,18 +342,9 @@ const handleMouseEnter = useCallback(
         }));
       }
 
-      await animateInfo("out");
+   
 
-      setState((prev) => {
-        const newIndices = [...prev.selectedImageIndices];
-        newIndices[newIndex] = 0;
-         newIndices[newIndex] = 0;
-        return {
-          ...prev,
-          activeProductIndex: newIndex,
-          selectedImageIndices: newIndices,
-        };
-      });
+   
 
       updateUrl(productCatalogSets[newIndex].id);
 
@@ -351,8 +352,7 @@ const handleMouseEnter = useCallback(
         swiperInstances.thumbs.slideTo(newIndex);
       }
 
-      animationInProgressRef.current = false;
-      updateAnimationState({ slideChanging: false, inProgress: false });
+      
 
       if (isMobile) {
         await new Promise((resolve) => setTimeout(resolve, 50));
@@ -364,21 +364,23 @@ const handleMouseEnter = useCallback(
       stopHoverAnimation();
 
 
-      setTimeout(() => {
+      // setTimeout(() => {
+        await new Promise((resolve) => setTimeout(resolve, SWIPER_CONFIG.SPEED));
   setState((prev) => {
     const newIndices = [...prev.selectedImageIndices];
     newIndices[oldIndex] = 0;
     return { ...prev, selectedImageIndices: newIndices };
   });
   //  blockScrubBriefly(800); // задержка скраба после смены продукта
-
+animationInProgressRef.current = false;
+      updateAnimationState({ slideChanging: false, inProgress: false });
   if (isTouchDevice) return;
 
   // if (isPointerOverSwiper()) {
   //   const product = productCatalogSets[newIndex];
   //   startHoverAnimation(newIndex, product);
   // }
-}, SWIPER_CONFIG.SPEED);
+// }, SWIPER_CONFIG.SPEED);
 
     },
     [
