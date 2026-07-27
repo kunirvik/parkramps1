@@ -364,7 +364,7 @@ const Accordion = ({
     }
     setContentVisible(false);
     setExpandedMap({});
-    setSuppressHeightTransition(true); // высота будет меняться мгновенно, без анимации, пока скрыто
+    // setSuppressHeightTransition(true); // высота будет меняться мгновенно, без анимации, пока скрыто
   }, [forceCloseTrigger]);
 
   // Асинхронная часть: возврат видимости и переоткрытие — с задержкой, под fade
@@ -385,7 +385,7 @@ const Accordion = ({
       requestAnimationFrame(() => {
         requestAnimationFrame(() => setSuppressHeightTransition(false));
       });
-    }, 220);
+    }, 300);
 
     return () => clearTimeout(timeout);
   }, [forceCloseTrigger]);
