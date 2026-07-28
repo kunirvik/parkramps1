@@ -1405,7 +1405,7 @@ export default function ZlitLanding() {
           <div className="hero-reveal relative border-4 border-black bg-black p-4">
             <RampBlueprint pathRef={heroPathRef} className="w-full" />
           </div> */}
-        </div>
+        </div><Skatepark></Skatepark>
       </section>
 
       <HazardMarquee />
@@ -1472,7 +1472,7 @@ export default function ZlitLanding() {
 
       <TornDivider />
 
-      <Skatepark></Skatepark>
+      
 
       {/* GALLERY — горизонтальна прокрутка, фото + відео зі стройки */}
       <section id="gallery" className="mx-auto max-w-7xl px-6 py-20">
