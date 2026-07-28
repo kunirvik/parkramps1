@@ -811,7 +811,7 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowUpRight, Mail, Instagram, Youtube, Send, X as CloseIcon, Play } from "lucide-react";
-
+import CursorImageTrail from "../CursorImageTrail/CursorImageTrail";
 gsap.registerPlugin(ScrollTrigger);
 
 /**
