@@ -373,23 +373,23 @@ duration:.2
 
 
 
-const moveTooltip=(e)=>{
+// const moveTooltip=(e)=>{
 
 
-if(!tooltip.current)return;
+// if(!tooltip.current)return;
 
 
-gsap.to(
-tooltip.current,
-{
-x:e.clientX+15,
-y:e.clientY+15,
-duration:.1
-}
-)
+// gsap.to(
+// tooltip.current,
+// {
+// x:e.clientX+15,
+// y:e.clientY+15,
+// duration:.1
+// }
+// )
 
 
-}
+// }
 const showCoords = (e)=>{
 
 const rect = e.currentTarget.getBoundingClientRect();
@@ -406,7 +406,7 @@ setCoords({
 });
 
 
-moveTooltip(e);
+// moveTooltip(e);
 
 };
 
