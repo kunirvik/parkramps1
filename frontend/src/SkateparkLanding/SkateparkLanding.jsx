@@ -39,7 +39,7 @@ const SPECS = [
 ];
 
 const GALLERY = [
-  { id: 1, caption: "ФУНДАМЕНТ · 03.2026" },
+  { id: 1, caption: "початок · 03.2026" },
   { id: 2, caption: "КАРКАС ПІВНІЧНОЇ СТІНИ" },
   { id: 3, caption: "МОНТАЖ ФЕРМ ПОКРІВЛІ" },
   { id: 4, caption: "BOWL, ЧОРНОВА ГЕОМЕТРІЯ" },
@@ -205,7 +205,7 @@ function RampBlueprint({ pathRef, className }) {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <text x="24" y="270" fill="#8a8a8a" fontFamily="[FuturaPT]" fontSize="10" letterSpacing="1">
+      <text x="24" y="270" fill="#8a8a8a" fontFamiy="['futura]" fontSize="10" letterSpacing="1">
         SECTION A—A · VERT + BOWL · SCALE 1:120
       </text>
     </svg>
@@ -215,7 +215,7 @@ function RampBlueprint({ pathRef, className }) {
 function StatNumber({ value, decimals }) {
   return (
     <span
-      className="stat-number font-['Teko'] text-6xl font-semibold leading-none text-[#f2ede4] md:text-7xl"
+      className="stat-number fnt-['futura] text-6xl font-semibold leading-none text-[#f2ede4] md:text-7xl"
       data-value={value}
       data-decimals={decimals}
     >
@@ -255,7 +255,7 @@ function Modal({ type, onClose }) {
           <CloseIcon size={18} />
         </button>
 
-        <p className="[font-FuturaPT] text-xs font-bold uppercase tracking-[0.2em] text-[#e2001a]">
+        <p className="font-futura text-xs font-bold uppercase tracking-[0.2em] text-[#e2001a]">
           {config.tag}
         </p>
         <h3 className="mt-2 font-['Oswald'] text-3xl font-bold uppercase leading-none">
@@ -263,14 +263,14 @@ function Modal({ type, onClose }) {
         </h3>
 
         {sent ? (
-          <p className="mt-8 [font-FuturaPT] text-sm">
+          <p className="mt-8 font-futura text-sm">
             Прийнято. Ми зв'яжемось найближчим часом.
           </p>
         ) : (
           <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
             {config.fields.map((f) => (
               <label key={f.name} className="flex flex-col gap-1">
-                <span className="[font-FuturaPT] text-[11px] font-bold uppercase tracking-widest text-black/70">
+                <span className="font-futura text-[11px] font-bold uppercase tracking-widest text-black/70">
                   {f.label}
                   {f.required ? " *" : ""}
                 </span>
@@ -300,7 +300,7 @@ function Modal({ type, onClose }) {
             ))}
             <button
               type="submit"
-              className="mt-2 bg-black px-6 py-3 [font-FuturaPT] text-sm font-bold uppercase tracking-widest text-[#f2ede4] transition hover:bg-[#e2001a]"
+              className="mt-2 bg-black px-6 py-3 font-futura text-sm font-bold uppercase tracking-widest text-[#f2ede4] transition hover:bg-[#e2001a]"
             >
               Надіслати
             </button>
@@ -429,7 +429,7 @@ export default function ZlitLanding() {
             </div>
           </div>
 
-          <nav className="hidden gap-6 [font-FuturaPT] text-xs font-bold uppercase tracking-widest md:flex">
+          <nav className="hidden gap-6 font-futura text-xs font-bold uppercase tracking-widest md:flex">
             <a href="#specs" className="transition hover:text-[#e2001a]">Об'єкт</a>
             <a href="#gallery" className="transition hover:text-[#e2001a]">Стройка</a>
             <a href="#sponsors" className="transition hover:text-[#e2001a]">Спонсорам</a>
@@ -438,7 +438,7 @@ export default function ZlitLanding() {
 
           <button
             onClick={() => setActiveModal("sponsor")}
-            className="border-2 border-black bg-[#e2001a] px-4 py-2 [font-FuturaPT] text-xs font-bold uppercase tracking-widest text-[#f2ede4] transition hover:bg-black"
+            className="border-2 border-black bg-[#e2001a] px-4 py-2 font-futura text-xs font-bold uppercase tracking-widest text-[#f2ede4] transition hover:bg-black"
           >
             Партнерство
           </button>
@@ -460,7 +460,7 @@ export default function ZlitLanding() {
 
         <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 md:grid-cols-2 md:items-center">
           <div>
-            <span className="stamp hero-reveal inline-block rotate-[-6deg] border-3 px-3 py-1 [font-FuturaPT] text-xs font-bold uppercase tracking-widest">
+            <span className="stamp hero-reveal inline-block rotate-[-6deg] border-3 px-3 py-1 font-futura text-xs font-bold uppercase tracking-widest">
               Under Construction
             </span>
             <h1
@@ -469,7 +469,7 @@ export default function ZlitLanding() {
             >
               Zlit
             </h1>
-            <p className="hero-reveal mt-4 max-w-md [font-FuturaPT] text-sm uppercase tracking-wide text-black/70">
+            <p className="hero-reveal mt-4 max-w-md font-futura text-sm uppercase tracking-wide text-black/70">
               Kyiv · Indoor Air Park · Est. 2027
             </p>
             <p className="hero-reveal mt-6 max-w-md text-lg font-medium text-black/80 md:text-xl">
@@ -479,13 +479,13 @@ export default function ZlitLanding() {
             <div className="hero-reveal mt-9 flex flex-wrap gap-3">
               <button
                 onClick={() => setActiveModal("sponsor")}
-                className="inline-flex items-center gap-2 border-2 border-black bg-black px-6 py-3 [font-FuturaPT] text-sm font-bold uppercase tracking-wider text-[#f2ede4] transition hover:bg-[#e2001a]"
+                className="inline-flex items-center gap-2 border-2 border-black bg-black px-6 py-3 font-futura text-sm font-bold uppercase tracking-wider text-[#f2ede4] transition hover:bg-[#e2001a]"
               >
                 Стати спонсором <ArrowUpRight size={16} />
               </button>
               <a
                 href="#specs"
-                className="inline-flex items-center gap-2 border-2 border-black px-6 py-3 [font-FuturaPT] text-sm font-bold uppercase tracking-wider transition hover:bg-black hover:text-[#f2ede4]"
+                className="inline-flex items-center gap-2 border-2 border-black px-6 py-3 font-futura text-sm font-bold uppercase tracking-wider transition hover:bg-black hover:text-[#f2ede4]"
               >
                 Специфікація
               </a>
@@ -503,7 +503,7 @@ export default function ZlitLanding() {
       {/* VISION — вырезка из зина */}
       <section className="mx-auto max-w-7xl px-6 py-20">
         <div className="reveal-up grid grid-cols-1 gap-8 md:grid-cols-[1fr_1.4fr]">
-          <p className="[font-FuturaPT] text-xs font-bold uppercase tracking-[0.25em] text-[#e2001a]">
+          <p className="font-futura text-xs font-bold uppercase tracking-[0.25em] text-[#e2001a]">
             Чому це важливо
           </p>
           <div className="border-l-4 border-black pl-6">
@@ -527,7 +527,7 @@ export default function ZlitLanding() {
         <div className="relative mx-auto max-w-7xl px-6">
           <div className="reveal-up mb-12 flex items-end justify-between border-b-2 border-[#e2001a] pb-4">
             <h2 className="font-['Oswald'] text-2xl font-bold uppercase md:text-4xl">Специфікація об'єкта</h2>
-            <span className="hidden [font-FuturaPT] text-xs text-white/50 md:block">
+            <span className="hidden font-futura text-xs text-white/50 md:block">
               DWG-ZLIT-001 / REV.03
             </span>
           </div>
@@ -535,7 +535,7 @@ export default function ZlitLanding() {
             {SPECS.map((s) => (
               <div key={s.label} className="bg-black p-6 md:p-8">
                 <StatNumber value={s.value} decimals={s.decimals} />
-                <span className="ml-2 [font-FuturaPT] text-sm text-white/50">{s.unit}</span>
+                <span className="ml-2 font-futura text-sm text-white/50">{s.unit}</span>
                 <p className="mt-2 text-sm font-medium uppercase tracking-wide text-white/60">{s.label}</p>
               </div>
             ))}
@@ -547,7 +547,7 @@ export default function ZlitLanding() {
 
       {/* GALLERY — фото со стройки, "приклеены скотчем" */}
       <section id="gallery" className="mx-auto max-w-7xl px-6 py-20">
-        <p className="reveal-up [font-FuturaPT] text-xs font-bold uppercase tracking-[0.25em] text-[#e2001a]">
+        <p className="reveal-up font-futura text-xs font-bold uppercase tracking-[0.25em] text-[#e2001a]">
           Стройка наживо
         </p>
         <h2 className="reveal-up mt-3 font-['Oswald'] text-3xl font-bold uppercase md:text-5xl">
@@ -568,11 +568,11 @@ export default function ZlitLanding() {
               <div className="tape absolute -top-3 left-1/2 h-6 w-16 -translate-x-1/2 -rotate-1 border border-black/20" />
               {/* Замените div ниже на <img src="..." className="aspect-[4/3] w-full object-cover" /> */}
               <div className="halftone flex aspect-[4/3] w-full items-center justify-center bg-[#d9d3c7]">
-                <span className="[font-FuturaPT] text-[10px] font-bold uppercase tracking-widest text-black/40">
+                <span className="font-futura text-[10px] font-bold uppercase tracking-widest text-black/40">
                   ФОТО {g.id}
                 </span>
               </div>
-              <figcaption className="mt-2 text-center [font-FuturaPT] text-[11px] font-bold uppercase tracking-wide text-black/70">
+              <figcaption className="mt-2 text-center font-futura text-[11px] font-bold uppercase tracking-wide text-black/70">
                 {g.caption}
               </figcaption>
             </figure>
@@ -583,7 +583,7 @@ export default function ZlitLanding() {
       {/* CONFIRMED PARTNERS — trust bar */}
       <section className="border-y-2 border-black bg-[#e9e3d6] py-10">
         <div className="mx-auto max-w-7xl px-6">
-          <p className="reveal-up mb-6 text-center [font-FuturaPT] text-xs font-bold uppercase tracking-[0.25em] text-black/50">
+          <p className="reveal-up mb-6 text-center font-futura text-xs font-bold uppercase tracking-[0.25em] text-black/50">
             Вже з нами
           </p>
           <div className="reveal-up flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
@@ -602,7 +602,7 @@ export default function ZlitLanding() {
 
       {/* SPONSORS */}
       <section id="sponsors" className="mx-auto max-w-7xl px-6 py-20">
-        <p className="reveal-up [font-FuturaPT] text-xs font-bold uppercase tracking-[0.25em] text-[#e2001a]">
+        <p className="reveal-up font-futura text-xs font-bold uppercase tracking-[0.25em] text-[#e2001a]">
           Партнерство
         </p>
         <h2 className="reveal-up mt-3 max-w-2xl font-['Oswald'] text-4xl font-bold uppercase leading-none md:text-6xl">
@@ -619,7 +619,7 @@ export default function ZlitLanding() {
             >
               <div>
                 <span
-                  className={`[font-FuturaPT] text-xs font-bold ${
+                  className={`font-futura text-xs font-bold ${
                     t.highlight ? "text-[#e2001a]" : "text-black/50"
                   }`}
                 >
@@ -632,7 +632,7 @@ export default function ZlitLanding() {
               </div>
               <button
                 onClick={() => setActiveModal("sponsor")}
-                className={`mt-7 inline-flex items-center gap-1 self-start [font-FuturaPT] text-xs font-bold uppercase tracking-widest ${
+                className={`mt-7 inline-flex items-center gap-1 self-start font-futura text-xs font-bold uppercase tracking-widest ${
                   t.highlight ? "text-[#e2001a]" : "text-black"
                 }`}
               >
@@ -647,7 +647,7 @@ export default function ZlitLanding() {
       <section className="border-y-2 border-black bg-black py-20 text-[#f2ede4]">
         <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-6 md:grid-cols-2">
           <div className="reveal-up">
-            <p className="[font-FuturaPT] text-xs font-bold uppercase tracking-[0.25em] text-[#e2001a]">
+            <p className="font-futura text-xs font-bold uppercase tracking-[0.25em] text-[#e2001a]">
               Тренерам і федераціям
             </p>
             <h2 className="mt-3 font-['Oswald'] text-3xl font-bold uppercase leading-none md:text-5xl">
@@ -660,12 +660,12 @@ export default function ZlitLanding() {
             </p>
             <button
               onClick={() => setActiveModal("trainer")}
-              className="mt-7 inline-flex items-center gap-2 border-2 border-[#f2ede4] px-6 py-3 [font-FuturaPT] text-sm font-bold uppercase tracking-wider transition hover:bg-[#e2001a] hover:border-[#e2001a]"
+              className="mt-7 inline-flex items-center gap-2 border-2 border-[#f2ede4] px-6 py-3 font-futura text-sm font-bold uppercase tracking-wider transition hover:bg-[#e2001a] hover:border-[#e2001a]"
             >
               Долучитися як тренер / партнер <ArrowUpRight size={16} />
             </button>
           </div>
-          <div className="reveal-up grid grid-cols-2 gap-px overflow-hidden border-2 border-white/10 bg-white/10 [font-FuturaPT] text-sm">
+          <div className="reveal-up grid grid-cols-2 gap-px overflow-hidden border-2 border-white/10 bg-white/10 font-futura text-sm">
             {["Bowl", "Vert", "Street Plaza", "Mini-ramp", "Foam Pit", "Mega Ramp"].map((zone) => (
               <div key={zone} className="bg-black px-5 py-6 text-white/60">
                 {zone}
@@ -678,7 +678,7 @@ export default function ZlitLanding() {
       {/* RIDERS */}
       <section className="mx-auto max-w-7xl px-6 py-20">
         <div className="reveal-up mx-auto max-w-xl text-center">
-          <span className="stamp inline-block rotate-3 border-3 px-3 py-1 [font-FuturaPT] text-xs font-bold uppercase tracking-widest">
+          <span className="stamp inline-block rotate-3 border-3 px-3 py-1 font-futura text-xs font-bold uppercase tracking-widest">
             Riders Only
           </span>
           <h2 className="mt-5 font-['Oswald'] text-4xl font-bold uppercase md:text-5xl">
@@ -690,7 +690,7 @@ export default function ZlitLanding() {
           </p>
           <button
             onClick={() => setActiveModal("rider")}
-            className="mt-8 inline-flex items-center gap-2 bg-black px-7 py-3 [font-FuturaPT] text-sm font-bold uppercase tracking-wider text-[#f2ede4] transition hover:bg-[#e2001a]"
+            className="mt-8 inline-flex items-center gap-2 bg-black px-7 py-3 font-futura text-sm font-bold uppercase tracking-wider text-[#f2ede4] transition hover:bg-[#e2001a]"
           >
             Отримати ранній доступ <ArrowUpRight size={16} />
           </button>
@@ -721,7 +721,7 @@ export default function ZlitLanding() {
                     {r.step}
                   </span>
                   <div>
-                    <p className="[font-FuturaPT] text-xs font-bold uppercase tracking-widest text-black/50">
+                    <p className="font-futura text-xs font-bold uppercase tracking-widest text-black/50">
                       {r.period}
                     </p>
                     <h3 className="mt-1 font-['Oswald'] text-xl font-bold uppercase md:text-2xl">
@@ -760,26 +760,26 @@ export default function ZlitLanding() {
             <div className="mt-8 flex flex-wrap gap-3">
               <button
                 onClick={() => setActiveModal("sponsor")}
-                className="border-2 border-[#f2ede4] px-5 py-2.5 [font-FuturaPT] text-xs font-bold uppercase tracking-widest transition hover:bg-[#e2001a] hover:border-[#e2001a]"
+                className="border-2 border-[#f2ede4] px-5 py-2.5 font-futura text-xs font-bold uppercase tracking-widest transition hover:bg-[#e2001a] hover:border-[#e2001a]"
               >
                 Спонсорам
               </button>
               <button
                 onClick={() => setActiveModal("trainer")}
-                className="border-2 border-[#f2ede4] px-5 py-2.5 [font-FuturaPT] text-xs font-bold uppercase tracking-widest transition hover:bg-[#e2001a] hover:border-[#e2001a]"
+                className="border-2 border-[#f2ede4] px-5 py-2.5 font-futura text-xs font-bold uppercase tracking-widest transition hover:bg-[#e2001a] hover:border-[#e2001a]"
               >
                 Тренерам
               </button>
               <button
                 onClick={() => setActiveModal("rider")}
-                className="border-2 border-[#f2ede4] px-5 py-2.5 [font-FuturaPT] text-xs font-bold uppercase tracking-widest transition hover:bg-[#e2001a] hover:border-[#e2001a]"
+                className="border-2 border-[#f2ede4] px-5 py-2.5 font-futura text-xs font-bold uppercase tracking-widest transition hover:bg-[#e2001a] hover:border-[#e2001a]"
               >
                 Райдерам
               </button>
             </div>
             <a
               href="mailto:hello@zlit.kyiv.ua"
-              className="mt-8 inline-flex items-center gap-2 border-b-2 border-[#f2ede4] pb-1 [font-FuturaPT] text-lg"
+              className="mt-8 inline-flex items-center gap-2 border-b-2 border-[#f2ede4] pb-1 font-futura text-lg"
             >
               <Mail size={18} /> hello@zlit.kyiv.ua
             </a>
@@ -798,7 +798,7 @@ export default function ZlitLanding() {
                 <Send size={18} />
               </a>
             </div>
-            <span className="[font-FuturaPT] text-xs text-white/40">
+            <span className="font-futura text-xs text-white/40">
               Kyiv, Ukraine © {new Date().getFullYear()}
             </span>
           </div>
