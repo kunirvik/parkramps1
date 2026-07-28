@@ -1,4 +1,4 @@
-.skatepark {
+/* .skatepark {
 
 position:relative;
 
@@ -74,6 +74,93 @@ border-radius:8px;
 opacity:0;
 
 transform:translateY(10px);
+
+white-space:nowrap;
+
+} */
+
+
+.skatepark{
+
+position:relative;
+
+width:100%;
+
+max-width:1200px;
+
+margin:auto;
+
+}
+
+
+
+.park-image{
+
+display:block;
+
+width:100%;
+
+height:auto;
+
+}
+
+
+
+
+.park-layer{
+
+position:absolute;
+
+left:0;
+top:0;
+
+width:100%;
+
+height:100%;
+
+object-fit:contain;
+
+opacity:0;
+
+pointer-events:none;
+
+}
+
+
+
+
+.hotspot{
+
+position:absolute;
+
+cursor:pointer;
+
+}
+
+
+
+
+.skate-tooltip{
+
+position:fixed;
+
+z-index:50;
+
+pointer-events:none;
+
+padding:10px 16px;
+
+background:#111;
+
+color:white;
+
+font-size:18px;
+
+font-weight:600;
+
+border-radius:8px;
+
+opacity:0;
 
 white-space:nowrap;
 

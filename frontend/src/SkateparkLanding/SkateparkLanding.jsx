@@ -1383,8 +1383,9 @@ export default function ZlitLanding() {
           </div> */}
         </div>
       </section>
-<Skatepark></Skatepark>
       <HazardMarquee />
+<Skatepark></Skatepark>
+      
 
       {/* VISION — витяг із зіну */}
       <section className="mx-auto max-w-7xl px-6 py-20">
@@ -1394,8 +1395,8 @@ export default function ZlitLanding() {
           </p>
           <div className="border-l-4 border-black pl-6">
             <h2 className="font-futura text-4xl font-bold uppercase leading-[0.95] md:text-6xl">
-              В Україні немає критого парку такого масштабу.
-              <span className="text-black/50"> Ми будуємо перший.</span>
+              В Україні дефицит критих скейтпарків. 
+              <span className="text-black/50">Ми це виправляємо.</span>
             </h2>
             <p className="mt-6 max-w-2xl font-medium text-black/70">
               Парк поділений на кілька умовних зон — кожен знайде свою
