@@ -1281,6 +1281,7 @@ export default function ZlitLanding() {
 
   return (
     <div className="min-h-screen bg-[#f2ede4] font-futura text-black antialiased">
+      <CursorImageTrail></CursorImageTrail>
       <GrungeStyles />
 
       {/* NAV — два лого через "×" */}
