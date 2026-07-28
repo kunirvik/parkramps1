@@ -1163,7 +1163,7 @@ function Modal({ type, onClose }) {
             ))}
             <button
               type="submit"
-              className="mt-2 bg-black px-6 py-3 font-futura text-sm font-bold uppercase tracking-widest text-[#f2ede4] transition hover:bg-[#e2001a]"
+              className="mt-2 bg-black px-6 py-3 font-futura text-sm font-bold uppercase tracking-widest text-rgb(242, 237, 228) transition hover:bg-[#e2001a]"
             >
               Надіслати
             </button>
@@ -1309,7 +1309,7 @@ export default function ZlitLanding() {
 
           <button
             onClick={() => setActiveModal("sponsor")}
-            className="border-2 border-black bg-[#e2001a] px-3 py-2 font-futura text-[11px] font-bold uppercase tracking-widest text-[#f2ede4] transition hover:bg-black md:px-4 md:text-xs"
+            className="border-2 border-black bg-rgb(226, 0, 218) px-3 py-2 font-futura text-[11px] font-bold uppercase tracking-widest text-[#f2ede4] transition hover:bg-black md:px-4 md:text-xs"
           >
             Партнерство
           </button>
