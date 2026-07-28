@@ -1366,7 +1366,7 @@ export default function ZlitLanding() {
               className="hero-reveal mt-6 font-futura text-7xl font-black uppercase leading-[0.85] tracking-tight md:text-9xl"
               style={{ textShadow: "5px 5px 0 #e2009a" }}
             >
-              Zlit
+            skatepark
             </h1>
             <p className="hero-reveal mt-4 max-w-md font-futura text-sm uppercase tracking-wide text-black/70">
               Київ · Правий берег · Зелена лінія метро
