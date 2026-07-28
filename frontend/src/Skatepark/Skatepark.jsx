@@ -279,10 +279,18 @@ const figures = [
 
 export default function Skatepark(){
 
+    const [coords,setCoords] = useState({
+  x:0,
+  y:0
+}); 
+
+
 const layers = useRef({});
 const tooltip = useRef(null);
 
 const [active,setActive]=useState(null);
+
+
 
 
 
@@ -326,6 +334,8 @@ duration:.3
 
 
 }
+
+
 
 
 
@@ -380,7 +390,25 @@ duration:.1
 
 
 }
+const showCoords = (e)=>{
 
+const rect = e.currentTarget.getBoundingClientRect();
+
+
+const x = ((e.clientX - rect.left) / rect.width) * 100;
+
+const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+
+setCoords({
+ x:x.toFixed(2),
+ y:y.toFixed(2)
+});
+
+
+moveTooltip(e);
+
+};
 
 
 
@@ -388,7 +416,9 @@ return (
 
 <div
 className="skatepark"
-onMouseMove={moveTooltip}
+//onMouseMove={moveTooltip}
+onMouseMove={showCoords}
+
 >
 
 
@@ -469,6 +499,14 @@ className="skate-tooltip"
 >
 
 {active}
+
+</div>
+
+
+<div className="coordinates z-1111111111111">
+
+left: {coords.x}% <br/>
+top: {coords.y}%
 
 </div>
 

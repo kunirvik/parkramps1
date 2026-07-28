@@ -165,3 +165,27 @@ opacity:0;
 white-space:nowrap;
 
 }
+
+
+.coordinates{
+
+position:fixed;
+
+top:20px;
+left:20px;
+
+background:black;
+
+color:white;
+
+padding:12px;
+
+font-size:18px;
+
+font-family:monospace;
+
+z-index:100;
+
+border-radius:8px;
+
+}
