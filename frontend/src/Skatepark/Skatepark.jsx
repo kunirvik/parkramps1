@@ -221,7 +221,7 @@
 import { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
 import "../Skatepark/Skatepark.css";
-import { ReactComponent as ParkMap } from "../Skatepark/park.svg";
+import ParkMap from "../Skatepark/park.svg?react";
 
 const figures = [
   { id: "quater",   title: "quarter",       image: "..." },
