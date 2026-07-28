@@ -205,7 +205,7 @@ function RampBlueprint({ pathRef, className }) {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <text x="24" y="270" fill="#8a8a8a" fontFamiy="['futura]" fontSize="10" letterSpacing="1">
+      <text x="24" y="270" fill="#8a8a8a"  fontSize="10" letterSpacing="1">
         SECTION A—A · VERT + BOWL · SCALE 1:120
       </text>
     </svg>
@@ -215,7 +215,7 @@ function RampBlueprint({ pathRef, className }) {
 function StatNumber({ value, decimals }) {
   return (
     <span
-      className="stat-number fnt-['futura] text-6xl font-semibold leading-none text-[#f2ede4] md:text-7xl"
+      className="stat-number font-futura text-6xl font-semibold leading-none text-[#f2ede4] md:text-7xl"
       data-value={value}
       data-decimals={decimals}
     >
@@ -258,7 +258,7 @@ function Modal({ type, onClose }) {
         <p className="font-futura text-xs font-bold uppercase tracking-[0.2em] text-[#e2001a]">
           {config.tag}
         </p>
-        <h3 className="mt-2 font-['Oswald'] text-3xl font-bold uppercase leading-none">
+        <h3 className="mt-2 font-futura text-3xl font-bold uppercase leading-none">
           {config.title}
         </h3>
 
@@ -417,13 +417,13 @@ export default function ZlitLanding() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6">
           <div className="flex items-center gap-3">
             <div className="border-2 border-black px-3 py-1.5">
-              <span className="font-['Oswald'] text-sm font-bold uppercase tracking-wide">
+              <span className="font-futura text-sm font-bold uppercase tracking-wide">
                 {BUILDER_LOGO}
               </span>
             </div>
-            <span className="font-['Oswald'] text-xl font-black text-[#e2001a]">×</span>
+            <span className="font-futura text-xl font-black text-[#e2001a]">×</span>
             <div className="border-2 border-black bg-black px-3 py-1.5">
-              <span className="font-['Oswald'] text-sm font-bold uppercase tracking-wide text-[#f2ede4]">
+              <span className="font-futura text-sm font-bold uppercase tracking-wide text-[#f2ede4]">
                 {PARTNER_LOGO}
               </span>
             </div>
@@ -464,7 +464,7 @@ export default function ZlitLanding() {
               Under Construction
             </span>
             <h1
-              className="hero-reveal mt-6 font-['Oswald'] text-7xl font-black uppercase leading-[0.85] tracking-tight md:text-9xl"
+              className="hero-reveal mt-6 font-futura text-7xl font-black uppercase leading-[0.85] tracking-tight md:text-9xl"
               style={{ textShadow: "5px 5px 0 #e2001a" }}
             >
               Zlit
@@ -507,7 +507,7 @@ export default function ZlitLanding() {
             Чому це важливо
           </p>
           <div className="border-l-4 border-black pl-6">
-            <h2 className="font-['Oswald'] text-4xl font-bold uppercase leading-[0.95] md:text-6xl">
+            <h2 className="font-futura text-4xl font-bold uppercase leading-[0.95] md:text-6xl">
               В Україні немає критого парку такого масштабу.
               <span className="text-black/50"> Ми будуємо перший.</span>
             </h2>
@@ -526,7 +526,7 @@ export default function ZlitLanding() {
         <div className="halftone-red pointer-events-none absolute inset-0 opacity-[0.08]" />
         <div className="relative mx-auto max-w-7xl px-6">
           <div className="reveal-up mb-12 flex items-end justify-between border-b-2 border-[#e2001a] pb-4">
-            <h2 className="font-['Oswald'] text-2xl font-bold uppercase md:text-4xl">Специфікація об'єкта</h2>
+            <h2 className="font-futura text-2xl font-bold uppercase md:text-4xl">Специфікація об'єкта</h2>
             <span className="hidden font-futura text-xs text-white/50 md:block">
               DWG-ZLIT-001 / REV.03
             </span>
@@ -550,7 +550,7 @@ export default function ZlitLanding() {
         <p className="reveal-up font-futura text-xs font-bold uppercase tracking-[0.25em] text-[#e2001a]">
           Стройка наживо
         </p>
-        <h2 className="reveal-up mt-3 font-['Oswald'] text-3xl font-bold uppercase md:text-5xl">
+        <h2 className="reveal-up mt-3 font-futura text-3xl font-bold uppercase md:text-5xl">
           Прогрес об'єкта
         </h2>
         <p className="reveal-up mt-3 max-w-xl text-black/60">
@@ -591,7 +591,7 @@ export default function ZlitLanding() {
               // Замените span на <img src="..." className="h-8 w-auto grayscale opacity-70" />
               <span
                 key={p}
-                className="font-['Oswald'] text-lg font-bold uppercase tracking-wide text-black/40"
+                className="font-futura text-lg font-bold uppercase tracking-wide text-black/40"
               >
                 {p}
               </span>
@@ -605,7 +605,7 @@ export default function ZlitLanding() {
         <p className="reveal-up font-futura text-xs font-bold uppercase tracking-[0.25em] text-[#e2001a]">
           Партнерство
         </p>
-        <h2 className="reveal-up mt-3 max-w-2xl font-['Oswald'] text-4xl font-bold uppercase leading-none md:text-6xl">
+        <h2 className="reveal-up mt-3 max-w-2xl font-futura text-4xl font-bold uppercase leading-none md:text-6xl">
           Три способи бути частиною першого зльоту
         </h2>
 
@@ -625,7 +625,7 @@ export default function ZlitLanding() {
                 >
                   {t.code}
                 </span>
-                <h3 className="mt-2 font-['Oswald'] text-2xl font-bold uppercase">{t.name}</h3>
+                <h3 className="mt-2 font-futura text-2xl font-bold uppercase">{t.name}</h3>
                 <p className={`mt-4 text-sm leading-relaxed ${t.highlight ? "text-white/70" : "text-black/70"}`}>
                   {t.desc}
                 </p>
@@ -650,7 +650,7 @@ export default function ZlitLanding() {
             <p className="font-futura text-xs font-bold uppercase tracking-[0.25em] text-[#e2001a]">
               Тренерам і федераціям
             </p>
-            <h2 className="mt-3 font-['Oswald'] text-3xl font-bold uppercase leading-none md:text-5xl">
+            <h2 className="mt-3 font-futura text-3xl font-bold uppercase leading-none md:text-5xl">
               Об'єкт олімпійського рівня потребує команди олімпійського рівня
             </h2>
             <p className="mt-5 text-white/70">
@@ -681,7 +681,7 @@ export default function ZlitLanding() {
           <span className="stamp inline-block rotate-3 border-3 px-3 py-1 font-futura text-xs font-bold uppercase tracking-widest">
             Riders Only
           </span>
-          <h2 className="mt-5 font-['Oswald'] text-4xl font-bold uppercase md:text-5xl">
+          <h2 className="mt-5 font-futura text-4xl font-bold uppercase md:text-5xl">
             Стань першим на старті
           </h2>
           <p className="mt-4 text-black/70">
@@ -700,7 +700,7 @@ export default function ZlitLanding() {
       {/* ROADMAP */}
       <section id="roadmap" ref={roadmapRef} className="border-t-2 border-black bg-[#e9e3d6] py-20">
         <div className="mx-auto max-w-4xl px-6">
-          <h2 className="reveal-up font-['Oswald'] text-2xl font-bold uppercase md:text-4xl">
+          <h2 className="reveal-up font-futura text-2xl font-bold uppercase md:text-4xl">
             Хід будівництва
           </h2>
           <div className="relative mt-12">
@@ -724,7 +724,7 @@ export default function ZlitLanding() {
                     <p className="font-futura text-xs font-bold uppercase tracking-widest text-black/50">
                       {r.period}
                     </p>
-                    <h3 className="mt-1 font-['Oswald'] text-xl font-bold uppercase md:text-2xl">
+                    <h3 className="mt-1 font-futura text-xl font-bold uppercase md:text-2xl">
                       {r.title}
                     </h3>
                   </div>
@@ -747,7 +747,7 @@ export default function ZlitLanding() {
         <div className="relative mx-auto max-w-7xl px-6 pb-16">
           <div className="reveal-up max-w-2xl">
             <h2
-              className="font-['Oswald'] text-5xl font-black uppercase leading-[0.85] md:text-7xl"
+              className="font-futura text-5xl font-black uppercase leading-[0.85] md:text-7xl"
               style={{ textShadow: "4px 4px 0 #e2001a" }}
             >
               Долучайся
@@ -786,7 +786,7 @@ export default function ZlitLanding() {
           </div>
 
           <div className="mt-16 flex flex-col items-start justify-between gap-6 border-t-2 border-white/15 pt-8 md:flex-row md:items-center">
-            <span className="font-['Oswald'] text-lg font-black uppercase">ZLIT</span>
+            <span className="font-futura text-lg font-black uppercase">ZLIT</span>
             <div className="flex gap-5 text-white/60">
               <a href="#" aria-label="Instagram" className="transition hover:text-[#e2001a]">
                 <Instagram size={18} />
