@@ -1003,8 +1003,8 @@ function GrungeStyles() {
         mix-blend-mode: multiply;
       }
       .hero-photo-duotone {
-        filter: grayscale(1) contrast(1.15);
-        mix-blend-mode: luminosity;
+      
+       
       }
       .no-scrollbar {
         scrollbar-width: none;
@@ -1320,7 +1320,7 @@ export default function ZlitLanding() {
       <section className="relative overflow-hidden pt-28 pb-16 md:pt-36">
         {/* Фоновий колаж фото: замініть src у HERO_BG_PHOTOS на реальні яскраві кадри стройки.
             duotone/halftone оверлей зверху тримає весь колаж у стилі thrasher-зіну. */}
-        <div className="pointer-events-none absolute inset-0 grid grid-cols-3 opacity-70 md:opacity-80">
+        {/* <div className="pointer-events-none absolute inset-0 grid grid-cols-3 opacity-70 md:opacity-80">
           {HERO_BG_PHOTOS.map((p) =>
             p.src ? (
               <img
@@ -1333,9 +1333,19 @@ export default function ZlitLanding() {
               <div key={p.id} className="hero-bg-photo h-full w-full bg-[#d9d3c7]" />
             )
           )}
-        </div>
+
+          
+        </div> */}
+
+        <div className="pointer-events-none absolute inset-0">
+  <img
+    src={HERO_BG_PHOTOS[0].src}
+    alt={HERO_BG_PHOTOS[0].alt}
+    className="h-full w-full object-cover"
+  />
+</div>
         <div className="halftone pointer-events-none absolute inset-0 opacity-20" />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#f2ede4] via-[#f2ede4]/85 to-[#f2ede4]/60" />
+        {/* <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#f2ede4] via-[#f2ede4]/85 to-[#f2ede4]/60" /> */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-30">
           {Array.from({ length: 5 }).map((_, i) => (
             <div
