@@ -1056,7 +1056,7 @@ function RampBlueprint({ pathRef, className }) {
       <path
         ref={pathRef}
         d="M 20 250 L 140 250 C 200 250 200 130 260 130 C 300 130 300 60 300 20 M 300 130 C 340 130 340 250 400 250 L 580 250"
-        stroke="#e2001a"
+        stroke="#e200a9"
         strokeWidth="3"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -1353,7 +1353,7 @@ export default function ZlitLanding() {
             </span>
             <h1
               className="hero-reveal mt-6 font-futura text-7xl font-black uppercase leading-[0.85] tracking-tight md:text-9xl"
-              style={{ textShadow: "5px 5px 0 #e2001a" }}
+              style={{ textShadow: "5px 5px 0 #e2009a" }}
             >
               Zlit
             </h1>
@@ -1706,14 +1706,14 @@ export default function ZlitLanding() {
           className="absolute inset-0 opacity-[0.05]"
           style={{
             backgroundImage:
-              "repeating-linear-gradient(135deg, #e2001a 0px, #e2001a 22px, transparent 22px, transparent 44px)",
+              "repeating-linear-gradient(135deg, #e20084 0px, #e2001a 22px, transparent 22px, transparent 44px)",
           }}
         />
         <div className="relative mx-auto max-w-7xl px-6 pb-16">
           <div className="reveal-up max-w-2xl">
             <h2
               className="font-futura text-5xl font-black uppercase leading-[0.85] md:text-7xl"
-              style={{ textShadow: "4px 4px 0 #e2001a" }}
+              style={{ textShadow: "4px 4px 0 #e20088" }}
             >
               Долучайся
               <br /> до зльоту
