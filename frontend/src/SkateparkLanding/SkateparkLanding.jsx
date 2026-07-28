@@ -843,9 +843,9 @@ const PARTNER_LOGO = "volt"; // для кого будують / бренд-ін
 // Замініть src на реальні яскраві фото стройки — вони йдуть під halftone/duotone
 // оверлеєм у стилі журналу, тому чим контрастніше фото, тим краще.
 const HERO_BG_PHOTOS = [
-  { id: 1, src: "/images/skateparks/park4front.png", alt: "Каркас об'єкта, вигляд збоку" },
-  { id: 2, src: "/images/skateparks/park2front.png", alt: "Монтаж ферм покрівлі" },
-  { id: 3, src: "/images/skateparks/park2top.png", alt: "Загальний вигляд, дрон" },
+  { id: 1, src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785253160/photo_2026-07-28_18-37-46_ceomex.jpg", alt: "Каркас об'єкта, вигляд збоку" },
+  // { id: 2, src: "/images/skateparks/park2front.png", alt: "Монтаж ферм покрівлі" },
+  // { id: 3, src: "/images/skateparks/park2top.png", alt: "Загальний вигляд, дрон" },
 ];
 
 const SPECS = [
@@ -1320,7 +1320,7 @@ export default function ZlitLanding() {
       <section className="relative overflow-hidden pt-28 pb-16 md:pt-36">
         {/* Фоновий колаж фото: замініть src у HERO_BG_PHOTOS на реальні яскраві кадри стройки.
             duotone/halftone оверлей зверху тримає весь колаж у стилі thrasher-зіну. */}
-        <div className="pointer-events-none absolute inset-0 grid grid-cols-3 opacity-40 md:opacity-50">
+        <div className="pointer-events-none absolute inset-0 grid grid-cols-3 opacity-70 md:opacity-80">
           {HERO_BG_PHOTOS.map((p) =>
             p.src ? (
               <img
