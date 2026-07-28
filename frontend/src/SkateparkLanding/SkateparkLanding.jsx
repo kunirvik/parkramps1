@@ -1042,31 +1042,31 @@ function HazardMarquee() {
   );
 }
 
-function RampBlueprint({ pathRef, className }) {
-  return (
-    <svg viewBox="0 0 600 300" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
-      <g stroke="#3a3a3a" strokeWidth="1" strokeDasharray="2 4" opacity="0.5">
-        <line x1="0" y1="50" x2="600" y2="50" />
-        <line x1="0" y1="150" x2="600" y2="150" />
-        <line x1="0" y1="250" x2="600" y2="250" />
-        <line x1="100" y1="0" x2="100" y2="300" />
-        <line x1="300" y1="0" x2="300" y2="300" />
-        <line x1="500" y1="0" x2="500" y2="300" />
-      </g>
-      <path
-        ref={pathRef}
-        d="M 20 250 L 140 250 C 200 250 200 130 260 130 C 300 130 300 60 300 20 M 300 130 C 340 130 340 250 400 250 L 580 250"
-        stroke="#e200a9"
-        strokeWidth="3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <text x="24" y="270" fill="#8a8a8a" fontFamily="FuturaPT" fontSize="10" letterSpacing="1">
-        SECTION A—A · VERT + BOWL · SCALE 1:120
-      </text>
-    </svg>
-  );
-}
+// function RampBlueprint({ pathRef, className }) {
+//   return (
+//     <svg viewBox="0 0 600 300" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+//       <g stroke="#3a3a3a" strokeWidth="1" strokeDasharray="2 4" opacity="0.5">
+//         <line x1="0" y1="50" x2="600" y2="50" />
+//         <line x1="0" y1="150" x2="600" y2="150" />
+//         <line x1="0" y1="250" x2="600" y2="250" />
+//         <line x1="100" y1="0" x2="100" y2="300" />
+//         <line x1="300" y1="0" x2="300" y2="300" />
+//         <line x1="500" y1="0" x2="500" y2="300" />
+//       </g>
+//       <path
+//         ref={pathRef}
+//         d="M 20 250 L 140 250 C 200 250 200 130 260 130 C 300 130 300 60 300 20 M 300 130 C 340 130 340 250 400 250 L 580 250"
+//         stroke="#e200a9"
+//         strokeWidth="3"
+//         strokeLinecap="round"
+//         strokeLinejoin="round"
+//       />
+//       <text x="24" y="270" fill="#8a8a8a" fontFamily="FuturaPT" fontSize="10" letterSpacing="1">
+//         SECTION A—A · VERT + BOWL · SCALE 1:120
+//       </text>
+//     </svg>
+//   );
+// }
 
 function StatNumber({ value, decimals, custom }) {
   if (custom) {
@@ -1384,10 +1384,10 @@ export default function ZlitLanding() {
               </a>
             </div>
           </div>
-
+{/* 
           <div className="hero-reveal relative border-4 border-black bg-black p-4">
             <RampBlueprint pathRef={heroPathRef} className="w-full" />
-          </div>
+          </div> */}
         </div>
       </section>
 
