@@ -260,7 +260,7 @@ const figures = [
     id:"vertwall",
     title:"Vertical Wall",
 
-    image:"https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual9_2_jrzknr.jpg",
+    image:"https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual8_2_zwmivn.jpg",
 
     area:{
       left:"5.50%",
