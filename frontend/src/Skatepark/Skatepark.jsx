@@ -263,10 +263,10 @@ const figures = [
     image:"https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual9_2_jrzknr.jpg",
 
     area:{
-      left:"40%",
-      top:"60%",
-      width:"15%",
-      height:"10%"
+      left:"5.50%",
+      top:"38.50%",
+      width:"20%",
+      height:"40%"
     }
   },
 
