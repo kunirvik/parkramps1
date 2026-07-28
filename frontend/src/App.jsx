@@ -14,7 +14,7 @@ import BlogPostModal from "./blog/components/BlogPostModal";
 import AdminPage from "./blog/components/Adminpage";
 import GalleryRoute from "./GalleryRoute";
 import MarketplacePage from "./Marketplacepage/Marketplacepage";
-import Zlitlanding from "./Zlitlanding/Zlitlanding";
+import Zlitlanding from "./SkateparkLanding/SkateparkLanding";
 
 function App() {
   const location = useLocation();
