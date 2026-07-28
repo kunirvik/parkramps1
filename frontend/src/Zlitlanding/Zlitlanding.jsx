@@ -1,25 +1,33 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ArrowUpRight, Mail, Instagram, Youtube, Send } from "lucide-react";
+import { ArrowUpRight, Mail, Instagram, Youtube, Send, X as CloseIcon } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
 /**
- * ZLIT — лендинг для крытого эир-скейтпарка в Киеве.
+ * ZLIT — лендинг крытого эир-скейтпарка в Киеве.
+ * Стиль: thrasher-zine × X Games broadcast.
  *
  * Установка:
  *   npm install gsap lucide-react
  *
- * Шрифты (добавьте в index.html <head> или в globals.css через @import):
- *   https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900
- *     &family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap
+ * Шрифты (добавьте в public/index.html <head>):
+ *   https://fonts.googleapis.com/css2?family=Oswald:wght@500;700;900
+ *     &family=Teko:wght@500;600;700&family=Inter:wght@400;500;600
+ *     &family=JetBrains+Mono:wght@400;500;700&display=swap
  *
- * Everything below uses Tailwind arbitrary values, so no tailwind.config
- * changes are required — but see README.md for a cleaner token setup.
+ * ЗАМЕНИТЕ:
+ *  - BUILDER_LOGO / PARTNER_LOGO — два лого в шапке
+ *  - GALLERY — фото со стройки (сейчас плейсхолдеры)
+ *  - CONFIRMED_PARTNERS — логотипы подтверждённых партнёров
+ *  - SPECS / TIERS / ROADMAP — реальные данные
  */
 
 // ---------- Данные (замените на реальные) ----------
+
+const BUILDER_LOGO = "BUILD CO."; // кто строит
+const PARTNER_LOGO = "ZLIT CREW"; // для кого строят / бренд-инициатор
 
 const SPECS = [
   { label: "Площа комплексу", value: 4700, unit: "м²", decimals: 0 },
@@ -29,6 +37,17 @@ const SPECS = [
   { label: "Пропускна здатність", value: 450, unit: "райдерів/день", decimals: 0 },
   { label: "Зон катання", value: 6, unit: "дисциплін", decimals: 0 },
 ];
+
+const GALLERY = [
+  { id: 1, caption: "ФУНДАМЕНТ · 03.2026" },
+  { id: 2, caption: "КАРКАС ПІВНІЧНОЇ СТІНИ" },
+  { id: 3, caption: "МОНТАЖ ФЕРМ ПОКРІВЛІ" },
+  { id: 4, caption: "BOWL, ЧОРНОВА ГЕОМЕТРІЯ" },
+  { id: 5, caption: "VERT WALL, ОПАЛУБКА" },
+  { id: 6, caption: "ЗАГАЛЬНИЙ ВИГЛЯД, ДРОН" },
+];
+
+const CONFIRMED_PARTNERS = ["VANS", "RED BULL", "NOVA POSHTA", "KYIVSTAR", "MONSTER"]; // плейсхолдер
 
 const TIERS = [
   {
@@ -58,27 +77,108 @@ const ROADMAP = [
   { step: "04", title: "Тестові заїзди, сертифікація, відкриття", period: "2027 Q2", status: "upcoming" },
 ];
 
+// ---------- Формы модалок по аудиториям ----------
+
+const MODAL_CONFIG = {
+  sponsor: {
+    title: "Спонсорський запит",
+    tag: "SPONSOR / PARTNER INQUIRY",
+    fields: [
+      { name: "company", label: "Компанія", type: "text", required: true },
+      { name: "contact", label: "Контактна особа", type: "text", required: true },
+      { name: "email", label: "Email", type: "email", required: true },
+      {
+        name: "tier",
+        label: "Цікавий пакет",
+        type: "select",
+        options: ["Title Partner", "Structural Partner", "Community Partner", "Ще не визначились"],
+      },
+      { name: "message", label: "Коментар", type: "textarea" },
+    ],
+  },
+  trainer: {
+    title: "Заявка тренера / федерації",
+    tag: "COACH / FEDERATION APPLICATION",
+    fields: [
+      { name: "name", label: "Ім'я", type: "text", required: true },
+      {
+        name: "role",
+        label: "Хто ви",
+        type: "select",
+        options: ["Тренер", "Федерація", "Бренд екіпіровки", "Інше"],
+      },
+      { name: "experience", label: "Досвід / деталі", type: "textarea" },
+      { name: "email", label: "Email", type: "email", required: true },
+    ],
+  },
+  rider: {
+    title: "Реєстрація райдера",
+    tag: "EARLY ACCESS WAITLIST",
+    fields: [
+      { name: "name", label: "Ім'я", type: "text", required: true },
+      { name: "email", label: "Email", type: "email", required: true },
+      {
+        name: "discipline",
+        label: "Дисципліна",
+        type: "select",
+        options: ["Street", "Bowl", "Vert", "Mini-ramp", "Все з перерахованого"],
+      },
+    ],
+  },
+};
+
 // ---------- Допоміжні компоненти ----------
+
+function GrungeStyles() {
+  // Глобальные текстуры/паттерны, инжектим один раз.
+  return (
+    <style>{`
+      .halftone {
+        background-image: radial-gradient(circle, #000 1px, transparent 1.4px);
+        background-size: 6px 6px;
+      }
+      .halftone-red {
+        background-image: radial-gradient(circle, #e2001a 1px, transparent 1.4px);
+        background-size: 7px 7px;
+      }
+      .torn-top {
+        clip-path: polygon(
+          0% 12px, 4% 0, 9% 10px, 14% 2px, 19% 12px, 24% 0, 29% 9px, 34% 1px, 39% 11px,
+          44% 3px, 49% 12px, 54% 0, 59% 9px, 64% 2px, 69% 12px, 74% 0, 79% 10px, 84% 1px,
+          89% 11px, 94% 3px, 100% 12px, 100% 100%, 0% 100%
+        );
+      }
+      .tape {
+        background: repeating-linear-gradient(115deg, rgba(242,237,228,0.85) 0 4px, rgba(242,237,228,0.65) 4px 8px);
+        box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      }
+      .stamp {
+        border: 3px dashed #e2001a;
+        color: #e2001a;
+        mix-blend-mode: multiply;
+      }
+    `}</style>
+  );
+}
 
 function HazardMarquee() {
   const text = "СПОНСОРСТВО — ТРЕНЕРИ — ПАРТНЕРСТВО — МЕДІА — РАЙДЕРИ — ОБ'ЄКТ У СТРОЙЦІ — ";
   return (
-    <div className="relative overflow-hidden border-y border-[#35383e] bg-[#121316] py-3">
+    <div className="relative overflow-hidden border-y-4 border-black bg-black py-3">
       <div
         className="absolute inset-0 opacity-90"
         style={{
           backgroundImage:
-            "repeating-linear-gradient(135deg, #ff3b1f 0px, #ff3b1f 22px, #121316 22px, #121316 44px)",
-          maskImage: "linear-gradient(#000,#000)",
+            "repeating-linear-gradient(135deg, #e2001a 0px, #e2001a 22px, #000 22px, #000 44px)",
         }}
       />
       <div className="marquee-track relative flex w-max whitespace-nowrap">
         {[0, 1].map((i) => (
           <span
             key={i}
-            className="px-4 font-['JetBrains_Mono'] text-sm font-medium tracking-[0.25em] text-[#121316] mix-blend-normal"
+            className="px-4 font-['JetBrains_Mono'] text-sm font-bold uppercase tracking-[0.2em] text-black"
           >
-            <span className="bg-[#e9e6df] px-3 py-1">{text.repeat(4)}</span>
+            <span className="bg-[#f2ede4] px-3 py-1">{text.repeat(4)}</span>
           </span>
         ))}
       </div>
@@ -87,15 +187,9 @@ function HazardMarquee() {
 }
 
 function RampBlueprint({ pathRef, className }) {
-  // Стилизованный чертёж поперечного сечения bowl + vert-стены.
   return (
-    <svg
-      viewBox="0 0 600 300"
-      className={className}
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <g stroke="#35383e" strokeWidth="1" strokeDasharray="2 4" opacity="0.5">
+    <svg viewBox="0 0 600 300" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g stroke="#3a3a3a" strokeWidth="1" strokeDasharray="2 4" opacity="0.5">
         <line x1="0" y1="50" x2="600" y2="50" />
         <line x1="0" y1="150" x2="600" y2="150" />
         <line x1="0" y1="250" x2="600" y2="250" />
@@ -106,18 +200,12 @@ function RampBlueprint({ pathRef, className }) {
       <path
         ref={pathRef}
         d="M 20 250 L 140 250 C 200 250 200 130 260 130 C 300 130 300 60 300 20 M 300 130 C 340 130 340 250 400 250 L 580 250"
-        stroke="url(#zlitGradient)"
+        stroke="#e2001a"
         strokeWidth="3"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <defs>
-        <linearGradient id="zlitGradient" x1="0" y1="0" x2="600" y2="0">
-          <stop offset="0%" stopColor="#6e5bff" />
-          <stop offset="100%" stopColor="#00e5ff" />
-        </linearGradient>
-      </defs>
-      <text x="24" y="270" fill="#9a9ea6" fontFamily="JetBrains Mono" fontSize="10" letterSpacing="1">
+      <text x="24" y="270" fill="#8a8a8a" fontFamily="JetBrains Mono" fontSize="10" letterSpacing="1">
         SECTION A—A · VERT + BOWL · SCALE 1:120
       </text>
     </svg>
@@ -127,7 +215,7 @@ function RampBlueprint({ pathRef, className }) {
 function StatNumber({ value, decimals }) {
   return (
     <span
-      className="stat-number font-['JetBrains_Mono'] text-4xl font-medium text-[#e9e6df] md:text-5xl"
+      className="stat-number font-['Teko'] text-6xl font-semibold leading-none text-[#f2ede4] md:text-7xl"
       data-value={value}
       data-decimals={decimals}
     >
@@ -136,18 +224,89 @@ function StatNumber({ value, decimals }) {
   );
 }
 
-function DiagonalDivider({ flip = false }) {
+function TornDivider() {
+  return <div className="torn-top h-4 w-full bg-[#f2ede4]" />;
+}
+
+function Modal({ type, onClose }) {
+  const config = MODAL_CONFIG[type];
+  const [sent, setSent] = useState(false);
+  if (!config) return null;
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setSent(true);
+  };
+
   return (
     <div
-      className={`diagonal-cut h-16 w-full bg-[#121316] md:h-24 ${flip ? "scale-y-[-1]" : ""}`}
-      style={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)" }}
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4"
+      onClick={onClose}
     >
       <div
-        className="h-full w-full"
-        style={{
-          background: "linear-gradient(100deg, transparent 48%, #35383e 49%, #35383e 51%, transparent 52%)",
-        }}
-      />
+        className="relative w-full max-w-md border-4 border-black bg-[#f2ede4] p-8 text-black shadow-[8px_8px_0_#e2001a]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          aria-label="Закрити"
+          className="absolute right-3 top-3 border-2 border-black bg-[#f2ede4] p-1 transition hover:bg-black hover:text-[#f2ede4]"
+        >
+          <CloseIcon size={18} />
+        </button>
+
+        <p className="font-['JetBrains_Mono'] text-xs font-bold uppercase tracking-[0.2em] text-[#e2001a]">
+          {config.tag}
+        </p>
+        <h3 className="mt-2 font-['Oswald'] text-3xl font-bold uppercase leading-none">
+          {config.title}
+        </h3>
+
+        {sent ? (
+          <p className="mt-8 font-['JetBrains_Mono'] text-sm">
+            Прийнято. Ми зв'яжемось найближчим часом.
+          </p>
+        ) : (
+          <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
+            {config.fields.map((f) => (
+              <label key={f.name} className="flex flex-col gap-1">
+                <span className="font-['JetBrains_Mono'] text-[11px] font-bold uppercase tracking-widest text-black/70">
+                  {f.label}
+                  {f.required ? " *" : ""}
+                </span>
+                {f.type === "textarea" ? (
+                  <textarea
+                    required={f.required}
+                    rows={3}
+                    className="border-2 border-black bg-white px-3 py-2 text-sm outline-none focus:border-[#e2001a]"
+                  />
+                ) : f.type === "select" ? (
+                  <select
+                    required={f.required}
+                    className="border-2 border-black bg-white px-3 py-2 text-sm outline-none focus:border-[#e2001a]"
+                  >
+                    {f.options.map((o) => (
+                      <option key={o}>{o}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type={f.type}
+                    required={f.required}
+                    className="border-2 border-black bg-white px-3 py-2 text-sm outline-none focus:border-[#e2001a]"
+                  />
+                )}
+              </label>
+            ))}
+            <button
+              type="submit"
+              className="mt-2 bg-black px-6 py-3 font-['JetBrains_Mono'] text-sm font-bold uppercase tracking-widest text-[#f2ede4] transition hover:bg-[#e2001a]"
+            >
+              Надіслати
+            </button>
+          </form>
+        )}
+      </div>
     </div>
   );
 }
@@ -157,23 +316,20 @@ function DiagonalDivider({ flip = false }) {
 export default function ZlitLanding() {
   const heroPathRef = useRef(null);
   const roadmapRef = useRef(null);
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [activeModal, setActiveModal] = useState(null); // null | 'sponsor' | 'trainer' | 'rider'
 
   useEffect(() => {
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const ctx = gsap.context(() => {
       if (!prefersReduced) {
-        // Чертёж рампы в hero — "прорисовывается"
         const path = heroPathRef.current;
         if (path) {
           const length = path.getTotalLength();
           gsap.set(path, { strokeDasharray: length, strokeDashoffset: length });
-          gsap.to(path, { strokeDashoffset: 0, duration: 2.2, ease: "power2.inOut", delay: 0.3 });
+          gsap.to(path, { strokeDashoffset: 0, duration: 2, ease: "power2.inOut", delay: 0.3 });
         }
 
-        // Диагональные speed-линии
         gsap.from(".speed-line", {
           xPercent: -120,
           opacity: 0,
@@ -183,28 +339,20 @@ export default function ZlitLanding() {
           delay: 0.2,
         });
 
-        // Текст hero
         gsap.from(".hero-reveal", {
           y: 36,
           opacity: 0,
-          duration: 0.9,
+          duration: 0.8,
           stagger: 0.1,
           ease: "power3.out",
-          delay: 0.6,
+          delay: 0.5,
         });
 
-        // Бегущая строка
-        gsap.to(".marquee-track", {
-          xPercent: -50,
-          repeat: -1,
-          duration: 22,
-          ease: "linear",
-        });
+        gsap.to(".marquee-track", { xPercent: -50, repeat: -1, duration: 22, ease: "linear" });
       } else {
         gsap.set([".speed-line", ".hero-reveal"], { opacity: 1, x: 0, y: 0 });
       }
 
-      // Появление секций при скролле
       gsap.utils.toArray(".reveal-up").forEach((el) => {
         gsap.from(el, {
           y: 50,
@@ -215,21 +363,6 @@ export default function ZlitLanding() {
         });
       });
 
-      // Диагональные разделители
-      gsap.utils.toArray(".diagonal-cut").forEach((el) => {
-        gsap.fromTo(
-          el,
-          { clipPath: "polygon(0 0, 0 0, 0 100%, 0 100%)" },
-          {
-            clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
-            duration: 1,
-            ease: "power3.inOut",
-            scrollTrigger: { trigger: el, start: "top 92%" },
-          }
-        );
-      });
-
-      // Счётчики спецификаций
       gsap.utils.toArray(".stat-number").forEach((el) => {
         const target = parseFloat(el.dataset.value);
         const decimals = parseInt(el.dataset.decimals, 10) || 0;
@@ -250,7 +383,6 @@ export default function ZlitLanding() {
         });
       });
 
-      // Прогресс-линия roadmap
       if (roadmapRef.current) {
         gsap.fromTo(
           ".roadmap-progress",
@@ -268,82 +400,99 @@ export default function ZlitLanding() {
           }
         );
       }
+
+      // лёгкий "дрожащий" hover на карточках галереи и тиров задаётся классами Tailwind,
+      // GSAP тут не нужен — оставляем CSS transition для производительности.
     });
 
     return () => ctx.revert();
   }, []);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!email) return;
-    setSubmitted(true);
-  };
-
   return (
-    <div className="min-h-screen bg-[#121316] font-['Manrope'] text-[#e9e6df] antialiased">
-      {/* NAV */}
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-[#35383e]/60 bg-[#121316]/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <span className="font-['Unbounded'] text-lg font-extrabold tracking-tight">
-            ЗЛІТ<span className="text-[#00e5ff]">.</span>
-          </span>
-          <nav className="hidden gap-8 font-['JetBrains_Mono'] text-xs uppercase tracking-widest text-[#9a9ea6] md:flex">
-            <a href="#specs" className="transition hover:text-[#e9e6df]">Об'єкт</a>
-            <a href="#sponsors" className="transition hover:text-[#e9e6df]">Спонсорам</a>
-            <a href="#roadmap" className="transition hover:text-[#e9e6df]">Хід будівництва</a>
-            <a href="#contact" className="transition hover:text-[#e9e6df]">Контакти</a>
+    <div className="min-h-screen bg-[#f2ede4] font-['Inter'] text-black antialiased">
+      <GrungeStyles />
+
+      {/* NAV — два лого через "×" */}
+      <header className="fixed inset-x-0 top-0 z-50 border-b-4 border-black bg-[#f2ede4]">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6">
+          <div className="flex items-center gap-3">
+            <div className="border-2 border-black px-3 py-1.5">
+              <span className="font-['Oswald'] text-sm font-bold uppercase tracking-wide">
+                {BUILDER_LOGO}
+              </span>
+            </div>
+            <span className="font-['Oswald'] text-xl font-black text-[#e2001a]">×</span>
+            <div className="border-2 border-black bg-black px-3 py-1.5">
+              <span className="font-['Oswald'] text-sm font-bold uppercase tracking-wide text-[#f2ede4]">
+                {PARTNER_LOGO}
+              </span>
+            </div>
+          </div>
+
+          <nav className="hidden gap-6 font-['JetBrains_Mono'] text-xs font-bold uppercase tracking-widest md:flex">
+            <a href="#specs" className="transition hover:text-[#e2001a]">Об'єкт</a>
+            <a href="#gallery" className="transition hover:text-[#e2001a]">Стройка</a>
+            <a href="#sponsors" className="transition hover:text-[#e2001a]">Спонсорам</a>
+            <a href="#roadmap" className="transition hover:text-[#e2001a]">Хід робіт</a>
           </nav>
-          <a
-            href="#sponsors"
-            className="rounded-none border border-[#ff3b1f] px-4 py-2 font-['JetBrains_Mono'] text-xs uppercase tracking-widest text-[#ff3b1f] transition hover:bg-[#ff3b1f] hover:text-[#121316]"
+
+          <button
+            onClick={() => setActiveModal("sponsor")}
+            className="border-2 border-black bg-[#e2001a] px-4 py-2 font-['JetBrains_Mono'] text-xs font-bold uppercase tracking-widest text-[#f2ede4] transition hover:bg-black"
           >
-            Стати партнером
-          </a>
+            Партнерство
+          </button>
         </div>
       </header>
 
       {/* HERO */}
-      <section className="relative overflow-hidden pt-40 pb-24 md:pt-48">
-        {/* speed lines */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-40">
-          {Array.from({ length: 6 }).map((_, i) => (
+      <section className="relative overflow-hidden pt-28 pb-16 md:pt-36">
+        <div className="halftone pointer-events-none absolute inset-0 opacity-[0.06]" />
+        <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-30">
+          {Array.from({ length: 5 }).map((_, i) => (
             <div
               key={i}
-              className="speed-line absolute h-px bg-gradient-to-r from-transparent via-[#6e5bff] to-transparent"
-              style={{ top: `${10 + i * 15}%`, width: "140%", left: "-20%", transform: `rotate(-6deg)` }}
+              className="speed-line absolute h-[3px] bg-black"
+              style={{ top: `${14 + i * 16}%`, width: "140%", left: "-20%", transform: "rotate(-5deg)" }}
             />
           ))}
         </div>
 
-        <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 md:grid-cols-2 md:items-center">
+        <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 md:grid-cols-2 md:items-center">
           <div>
-            <p className="hero-reveal mb-6 font-['JetBrains_Mono'] text-xs uppercase tracking-[0.3em] text-[#00e5ff]">
+            <span className="stamp hero-reveal inline-block rotate-[-6deg] border-3 px-3 py-1 font-['JetBrains_Mono'] text-xs font-bold uppercase tracking-widest">
+              Under Construction
+            </span>
+            <h1
+              className="hero-reveal mt-6 font-['Oswald'] text-7xl font-black uppercase leading-[0.85] tracking-tight md:text-9xl"
+              style={{ textShadow: "5px 5px 0 #e2001a" }}
+            >
+              Zlit
+            </h1>
+            <p className="hero-reveal mt-4 max-w-md font-['JetBrains_Mono'] text-sm uppercase tracking-wide text-black/70">
               Kyiv · Indoor Air Park · Est. 2027
             </p>
-            <h1 className="hero-reveal font-['Unbounded'] text-6xl font-black uppercase leading-[0.95] tracking-tight md:text-8xl">
-              Злiт
-            </h1>
-            <p className="hero-reveal mt-6 max-w-md text-lg text-[#9a9ea6] md:text-xl">
-              Перший в Україні критий скейтпарк такого масштабу. Без сезонів, без
-              погоди, без обмежень — лише швидкість, повітря і бетон.
+            <p className="hero-reveal mt-6 max-w-md text-lg font-medium text-black/80 md:text-xl">
+              Перший в Україні критий скейтпарк такого масштабу. Без сезонів,
+              без погоди, без обмежень — лише швидкість, повітря і бетон.
             </p>
-            <div className="hero-reveal mt-10 flex flex-wrap gap-4">
-              <a
-                href="#sponsors"
-                className="inline-flex items-center gap-2 bg-[#ff3b1f] px-6 py-3 font-['JetBrains_Mono'] text-sm font-medium uppercase tracking-wider text-[#121316] transition hover:bg-[#e9e6df]"
+            <div className="hero-reveal mt-9 flex flex-wrap gap-3">
+              <button
+                onClick={() => setActiveModal("sponsor")}
+                className="inline-flex items-center gap-2 border-2 border-black bg-black px-6 py-3 font-['JetBrains_Mono'] text-sm font-bold uppercase tracking-wider text-[#f2ede4] transition hover:bg-[#e2001a]"
               >
                 Стати спонсором <ArrowUpRight size={16} />
-              </a>
+              </button>
               <a
                 href="#specs"
-                className="inline-flex items-center gap-2 border border-[#35383e] px-6 py-3 font-['JetBrains_Mono'] text-sm font-medium uppercase tracking-wider text-[#e9e6df] transition hover:border-[#e9e6df]"
+                className="inline-flex items-center gap-2 border-2 border-black px-6 py-3 font-['JetBrains_Mono'] text-sm font-bold uppercase tracking-wider transition hover:bg-black hover:text-[#f2ede4]"
               >
-                Специфікація об'єкта
+                Специфікація
               </a>
             </div>
           </div>
 
-          <div className="hero-reveal relative">
+          <div className="hero-reveal relative border-4 border-black bg-black p-4">
             <RampBlueprint pathRef={heroPathRef} className="w-full" />
           </div>
         </div>
@@ -351,18 +500,18 @@ export default function ZlitLanding() {
 
       <HazardMarquee />
 
-      {/* VISION */}
-      <section className="mx-auto max-w-7xl px-6 py-24 md:py-32">
-        <div className="reveal-up grid grid-cols-1 gap-10 md:grid-cols-[1fr_1.4fr]">
-          <p className="font-['JetBrains_Mono'] text-xs uppercase tracking-[0.3em] text-[#00e5ff]">
+      {/* VISION — вырезка из зина */}
+      <section className="mx-auto max-w-7xl px-6 py-20">
+        <div className="reveal-up grid grid-cols-1 gap-8 md:grid-cols-[1fr_1.4fr]">
+          <p className="font-['JetBrains_Mono'] text-xs font-bold uppercase tracking-[0.25em] text-[#e2001a]">
             Чому це важливо
           </p>
-          <div>
-            <h2 className="font-['Unbounded'] text-3xl font-bold leading-tight md:text-5xl">
+          <div className="border-l-4 border-black pl-6">
+            <h2 className="font-['Oswald'] text-4xl font-bold uppercase leading-[0.95] md:text-6xl">
               В Україні немає критого парку такого масштабу.
-              <span className="text-[#9a9ea6]"> Ми будуємо перший.</span>
+              <span className="text-black/50"> Ми будуємо перший.</span>
             </h2>
-            <p className="mt-6 max-w-2xl text-[#9a9ea6]">
+            <p className="mt-6 max-w-2xl font-medium text-black/70">
               Сьогодні райдери залежні від погоди й сезону, тренери — від
               випадкових локацій, а спорт — від ентузіазму, а не інфраструктури.
               ЗЛІТ — це цілорічний об'єкт олімпійського рівня: bowl, vert,
@@ -372,91 +521,153 @@ export default function ZlitLanding() {
         </div>
       </section>
 
-      {/* SPECS */}
-      <section id="specs" className="border-y border-[#35383e]/60 bg-[#0e0f12] py-24">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="reveal-up mb-14 flex items-end justify-between">
-            <h2 className="font-['Unbounded'] text-2xl font-bold uppercase md:text-3xl">
-              Специфікація об'єкта
-            </h2>
-            <span className="hidden font-['JetBrains_Mono'] text-xs text-[#9a9ea6] md:block">
+      {/* SPECS — scoreboard */}
+      <section id="specs" className="relative bg-black py-20 text-[#f2ede4]">
+        <div className="halftone-red pointer-events-none absolute inset-0 opacity-[0.08]" />
+        <div className="relative mx-auto max-w-7xl px-6">
+          <div className="reveal-up mb-12 flex items-end justify-between border-b-2 border-[#e2001a] pb-4">
+            <h2 className="font-['Oswald'] text-2xl font-bold uppercase md:text-4xl">Специфікація об'єкта</h2>
+            <span className="hidden font-['JetBrains_Mono'] text-xs text-white/50 md:block">
               DWG-ZLIT-001 / REV.03
             </span>
           </div>
-          <div className="reveal-up grid grid-cols-2 gap-px overflow-hidden border border-[#35383e]/60 bg-[#35383e]/60 md:grid-cols-3">
+          <div className="reveal-up grid grid-cols-2 gap-px overflow-hidden border-2 border-white/10 bg-white/10 md:grid-cols-3">
             {SPECS.map((s) => (
-              <div key={s.label} className="bg-[#0e0f12] p-6 md:p-8">
+              <div key={s.label} className="bg-black p-6 md:p-8">
                 <StatNumber value={s.value} decimals={s.decimals} />
-                <span className="ml-2 font-['JetBrains_Mono'] text-sm text-[#9a9ea6]">{s.unit}</span>
-                <p className="mt-2 text-sm text-[#9a9ea6]">{s.label}</p>
+                <span className="ml-2 font-['JetBrains_Mono'] text-sm text-white/50">{s.unit}</span>
+                <p className="mt-2 text-sm font-medium uppercase tracking-wide text-white/60">{s.label}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <DiagonalDivider />
+      <TornDivider />
+
+      {/* GALLERY — фото со стройки, "приклеены скотчем" */}
+      <section id="gallery" className="mx-auto max-w-7xl px-6 py-20">
+        <p className="reveal-up font-['JetBrains_Mono'] text-xs font-bold uppercase tracking-[0.25em] text-[#e2001a]">
+          Стройка наживо
+        </p>
+        <h2 className="reveal-up mt-3 font-['Oswald'] text-3xl font-bold uppercase md:text-5xl">
+          Прогрес об'єкта
+        </h2>
+        <p className="reveal-up mt-3 max-w-xl text-black/60">
+          Замініть плейсхолдери нижче на реальні фото/рендери зі стройки —
+          компонент &lt;Gallery /&gt; підтримує будь-яку кількість карток.
+        </p>
+
+        <div className="reveal-up mt-12 grid grid-cols-2 gap-8 md:grid-cols-3">
+          {GALLERY.map((g, i) => (
+            <figure
+              key={g.id}
+              className="relative border-2 border-black bg-black/5 p-2 shadow-[4px_4px_0_#000]"
+              style={{ transform: `rotate(${i % 2 === 0 ? -2 : 2}deg)` }}
+            >
+              <div className="tape absolute -top-3 left-1/2 h-6 w-16 -translate-x-1/2 -rotate-1 border border-black/20" />
+              {/* Замените div ниже на <img src="..." className="aspect-[4/3] w-full object-cover" /> */}
+              <div className="halftone flex aspect-[4/3] w-full items-center justify-center bg-[#d9d3c7]">
+                <span className="font-['JetBrains_Mono'] text-[10px] font-bold uppercase tracking-widest text-black/40">
+                  ФОТО {g.id}
+                </span>
+              </div>
+              <figcaption className="mt-2 text-center font-['JetBrains_Mono'] text-[11px] font-bold uppercase tracking-wide text-black/70">
+                {g.caption}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+
+      {/* CONFIRMED PARTNERS — trust bar */}
+      <section className="border-y-2 border-black bg-[#e9e3d6] py-10">
+        <div className="mx-auto max-w-7xl px-6">
+          <p className="reveal-up mb-6 text-center font-['JetBrains_Mono'] text-xs font-bold uppercase tracking-[0.25em] text-black/50">
+            Вже з нами
+          </p>
+          <div className="reveal-up flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
+            {CONFIRMED_PARTNERS.map((p) => (
+              // Замените span на <img src="..." className="h-8 w-auto grayscale opacity-70" />
+              <span
+                key={p}
+                className="font-['Oswald'] text-lg font-bold uppercase tracking-wide text-black/40"
+              >
+                {p}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* SPONSORS */}
-      <section id="sponsors" className="mx-auto max-w-7xl px-6 py-24 md:py-32">
-        <p className="reveal-up font-['JetBrains_Mono'] text-xs uppercase tracking-[0.3em] text-[#00e5ff]">
+      <section id="sponsors" className="mx-auto max-w-7xl px-6 py-20">
+        <p className="reveal-up font-['JetBrains_Mono'] text-xs font-bold uppercase tracking-[0.25em] text-[#e2001a]">
           Партнерство
         </p>
-        <h2 className="reveal-up mt-4 max-w-2xl font-['Unbounded'] text-3xl font-bold leading-tight md:text-5xl">
+        <h2 className="reveal-up mt-3 max-w-2xl font-['Oswald'] text-4xl font-bold uppercase leading-none md:text-6xl">
           Три способи бути частиною першого зльоту
         </h2>
 
-        <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
           {TIERS.map((t) => (
             <div
               key={t.code}
-              className={`reveal-up flex flex-col justify-between border p-8 transition ${
-                t.highlight
-                  ? "border-[#00e5ff]/60 bg-gradient-to-b from-[#1c1e22] to-[#121316]"
-                  : "border-[#35383e]/60 bg-[#1c1e22]"
+              className={`reveal-up flex flex-col justify-between border-2 border-black p-7 transition hover:-translate-y-1 ${
+                t.highlight ? "bg-black text-[#f2ede4] shadow-[6px_6px_0_#e2001a]" : "bg-[#f2ede4] shadow-[6px_6px_0_#000]"
               }`}
             >
               <div>
-                <span className="font-['JetBrains_Mono'] text-xs text-[#9a9ea6]">{t.code}</span>
-                <h3 className="mt-3 font-['Unbounded'] text-xl font-bold">{t.name}</h3>
-                <p className="mt-4 text-sm leading-relaxed text-[#9a9ea6]">{t.desc}</p>
+                <span
+                  className={`font-['JetBrains_Mono'] text-xs font-bold ${
+                    t.highlight ? "text-[#e2001a]" : "text-black/50"
+                  }`}
+                >
+                  {t.code}
+                </span>
+                <h3 className="mt-2 font-['Oswald'] text-2xl font-bold uppercase">{t.name}</h3>
+                <p className={`mt-4 text-sm leading-relaxed ${t.highlight ? "text-white/70" : "text-black/70"}`}>
+                  {t.desc}
+                </p>
               </div>
-              <a
-                href="#contact"
-                className="mt-8 inline-flex items-center gap-1 font-['JetBrains_Mono'] text-xs uppercase tracking-widest text-[#00e5ff]"
+              <button
+                onClick={() => setActiveModal("sponsor")}
+                className={`mt-7 inline-flex items-center gap-1 self-start font-['JetBrains_Mono'] text-xs font-bold uppercase tracking-widest ${
+                  t.highlight ? "text-[#e2001a]" : "text-black"
+                }`}
               >
                 Обговорити пакет <ArrowUpRight size={14} />
-              </a>
+              </button>
             </div>
           ))}
         </div>
       </section>
 
-      {/* TRAINERS / PARTNERS */}
-      <section className="border-y border-[#35383e]/60 bg-[#0e0f12] py-24">
-        <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-6 md:grid-cols-2">
+      {/* TRAINERS */}
+      <section className="border-y-2 border-black bg-black py-20 text-[#f2ede4]">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-6 md:grid-cols-2">
           <div className="reveal-up">
-            <p className="font-['JetBrains_Mono'] text-xs uppercase tracking-[0.3em] text-[#6e5bff]">
+            <p className="font-['JetBrains_Mono'] text-xs font-bold uppercase tracking-[0.25em] text-[#e2001a]">
               Тренерам і федераціям
             </p>
-            <h2 className="mt-4 font-['Unbounded'] text-3xl font-bold leading-tight md:text-4xl">
+            <h2 className="mt-3 font-['Oswald'] text-3xl font-bold uppercase leading-none md:text-5xl">
               Об'єкт олімпійського рівня потребує команди олімпійського рівня
             </h2>
-            <p className="mt-6 text-[#9a9ea6]">
+            <p className="mt-5 text-white/70">
               Ми відкриті до співпраці з тренерськими штабами, федераціями
               скейтбордингу та брендами екіпіровки — від методичних програм
               до сумісних заходів і зборів.
             </p>
-            <a
-              href="#contact"
-              className="mt-8 inline-flex items-center gap-2 border border-[#35383e] px-6 py-3 font-['JetBrains_Mono'] text-sm uppercase tracking-wider transition hover:border-[#e9e6df]"
+            <button
+              onClick={() => setActiveModal("trainer")}
+              className="mt-7 inline-flex items-center gap-2 border-2 border-[#f2ede4] px-6 py-3 font-['JetBrains_Mono'] text-sm font-bold uppercase tracking-wider transition hover:bg-[#e2001a] hover:border-[#e2001a]"
             >
               Долучитися як тренер / партнер <ArrowUpRight size={16} />
-            </a>
+            </button>
           </div>
-          <div className="reveal-up grid grid-cols-2 gap-px overflow-hidden border border-[#35383e]/60 bg-[#35383e]/60 font-['JetBrains_Mono'] text-sm">
+          <div className="reveal-up grid grid-cols-2 gap-px overflow-hidden border-2 border-white/10 bg-white/10 font-['JetBrains_Mono'] text-sm">
             {["Bowl", "Vert", "Street Plaza", "Mini-ramp", "Foam Pit", "Mega Ramp"].map((zone) => (
-              <div key={zone} className="bg-[#0e0f12] px-5 py-6 text-[#9a9ea6]">
+              <div key={zone} className="bg-black px-5 py-6 text-white/60">
                 {zone}
               </div>
             ))}
@@ -464,74 +675,58 @@ export default function ZlitLanding() {
         </div>
       </section>
 
-      {/* RIDERS WAITLIST */}
-      <section className="mx-auto max-w-7xl px-6 py-24 md:py-32">
+      {/* RIDERS */}
+      <section className="mx-auto max-w-7xl px-6 py-20">
         <div className="reveal-up mx-auto max-w-xl text-center">
-          <p className="font-['JetBrains_Mono'] text-xs uppercase tracking-[0.3em] text-[#00e5ff]">
-            Для райдерів
-          </p>
-          <h2 className="mt-4 font-['Unbounded'] text-3xl font-bold md:text-4xl">
+          <span className="stamp inline-block rotate-3 border-3 px-3 py-1 font-['JetBrains_Mono'] text-xs font-bold uppercase tracking-widest">
+            Riders Only
+          </span>
+          <h2 className="mt-5 font-['Oswald'] text-4xl font-bold uppercase md:text-5xl">
             Стань першим на старті
           </h2>
-          <p className="mt-4 text-[#9a9ea6]">
+          <p className="mt-4 text-black/70">
             Ранній доступ до передпродажу абонементів і запрошення на
             тестові заїзди — до офіційного відкриття.
           </p>
-          {submitted ? (
-            <p className="mt-8 font-['JetBrains_Mono'] text-sm text-[#00e5ff]">
-              Дякуємо. Ми напишемо, щойно відкриється реєстрація.
-            </p>
-          ) : (
-            <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
-                className="flex-1 border border-[#35383e] bg-[#1c1e22] px-4 py-3 font-['JetBrains_Mono'] text-sm outline-none placeholder:text-[#5a5d63] focus:border-[#00e5ff]"
-              />
-              <button
-                type="submit"
-                className="bg-[#e9e6df] px-6 py-3 font-['JetBrains_Mono'] text-sm font-medium uppercase tracking-wider text-[#121316] transition hover:bg-[#00e5ff]"
-              >
-                Отримати доступ
-              </button>
-            </form>
-          )}
+          <button
+            onClick={() => setActiveModal("rider")}
+            className="mt-8 inline-flex items-center gap-2 bg-black px-7 py-3 font-['JetBrains_Mono'] text-sm font-bold uppercase tracking-wider text-[#f2ede4] transition hover:bg-[#e2001a]"
+          >
+            Отримати ранній доступ <ArrowUpRight size={16} />
+          </button>
         </div>
       </section>
 
-      <DiagonalDivider flip />
-
       {/* ROADMAP */}
-      <section id="roadmap" ref={roadmapRef} className="bg-[#0e0f12] py-24 md:py-32">
+      <section id="roadmap" ref={roadmapRef} className="border-t-2 border-black bg-[#e9e3d6] py-20">
         <div className="mx-auto max-w-4xl px-6">
-          <h2 className="reveal-up font-['Unbounded'] text-2xl font-bold uppercase md:text-3xl">
+          <h2 className="reveal-up font-['Oswald'] text-2xl font-bold uppercase md:text-4xl">
             Хід будівництва
           </h2>
-          <div className="relative mt-14">
-            <div className="absolute left-[27px] top-0 h-full w-px bg-[#35383e]" />
-            <div className="roadmap-progress absolute left-[27px] top-0 h-full w-px bg-gradient-to-b from-[#6e5bff] to-[#00e5ff]" />
-            <div className="flex flex-col gap-12">
+          <div className="relative mt-12">
+            <div className="absolute left-[27px] top-0 h-full w-1 bg-black/15" />
+            <div className="roadmap-progress absolute left-[27px] top-0 h-full w-1 bg-[#e2001a]" />
+            <div className="flex flex-col gap-10">
               {ROADMAP.map((r) => (
-                <div key={r.step} className="reveal-up relative flex gap-8 pl-14">
+                <div key={r.step} className="reveal-up relative flex gap-7 pl-14">
                   <span
-                    className={`absolute left-0 flex h-14 w-14 items-center justify-center border font-['JetBrains_Mono'] text-xs ${
+                    className={`absolute left-0 flex h-14 w-14 items-center justify-center border-2 font-['Teko'] text-xl font-semibold ${
                       r.status === "done"
-                        ? "border-[#00e5ff] text-[#00e5ff]"
+                        ? "border-black bg-black text-[#f2ede4]"
                         : r.status === "active"
-                        ? "border-[#ff3b1f] text-[#ff3b1f]"
-                        : "border-[#35383e] text-[#5a5d63]"
+                        ? "border-[#e2001a] bg-[#e2001a] text-[#f2ede4]"
+                        : "border-black/30 text-black/40"
                     }`}
                   >
                     {r.step}
                   </span>
                   <div>
-                    <p className="font-['JetBrains_Mono'] text-xs uppercase tracking-widest text-[#9a9ea6]">
+                    <p className="font-['JetBrains_Mono'] text-xs font-bold uppercase tracking-widest text-black/50">
                       {r.period}
                     </p>
-                    <h3 className="mt-1 font-['Unbounded'] text-lg font-bold md:text-xl">{r.title}</h3>
+                    <h3 className="mt-1 font-['Oswald'] text-xl font-bold uppercase md:text-2xl">
+                      {r.title}
+                    </h3>
                   </div>
                 </div>
               ))}
@@ -540,54 +735,77 @@ export default function ZlitLanding() {
         </div>
       </section>
 
-      {/* CONTACT / FOOTER */}
-      <section id="contact" className="relative overflow-hidden bg-[#121316] pt-24">
+      {/* FOOTER */}
+      <section className="relative overflow-hidden bg-black pt-20 text-[#f2ede4]">
         <div
-          className="absolute inset-0 opacity-[0.06]"
+          className="absolute inset-0 opacity-[0.05]"
           style={{
             backgroundImage:
-              "repeating-linear-gradient(135deg, #ff3b1f 0px, #ff3b1f 22px, transparent 22px, transparent 44px)",
+              "repeating-linear-gradient(135deg, #e2001a 0px, #e2001a 22px, transparent 22px, transparent 44px)",
           }}
         />
         <div className="relative mx-auto max-w-7xl px-6 pb-16">
           <div className="reveal-up max-w-2xl">
-            <h2 className="font-['Unbounded'] text-4xl font-black uppercase leading-[0.95] md:text-6xl">
+            <h2
+              className="font-['Oswald'] text-5xl font-black uppercase leading-[0.85] md:text-7xl"
+              style={{ textShadow: "4px 4px 0 #e2001a" }}
+            >
               Долучайся
               <br /> до зльоту
             </h2>
-            <p className="mt-6 text-[#9a9ea6]">
+            <p className="mt-6 text-white/60">
               Спонсорство, тренерська співпраця, медіа-запити чи просто
-              питання про проєкт — пишіть, розкажемо детально.
+              питання про проєкт — оберіть свою роль, форма займе хвилину.
             </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <button
+                onClick={() => setActiveModal("sponsor")}
+                className="border-2 border-[#f2ede4] px-5 py-2.5 font-['JetBrains_Mono'] text-xs font-bold uppercase tracking-widest transition hover:bg-[#e2001a] hover:border-[#e2001a]"
+              >
+                Спонсорам
+              </button>
+              <button
+                onClick={() => setActiveModal("trainer")}
+                className="border-2 border-[#f2ede4] px-5 py-2.5 font-['JetBrains_Mono'] text-xs font-bold uppercase tracking-widest transition hover:bg-[#e2001a] hover:border-[#e2001a]"
+              >
+                Тренерам
+              </button>
+              <button
+                onClick={() => setActiveModal("rider")}
+                className="border-2 border-[#f2ede4] px-5 py-2.5 font-['JetBrains_Mono'] text-xs font-bold uppercase tracking-widest transition hover:bg-[#e2001a] hover:border-[#e2001a]"
+              >
+                Райдерам
+              </button>
+            </div>
             <a
               href="mailto:hello@zlit.kyiv.ua"
-              className="mt-8 inline-flex items-center gap-2 border-b border-[#e9e6df] pb-1 font-['JetBrains_Mono'] text-lg"
+              className="mt-8 inline-flex items-center gap-2 border-b-2 border-[#f2ede4] pb-1 font-['JetBrains_Mono'] text-lg"
             >
               <Mail size={18} /> hello@zlit.kyiv.ua
             </a>
           </div>
 
-          <div className="mt-20 flex flex-col items-start justify-between gap-6 border-t border-[#35383e]/60 pt-8 md:flex-row md:items-center">
-            <span className="font-['Unbounded'] text-lg font-extrabold">
-              ЗЛІТ<span className="text-[#00e5ff]">.</span>
-            </span>
-            <div className="flex gap-5 text-[#9a9ea6]">
-              <a href="#" aria-label="Instagram" className="transition hover:text-[#e9e6df]">
+          <div className="mt-16 flex flex-col items-start justify-between gap-6 border-t-2 border-white/15 pt-8 md:flex-row md:items-center">
+            <span className="font-['Oswald'] text-lg font-black uppercase">ZLIT</span>
+            <div className="flex gap-5 text-white/60">
+              <a href="#" aria-label="Instagram" className="transition hover:text-[#e2001a]">
                 <Instagram size={18} />
               </a>
-              <a href="#" aria-label="YouTube" className="transition hover:text-[#e9e6df]">
+              <a href="#" aria-label="YouTube" className="transition hover:text-[#e2001a]">
                 <Youtube size={18} />
               </a>
-              <a href="#" aria-label="Telegram" className="transition hover:text-[#e9e6df]">
+              <a href="#" aria-label="Telegram" className="transition hover:text-[#e2001a]">
                 <Send size={18} />
               </a>
             </div>
-            <span className="font-['JetBrains_Mono'] text-xs text-[#5a5d63]">
+            <span className="font-['JetBrains_Mono'] text-xs text-white/40">
               Kyiv, Ukraine © {new Date().getFullYear()}
             </span>
           </div>
         </div>
       </section>
+
+      {activeModal && <Modal type={activeModal} onClose={() => setActiveModal(null)} />}
     </div>
   );
 }
