@@ -195,6 +195,7 @@ const productCatalogSets = [
     altImages: [`${CLOUDINARY}v1783083840/box_121_diy2_jkc9nu.webp`, `${CLOUDINARY}v1783083838/box_121_diy_dead8o.webp`],
 
     sample: [
+        { type: "image", src: `${CLOUDINARY}v1785165171/20260621_124337_i5tcck.jpg`, caption: "підпис 1" },
        { type: "image", src: `${CLOUDINARY}v1785165171/20260621_124322_eguuup.jpg`, caption: "підпис 1" },
       { type: "image", src: `${CLOUDINARY}v1783062743/grindbox2_kymbjd.webp`, caption: "підпис 1" },
       { type: "image", src: `${CLOUDINARY}v1783062742/grindbox_xhcxsp.webp`, caption: "підпис 2" },
