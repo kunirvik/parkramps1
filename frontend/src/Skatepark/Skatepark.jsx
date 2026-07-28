@@ -1,13 +1,13 @@
 import { useRef, useState } from "react";
 import gsap from "gsap";
-import "./Skatepark.css";
+import "../Skatepark/Skatepark.css";
 
 
 const figures = [
   {
     id: "rail",
     title: "Rail",
-    image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257521/voltparkvisual2_k4c3fr.jpg",
+    image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257520/volt_park_visual10_2_oo1az0.jpg",
     area: {
       left: "20%",
       top: "45%",
@@ -141,7 +141,7 @@ onMouseMove={moveTooltip}
 
 <img
 className="park-image"
-src="/images/skatepark-bw.webp"
+src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785257521/voltparkvisual2_k4c3fr.jpg"
 alt=""
 />
 

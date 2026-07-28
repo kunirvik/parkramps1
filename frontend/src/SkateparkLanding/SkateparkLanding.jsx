@@ -816,38 +816,14 @@ import Skatepark from "../Skatepark/Skatepark";
 
 gsap.registerPlugin(ScrollTrigger);
 
-/**
- * ZLIT — лендинг критого ейр-скейтпарку в Києві.
- * Стиль: thrasher-zine × X Games broadcast.
- *
- * Установка:
- *   npm install gsap lucide-react
- *
- * Шрифти (додайте в public/index.html <head>):
- *   https://fonts.googleapis.com/css2?family=Oswald:wght@500;700;900
- *     &family=Teko:wght@500;600;700&family=Inter:wght@400;500;600
- *     &family=JetBrains+Mono:wght@400;500;700&display=swap
- *
- * ЗАМІНІТЬ:
- *  - BUILDER_LOGO / PARTNER_LOGO — два лого в шапці
- *  - HERO_BG_PHOTOS — фото об'єкта для фонового колажу в хіро-секції
- *  - GALLERY — фото і відео з будівництва (зараз плейсхолдери)
- *  - CONFIRMED_PARTNERS — логотипи підтверджених партнерів
- *  - SPECS / FEATURES / TIERS / ROADMAP — реальні дані
- */
-
-// ---------- Дані (замініть на реальні) ----------
 
 const BUILDER_LOGO = "parkramps"; // хто будує
 const PARTNER_LOGO = "volt"; // для кого будують / бренд-ініціатор
 
-// Фото об'єкта з різних ракурсів для фонового колажу хіро-секції.
-// Замініть src на реальні яскраві фото стройки — вони йдуть під halftone/duotone
-// оверлеєм у стилі журналу, тому чим контрастніше фото, тим краще.
+
 const HERO_BG_PHOTOS = [
   { id: 1, src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785253160/photo_2026-07-28_18-37-46_ceomex.jpg", alt: "Каркас об'єкта, вигляд збоку" },
-  // { id: 2, src: "/images/skateparks/park2front.png", alt: "Монтаж ферм покрівлі" },
-  // { id: 3, src: "/images/skateparks/park2top.png", alt: "Загальний вигляд, дрон" },
+
 ];
 
 const SPECS = [
