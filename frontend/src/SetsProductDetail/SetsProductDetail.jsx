@@ -23,9 +23,6 @@ import ProductGallery from "../Productgallery/ProductGallery";
 import ProductDrawing from "../ProductDrawing";
 import ProductThumbs from "../ProductThumbs/ProductThumbs";
 import { useIsDesktop } from "../hooks/useIsDesktop";
-
-const CLOUDINARY = import.meta.env.VITE_CLOUDINARY_BASE_URL; 
- 
 // import ProductThumbs from "../ProductThumbs/ProductThumbs";
 // Константы
 const ANIMATION_CONFIG = {
@@ -69,9 +66,11 @@ const imageData = imageDataRef.current;
   const [state, setState] = useState(() => ({
     activeProductIndex: Math.max(
       0,
-      productCatalogSets.findIndex((p) => p.id === Number(id))
+      productCatalogSets
+    .findIndex((p) => p.id === Number(id))
     ),
-    selectedImageIndices: productCatalogSets.map(() => 0),
+    selectedImageIndices: productCatalogSets
+  .map(() => 0),
     hoveredIndex: null,
     isGalleryOpen: false,
     galleryStartIndex: 0,
@@ -115,7 +114,8 @@ const imageData = imageDataRef.current;
 
   // ─── Мемо ────────────────────────────────────────────────────────────────
   const currentProduct = useMemo(
-    () => productCatalogSets[state.activeProductIndex],
+    () => productCatalogSets
+  [state.activeProductIndex],
     [state.activeProductIndex]
   );
 
@@ -319,19 +319,9 @@ const handleMouseEnter = useCallback(
       updateAnimationState({ slideChanging: true, inProgress: true });
 
       
-   await animateInfo("out");
+
       const isMobile = window.innerWidth < 1024;
 
-   setState((prev) => {
-        const newIndices = [...prev.selectedImageIndices];
-        newIndices[newIndex] = 0;
-        //  newIndices[newIndex] = 0;
-        return {
-          ...prev,
-          activeProductIndex: newIndex,
-          selectedImageIndices: newIndices,
-        };
-      });
       if (isMobile) {
         setAccordionState({ purchase: null, product: null, virobi: null });
       } else {
@@ -342,17 +332,28 @@ const handleMouseEnter = useCallback(
         }));
       }
 
-   
+      await animateInfo("out");
 
-   
+      setState((prev) => {
+        const newIndices = [...prev.selectedImageIndices];
+        newIndices[newIndex] = 0;
+         newIndices[newIndex] = 0;
+        return {
+          ...prev,
+          activeProductIndex: newIndex,
+          selectedImageIndices: newIndices,
+        };
+      });
 
-      updateUrl(productCatalogSets[newIndex].id);
+      updateUrl(productCatalogSets
+      [newIndex].id);
 
       if (swiperInstances.thumbs) {
         swiperInstances.thumbs.slideTo(newIndex);
       }
 
-      
+      animationInProgressRef.current = false;
+      updateAnimationState({ slideChanging: false, inProgress: false });
 
       if (isMobile) {
         await new Promise((resolve) => setTimeout(resolve, 50));
@@ -364,23 +365,22 @@ const handleMouseEnter = useCallback(
       stopHoverAnimation();
 
 
-      // setTimeout(() => {
-        await new Promise((resolve) => setTimeout(resolve, SWIPER_CONFIG.SPEED));
+      setTimeout(() => {
   setState((prev) => {
     const newIndices = [...prev.selectedImageIndices];
     newIndices[oldIndex] = 0;
     return { ...prev, selectedImageIndices: newIndices };
   });
   //  blockScrubBriefly(800); // задержка скраба после смены продукта
-animationInProgressRef.current = false;
-      updateAnimationState({ slideChanging: false, inProgress: false });
+
   if (isTouchDevice) return;
 
   // if (isPointerOverSwiper()) {
-  //   const product = productCatalogSets[newIndex];
+  //   const product = productCatalogSets
+  //[newIndex];
   //   startHoverAnimation(newIndex, product);
   // }
-// }, SWIPER_CONFIG.SPEED);
+}, SWIPER_CONFIG.SPEED);
 
     },
     [
@@ -497,7 +497,8 @@ animationInProgressRef.current = false;
   //   const newIndex = swiper.activeIndex;
   //   if (newIndex !== state.activeProductIndex) {
   //     updateState({ activeProductIndex: newIndex });
-  //     updateUrl(productCatalogSets[newIndex].id);
+  //     updateUrl(productCatalogSets
+  //[newIndex].id);
 
   //     if (swiperInstances.thumbs) {
   //       swiperInstances.thumbs.slideTo(newIndex);
@@ -523,36 +524,12 @@ animationInProgressRef.current = false;
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
     <>
-   
-<div className="flex flex-col min-h-screen overflow-hidden relative w-full">
- 
-  <div
-    className="hidden lg:block fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat"
-    style={{
-      backgroundImage:
-        `url('${CLOUDINARY}v1780563482/project-brightness-50_fbitrl.png')`,
-    }}
-  />
-  
- <div
-  className="lg:hidden fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat"
-  style={{
-    backgroundImage:
-      `url('${CLOUDINARY}v1784653098/project2_qewlhy.webp')`,
-    height: "100dvh",
-    width: "100vw",
-  }}
-/>
-
-      {/* <div className="flex flex-col  min-h-screen overflow-hidden relative w-full">
-          <div
-    className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat"
-    style={{
-      backgroundImage:
-        "url('https://res.cloudinary.com/dbx6muxub/image/upload/v1780563482/project-brightness-50_fbitrl.png')",
-    }}
-  /> */}
-
+      <div className="flex flex-col  min-h-screen overflow-hidden
+    
+    
+    relative bg-[rgba(0, 0, 0, 0.77)]   bg-cover
+    bg-center
+    bg-no-repeat bg-[url('https://res.cloudinary.com/dbx6muxub/image/upload/v1780563482/project-brightness-50_fbitrl.png')] w-full">
         <div className="z-50 flex-shrink-0">
           <SocialButtons
             ref={socialButtonsRef}
@@ -578,7 +555,9 @@ animationInProgressRef.current = false;
          
 <ProductInfo
   product={currentProduct}
-    products={productCatalogSets}
+    products={productCatalogSets
+    
+    }
   state={state}
   accordionState={accordionState}
   onAccordionToggle={handleAccordionToggle}
@@ -596,7 +575,9 @@ animationInProgressRef.current = false;
 )}
   
 <ProductGallery
-  products={productCatalogSets}
+  products={productCatalogSets
+  
+  }
   
   state={state}
   swiperInstances={swiperInstances}
@@ -629,7 +610,9 @@ animationInProgressRef.current = false;
         </div>  {!isDesktop && (
   <div className="mt-8">
     <ProductThumbs
-      products={productCatalogSets}
+      products={productCatalogSets
+      
+      }
       state={state}
       setSwiperInstances={setSwiperInstances}
       onThumbnailClick={handleThumbnailClick}
