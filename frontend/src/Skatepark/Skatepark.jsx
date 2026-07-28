@@ -219,40 +219,30 @@
 
 // }
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
 import "../Skatepark/Skatepark.css";
-
+import { ReactComponent as ParkMap } from "../Skatepark/park.svg";
 
 const figures = [
 
   {
-    id:"quarter",
+    id:"quater",
     title:"quarter",
 
     image:"https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/volt_park_visual7_2_rrpf7v.jpg",
 
-    area:{
-      left:"7.50%",
-      top:"25.50%",
-      width:"12%",
-      height:"18%"
-    }
+
   },
 
 
   {
-    id:"quarter2",
+    id:"quater2",
     title:"Quarter Pipe",
 
     image:"https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual6_2_gl0q0k.jpg",
 
-    area:{
-      left:"7.50%",
-      top:"65%",
-      width:"12%",
-      height:"18%"
-    }
+
   },
 
 
@@ -262,13 +252,21 @@ const figures = [
 
     image:"https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual8_2_zwmivn.jpg",
 
-    area:{
-      left:"4%",
-      top:"38.50%",
-      width:"13.50%",
-      height:"28%"
-    }
+
   },
+//     {
+//     id:"vertwall1",
+//     title:"Vertical Wall",
+
+//     image:"https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual8_2_zwmivn.jpg",
+
+//     area:{
+//       left:"4%",
+//       top:"38.50%",
+//       width:"13.50%",
+//       height:"28%"
+//     }
+//   },
 
 
   // добавляешь остальные фигуры сюда
@@ -390,6 +388,21 @@ duration:.2
 
 
 // }
+useEffect(() => {
+  figures.forEach((figure) => {
+    const el = document.getElementById(figure.id);
+
+    if (!el) return;
+
+    el.style.cursor = "pointer";
+
+    el.addEventListener("mouseenter", () =>
+      showFigure(figure.id, figure.title)
+    );
+
+    el.addEventListener("mouseleave", hideFigure);
+  });
+}, []); 
 const showCoords = (e)=>{
 
 const rect = e.currentTarget.getBoundingClientRect();
@@ -473,7 +486,7 @@ figures.map(item=>(
 
 key={item.id}
 
-className="hotspot"
+className="park-svg"
 
 style={item.area}
 
