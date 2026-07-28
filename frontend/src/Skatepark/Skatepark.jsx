@@ -257,8 +257,8 @@ const figures = [
 
 
   {
-    id:"box",
-    title:"Fun Box",
+    id:"vertwall",
+    title:"Vertical Wall",
 
     image:"https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual9_2_jrzknr.jpg",
 
