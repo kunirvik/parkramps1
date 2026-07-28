@@ -218,326 +218,437 @@
 // );
 
 // }
-
 import { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
 import "../Skatepark/Skatepark.css";
 import { ReactComponent as ParkMap } from "../Skatepark/park.svg";
 
 const figures = [
+  { id: "quater",   title: "quarter",       image: "..." },
+  { id: "quater2",  title: "Quarter Pipe",  image: "..." },
+  { id: "vertwall", title: "Vertical Wall", image: "..." },
+  // остальные фигуры — id должен совпадать с id path в park.svg
+];
 
-  {
-    id:"quater",
-    title:"quarter",
+const figureById = Object.fromEntries(figures.map(f => [f.id, f]));
 
-    image:"https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/volt_park_visual7_2_rrpf7v.jpg",
+export default function Skatepark() {
+  const svgWrapRef = useRef(null);
+  const layers = useRef({});
+  const [active, setActive] = useState(null);
+
+  const isTouch =
+    typeof window !== "undefined" &&
+    window.matchMedia("(pointer: coarse)").matches;
+
+  const highlight = (id) => {
+    setActive(id);
+    Object.keys(layers.current).forEach((key) => {
+      gsap.to(layers.current[key], {
+        opacity: key === id ? 1 : 0,
+        duration: 0.4,
+        ease: "power3.out",
+      });
+    });
+  };
+
+  const clearHighlight = () => {
+    setActive(null);
+    Object.values(layers.current).forEach((layer) =>
+      gsap.to(layer, { opacity: 0, duration: 0.4 })
+    );
+  };
+
+  useEffect(() => {
+    const root = svgWrapRef.current;
+    if (!root) return;
+
+    const paths = root.querySelectorAll("path[id]");
+
+    paths.forEach((path) => {
+      const figure = figureById[path.id];
+      if (!figure) return; // путь без соответствующей фигуры пропускаем
+
+      path.style.cursor = "pointer";
+      path.style.pointerEvents = "auto"; // на случай если у svg pointer-events:none
+
+      if (isTouch) {
+        // тап — тоггл: тапнул по фигуре -> подсветилась,
+        // тапнул ещё раз по ней же или мимо -> погасла
+        path.addEventListener("click", (e) => {
+          e.stopPropagation();
+          setActive((prev) => {
+            const next = prev === figure.id ? null : figure.id;
+            if (next) highlight(next);
+            else clearHighlight();
+            return next;
+          });
+        });
+      } else {
+        path.addEventListener("mouseenter", () => highlight(figure.id));
+        path.addEventListener("mouseleave", clearHighlight);
+      }
+    });
+
+    if (isTouch) {
+      // тап в пустое место карты - сброс подсветки
+      const handleOutsideTap = (e) => {
+        if (!root.contains(e.target)) clearHighlight();
+      };
+      document.addEventListener("click", handleOutsideTap);
+      return () => document.removeEventListener("click", handleOutsideTap);
+    }
+  }, [isTouch]);
+
+  return (
+    <div className="skatepark">
+      <img
+        className="park-image"
+        src="..."
+        alt="skatepark"
+      />
+
+      {figures.map((item) => (
+        <img
+          key={item.id}
+          ref={(el) => (layers.current[item.id] = el)}
+          className="park-layer"
+          src={item.image}
+          alt=""
+        />
+      ))}
+
+      <div ref={svgWrapRef} className="park-svg-wrap">
+        <ParkMap className="park-svg" />
+      </div>
+
+      {active && (
+        <div className="skate-tooltip skate-tooltip--visible">
+          {figureById[active]?.title}
+        </div>
+      )}
+    </div>
+  );
+}
+// import { useRef, useState, useEffect } from "react";
+// import gsap from "gsap";
+// import "../Skatepark/Skatepark.css";
+// import { ReactComponent as ParkMap } from "../Skatepark/park.svg";
+
+// const figures = [
+
+//   {
+//     id:"quater",
+//     title:"quarter",
+
+//     image:"https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/volt_park_visual7_2_rrpf7v.jpg",
 
 
-  },
+//   },
 
 
-  {
-    id:"quater2",
-    title:"Quarter Pipe",
+//   {
+//     id:"quater2",
+//     title:"Quarter Pipe",
 
-    image:"https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual6_2_gl0q0k.jpg",
-
-
-  },
+//     image:"https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual6_2_gl0q0k.jpg",
 
 
-  {
-    id:"vertwall",
-    title:"Vertical Wall",
-
-    image:"https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual8_2_zwmivn.jpg",
+//   },
 
 
-  },
-//     {
-//     id:"vertwall1",
+//   {
+//     id:"vertwall",
 //     title:"Vertical Wall",
 
 //     image:"https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual8_2_zwmivn.jpg",
 
-//     area:{
-//       left:"4%",
-//       top:"38.50%",
-//       width:"13.50%",
-//       height:"28%"
-//     }
+
 //   },
+// //     {
+// //     id:"vertwall1",
+// //     title:"Vertical Wall",
+
+// //     image:"https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual8_2_zwmivn.jpg",
+
+// //     area:{
+// //       left:"4%",
+// //       top:"38.50%",
+// //       width:"13.50%",
+// //       height:"28%"
+// //     }
+// //   },
 
 
-  // добавляешь остальные фигуры сюда
+//   // добавляешь остальные фигуры сюда
 
-];
-
-
-
-export default function Skatepark(){
-
-    const [coords,setCoords] = useState({
-  x:0,
-  y:0
-}); 
-
-
-const layers = useRef({});
-const tooltip = useRef(null);
-
-const [active,setActive]=useState(null);
-
+// ];
 
 
 
+// export default function Skatepark(){
 
-const showFigure=(id,title)=>{
-
-
-setActive(title);
-
-
-Object.keys(layers.current).forEach(key=>{
-
-gsap.to(
-layers.current[key],
-{
-opacity:key===id?1:0,
-duration:.4,
-ease:"power3.out"
-}
-)
-
-});
+//     const [coords,setCoords] = useState({
+//   x:0,
+//   y:0
+// }); 
 
 
-gsap.fromTo(
-tooltip.current,
+// const layers = useRef({});
+// const tooltip = useRef(null);
 
-{
-opacity:0,
-scale:.8,
-y:10
-},
-
-{
-opacity:1,
-scale:1,
-y:0,
-duration:.3
-}
-
-);
-
-
-}
+// const [active,setActive]=useState(null);
 
 
 
 
 
-const hideFigure=()=>{
+// const showFigure=(id,title)=>{
 
 
-setActive(null);
+// setActive(title);
 
 
-Object.values(layers.current).forEach(layer=>{
+// Object.keys(layers.current).forEach(key=>{
 
-gsap.to(
-layer,
-{
-opacity:0,
-duration:.4
-}
-)
+// gsap.to(
+// layers.current[key],
+// {
+// opacity:key===id?1:0,
+// duration:.4,
+// ease:"power3.out"
+// }
+// )
 
-});
-
-
-gsap.to(
-tooltip.current,
-{
-opacity:0,
-y:10,
-duration:.2
-}
-)
+// });
 
 
-}
+// gsap.fromTo(
+// tooltip.current,
+
+// {
+// opacity:0,
+// scale:.8,
+// y:10
+// },
+
+// {
+// opacity:1,
+// scale:1,
+// y:0,
+// duration:.3
+// }
+
+// );
+
+
+// }
 
 
 
 
-// const moveTooltip=(e)=>{
+
+// const hideFigure=()=>{
 
 
-// if(!tooltip.current)return;
+// setActive(null);
+
+
+// Object.values(layers.current).forEach(layer=>{
+
+// gsap.to(
+// layer,
+// {
+// opacity:0,
+// duration:.4
+// }
+// )
+
+// });
 
 
 // gsap.to(
 // tooltip.current,
 // {
-// x:e.clientX+15,
-// y:e.clientY+15,
-// duration:.1
+// opacity:0,
+// y:10,
+// duration:.2
 // }
 // )
 
 
 // }
-useEffect(() => {
-  figures.forEach((figure) => {
-    const el = document.getElementById(figure.id);
 
-    if (!el) return;
 
-    el.style.cursor = "pointer";
 
-    el.addEventListener("mouseenter", () =>
-      showFigure(figure.id, figure.title)
-    );
 
-    el.addEventListener("mouseleave", hideFigure);
-  });
-}, []); 
-const showCoords = (e)=>{
+// // const moveTooltip=(e)=>{
 
-const rect = e.currentTarget.getBoundingClientRect();
 
+// // if(!tooltip.current)return;
 
-const x = ((e.clientX - rect.left) / rect.width) * 100;
 
-const y = ((e.clientY - rect.top) / rect.height) * 100;
+// // gsap.to(
+// // tooltip.current,
+// // {
+// // x:e.clientX+15,
+// // y:e.clientY+15,
+// // duration:.1
+// // }
+// // )
 
 
-setCoords({
- x:x.toFixed(2),
- y:y.toFixed(2)
-});
+// // }
+// useEffect(() => {
+//   figures.forEach((figure) => {
+//     const el = document.getElementById(figure.id);
 
+//     if (!el) return;
 
-// moveTooltip(e);
+//     el.style.cursor = "pointer";
 
-};
+//     el.addEventListener("mouseenter", () =>
+//       showFigure(figure.id, figure.title)
+//     );
 
+//     el.addEventListener("mouseleave", hideFigure);
+//   });
+// }, []); 
+// const showCoords = (e)=>{
 
+// const rect = e.currentTarget.getBoundingClientRect();
 
-return (
 
-<div
-className="skatepark"
-//onMouseMove={moveTooltip}
-onMouseMove={showCoords}
+// const x = ((e.clientX - rect.left) / rect.width) * 100;
 
->
+// const y = ((e.clientY - rect.top) / rect.height) * 100;
 
 
-{/* базовая карта */}
+// setCoords({
+//  x:x.toFixed(2),
+//  y:y.toFixed(2)
+// });
 
-<img
 
-className="park-image"
+// // moveTooltip(e);
 
-src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785257521/voltparkvisual2_k4c3fr.jpg"
+// };
 
-alt="skatepark"
 
-/>
 
+// return (
 
+// <div
+// className="skatepark"
+// //onMouseMove={moveTooltip}
+// onMouseMove={showCoords}
 
-{/* слои подсветки */}
+// >
 
-{/* {
 
-figures.map(item=>(
+// {/* базовая карта */}
 
-<img
+// <img
 
-key={item.id}
+// className="park-image"
 
-ref={el=>layers.current[item.id]=el}
+// src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785257521/voltparkvisual2_k4c3fr.jpg"
 
-className="park-layer"
+// alt="skatepark"
 
-src={item.image}
+// />
 
-alt=""
 
-/>
 
-))
+// {/* слои подсветки */}
 
-} */}
+// {/* {
 
-{figures.map(item => (
-  <img
-    key={item.id}
-    ref={el => (layers.current[item.id] = el)}
-    className="park-layer"
-    src={item.image}
-    alt=""
-  />
-))}
+// figures.map(item=>(
 
-<ParkMap className="park-svg" /> 
+// <img
 
+// key={item.id}
 
-{/* интерактивные зоны */}
+// ref={el=>layers.current[item.id]=el}
 
-{
+// className="park-layer"
 
-figures.map(item=>(
+// src={item.image}
 
-<div
+// alt=""
 
-key={item.id}
+// />
 
-className="park-svg"
+// ))
 
-style={item.area}
+// } */}
 
-onMouseEnter={()=>showFigure(item.id,item.title)}
+// {figures.map(item => (
+//   <img
+//     key={item.id}
+//     ref={el => (layers.current[item.id] = el)}
+//     className="park-layer"
+//     src={item.image}
+//     alt=""
+//   />
+// ))}
 
-onMouseLeave={hideFigure}
+// <ParkMap className="park-svg" /> 
 
-/>
 
-))
+// {/* интерактивные зоны */}
 
-}
+// {
 
+// figures.map(item=>(
 
+// <div
 
+// key={item.id}
 
-{/* <div
+// className="park-svg"
 
-ref={tooltip}
+// style={item.area}
 
-className="skate-tooltip"
+// onMouseEnter={()=>showFigure(item.id,item.title)}
 
->
+// onMouseLeave={hideFigure}
 
-{active}
+// />
 
-</div> */}
+// ))
 
+// }
 
-<div className="coordinates z-1111111111111">
 
-left: {coords.x}% <br/>
-top: {coords.y}%
 
-</div>
 
+// {/* <div
 
+// ref={tooltip}
 
-</div>
+// className="skate-tooltip"
 
-)
+// >
 
+// {active}
 
-}
+// </div> */}
+
+
+// <div className="coordinates z-1111111111111">
+
+// left: {coords.x}% <br/>
+// top: {coords.y}%
+
+// </div>
+
+
+
+// </div>
+
+// )
+
+
+// }
