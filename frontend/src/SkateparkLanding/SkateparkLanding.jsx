@@ -836,8 +836,8 @@ gsap.registerPlugin(ScrollTrigger);
 
 // ---------- Дані (замініть на реальні) ----------
 
-const BUILDER_LOGO = "BUILD CO."; // хто будує
-const PARTNER_LOGO = "ZLIT CREW"; // для кого будують / бренд-ініціатор
+const BUILDER_LOGO = "parkramps"; // хто будує
+const PARTNER_LOGO = "volt"; // для кого будують / бренд-ініціатор
 
 // Фото об'єкта з різних ракурсів для фонового колажу хіро-секції.
 // Замініть src на реальні яскраві фото стройки — вони йдуть під halftone/duotone
@@ -983,7 +983,7 @@ function GrungeStyles() {
         background-size: 6px 6px;
       }
       .halftone-red {
-        background-image: radial-gradient(circle, #e2001a 1px, transparent 1.4px);
+        background-image: radial-gradient(circle, #e200a6 1px, transparent 1.4px);
         background-size: 7px 7px;
       }
       .torn-top {
@@ -998,8 +998,8 @@ function GrungeStyles() {
         box-shadow: 0 1px 2px rgba(0,0,0,0.3);
       }
       .stamp {
-        border: 3px dashed #e2001a;
-        color: #e2001a;
+        border: 3px dashed #e200b1;
+        color: #e200b9;
         mix-blend-mode: multiply;
       }
       .hero-photo-duotone {
@@ -1025,7 +1025,7 @@ function HazardMarquee() {
         className="absolute inset-0 opacity-90"
         style={{
           backgroundImage:
-            "repeating-linear-gradient(135deg, #e2001a 0px, #e2001a 22px, #000 22px, #000 44px)",
+            "repeating-linear-gradient(135deg, #e20075 0px, #e200b1 22px, #000 22px, #000 44px)",
         }}
       />
       <div className="marquee-track relative flex w-max whitespace-nowrap">
