@@ -233,10 +233,10 @@ const figures = [
     image:"https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/volt_park_visual7_2_rrpf7v.jpg",
 
     area:{
-      left:"8.50%",
+      left:"7.50%",
       top:"25.50%",
-      width:"18%",
-      height:"34%"
+      width:"12%",
+      height:"18%"
     }
   },
 
@@ -248,10 +248,10 @@ const figures = [
     image:"https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual6_2_gl0q0k.jpg",
 
     area:{
-      left:"8%",
-      top:"70%",
-      width:"18%",
-      height:"35%"
+      left:"7.50%",
+      top:"65%",
+      width:"12%",
+      height:"18%"
     }
   },
 
@@ -263,10 +263,10 @@ const figures = [
     image:"https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual8_2_zwmivn.jpg",
 
     area:{
-      left:"5.50%",
+      left:"4%",
       top:"38.50%",
-      width:"20%",
-      height:"40%"
+      width:"13.50%",
+      height:"28%"
     }
   },
 
