@@ -230,7 +230,7 @@ const figures = [
     id:"quarter",
     title:"quarter",
 
-    image:"https://res.cloudinary.com/dbx6muxub/image/upload/v1785257520/volt_park_visual10_2_oo1az0.jpg",
+    image:"https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/volt_park_visual7_2_rrpf7v.jpg",
 
     area:{
       left:"8.50%",
@@ -245,7 +245,7 @@ const figures = [
     id:"quarter2",
     title:"Quarter Pipe",
 
-    image:"https://res.cloudinary.com/dbx6muxub/image/upload/v1785257520/volt_park_visual10_2_oo1az0.jpg",
+    image:"https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual6_2_gl0q0k.jpg",
 
     area:{
       left:"8%",
