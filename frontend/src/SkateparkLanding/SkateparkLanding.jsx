@@ -205,7 +205,7 @@ function RampBlueprint({ pathRef, className }) {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <text x="24" y="270" fill="#8a8a8a" fontFam[ily="FuturaPT]" fontSize="10" letterSpacing="1">
+      <text x="24" y="270" fill="#8a8a8a" fontFamily="[FuturaPT]" fontSize="10" letterSpacing="1">
         SECTION A—A · VERT + BOWL · SCALE 1:120
       </text>
     </svg>
