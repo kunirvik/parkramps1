@@ -234,9 +234,9 @@ const figures = [
 
     area:{
       left:"8.50%",
-      top:"43.50%",
-      width:"12%",
-      height:"8%"
+      top:"25.50%",
+      width:"18%",
+      height:"34%"
     }
   },
 
@@ -248,8 +248,8 @@ const figures = [
     image:"https://res.cloudinary.com/dbx6muxub/image/upload/v1785257520/volt_park_visual10_2_oo1az0.jpg",
 
     area:{
-      left:"65%",
-      top:"20%",
+      left:"8%",
+      top:"70%",
       width:"18%",
       height:"35%"
     }
