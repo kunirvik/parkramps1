@@ -1406,7 +1406,7 @@ export default function ZlitLanding() {
       {/* VISION — витяг із зіну */}
       <section className="mx-auto max-w-7xl px-6 py-20">
         <div className="reveal-up grid grid-cols-1 gap-8 md:grid-cols-[1fr_1.4fr]">
-          <p className="font-futura text-xs font-bold uppercase tracking-[0.25em] text-[#e2001a]">
+          <p className="font-futura text-xs font-bold uppercase tracking-[0.25em] text-rgb(26, 162, 96)">
             Чому це важливо
           </p>
           <div className="border-l-4 border-black pl-6">
@@ -1767,7 +1767,7 @@ export default function ZlitLanding() {
           </div>
 
           <div className="mt-16 flex flex-col items-start justify-between gap-6 border-t-2 border-white/15 pt-8 md:flex-row md:items-center">
-            <span className="font-futura text-lg font-black uppercase">ZLIT</span>
+            <span className="font-futura text-lg font-black uppercase">SKATEPARK</span>
             <div className="flex gap-5 text-white/60">
               <a href="#" aria-label="Instagram" className="transition hover:text-[#e2001a]">
                 <Instagram size={18} />
