@@ -4,12 +4,17 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 
 
+// const images = [
+//   "/1.png",
+//   "/2.png",
+//   "/3.png",
+//   "/4.png",
+//   "/5.png",
+// ];
 const images = [
-  "/1.png",
-  "/2.png",
-  "/3.png",
-  "/4.png",
-  "/5.png",
+"https://picsum.photos/300/300",
+"https://picsum.photos/301/300",
+"https://picsum.photos/302/300"
 ];
 
 
