@@ -843,9 +843,9 @@ const PARTNER_LOGO = "ZLIT CREW"; // для кого будують / бренд
 // Замініть src на реальні яскраві фото стройки — вони йдуть під halftone/duotone
 // оверлеєм у стилі журналу, тому чим контрастніше фото, тим краще.
 const HERO_BG_PHOTOS = [
-  { id: 1, src: "", alt: "Каркас об'єкта, вигляд збоку" },
-  { id: 2, src: "", alt: "Монтаж ферм покрівлі" },
-  { id: 3, src: "", alt: "Загальний вигляд, дрон" },
+  { id: 1, src: "/images/skateparks/park4front.png", alt: "Каркас об'єкта, вигляд збоку" },
+  { id: 2, src: "/images/skateparks/park2front.png", alt: "Монтаж ферм покрівлі" },
+  { id: 3, src: "/images/skateparks/park2top.png", alt: "Загальний вигляд, дрон" },
 ];
 
 const SPECS = [
