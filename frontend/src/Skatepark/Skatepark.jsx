@@ -264,7 +264,7 @@ export default function Skatepark() {
     if (!root) return;
 
     const paths = root.querySelectorAll("path[id]");
-
+console.log(document.querySelectorAll('.park-svg path[id]'))
     paths.forEach((path) => {
       const figure = figureById[path.id];
       if (!figure) return; // путь без соответствующей фигуры пропускаем
