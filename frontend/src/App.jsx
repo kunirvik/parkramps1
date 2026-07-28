@@ -14,7 +14,7 @@ import BlogPostModal from "./blog/components/BlogPostModal";
 import AdminPage from "./blog/components/Adminpage";
 import GalleryRoute from "./GalleryRoute";
 import MarketplacePage from "./Marketplacepage/Marketplacepage";
-import Zlitlanding from "./SkateparkLanding/SkateparkLanding";
+import SkateparkLanding from "./SkateparkLanding/SkateparkLanding";
 
 function App() {
   const location = useLocation();
@@ -32,7 +32,7 @@ function App() {
         <Route path="/catalogue" element={<Catalogue />} />
      <Route path="/gallery/all" element={<GalleryRoute />} />    
      <Route path="/gallery/:type/:id" element={<GalleryRoute />} />
- <Route path="/zlitland" element={<Zlitlanding />} />
+ <Route path="/skateparklanding" element={<SkateparkLanding />} />
  
         <Route path="/product/sets/:id" element={<SetsProductDetail />} />
         <Route path="/product/ramps/:id" element={<RampsProductDetail />} />
