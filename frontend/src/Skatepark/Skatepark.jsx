@@ -451,7 +451,7 @@ alt="skatepark"
 
 {/* слои подсветки */}
 
-{
+{/* {
 
 figures.map(item=>(
 
@@ -471,9 +471,19 @@ alt=""
 
 ))
 
-}
+} */}
 
+{figures.map(item => (
+  <img
+    key={item.id}
+    ref={el => (layers.current[item.id] = el)}
+    className="park-layer"
+    src={item.image}
+    alt=""
+  />
+))}
 
+<ParkMap className="park-svg" /> 
 
 
 {/* интерактивные зоны */}
