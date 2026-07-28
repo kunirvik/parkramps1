@@ -26,8 +26,8 @@ gsap.registerPlugin(ScrollTrigger);
 
 // ---------- Данные (замените на реальные) ----------
 
-const BUILDER_LOGO = "BUILD CO."; // кто строит
-const PARTNER_LOGO = "ZLIT CREW"; // для кого строят / бренд-инициатор
+const BUILDER_LOGO = "parkramps"; // кто строит
+const PARTNER_LOGO = "VOLT"; // для кого строят / бренд-инициатор
 
 const SPECS = [
   { label: "Площа комплексу", value: 4700, unit: "м²", decimals: 0 },
@@ -474,7 +474,7 @@ export default function ZlitLanding() {
             </p>
             <p className="hero-reveal mt-6 max-w-md text-lg font-medium text-black/80 md:text-xl">
               Перший в Україні критий скейтпарк такого масштабу. Без сезонів,
-              без погоди, без обмежень — лише швидкість, повітря і бетон.
+              без погоди, без обмежень — лише швидкість, повітря і фанера.
             </p>
             <div className="hero-reveal mt-9 flex flex-wrap gap-3">
               <button
