@@ -30,12 +30,12 @@ const BUILDER_LOGO = "parkramps"; // кто строит
 const PARTNER_LOGO = "VOLT"; // для кого строят / бренд-инициатор
 
 const SPECS = [
-  { label: "Площа комплексу", value: 4700, unit: "м²", decimals: 0 },
-  { label: "Висота стелі", value: 14, unit: "м", decimals: 0 },
+  { label: "Площа комплексу", value: 1000, unit: "м²", decimals: 0 },
+  { label: "Висота стелі", value: 11, unit: "м", decimals: 0 },
   { label: "Глибина bowl", value: 3.6, unit: "м", decimals: 1 },
-  { label: "Вертикальна стіна", value: 4.2, unit: "м", decimals: 1 },
-  { label: "Пропускна здатність", value: 450, unit: "райдерів/день", decimals: 0 },
-  { label: "Зон катання", value: 6, unit: "дисциплін", decimals: 0 },
+  // { label: "Вертикальна стіна", value: 4.2, unit: "м", decimals: 1 },
+  // { label: "Пропускна здатність", value: 450, unit: "райдерів/день", decimals: 0 },
+  // { label: "Зон катання", value: 6, unit: "дисциплін", decimals: 0 },
 ];
 
 const GALLERY = [
