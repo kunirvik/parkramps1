@@ -1381,9 +1381,9 @@ export default function ZlitLanding() {
           <div className="hero-reveal relative border-4 border-black bg-black p-4">
             <RampBlueprint pathRef={heroPathRef} className="w-full" />
           </div> */}
-        </div><Skatepark></Skatepark>
+        </div>
       </section>
-
+<Skatepark></Skatepark>
       <HazardMarquee />
 
       {/* VISION — витяг із зіну */}
