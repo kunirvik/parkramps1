@@ -227,8 +227,8 @@ import "../Skatepark/Skatepark.css";
 const figures = [
 
   {
-    id:"rail",
-    title:"Rail",
+    id:"quarter",
+    title:"quarter",
 
     image:"https://res.cloudinary.com/dbx6muxub/image/upload/v1785257520/volt_park_visual10_2_oo1az0.jpg",
 
