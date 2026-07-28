@@ -490,7 +490,7 @@ onMouseLeave={hideFigure}
 
 
 
-<div
+{/* <div
 
 ref={tooltip}
 
@@ -500,7 +500,7 @@ className="skate-tooltip"
 
 {active}
 
-</div>
+</div> */}
 
 
 <div className="coordinates z-1111111111111">
