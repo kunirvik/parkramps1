@@ -12,9 +12,9 @@ import gsap from "gsap";
 //   "/5.png",
 // ];
 const images = [
-"https://picsum.photos/300/300",
-"https://picsum.photos/301/300",
-"https://picsum.photos/302/300"
+"https://res.cloudinary.com/dbx6muxub/image/upload/v1785257191/4_dywada.png",
+"https://res.cloudinary.com/dbx6muxub/image/upload/v1785257191/2_gqcetl.png",
+"https://res.cloudinary.com/dbx6muxub/image/upload/v1785257192/1_wcwpjq.png"
 ];
 
 
