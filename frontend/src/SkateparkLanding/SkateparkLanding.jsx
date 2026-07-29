@@ -2151,7 +2151,7 @@ function Footer() {
 }
 
 export default function LandingPage() {
-  return (
+  return (<>
     <div className="landing">
       {/* трейл выключается автоматически внутри зон с data-cursor-trail="off" */}
       <CursorImageTrail />
@@ -2160,7 +2160,7 @@ export default function LandingPage() {
       <InfoStats />
       <ParkSection />
 
-         {/* <Skatepark /> */}
+        
     
  
       <Gallery />
@@ -2168,6 +2168,7 @@ export default function LandingPage() {
       <CTA />
       <Footer />
     </div>
+    <Skatepark /></>
   );
 }
 // "use client";
