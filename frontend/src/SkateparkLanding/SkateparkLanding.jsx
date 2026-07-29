@@ -1824,7 +1824,7 @@ const CATEGORIES = [
     id: "partners",
     tag: "01 — Партнери",
     title: "Партнерам",
-    text: "Брендування фігур, логотипи, банери, партнерські програми — розглядаємо всі варіанти співпраці. Підтримуй спорт і вкладайся у майбутнє.",
+    text: "Розміщення рекламної продукції на локації.ю  Брендування фігур, логотипи, банери, партнерські програми — розглядаємо всі варіанти співпраці. Підтримуй спорт і вкладайся у майбутнє.",
     contacts: [{ label: "Пошта", value: "partners@voltpark.ua", href: "mailto:partners@voltpark.ua" }],
   },
   {
@@ -2012,24 +2012,24 @@ function InfoStats() {
   );
 }
 
-function ParkSection() {
-  const ref = useScrollReveal(".reveal");
-  return (
-    <section className="park-section" ref={ref}>
-      <div className="section-head reveal">
-        <span className="section-head__tag">Карта парку</span>
-        <h2 className="section-head__title">Наведи на фігуру</h2>
-        <p className="section-head__sub">
-          У парку: 2 бокси, 3 квотери різних розмірів, великий квотерволл, рампа, бенк,
-          ролл-ін.
-        </p>
-      </div>
-     <div className="reveal">
-        <Skatepark /></div>
+// function ParkSection() {
+//   const ref = useScrollReveal(".reveal");
+//   return (
+//     <section className="park-section" ref={ref}>
+//       <div className="section-head reveal">
+//         <span className="section-head__tag">Карта парку</span>
+//         <h2 className="section-head__title">Наведи на фігуру</h2>
+//         <p className="section-head__sub">
+//           У парку: 2 бокси, 3 квотери різних розмірів, великий квотерволл, рампа, бенк,
+//           ролл-ін.
+//         </p>
+//       </div>
+//      <div className="reveal">
+//         <Skatepark /></div>
     
-    </section>
-  );
-}
+//     </section>
+//   );
+// }
 
 function Gallery() {
   const trackRef = useRef(null);
@@ -2158,7 +2158,20 @@ export default function LandingPage() {
       <Header />
       <Hero />
       <InfoStats />
-      <ParkSection />
+      {/* <ParkSection /> */}
+<section className="park-section" ref={ref}>
+      <div className="section-head reveal">
+        <span className="section-head__tag">Карта парку</span>
+        <h2 className="section-head__title">Наведи на фігуру</h2>
+        <p className="section-head__sub">
+          У парку: 2 бокси, 3 квотери різних розмірів, великий квотерволл, рампа, бенк,
+          ролл-ін.
+        </p>
+      </div>
+     <div className="reveal">
+        <Skatepark /></div>
+    
+    </section>
       <Gallery />
       <Categories />
       <CTA />
