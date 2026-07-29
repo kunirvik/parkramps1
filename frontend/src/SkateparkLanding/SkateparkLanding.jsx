@@ -2024,7 +2024,11 @@ function ParkSection() {
           ролл-ін.
         </p>
       </div>
+
       <div className="reveal">
+        <div style={{ height: 300, background: "red" }}>
+  HELLO
+</div>
         <Skatepark />
       </div>
     </section>
@@ -2158,6 +2162,9 @@ export default function LandingPage() {
       <Header />
       <Hero />
       <InfoStats />
+      <div style={{ height: 300, background: "red" }}>
+  HELLO
+</div>
       <ParkSection />
       <Gallery />
       <Categories />

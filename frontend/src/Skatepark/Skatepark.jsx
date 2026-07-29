@@ -700,6 +700,7 @@ function useIsMobile(breakpoint = 720) {
 }
 
 export default function Skatepark() {
+    console.log("Skatepark render");
   const svgWrapRef = useRef(null);
   const layers = useRef({});
   const [active, setActive] = useState(null);
@@ -855,6 +856,7 @@ export default function Skatepark() {
 
   return (
     // data-cursor-trail="off" выключает CursorImageTrail именно в этой зоне
+     
     <div className={`skatepark ${isMobile ? "skatepark--mobile" : ""}`} data-cursor-trail="off">
       <img className="park-image" src={baseImage} alt="Скейтпарк, загальний вигляд" />
 
