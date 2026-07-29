@@ -332,8 +332,8 @@
 // }
 import { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
-import "../Skatepark/Skatepark.css";
-import ParkMap from "../Skatepark/park.svg?react";
+import "./Skatepark.css";
+import ParkMap from "./park.svg?react";
 
 // Базовое фото парка (общий план, без подсветки)
 const BASE_IMAGE = "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257521/voltparkvisual2_k4c3fr.jpg";
