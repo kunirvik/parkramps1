@@ -1778,8 +1778,6 @@
 
 // }
 
-"use client";
-
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -2012,24 +2010,24 @@ function InfoStats() {
   );
 }
 
-function ParkSection() {
-  const ref = useScrollReveal(".reveal");
-  return (
-    <section className="park-section" ref={ref}>
-      <div className="section-head reveal">
-        <span className="section-head__tag">Карта парку</span>
-        <h2 className="section-head__title">Наведи на фігуру</h2>
-        <p className="section-head__sub">
-          У парку: 2 бокси, 3 квотери різних розмірів, великий квотерволл, рампа, бенк,
-          ролл-ін.
-        </p>
-      </div>
+// function ParkSection() {
+//   const ref = useScrollReveal(".reveal");
+//   return (
+//     <section className="park-section" ref={ref}>
+//       <div className="section-head reveal">
+//         <span className="section-head__tag">Карта парку</span>
+//         <h2 className="section-head__title">Наведи на фігуру</h2>
+//         <p className="section-head__sub">
+//           У парку: 2 бокси, 3 квотери різних розмірів, великий квотерволл, рампа, бенк,
+//           ролл-ін.
+//         </p>
+//       </div>
+//      <div className="reveal">
+//         <Skatepark /></div>
     
-        <Skatepark />
-    
-    </section>
-  );
-}
+//     </section>
+//   );
+// }
 
 function Gallery() {
   const trackRef = useRef(null);
@@ -2151,16 +2149,16 @@ function Footer() {
 }
 
 export default function LandingPage() {
-  return (<>
+  return (
     <div className="landing">
       {/* трейл выключается автоматически внутри зон с data-cursor-trail="off" */}
       <CursorImageTrail />
       <Header />
       <Hero />
       <InfoStats />
-      <ParkSection />
+      {/* <ParkSection /> */}
 
-        
+         <Skatepark />
     
  
       <Gallery />
@@ -2168,7 +2166,6 @@ export default function LandingPage() {
       <CTA />
       <Footer />
     </div>
-    <Skatepark /></>
   );
 }
 // "use client";
