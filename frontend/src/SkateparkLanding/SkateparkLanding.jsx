@@ -1791,7 +1791,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 // ─── Демо-контент — замени на свои реальные фото/видео/логотипы ─────
 const HERO_VIDEO_DESKTOP =
-  "https://res.cloudinary.com/dbx6muxub/video/upload/v1785257521/voltpark_hero.mp4"; // placeholder
+  "https://res.cloudinary.com/dbx6muxub/video/upload/v1785325905/volt_park_visual2kwide_sjelea.mp4"; // placeholder
 const HERO_VIDEO_MOBILE =
   "https://res.cloudinary.com/dbx6muxub/video/upload/v1785257521/voltpark_hero_mobile.mp4"; // вертикальное видео для телефона — замени на своё
 
@@ -1803,9 +1803,9 @@ const BG_PHOTO_3 =
   "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual6_2_gl0q0k.jpg";
 
 // Логотипы шапки — поставь свои файлы (SVG/PNG с прозрачным фоном)
-const LOGO_BUILDER = null; // логотип забудовника/проєктувальників
+const LOGO_BUILDER = "https://res.cloudinary.com/dbx6muxub/image/upload/v1785326790/%D0%BF%D0%B0%D1%80%D0%BA_%D1%80%D1%8D%D0%BC%D0%BF%D1%81_%D0%B8%D0%BD%D0%B2%D0%B5%D1%80%D1%8111_fag6kp.png"; // логотип забудовника/проєктувальників
 const LOGO_PARTNER_1 = null; // логотип школи роллердрому №1
-const LOGO_PARTNER_2 = null; // логотип школи роллердрому №2
+// const LOGO_PARTNER_2 = null; // логотип школи роллердрому №2
 
 const GALLERY_ITEMS = [
   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual12_unvhp8.jpg", caption: "Рампа. Заливка бетону" },
@@ -1915,13 +1915,13 @@ function Header() {
             <span className="logo-placeholder">ЛОГО ШКОЛИ 1</span>
           )}
         </div>
-        <div className="header-logo header-logo--partner">
+        {/* <div className="header-logo header-logo--partner">
           {LOGO_PARTNER_2 ? (
             <img src={LOGO_PARTNER_2} alt="Партнер" />
           ) : (
             <span className="logo-placeholder">ЛОГО ШКОЛИ 2</span>
           )}
-        </div>
+        </div> */}
       </div>
     </header>
   );

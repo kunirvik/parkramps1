@@ -260,8 +260,8 @@ const images = [
 const MAX_ACTIVE_IMAGES = 5;   // сколько картинок одновременно видно на экране
 const MIN_DISTANCE = 110;      // px — курсор должен пройти столько, чтобы спавнилась новая картинка
 const MIN_INTERVAL = 160;      // ms — минимальная пауза между спавнами (защита от "пулемёта")
-const SIZE_MIN = 90;          // px
-const SIZE_MAX = 100;          // px
+const SIZE_MIN = 50;          // px
+const SIZE_MAX = 70;          // px
 
 // Атрибут, которым помечаются зоны, где трейл должен быть выключен.
 // Повесь data-cursor-trail="off" на любой блок (например .skatepark)
