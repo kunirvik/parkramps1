@@ -2159,19 +2159,19 @@ export default function LandingPage() {
       <Hero />
       <InfoStats />
       {/* <ParkSection /> */}
-<section className="park-section" ref={ref}>
-      <div className="section-head reveal">
-        <span className="section-head__tag">Карта парку</span>
-        <h2 className="section-head__title">Наведи на фігуру</h2>
-        <p className="section-head__sub">
-          У парку: 2 бокси, 3 квотери різних розмірів, великий квотерволл, рампа, бенк,
-          ролл-ін.
-        </p>
-      </div>
+      //     <section className="park-section" >
+//       <div className="section-head reveal">
+//         <span className="section-head__tag">Карта парку</span>
+//         <h2 className="section-head__title">Наведи на фігуру</h2>
+//         <p className="section-head__sub">
+//           У парку: 2 бокси, 3 квотери різних розмірів, великий квотерволл, рампа, бенк,
+//           ролл-ін.
+//         </p>
+//       </div>
+//      <div className="reveal">
+//         <Skatepark /></div>
     
-        <Skatepark />
-    
-    </section>
+//     </section>
       <Gallery />
       <Categories />
       <CTA />
