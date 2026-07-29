@@ -1,13 +1,14 @@
 .skatepark {
   position: relative;
   width: 100%;
-  aspect-ratio: 2304 / 775; /* совпадает с viewBox park.svg (десктоп) */
+  aspect-ratio: 2304 / 775; /* совпадает с viewBox park.svg — задаёт высоту контейнеру */
   overflow: hidden;
   user-select: none;
-  background: #0a0a0a;
+  background: #0a0a0a; /* заглушка-фон, пока не загрузилось фото */
 }
 
-/* Мобильная версия — вертикальное фото/SVG, подставь реальный viewBox */
+/* На телефоне карта/фото вертикальные — подстрой это соотношение под
+   реальный viewBox park-mobile.svg и пропорции вертикального фото */
 .skatepark--mobile {
   aspect-ratio: 9 / 16;
 }
@@ -27,6 +28,11 @@
   background: rgba(10, 10, 10, 0.85);
 }
 
+.skate-fallback code {
+  color: #d4ff3f;
+}
+
+/* Базовое фото и слои фигур занимают весь контейнер и лежат друг на друге */
 .park-image,
 .park-layer {
   position: absolute;
@@ -34,33 +40,41 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  pointer-events: none;
+  pointer-events: none; /* клики должны идти на SVG, а не на картинки */
 }
 
+/* Базовое фото — всегда полностью видимое, лежит в самом низу */
 .park-image {
   z-index: 1;
   opacity: 1;
 }
 
+/* Картинки фигур изначально невидимы, GSAP включает нужную через opacity */
 .park-layer {
   z-index: 2;
   opacity: 0;
   will-change: opacity;
 }
 
+/* SVG-обёртка лежит выше всех картинок и содержит только hit-зоны */
 .park-svg-wrap {
   position: absolute;
   inset: 0;
   z-index: 10;
-  pointer-events: none;
+  pointer-events: none; /* сама обёртка кликов не ловит */
 }
 
+/* SVG теперь вставляется как raw markup (dangerouslySetInnerHTML),
+   поэтому стилизуем его через потомка враппера, а не через className */
 .park-svg-wrap svg {
   width: 100%;
   height: 100%;
   display: block;
 }
 
+/* Path'ы — единственные интерактивные элементы: полностью невидимые hit-зоны.
+   Никакой заливки/обводки при hover — раньше это давало эффект "скелетов",
+   просвечивающих поверх фото. Подсказку теперь даёт только фото-слой + заметка сбоку. */
 .park-svg path {
   fill: transparent;
   stroke: transparent;
@@ -69,107 +83,79 @@
   outline: none;
 }
 
-/* ── COMIC BOX — универсальный стиль текстовых блоков (как на скрине) ──
-   Переменные задают цвет рамки/плашки, используй data-color на элементе:
-   data-color="blue" | "volt" | "tape" | "mono"                         */
-.comic-box {
-  --box-border: #3fa9f5;
-  --box-header: #f5c542;
-  --box-bg: #0c1c33;
-  --box-text: #eaf6ff;
-
-  position: relative;
-  background: var(--box-bg);
-  border: 3px solid var(--box-border);
-  border-radius: 3px;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
-  font-family: "Space Mono", monospace;
-  overflow: visible;
-}
-
-.comic-box[data-color="volt"] {
-  --box-border: #d4ff3f;
-  --box-header: #d4ff3f;
-  --box-bg: #10160a;
-  --box-text: #eafccb;
-}
-
-.comic-box[data-color="tape"] {
-  --box-border: #ff3d1a;
-  --box-header: #ff3d1a;
-  --box-bg: #201007;
-  --box-text: #ffe7de;
-}
-
-.comic-box[data-color="mono"] {
-  --box-border: #f2f0e6;
-  --box-header: #f2f0e6;
-  --box-bg: #101010;
-  --box-text: #f2f0e6;
-}
-
-.comic-box::before,
-.comic-box::after {
-  content: "";
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--box-border);
-  top: 5px;
-  z-index: 2;
-  box-shadow: 0 0 0 2px var(--box-bg);
-}
-.comic-box::before { left: 5px; }
-.comic-box::after { right: 5px; }
-
-.comic-box__header {
-  background: var(--box-header);
-  color: #0a0a0a;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-size: 12px;
-  padding: 8px 16px;
-  border-bottom: 3px solid var(--box-border);
-}
-
-.comic-box__body {
-  padding: 12px 16px 16px;
-  color: var(--box-text);
-  font-size: 13px;
-  line-height: 1.45;
-}
-
-/* ── Журнальна заметка сбоку от активной фигуры, теперь в стиле comic-box ── */
+/* ── Журнальная заметка сбоку (как вырезка из зина) ───────────────── */
 .skate-note {
   position: absolute;
   top: 50%;
   z-index: 20;
   width: min(240px, 42%);
-  padding: 0;
-  transform: translateY(-50%) rotate(-1deg) scale(0.96);
+  padding: 14px 16px 16px;
+  background: #f2f0e6;
+  color: #111;
+  transform: translateY(-50%) rotate(-2deg) scale(0.96);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s ease, transform 0.25s ease;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  clip-path: polygon(
+    0% 2%, 3% 0%, 97% 1%, 100% 3%,
+    99% 97%, 96% 100%, 2% 99%, 0% 96%
+  );
 }
 
-.skate-note--right { right: 24px; }
+.skate-note--right {
+  right: 24px;
+}
+
 .skate-note--left {
   left: 24px;
-  transform: translateY(-50%) rotate(1deg) scale(0.96);
+  transform: translateY(-50%) rotate(2deg) scale(0.96);
 }
 
 .skate-note--visible {
   opacity: 1;
-  transform: translateY(-50%) rotate(-1deg) scale(1);
+  transform: translateY(-50%) rotate(-2deg) scale(1);
 }
+
 .skate-note--left.skate-note--visible {
-  transform: translateY(-50%) rotate(1deg) scale(1);
+  transform: translateY(-50%) rotate(2deg) scale(1);
+}
+
+.skate-note__tag {
+  display: inline-block;
+  font-family: "Space Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: #111;
+  color: #d4ff3f;
+  padding: 2px 6px;
+  margin-bottom: 8px;
+}
+
+.skate-note__title {
+  margin: 0 0 6px;
+  font-family: "Anton", "Arial Narrow", sans-serif;
+  font-size: 22px;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.skate-note__text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
 }
 
 @media (max-width: 720px) {
-  .skate-note { width: min(200px, 60%); }
-  .comic-box__header { font-size: 11px; padding: 7px 12px; }
-  .comic-box__body { font-size: 12px; padding: 10px 12px 12px; }
+  .skate-note {
+    width: min(200px, 60%);
+    padding: 10px 12px 12px;
+  }
+  .skate-note__title {
+    font-size: 18px;
+  }
+  .skate-note__text {
+    font-size: 12px;
+  }
 }

@@ -810,19 +810,18 @@
 //     </div>
 //   );
 // }
+
 import { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
 import "./Skatepark.css";
-import ParkMapDesktop from "./park.svg?react";
-import ParkMapMobile from "./park.svg?react"; // ← замени на свой мобильный SVG
+import ParkMap from "./park.svg?react";
 
-// Базовые фото парка
-const BASE_IMAGE_DESKTOP =
+// Базовое фото парка (общий план, без подсветки)
+const BASE_IMAGE =
   "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257521/voltparkvisual2_k4c3fr.jpg";
-const BASE_IMAGE_MOBILE =
-  "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257521/voltparkvisual2_mobile_PLACEHOLDER.jpg"; // ← замени на вертикальное фото
 
-// Каждая фигура: id должен ТОЧНО совпадать с id path и в park.svg, и в park-mobile.svg
+// Каждая фигура: id должен ТОЧНО совпадать с id path в park.svg,
+// image — картинка именно этой фигуры, note — короткая "журнальная" подпись сбоку.
 const figures = [
   { id: "ramp", title: "Рампа", note: "Класична рампа для набору швидкості й повітряних трюків.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual12_unvhp8.jpg" },
   { id: "quater3", title: "Квотер 3", note: "Один із трьох квотерів парку, свій розмір і свій характер.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual11_cewrz7.jpg" },
@@ -836,29 +835,17 @@ const figures = [
   { id: "vertwall", title: "Vert wall", note: "Вертикальна стіна для найвищого рівня катання.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual8_2_zwmivn.jpg" },
   { id: "quater", title: "Квотер", note: "Базовий квотер парку, з нього зручно починати.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/volt_park_visual7_2_rrpf7v.jpg" },
   { id: "box2", title: "Бокс", note: "Один із двох боксів парку — для слайдів і грайндів.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual14_dnjash.jpg" },
+  { id: "box2", title: "Бокс", note: "Один із двох боксів парку — для слайдів і грайндів.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual15_ktwiqp.jpg" },
+
 ];
 
 const figureById = Object.fromEntries(figures.map((f) => [f.id, f]));
-
-function useIsMobile(breakpoint = 720) {
-  const [isMobile, setIsMobile] = useState(
-    typeof window !== "undefined" ? window.innerWidth <= breakpoint : false
-  );
-  useEffect(() => {
-    const mql = window.matchMedia(`(max-width: ${breakpoint}px)`);
-    const onChange = (e) => setIsMobile(e.matches);
-    mql.addEventListener("change", onChange);
-    return () => mql.removeEventListener("change", onChange);
-  }, [breakpoint]);
-  return isMobile;
-}
 
 export default function Skatepark() {
   const svgWrapRef = useRef(null);
   const layers = useRef({});
   const [active, setActive] = useState(null);
   const [notePos, setNotePos] = useState({ side: "right" });
-  const isMobile = useIsMobile();
 
   const isTouch =
     typeof window !== "undefined" &&
@@ -866,6 +853,7 @@ export default function Skatepark() {
 
   const showLayer = (id, clientX) => {
     setActive(id);
+    // если фигура в правой половине экрана — карточка выезжает слева, и наоборот
     if (typeof window !== "undefined" && typeof clientX === "number") {
       setNotePos({ side: clientX > window.innerWidth / 2 ? "left" : "right" });
     }
@@ -956,20 +944,17 @@ export default function Skatepark() {
       cleanupFns.forEach((fn) => fn());
       if (outsideTapHandler) document.removeEventListener("click", outsideTapHandler);
     };
-    // пересоздаём обработчики при смене SVG (десктоп ⇄ мобилка)
-  }, [isTouch, isMobile]);
+  }, [isTouch]);
 
   const activeFigure = active ? figureById[active] : null;
-  const ParkMap = isMobile ? ParkMapMobile : ParkMapDesktop;
-  const baseImage = isMobile ? BASE_IMAGE_MOBILE : BASE_IMAGE_DESKTOP;
 
   return (
-    <div
-      className={`skatepark ${isMobile ? "skatepark--mobile" : ""}`}
-      data-cursor-trail="off"
-    >
-      <img className="park-image" src={baseImage} alt="Скейтпарк, загальний вигляд" />
+    // data-cursor-trail="off" выключает CursorImageTrail именно в этой зоне
+    <div className="skatepark" data-cursor-trail="off">
+      {/* Базовое фото — видно всегда */}
+      <img className="park-image" src={BASE_IMAGE} alt="Скейтпарк, загальний вигляд" />
 
+      {/* Слой картинки для каждой фигуры — проявляется поверх базового при наведении */}
       {figures.map((item) => (
         <img
           key={item.id}
@@ -980,25 +965,23 @@ export default function Skatepark() {
         />
       ))}
 
+      {/* SVG поверх всего — прозрачные path работают как hit-зоны для наведения */}
       <div ref={svgWrapRef} className="park-svg-wrap">
         <ParkMap className="park-svg" />
       </div>
 
+      {/* Журнальная заметка сбоку от активной фигуры */}
       <div
         className={`skate-note skate-note--${notePos.side} ${
           activeFigure ? "skate-note--visible" : ""
         }`}
       >
         {activeFigure && (
-          <div className="comic-box" data-color="blue">
-            <div className="comic-box__header">Зона парку</div>
-            <div className="comic-box__body">
-              <h4 style={{ margin: "0 0 6px", fontSize: 18, textTransform: "uppercase" }}>
-                {activeFigure.title}
-              </h4>
-              <p style={{ margin: 0 }}>{activeFigure.note}</p>
-            </div>
-          </div>
+          <>
+            <span className="skate-note__tag">Зона парку</span>
+            <h4 className="skate-note__title">{activeFigure.title}</h4>
+            <p className="skate-note__text">{activeFigure.note}</p>
+          </>
         )}
       </div>
     </div>
