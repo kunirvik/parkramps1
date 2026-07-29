@@ -1,8 +1,8 @@
 .skatepark {
   position: relative;
   width: 100%;
-  
-  aspect-ratio: 2304 / 775; /* совпадает с viewBox park.svg — задаёт высоту контейнеру */
+  height: 100vh;
+  /* aspect-ratio: 2304 / 775; совпадает с viewBox park.svg — задаёт высоту контейнеру */
   overflow: hidden;
   user-select: none;
   background: #0a0a0a; /* заглушка-фон, пока не загрузилось фото */

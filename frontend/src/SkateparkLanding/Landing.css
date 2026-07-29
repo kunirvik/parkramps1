@@ -349,7 +349,7 @@
 }
 
 .park-section > div:last-child {
-  max-width: 1200px;
+  max-width: 100vh;
   margin: 0 auto;
   padding: 0 20px;
 }
