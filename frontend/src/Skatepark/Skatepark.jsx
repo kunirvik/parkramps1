@@ -330,29 +330,179 @@
 //     </div>
 //   );
 // }
+// import { useRef, useState, useEffect } from "react";
+// import gsap from "gsap";
+// import "../Skatepark/Skatepark.css";
+// import ParkMap from "../Skatepark/park.svg?react";
+
+// // Базовое фото парка (общий план, без подсветки)
+// const BASE_IMAGE = "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257521/voltparkvisual2_k4c3fr.jpg";
+
+// // Каждая фигура: id должен ТОЧНО совпадать с id path в park.svg,
+// // image — картинка именно этой фигуры (крупный план / рендер / фото),
+// // которая появится поверх базового фото при наведении.
+// const figures = [
+//   { id: "ramp",     title: "Рампа",              image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual12_unvhp8.jpg" },
+//   { id: "quater3",  title: "Квотер 3",           image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual11_cewrz7.jpg" },
+//   { id: "roll-in",  title: "Ролл-ін",            image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257520/volt_park_visual10_2_oo1az0.jpg" },
+//   { id: "bank",     title: "Бенк",               image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual9_2_jrzknr.jpg" },
+//   { id: "box",      title: "Бокс",               image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual13_z6hp1g.jpg" },
+//   { id: "jumpbox",  title: "Джампбокс",          image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/voltparkvisual4_rrbeeo.jpg" },
+//   { id: "flybox",   title: "Флайбокс",           image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/voltparkvisual3_kpnpkk.jpg" },
+//   { id: "volcano",  title: "Волкано",            image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/volt_park_visual5_2_w899yo.jpg" },
+//   { id: "quater2",  title: "Квотер 2",           image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual6_2_gl0q0k.jpg" },
+//   { id: "vertwall", title: "Vert wall",          image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual8_2_zwmivn.jpg" },
+//   { id: "quater",   title: "Квотер",             image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/volt_park_visual7_2_rrpf7v.jpg" },
+// ];
+
+// const figureById = Object.fromEntries(figures.map((f) => [f.id, f]));
+
+// export default function Skatepark() {
+//   const svgWrapRef = useRef(null);
+//   const layers = useRef({});
+//   const [active, setActive] = useState(null);
+
+//   const isTouch =
+//     typeof window !== "undefined" &&
+//     window.matchMedia("(pointer: coarse)").matches;
+
+//   const showLayer = (id) => {
+//     setActive(id);
+//     Object.entries(layers.current).forEach(([key, el]) => {
+//       if (!el) return;
+//       gsap.to(el, {
+//         opacity: key === id ? 1 : 0,
+//         duration: 0.35,
+//         ease: "power2.out",
+//         overwrite: true,
+//       });
+//     });
+//   };
+
+//   const hideAllLayers = () => {
+//     setActive(null);
+//     Object.values(layers.current).forEach((el) => {
+//       if (!el) return;
+//       gsap.to(el, { opacity: 0, duration: 0.35, ease: "power2.out", overwrite: true });
+//     });
+//   };
+
+//   useEffect(() => {
+//     const root = svgWrapRef.current;
+//     if (!root) return;
+
+//     const paths = root.querySelectorAll("path[id]");
+//     const cleanupFns = [];
+
+//     paths.forEach((path) => {
+//       const figure = figureById[path.id];
+//       if (!figure) return;
+
+//       path.style.cursor = "pointer";
+//       path.style.pointerEvents = "auto";
+//       path.setAttribute("tabindex", "0");
+//       path.setAttribute("role", "button");
+//       path.setAttribute("aria-label", figure.title);
+
+//       if (isTouch) {
+//         const onTap = (e) => {
+//           e.stopPropagation();
+//           setActive((prev) => {
+//             const next = prev === figure.id ? null : figure.id;
+//             if (next) showLayer(next);
+//             else hideAllLayers();
+//             return next;
+//           });
+//         };
+//         path.addEventListener("click", onTap);
+//         cleanupFns.push(() => path.removeEventListener("click", onTap));
+//       } else {
+//         const onEnter = () => showLayer(figure.id);
+//         const onLeave = () => hideAllLayers();
+//         const onFocus = () => showLayer(figure.id);
+//         const onBlur = () => hideAllLayers();
+
+//         path.addEventListener("mouseenter", onEnter);
+//         path.addEventListener("mouseleave", onLeave);
+//         path.addEventListener("focus", onFocus);
+//         path.addEventListener("blur", onBlur);
+
+//         cleanupFns.push(() => {
+//           path.removeEventListener("mouseenter", onEnter);
+//           path.removeEventListener("mouseleave", onLeave);
+//           path.removeEventListener("focus", onFocus);
+//           path.removeEventListener("blur", onBlur);
+//         });
+//       }
+//     });
+
+//     let outsideTapHandler;
+//     if (isTouch) {
+//       outsideTapHandler = (e) => {
+//         if (!root.contains(e.target)) hideAllLayers();
+//       };
+//       document.addEventListener("click", outsideTapHandler);
+//     }
+
+//     return () => {
+//       cleanupFns.forEach((fn) => fn());
+//       if (outsideTapHandler) document.removeEventListener("click", outsideTapHandler);
+//     };
+//   }, [isTouch]);
+
+//   return (
+//     <div className="skatepark">
+//       {/* Базовое фото — видно всегда */}
+//       <img className="park-image" src={BASE_IMAGE} alt="Скейтпарк, загальний вигляд" />
+
+//       {/* Слой картинки для каждой фигуры — проявляется поверх базового при наведении */}
+//       {figures.map((item) => (
+//         <img
+//           key={item.id}
+//           ref={(el) => (layers.current[item.id] = el)}
+//           className="park-layer"
+//           src={item.image}
+//           alt={item.title}
+//         />
+//       ))}
+
+//       {/* SVG поверх всего — прозрачные path работают как hit-зоны для наведения */}
+//       <div ref={svgWrapRef} className="park-svg-wrap">
+//         <ParkMap className="park-svg" />
+//       </div>
+
+//       {active && (
+//         <div className="skate-tooltip skate-tooltip--visible">
+//           {figureById[active]?.title}
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
+
 import { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
-import "../Skatepark/Skatepark.css";
-import ParkMap from "../Skatepark/park.svg?react";
+import "./Skatepark.css";
+import ParkMap from "./park.svg?react";
 
 // Базовое фото парка (общий план, без подсветки)
-const BASE_IMAGE = "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257521/voltparkvisual2_k4c3fr.jpg";
+const BASE_IMAGE =
+  "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257521/voltparkvisual2_k4c3fr.jpg";
 
 // Каждая фигура: id должен ТОЧНО совпадать с id path в park.svg,
-// image — картинка именно этой фигуры (крупный план / рендер / фото),
-// которая появится поверх базового фото при наведении.
+// image — картинка именно этой фигуры, note — короткая "журнальная" подпись сбоку.
 const figures = [
-  { id: "ramp",     title: "Рампа",              image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual12_unvhp8.jpg" },
-  { id: "quater3",  title: "Квотер 3",           image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual11_cewrz7.jpg" },
-  { id: "roll-in",  title: "Ролл-ін",            image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257520/volt_park_visual10_2_oo1az0.jpg" },
-  { id: "bank",     title: "Бенк",               image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual9_2_jrzknr.jpg" },
-  { id: "box",      title: "Бокс",               image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual13_z6hp1g.jpg" },
-  { id: "jumpbox",  title: "Джампбокс",          image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/voltparkvisual4_rrbeeo.jpg" },
-  { id: "flybox",   title: "Флайбокс",           image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/voltparkvisual3_kpnpkk.jpg" },
-  { id: "volcano",  title: "Волкано",            image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/volt_park_visual5_2_w899yo.jpg" },
-  { id: "quater2",  title: "Квотер 2",           image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual6_2_gl0q0k.jpg" },
-  { id: "vertwall", title: "Vert wall",          image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual8_2_zwmivn.jpg" },
-  { id: "quater",   title: "Квотер",             image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/volt_park_visual7_2_rrpf7v.jpg" },
+  { id: "ramp", title: "Рампа", note: "Класична рампа для набору швидкості й повітряних трюків.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual12_unvhp8.jpg" },
+  { id: "quater3", title: "Квотер 3", note: "Один із трьох квотерів парку, свій розмір і свій характер.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual11_cewrz7.jpg" },
+  { id: "roll-in", title: "Ролл-ін", note: "Заїзд, з якого стартують у секцію з фігурами.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257520/volt_park_visual10_2_oo1az0.jpg" },
+  { id: "bank", title: "Бенк", note: "Похила поверхня для зв'язок і плавних переходів.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual9_2_jrzknr.jpg" },
+  { id: "box", title: "Бокс", note: "Один із двох боксів парку — для слайдів і грайндів.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual13_z6hp1g.jpg" },
+  { id: "jumpbox", title: "Джампбокс", note: "Фігура для стрибків і відпрацювання ейр-трюків.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/voltparkvisual4_rrbeeo.jpg" },
+  { id: "flybox", title: "Флайбокс", note: "Одна з фірмових фігур парку з ухилом в ейр.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/voltparkvisual3_kpnpkk.jpg" },
+  { id: "volcano", title: "Волкано", note: "Фігура для складніших заходів і виходів.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/volt_park_visual5_2_w899yo.jpg" },
+  { id: "quater2", title: "Квотер 2", note: "Другий квотер — частина великої ейр-зони.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual6_2_gl0q0k.jpg" },
+  { id: "vertwall", title: "Vert wall", note: "Вертикальна стіна для найвищого рівня катання.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual8_2_zwmivn.jpg" },
+  { id: "quater", title: "Квотер", note: "Базовий квотер парку, з нього зручно починати.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/volt_park_visual7_2_rrpf7v.jpg" },
 ];
 
 const figureById = Object.fromEntries(figures.map((f) => [f.id, f]));
@@ -361,13 +511,18 @@ export default function Skatepark() {
   const svgWrapRef = useRef(null);
   const layers = useRef({});
   const [active, setActive] = useState(null);
+  const [notePos, setNotePos] = useState({ side: "right" });
 
   const isTouch =
     typeof window !== "undefined" &&
     window.matchMedia("(pointer: coarse)").matches;
 
-  const showLayer = (id) => {
+  const showLayer = (id, clientX) => {
     setActive(id);
+    // если фигура в правой половине экрана — карточка выезжает слева, и наоборот
+    if (typeof window !== "undefined" && typeof clientX === "number") {
+      setNotePos({ side: clientX > window.innerWidth / 2 ? "left" : "right" });
+    }
     Object.entries(layers.current).forEach(([key, el]) => {
       if (!el) return;
       gsap.to(el, {
@@ -409,7 +564,7 @@ export default function Skatepark() {
           e.stopPropagation();
           setActive((prev) => {
             const next = prev === figure.id ? null : figure.id;
-            if (next) showLayer(next);
+            if (next) showLayer(next, e.clientX);
             else hideAllLayers();
             return next;
           });
@@ -417,18 +572,25 @@ export default function Skatepark() {
         path.addEventListener("click", onTap);
         cleanupFns.push(() => path.removeEventListener("click", onTap));
       } else {
-        const onEnter = () => showLayer(figure.id);
+        const onEnter = (e) => showLayer(figure.id, e.clientX);
+        const onMove = (e) => {
+          if (typeof window !== "undefined") {
+            setNotePos({ side: e.clientX > window.innerWidth / 2 ? "left" : "right" });
+          }
+        };
         const onLeave = () => hideAllLayers();
-        const onFocus = () => showLayer(figure.id);
+        const onFocus = (e) => showLayer(figure.id, e.target.getBoundingClientRect().x);
         const onBlur = () => hideAllLayers();
 
         path.addEventListener("mouseenter", onEnter);
+        path.addEventListener("mousemove", onMove);
         path.addEventListener("mouseleave", onLeave);
         path.addEventListener("focus", onFocus);
         path.addEventListener("blur", onBlur);
 
         cleanupFns.push(() => {
           path.removeEventListener("mouseenter", onEnter);
+          path.removeEventListener("mousemove", onMove);
           path.removeEventListener("mouseleave", onLeave);
           path.removeEventListener("focus", onFocus);
           path.removeEventListener("blur", onBlur);
@@ -450,8 +612,11 @@ export default function Skatepark() {
     };
   }, [isTouch]);
 
+  const activeFigure = active ? figureById[active] : null;
+
   return (
-    <div className="skatepark">
+    // data-cursor-trail="off" выключает CursorImageTrail именно в этой зоне
+    <div className="skatepark" data-cursor-trail="off">
       {/* Базовое фото — видно всегда */}
       <img className="park-image" src={BASE_IMAGE} alt="Скейтпарк, загальний вигляд" />
 
@@ -471,11 +636,20 @@ export default function Skatepark() {
         <ParkMap className="park-svg" />
       </div>
 
-      {active && (
-        <div className="skate-tooltip skate-tooltip--visible">
-          {figureById[active]?.title}
-        </div>
-      )}
+      {/* Журнальная заметка сбоку от активной фигуры */}
+      <div
+        className={`skate-note skate-note--${notePos.side} ${
+          activeFigure ? "skate-note--visible" : ""
+        }`}
+      >
+        {activeFigure && (
+          <>
+            <span className="skate-note__tag">Зона парку</span>
+            <h4 className="skate-note__title">{activeFigure.title}</h4>
+            <p className="skate-note__text">{activeFigure.note}</p>
+          </>
+        )}
+      </div>
     </div>
   );
 }

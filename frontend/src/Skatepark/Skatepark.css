@@ -271,7 +271,7 @@ border-radius:8px;
 .skate-tooltip--visible {
   opacity: 1;
 } */ 
- .skatepark {
+.skatepark {
   position: relative;
   width: 100%;
   aspect-ratio: 2304 / 775; /* совпадает с viewBox park.svg — задаёт высоту контейнеру */
@@ -318,7 +318,9 @@ border-radius:8px;
   display: block;
 }
 
-/* Path'ы — единственные интерактивные элементы: невидимая заливка + курсор */
+/* Path'ы — единственные интерактивные элементы: полностью невидимые hit-зоны.
+   Никакой заливки/обводки при hover — раньше это давало эффект "скелетов",
+   просвечивающих поверх фото. Подсказку теперь даёт только фото-слой + заметка сбоку. */
 .park-svg path {
   fill: transparent;
   stroke: transparent;
@@ -327,30 +329,79 @@ border-radius:8px;
   outline: none;
 }
 
-/* Лёгкая рамка при наведении/фокусе — помогает видеть активную зону без картинки */
-.park-svg path:hover,
-.park-svg path:focus-visible {
-  fill: rgba(255, 255, 255, 0.08);
-  stroke: rgba(255, 255, 255, 0.35);
-  stroke-width: 2;
-}
-
-.skate-tooltip {
+/* ── Журнальная заметка сбоку (как вырезка из зина) ───────────────── */
+.skate-note {
   position: absolute;
-  top: 16px;
-  left: 16px;
+  top: 50%;
   z-index: 20;
-  padding: 6px 12px;
-  background: black;
-  color: white;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  pointer-events: none;
+  width: min(240px, 42%);
+  padding: 14px 16px 16px;
+  background: #f2f0e6;
+  color: #111;
+  transform: translateY(-50%) rotate(-2deg) scale(0.96);
   opacity: 0;
-  transition: opacity 0.2s ease;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  clip-path: polygon(
+    0% 2%, 3% 0%, 97% 1%, 100% 3%,
+    99% 97%, 96% 100%, 2% 99%, 0% 96%
+  );
 }
 
-.skate-tooltip--visible {
+.skate-note--right {
+  right: 24px;
+}
+
+.skate-note--left {
+  left: 24px;
+  transform: translateY(-50%) rotate(2deg) scale(0.96);
+}
+
+.skate-note--visible {
   opacity: 1;
+  transform: translateY(-50%) rotate(-2deg) scale(1);
+}
+
+.skate-note--left.skate-note--visible {
+  transform: translateY(-50%) rotate(2deg) scale(1);
+}
+
+.skate-note__tag {
+  display: inline-block;
+  font-family: "Space Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: #111;
+  color: #d4ff3f;
+  padding: 2px 6px;
+  margin-bottom: 8px;
+}
+
+.skate-note__title {
+  margin: 0 0 6px;
+  font-family: "Anton", "Arial Narrow", sans-serif;
+  font-size: 22px;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.skate-note__text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+@media (max-width: 720px) {
+  .skate-note {
+    width: min(200px, 60%);
+    padding: 10px 12px 12px;
+  }
+  .skate-note__title {
+    font-size: 18px;
+  }
+  .skate-note__text {
+    font-size: 12px;
+  }
 }
