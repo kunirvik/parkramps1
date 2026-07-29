@@ -836,7 +836,7 @@ const figures = [
   { id: "vertwall", title: "Vert wall", note: "Вертикальна стіна для найвищого рівня катання.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual8_2_zwmivn.jpg" },
   { id: "quater", title: "Квотер", note: "Базовий квотер парку, з нього зручно починати.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/volt_park_visual7_2_rrpf7v.jpg" },
   { id: "box2", title: "Бокс", note: "Один із двох боксів парку — для слайдів і грайндів.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual14_dnjash.jpg" },
-  { id: "vertwall", title: "Бокс", note: "Один із двох боксів парку — для слайдів і грайндів.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual15_ktwiqp.jpg" },
+  { id: "wallride", title: "Бокс", note: "Один із двох боксів парку — для слайдів і грайндів.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual15_ktwiqp.jpg" },
 
 ];
 
