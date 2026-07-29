@@ -344,9 +344,13 @@
 }
 
 .park-section > div:last-child {
-  max-width: 1200px;
+  /* max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 20px; */
+    width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
 }
 
 /* ── GALLERY (горизонтальная прокрутка, как истории) ────────────── */
