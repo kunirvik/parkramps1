@@ -280,7 +280,7 @@ border-radius:8px;
   background: #0a0a0a; заглушка-фон, пока не загрузилось фото */ 
     position: relative;
   width: 100%;
-  height: 100dvh;
+ height: 100vh !important;
   overflow: hidden;
   user-select: none;
   background: #0a0a0a;
