@@ -2026,7 +2026,7 @@ function ParkSection() {
       </div>
 
 
-     
+      <Skatepark />
     
     </section>
   );
@@ -2160,7 +2160,7 @@ export default function LandingPage() {
       <Hero />
       <InfoStats />
       <ParkSection /> 
-        <Skatepark />
+       
       <Gallery />
       <Categories />
       <CTA />
