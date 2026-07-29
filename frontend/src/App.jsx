@@ -32,7 +32,7 @@ function App() {
         <Route path="/catalogue" element={<Catalogue />} />
      <Route path="/gallery/all" element={<GalleryRoute />} />    
      <Route path="/gallery/:type/:id" element={<GalleryRoute />} />
- <Route path="/skateparklanding" element={<Skatepark/>} />
+ <Route path="/skateparklanding" element={<SkateparkLanding/>} />
  
         <Route path="/product/sets/:id" element={<SetsProductDetail />} />
         <Route path="/product/ramps/:id" element={<RampsProductDetail />} />
