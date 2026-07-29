@@ -889,6 +889,7 @@ export default function Skatepark() {
   };
 
   useEffect(() => {
+    console.log("found paths:", paths.length, [...paths].map(p => p.id));
     const root = svgWrapRef.current;
     if (!root) return;
 
