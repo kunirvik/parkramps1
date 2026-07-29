@@ -274,6 +274,7 @@ border-radius:8px;
 .skatepark {
   position: relative;
   width: 100%;
+  height: auto!important;
   aspect-ratio: 2304 / 775; /* совпадает с viewBox park.svg — задаёт высоту контейнеру */
   overflow: hidden;
   user-select: none;
@@ -354,7 +355,7 @@ border-radius:8px;
   pointer-events: auto;
   cursor: pointer;
   outline: none;
-  
+
 }
 
 /* ── Журнальная заметка сбоку (как вырезка из зина) ───────────────── */
