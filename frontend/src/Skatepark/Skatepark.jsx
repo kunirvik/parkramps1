@@ -968,7 +968,7 @@ export default function Skatepark() {
 
       {/* SVG поверх всего — прозрачные path работают как hit-зоны для наведения */}
       <div ref={svgWrapRef} className="park-svg-wrap">
-        <ParkMap className="park-svg" />
+        <ParkMap className="park-svg" preserveAspectRatio="xMidYMid slice" />
       </div>
 
       {/* Журнальная заметка сбоку от активной фигуры */}
