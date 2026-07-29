@@ -15,6 +15,7 @@ import AdminPage from "./blog/components/Adminpage";
 import GalleryRoute from "./GalleryRoute";
 import MarketplacePage from "./Marketplacepage/Marketplacepage";
 import SkateparkLanding from "./SkateparkLanding/SkateparkLanding";
+import Skatepark from "./Skatepark/Skatepark";
 
 function App() {
   const location = useLocation();
@@ -32,7 +33,7 @@ function App() {
         <Route path="/catalogue" element={<Catalogue />} />
      <Route path="/gallery/all" element={<GalleryRoute />} />    
      <Route path="/gallery/:type/:id" element={<GalleryRoute />} />
- <Route path="/skateparklanding" element={<SkateparkLanding />} />
+ <Route path="/skateparklanding" element={<Skatepark/>} />
  
         <Route path="/product/sets/:id" element={<SetsProductDetail />} />
         <Route path="/product/ramps/:id" element={<RampsProductDetail />} />
