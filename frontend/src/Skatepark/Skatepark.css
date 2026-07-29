@@ -348,7 +348,7 @@ border-radius:8px;
 /* Path'ы — единственные интерактивные элементы: полностью невидимые hit-зоны.
    Никакой заливки/обводки при hover — раньше это давало эффект "скелетов",
    просвечивающих поверх фото. Подсказку теперь даёт только фото-слой + заметка сбоку. */
-.park-svg path {
+.park-svg-wrap path {
   fill: transparent;
   stroke: transparent;
   pointer-events: auto;
