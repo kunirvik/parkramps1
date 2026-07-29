@@ -2168,8 +2168,8 @@ export default function LandingPage() {
           ролл-ін.
         </p>
       </div>
-     <div className="reveal">
-        <Skatepark /></div>
+    
+        <Skatepark />
     
     </section>
       <Gallery />
