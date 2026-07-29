@@ -15,7 +15,6 @@ import AdminPage from "./blog/components/Adminpage";
 import GalleryRoute from "./GalleryRoute";
 import MarketplacePage from "./Marketplacepage/Marketplacepage";
 import SkateparkLanding from "./SkateparkLanding/SkateparkLanding";
-import Skatepark from "./Skatepark/Skatepark";
 
 function App() {
   const location = useLocation();
