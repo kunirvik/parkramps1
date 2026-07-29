@@ -482,7 +482,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
-import "./Skatepark.css";
+import "../Skatepark/Skatepaerk.css";
 import ParkMap from "./park.svg?react";
 
 // Базовое фото парка (общий план, без подсветки)
