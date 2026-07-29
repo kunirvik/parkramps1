@@ -2024,8 +2024,8 @@ function ParkSection() {
           ролл-ін.
         </p>
       </div>
-     
-        <Skatepark />
+     <div className="reveal">
+        <Skatepark /></div>
     
     </section>
   );
