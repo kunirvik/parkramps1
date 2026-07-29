@@ -1778,7 +1778,6 @@
 
 // }
 
-
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -1790,9 +1789,11 @@ import CursorImageTrail from "../CursorImageTrail/CursorImageTrail";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// ─── Демо-контент — замени на свои реальные фото/видео проекта ──────
-const HERO_VIDEO =
+// ─── Демо-контент — замени на свои реальные фото/видео/логотипы ─────
+const HERO_VIDEO_DESKTOP =
   "https://res.cloudinary.com/dbx6muxub/video/upload/v1785257521/voltpark_hero.mp4"; // placeholder
+const HERO_VIDEO_MOBILE =
+  "https://res.cloudinary.com/dbx6muxub/video/upload/v1785257521/voltpark_hero_mobile.mp4"; // вертикальное видео для телефона — замени на своё
 
 const BG_PHOTO_1 =
   "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/volt_park_visual7_2_rrpf7v.jpg";
@@ -1800,6 +1801,11 @@ const BG_PHOTO_2 =
   "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual8_2_zwmivn.jpg";
 const BG_PHOTO_3 =
   "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual6_2_gl0q0k.jpg";
+
+// Логотипы шапки — поставь свои файлы (SVG/PNG с прозрачным фоном)
+const LOGO_BUILDER = null; // логотип забудовника/проєктувальників
+const LOGO_PARTNER_1 = null; // логотип школи роллердрому №1
+const LOGO_PARTNER_2 = null; // логотип школи роллердрому №2
 
 const GALLERY_ITEMS = [
   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual12_unvhp8.jpg", caption: "Рампа. Заливка бетону" },
@@ -1812,34 +1818,41 @@ const GALLERY_ITEMS = [
   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/volt_park_visual5_2_w899yo.jpg", caption: "Волкано. Вигин" },
 ];
 
+// Контакти під кожен вид співпраці — постав свої реальні
 const CATEGORIES = [
   {
     id: "partners",
     tag: "01 — Партнери",
     title: "Партнерам",
     text: "Брендування фігур, логотипи, банери, партнерські програми — розглядаємо всі варіанти співпраці. Підтримуй спорт і вкладайся у майбутнє.",
-    cta: "Обговорити співпрацю",
+    contacts: [{ label: "Пошта", value: "partners@voltpark.ua", href: "mailto:partners@voltpark.ua" }],
   },
   {
     id: "coaches",
     tag: "02 — Тренери",
     title: "Тренерам",
     text: "Працюй зі своєю клієнтською базою або розвивай кар'єру з нуля. Тренуй на нашій локації — для тренерів відведено окремий час, щоб не перетинатись із катаючими.",
-    cta: "Стати тренером парку",
+    contacts: [
+      { label: "Telegram", value: "@voltpark_coach", href: "https://t.me/voltpark_coach" },
+      { label: "Тел.", value: "+38 (0__) ___-__-__", href: "tel:+380000000000" },
+    ],
   },
   {
     id: "riders",
     tag: "03 — Райдери",
     title: "Райдерам",
     text: "Парк відкриється для всіх, але в тебе є шанс потрапити на тестове катання раніше за інших. Розіграємо кілька проходок 1+1 та відберемо учасників за відео.",
-    cta: "Записатись на тест-катання",
+    contacts: [{ label: "Заявка", value: "форма нижче ↓", href: "#cta" }],
   },
   {
     id: "media",
     tag: "04 — Медіа",
     title: "Блогерам і медіа",
     text: "Можливо, саме тобі випаде унікальна нагода завітати до нас на етапах будівництва та зняти свій репортаж з майданчика.",
-    cta: "Запропонувати співпрацю",
+    contacts: [
+      { label: "Telegram", value: "@voltpark_media", href: "https://t.me/voltpark_media" },
+      { label: "Пошта", value: "media@voltpark.ua", href: "mailto:media@voltpark.ua" },
+    ],
   },
 ];
 
@@ -1861,10 +1874,7 @@ function useScrollReveal(selector, options = {}) {
             duration: 0.8,
             ease: "power3.out",
             delay: i * (options.stagger ?? 0.08),
-            scrollTrigger: {
-              trigger: el,
-              start: "top 85%",
-            },
+            scrollTrigger: { trigger: el, start: "top 85%" },
           }
         );
       });
@@ -1874,32 +1884,79 @@ function useScrollReveal(selector, options = {}) {
   return ref;
 }
 
-function Hero() {
-  const heroRef = useRef(null);
+function Header() {
+  const ref = useRef(null);
 
   useEffect(() => {
+    gsap.fromTo(
+      ".header-logo",
+      { opacity: 0, y: -18 },
+      { opacity: 1, y: 0, duration: 0.7, stagger: 0.12, delay: 0.3, ease: "power2.out" }
+    );
+  }, []);
+
+  return (
+    <header className="site-header" ref={ref}>
+      {/* Забудовник / проєктувальники */}
+      <div className="header-logo header-logo--builder">
+        {LOGO_BUILDER ? (
+          <img src={LOGO_BUILDER} alt="Забудовник" />
+        ) : (
+          <span className="logo-placeholder">ЛОГО БУДІВЕЛЬНИКА</span>
+        )}
+      </div>
+
+      {/* Школа роллердрому, яка звернулась за реалізацією — 2 логотипи */}
+      <div className="header-logo-group">
+        <div className="header-logo header-logo--partner">
+          {LOGO_PARTNER_1 ? (
+            <img src={LOGO_PARTNER_1} alt="Школа роллердрому" />
+          ) : (
+            <span className="logo-placeholder">ЛОГО ШКОЛИ 1</span>
+          )}
+        </div>
+        <div className="header-logo header-logo--partner">
+          {LOGO_PARTNER_2 ? (
+            <img src={LOGO_PARTNER_2} alt="Партнер" />
+          ) : (
+            <span className="logo-placeholder">ЛОГО ШКОЛИ 2</span>
+          )}
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function Hero() {
+  useEffect(() => {
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-    tl.fromTo(".hero-title span", { yPercent: 120 }, { yPercent: 0, duration: 1, stagger: 0.06 })
+    tl.fromTo(".hero-eyebrow", { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.5 })
+      .fromTo(".hero-title span", { yPercent: 120 }, { yPercent: 0, duration: 1, stagger: 0.05 }, "-=0.1")
       .fromTo(".hero-sub", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6 }, "-=0.5")
       .fromTo(".hero-scroll", { opacity: 0 }, { opacity: 1, duration: 0.6 }, "-=0.3");
   }, []);
 
   return (
-    <section className="hero" ref={heroRef}>
+    <section className="hero">
       <video className="hero-video" autoPlay muted loop playsInline poster={BG_PHOTO_1}>
-        <source src={HERO_VIDEO} type="video/mp4" />
+        {/* браузер сам выбирает первый подходящий source по media-запросу */}
+        <source src={HERO_VIDEO_MOBILE} media="(max-width: 720px)" type="video/mp4" />
+        <source src={HERO_VIDEO_DESKTOP} type="video/mp4" />
       </video>
       <div className="hero-overlay" />
       <div className="hero-content">
+        <span className="hero-eyebrow">Нарешті. Критий.</span>
         <h1 className="hero-title">
-          {"VOLT SKATEPARK".split("").map((ch, i) => (
+          {"SKATEPARK".split("").map((ch, i) => (
             <span key={i} style={{ display: "inline-block" }}>
-              {ch === " " ? "\u00A0" : ch}
+              {ch}
             </span>
           ))}
         </h1>
         <p className="hero-sub">
           Перший критий скейтпарк на правому березі Києва. Зелена лінія.
+          <br />
+          1000 м² для катання будь-якого рівня, у будь-яку погоду.
         </p>
       </div>
       <div className="hero-scroll">
@@ -2022,12 +2079,18 @@ function Categories() {
       <div className="categories-grid">
         {CATEGORIES.map((cat) => (
           <div className="cat-card reveal" data-rotate={cat.id === "riders" ? "-1.5" : "1"} key={cat.id}>
+            <span className="cat-card__sticker">{cat.tag.split(" — ")[0]}</span>
             <span className="cat-card__tag">{cat.tag}</span>
             <h3 className="cat-card__title">{cat.title}</h3>
             <p className="cat-card__text">{cat.text}</p>
-            <a className="cat-card__cta" href="#cta">
-              {cat.cta} →
-            </a>
+            <div className="cat-card__contacts">
+              {cat.contacts.map((c) => (
+                <a className="cat-card__contact" href={c.href} key={c.label}>
+                  <span className="cat-card__contact-label">{c.label}</span>
+                  <span className="cat-card__contact-value">{c.value}</span>
+                </a>
+              ))}
+            </div>
           </div>
         ))}
       </div>
@@ -2061,9 +2124,7 @@ function CTA() {
             <input type="text" placeholder="Ім'я" required />
             <input type="tel" placeholder="Телефон або Telegram" required />
             <select defaultValue="">
-              <option value="" disabled>
-                Рівень катання
-              </option>
+              <option value="" disabled>Рівень катання</option>
               <option value="beginner">Новачок</option>
               <option value="middle">Середній</option>
               <option value="pro">Про</option>
@@ -2092,9 +2153,9 @@ function Footer() {
 export default function LandingPage() {
   return (
     <div className="landing">
-      {/* трейл выключается автоматически внутри зон с data-cursor-trail="off",
-          например внутри интерактивной карты парка */}
+      {/* трейл выключается автоматически внутри зон с data-cursor-trail="off" */}
       <CursorImageTrail />
+      <Header />
       <Hero />
       <InfoStats />
       <ParkSection />
@@ -2105,6 +2166,332 @@ export default function LandingPage() {
     </div>
   );
 }
+// "use client";
+
+// import { useEffect, useRef, useState } from "react";
+// import gsap from "gsap";
+// import { ScrollTrigger } from "gsap/ScrollTrigger";
+// import "./Landing.css";
+// import Skatepark from "../Skatepark/Skatepark";
+// import CursorImageTrail from "../CursorImageTrail/CursorImageTrail";
+
+// gsap.registerPlugin(ScrollTrigger);
+
+// // ─── Демо-контент — замени на свои реальные фото/видео проекта ──────
+// const HERO_VIDEO =
+//   "https://res.cloudinary.com/dbx6muxub/video/upload/v1785257521/voltpark_hero.mp4"; // placeholder
+
+// const BG_PHOTO_1 =
+//   "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/volt_park_visual7_2_rrpf7v.jpg";
+// const BG_PHOTO_2 =
+//   "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual8_2_zwmivn.jpg";
+// const BG_PHOTO_3 =
+//   "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual6_2_gl0q0k.jpg";
+
+// const GALLERY_ITEMS = [
+//   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual12_unvhp8.jpg", caption: "Рампа. Заливка бетону" },
+//   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual11_cewrz7.jpg", caption: "Квотер 3. Каркас" },
+//   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257520/volt_park_visual10_2_oo1az0.jpg", caption: "Ролл-ін. Перші метри" },
+//   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual9_2_jrzknr.jpg", caption: "Бенк. Опалубка" },
+//   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual13_z6hp1g.jpg", caption: "Бокс. Монтаж" },
+//   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/voltparkvisual4_rrbeeo.jpg", caption: "Джампбокс. Розмітка" },
+//   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/voltparkvisual3_kpnpkk.jpg", caption: "Флайбокс. Форма" },
+//   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/volt_park_visual5_2_w899yo.jpg", caption: "Волкано. Вигин" },
+// ];
+
+// const CATEGORIES = [
+//   {
+//     id: "partners",
+//     tag: "01 — Партнери",
+//     title: "Партнерам",
+//     text: "Брендування фігур, логотипи, банери, партнерські програми — розглядаємо всі варіанти співпраці. Підтримуй спорт і вкладайся у майбутнє.",
+//     cta: "Обговорити співпрацю",
+//   },
+//   {
+//     id: "coaches",
+//     tag: "02 — Тренери",
+//     title: "Тренерам",
+//     text: "Працюй зі своєю клієнтською базою або розвивай кар'єру з нуля. Тренуй на нашій локації — для тренерів відведено окремий час, щоб не перетинатись із катаючими.",
+//     cta: "Стати тренером парку",
+//   },
+//   {
+//     id: "riders",
+//     tag: "03 — Райдери",
+//     title: "Райдерам",
+//     text: "Парк відкриється для всіх, але в тебе є шанс потрапити на тестове катання раніше за інших. Розіграємо кілька проходок 1+1 та відберемо учасників за відео.",
+//     cta: "Записатись на тест-катання",
+//   },
+//   {
+//     id: "media",
+//     tag: "04 — Медіа",
+//     title: "Блогерам і медіа",
+//     text: "Можливо, саме тобі випаде унікальна нагода завітати до нас на етапах будівництва та зняти свій репортаж з майданчика.",
+//     cta: "Запропонувати співпрацю",
+//   },
+// ];
+
+// function useScrollReveal(selector, options = {}) {
+//   const ref = useRef(null);
+//   useEffect(() => {
+//     const root = ref.current;
+//     if (!root) return;
+//     const els = root.querySelectorAll(selector);
+//     const ctx = gsap.context(() => {
+//       els.forEach((el, i) => {
+//         gsap.fromTo(
+//           el,
+//           { opacity: 0, y: 40, rotate: options.rotateFrom ?? 0 },
+//           {
+//             opacity: 1,
+//             y: 0,
+//             rotate: el.dataset.rotate ? Number(el.dataset.rotate) : 0,
+//             duration: 0.8,
+//             ease: "power3.out",
+//             delay: i * (options.stagger ?? 0.08),
+//             scrollTrigger: {
+//               trigger: el,
+//               start: "top 85%",
+//             },
+//           }
+//         );
+//       });
+//     }, root);
+//     return () => ctx.revert();
+//   }, [selector, options.stagger, options.rotateFrom]);
+//   return ref;
+// }
+
+// function Hero() {
+//   const heroRef = useRef(null);
+
+//   useEffect(() => {
+//     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+//     tl.fromTo(".hero-title span", { yPercent: 120 }, { yPercent: 0, duration: 1, stagger: 0.06 })
+//       .fromTo(".hero-sub", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6 }, "-=0.5")
+//       .fromTo(".hero-scroll", { opacity: 0 }, { opacity: 1, duration: 0.6 }, "-=0.3");
+//   }, []);
+
+//   return (
+//     <section className="hero" ref={heroRef}>
+//       <video className="hero-video" autoPlay muted loop playsInline poster={BG_PHOTO_1}>
+//         <source src={HERO_VIDEO} type="video/mp4" />
+//       </video>
+//       <div className="hero-overlay" />
+//       <div className="hero-content">
+//         <h1 className="hero-title">
+//           {"VOLT SKATEPARK".split("").map((ch, i) => (
+//             <span key={i} style={{ display: "inline-block" }}>
+//               {ch === " " ? "\u00A0" : ch}
+//             </span>
+//           ))}
+//         </h1>
+//         <p className="hero-sub">
+//           Перший критий скейтпарк на правому березі Києва. Зелена лінія.
+//         </p>
+//       </div>
+//       <div className="hero-scroll">
+//         <span>Гортай</span>
+//         <div className="hero-scroll__line" />
+//       </div>
+//     </section>
+//   );
+// }
+
+// function InfoStats() {
+//   const ref = useScrollReveal(".reveal");
+//   return (
+//     <section className="info" ref={ref} style={{ backgroundImage: `url(${BG_PHOTO_2})` }}>
+//       <div className="info-overlay" />
+//       <div className="info-inner">
+//         <div className="clip clip--tape reveal" data-rotate="-2">
+//           <span className="clip__eyebrow">Нарешті</span>
+//           <h2 className="clip__title">Критий парк у Києві</h2>
+//           <p className="clip__text">
+//             Правий берег. Зелена лінія. Будівництво відбудеться у кілька етапів — з ухилом
+//             в ейр, для тренувань у квотерах і на флайбоксах. Лінії розраховані на всі рівні
+//             катання.
+//           </p>
+//         </div>
+
+//         <div className="stat-row">
+//           <div className="stat-card reveal" data-rotate="-1">
+//             <span className="stat-card__num">1000 м²</span>
+//             <span className="stat-card__label">загальна площа парку</span>
+//           </div>
+//           <div className="stat-card reveal" data-rotate="1.5">
+//             <span className="stat-card__num">475 м²</span>
+//             <span className="stat-card__label">
+//               крита ейр-зона: вертвол, флайбокси, спайн, квотери різних розмірів, рампа
+//             </span>
+//           </div>
+//           <div className="stat-card reveal" data-rotate="-1.5">
+//             <span className="stat-card__num">525 м²</span>
+//             <span className="stat-card__label">флету для роллердрому</span>
+//           </div>
+//         </div>
+
+//         <div className="clip clip--paper reveal" data-rotate="1">
+//           <p className="clip__text">
+//             Різноманітність фігур дозволяє новачку поступово підіймати свій рівень, а про
+//             може поєднувати частини парку між собою. Парк поділений на кілька умовних зон —
+//             кожен знайде свою улюблену фігуру.
+//           </p>
+//         </div>
+//       </div>
+//     </section>
+//   );
+// }
+
+// function ParkSection() {
+//   const ref = useScrollReveal(".reveal");
+//   return (
+//     <section className="park-section" ref={ref}>
+//       <div className="section-head reveal">
+//         <span className="section-head__tag">Карта парку</span>
+//         <h2 className="section-head__title">Наведи на фігуру</h2>
+//         <p className="section-head__sub">
+//           У парку: 2 бокси, 3 квотери різних розмірів, великий квотерволл, рампа, бенк,
+//           ролл-ін.
+//         </p>
+//       </div>
+//       <div className="reveal">
+//         <Skatepark />
+//       </div>
+//     </section>
+//   );
+// }
+
+// function Gallery() {
+//   const trackRef = useRef(null);
+
+//   const scrollBy = (dir) => {
+//     const el = trackRef.current;
+//     if (!el) return;
+//     el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: "smooth" });
+//   };
+
+//   return (
+//     <section className="gallery">
+//       <div className="section-head section-head--light">
+//         <span className="section-head__tag">Стрічка будівництва</span>
+//         <h2 className="section-head__title">Слідкуй за процесом</h2>
+//         <p className="section-head__sub">
+//           Сезон надворі закінчиться, але ми вже готуємо для вас дещо цікаве — фото і відео
+//           прямо з майданчика.
+//         </p>
+//       </div>
+//       <div className="gallery-track" ref={trackRef}>
+//         {GALLERY_ITEMS.map((item, i) => (
+//           <div className="gallery-frame" key={i}>
+//             <span className="gallery-frame__num">{String(i + 1).padStart(2, "0")}</span>
+//             <img src={item.src} alt={item.caption} loading="lazy" />
+//             <span className="gallery-frame__caption">{item.caption}</span>
+//           </div>
+//         ))}
+//       </div>
+//       <div className="gallery-controls">
+//         <button aria-label="Назад" onClick={() => scrollBy(-1)}>←</button>
+//         <button aria-label="Вперед" onClick={() => scrollBy(1)}>→</button>
+//       </div>
+//     </section>
+//   );
+// }
+
+// function Categories() {
+//   const ref = useScrollReveal(".reveal", { stagger: 0.1 });
+//   return (
+//     <section className="categories" ref={ref} style={{ backgroundImage: `url(${BG_PHOTO_3})` }}>
+//       <div className="categories-overlay" />
+//       <div className="section-head section-head--light">
+//         <span className="section-head__tag">Співпраця</span>
+//         <h2 className="section-head__title">Для кого цей парк</h2>
+//       </div>
+//       <div className="categories-grid">
+//         {CATEGORIES.map((cat) => (
+//           <div className="cat-card reveal" data-rotate={cat.id === "riders" ? "-1.5" : "1"} key={cat.id}>
+//             <span className="cat-card__tag">{cat.tag}</span>
+//             <h3 className="cat-card__title">{cat.title}</h3>
+//             <p className="cat-card__text">{cat.text}</p>
+//             <a className="cat-card__cta" href="#cta">
+//               {cat.cta} →
+//             </a>
+//           </div>
+//         ))}
+//       </div>
+//     </section>
+//   );
+// }
+
+// function CTA() {
+//   const [sent, setSent] = useState(false);
+
+//   const handleSubmit = (e) => {
+//     e.preventDefault();
+//     // TODO: подключить реальную отправку (API / Telegram-бот / форма)
+//     setSent(true);
+//   };
+
+//   return (
+//     <section className="cta" id="cta">
+//       <div className="cta-stamp">Місця обмежені</div>
+//       <div className="cta-inner">
+//         <h2 className="cta-title">Запишись на тестове катання</h2>
+//         <p className="cta-sub">
+//           Ще до відкриття — обмежена кількість місць. Community-партнери отримують проходки
+//           для медіа на етапі будівництва за домовленістю, плюс проходки на відкриття.
+//         </p>
+
+//         {sent ? (
+//           <p className="cta-success">Дякуємо! Ми зв'яжемось із тобою найближчим часом.</p>
+//         ) : (
+//           <form className="cta-form" onSubmit={handleSubmit}>
+//             <input type="text" placeholder="Ім'я" required />
+//             <input type="tel" placeholder="Телефон або Telegram" required />
+//             <select defaultValue="">
+//               <option value="" disabled>
+//                 Рівень катання
+//               </option>
+//               <option value="beginner">Новачок</option>
+//               <option value="middle">Середній</option>
+//               <option value="pro">Про</option>
+//             </select>
+//             <button type="submit">Залишити заявку</button>
+//           </form>
+//         )}
+//       </div>
+//     </section>
+//   );
+// }
+
+// function Footer() {
+//   return (
+//     <footer className="footer">
+//       <span className="footer__brand">VOLT SKATEPARK</span>
+//       <span className="footer__loc">Київ · Правий берег · Зелена лінія</span>
+//       <div className="footer__links">
+//         <a href="#cta">Instagram</a>
+//         <a href="#cta">Telegram</a>
+//       </div>
+//     </footer>
+//   );
+// }
+
+// export default function LandingPage() {
+//   return (
+//     <div className="landing">
+//       {/* трейл выключается автоматически внутри зон с data-cursor-trail="off",
+//           например внутри интерактивной карты парка */}
+//       <CursorImageTrail />
+//       <Hero />
+//       <InfoStats />
+//       <ParkSection />
+//       <Gallery />
+//       <Categories />
+//       <CTA />
+//       <Footer />
+//     </div>
+//   );
+// }
 // import { useEffect, useRef, useState } from "react";
 // import { gsap } from "gsap";
 // import { ScrollTrigger } from "gsap/ScrollTrigger";

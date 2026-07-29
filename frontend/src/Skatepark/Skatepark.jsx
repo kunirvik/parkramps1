@@ -480,17 +480,213 @@
 //   );
 // }
 
+// import { useRef, useState, useEffect } from "react";
+// import gsap from "gsap";
+// import "./Skatepark.css";
+// import ParkMap from "./park.svg?react";
+
+// // Базовое фото парка (общий план, без подсветки)
+// const BASE_IMAGE =
+//   "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257521/voltparkvisual2_k4c3fr.jpg";
+
+// // Каждая фигура: id должен ТОЧНО совпадать с id path в park.svg,
+// // image — картинка именно этой фигуры, note — короткая "журнальная" подпись сбоку.
+// const figures = [
+//   { id: "ramp", title: "Рампа", note: "Класична рампа для набору швидкості й повітряних трюків.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual12_unvhp8.jpg" },
+//   { id: "quater3", title: "Квотер 3", note: "Один із трьох квотерів парку, свій розмір і свій характер.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual11_cewrz7.jpg" },
+//   { id: "roll-in", title: "Ролл-ін", note: "Заїзд, з якого стартують у секцію з фігурами.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257520/volt_park_visual10_2_oo1az0.jpg" },
+//   { id: "bank", title: "Бенк", note: "Похила поверхня для зв'язок і плавних переходів.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual9_2_jrzknr.jpg" },
+//   { id: "box", title: "Бокс", note: "Один із двох боксів парку — для слайдів і грайндів.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual13_z6hp1g.jpg" },
+//   { id: "jumpbox", title: "Джампбокс", note: "Фігура для стрибків і відпрацювання ейр-трюків.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/voltparkvisual4_rrbeeo.jpg" },
+//   { id: "flybox", title: "Флайбокс", note: "Одна з фірмових фігур парку з ухилом в ейр.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/voltparkvisual3_kpnpkk.jpg" },
+//   { id: "volcano", title: "Волкано", note: "Фігура для складніших заходів і виходів.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/volt_park_visual5_2_w899yo.jpg" },
+//   { id: "quater2", title: "Квотер 2", note: "Другий квотер — частина великої ейр-зони.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual6_2_gl0q0k.jpg" },
+//   { id: "vertwall", title: "Vert wall", note: "Вертикальна стіна для найвищого рівня катання.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual8_2_zwmivn.jpg" },
+//   { id: "quater", title: "Квотер", note: "Базовий квотер парку, з нього зручно починати.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/volt_park_visual7_2_rrpf7v.jpg" },
+// ];
+
+// const figureById = Object.fromEntries(figures.map((f) => [f.id, f]));
+
+// export default function Skatepark() {
+//   const svgWrapRef = useRef(null);
+//   const layers = useRef({});
+//   const [active, setActive] = useState(null);
+//   const [notePos, setNotePos] = useState({ side: "right" });
+
+//   const isTouch =
+//     typeof window !== "undefined" &&
+//     window.matchMedia("(pointer: coarse)").matches;
+
+//   const showLayer = (id, clientX) => {
+//     setActive(id);
+//     // если фигура в правой половине экрана — карточка выезжает слева, и наоборот
+//     if (typeof window !== "undefined" && typeof clientX === "number") {
+//       setNotePos({ side: clientX > window.innerWidth / 2 ? "left" : "right" });
+//     }
+//     Object.entries(layers.current).forEach(([key, el]) => {
+//       if (!el) return;
+//       gsap.to(el, {
+//         opacity: key === id ? 1 : 0,
+//         duration: 0.35,
+//         ease: "power2.out",
+//         overwrite: true,
+//       });
+//     });
+//   };
+
+//   const hideAllLayers = () => {
+//     setActive(null);
+//     Object.values(layers.current).forEach((el) => {
+//       if (!el) return;
+//       gsap.to(el, { opacity: 0, duration: 0.35, ease: "power2.out", overwrite: true });
+//     });
+//   };
+
+//   useEffect(() => {
+//     const root = svgWrapRef.current;
+//     if (!root) return;
+
+//     const paths = root.querySelectorAll("path[id]");
+//     const cleanupFns = [];
+
+//     paths.forEach((path) => {
+//       const figure = figureById[path.id];
+//       if (!figure) return;
+
+//       path.style.cursor = "pointer";
+//       path.style.pointerEvents = "auto";
+//       path.setAttribute("tabindex", "0");
+//       path.setAttribute("role", "button");
+//       path.setAttribute("aria-label", figure.title);
+
+//       if (isTouch) {
+//         const onTap = (e) => {
+//           e.stopPropagation();
+//           setActive((prev) => {
+//             const next = prev === figure.id ? null : figure.id;
+//             if (next) showLayer(next, e.clientX);
+//             else hideAllLayers();
+//             return next;
+//           });
+//         };
+//         path.addEventListener("click", onTap);
+//         cleanupFns.push(() => path.removeEventListener("click", onTap));
+//       } else {
+//         const onEnter = (e) => showLayer(figure.id, e.clientX);
+//         const onMove = (e) => {
+//           if (typeof window !== "undefined") {
+//             setNotePos({ side: e.clientX > window.innerWidth / 2 ? "left" : "right" });
+//           }
+//         };
+//         const onLeave = () => hideAllLayers();
+//         const onFocus = (e) => showLayer(figure.id, e.target.getBoundingClientRect().x);
+//         const onBlur = () => hideAllLayers();
+
+//         path.addEventListener("mouseenter", onEnter);
+//         path.addEventListener("mousemove", onMove);
+//         path.addEventListener("mouseleave", onLeave);
+//         path.addEventListener("focus", onFocus);
+//         path.addEventListener("blur", onBlur);
+
+//         cleanupFns.push(() => {
+//           path.removeEventListener("mouseenter", onEnter);
+//           path.removeEventListener("mousemove", onMove);
+//           path.removeEventListener("mouseleave", onLeave);
+//           path.removeEventListener("focus", onFocus);
+//           path.removeEventListener("blur", onBlur);
+//         });
+//       }
+//     });
+
+//     let outsideTapHandler;
+//     if (isTouch) {
+//       outsideTapHandler = (e) => {
+//         if (!root.contains(e.target)) hideAllLayers();
+//       };
+//       document.addEventListener("click", outsideTapHandler);
+//     }
+
+//     return () => {
+//       cleanupFns.forEach((fn) => fn());
+//       if (outsideTapHandler) document.removeEventListener("click", outsideTapHandler);
+//     };
+//   }, [isTouch]);
+
+//   const activeFigure = active ? figureById[active] : null;
+
+//   return (
+//     // data-cursor-trail="off" выключает CursorImageTrail именно в этой зоне
+//     <div className="skatepark" data-cursor-trail="off">
+//       {/* Базовое фото — видно всегда */}
+//       <img className="park-image" src={BASE_IMAGE} alt="Скейтпарк, загальний вигляд" />
+
+//       {/* Слой картинки для каждой фигуры — проявляется поверх базового при наведении */}
+//       {figures.map((item) => (
+//         <img
+//           key={item.id}
+//           ref={(el) => (layers.current[item.id] = el)}
+//           className="park-layer"
+//           src={item.image}
+//           alt={item.title}
+//         />
+//       ))}
+
+//       {/* SVG поверх всего — прозрачные path работают как hit-зоны для наведения */}
+//       <div ref={svgWrapRef} className="park-svg-wrap">
+//         <ParkMap className="park-svg" />
+//       </div>
+
+//       {/* Журнальная заметка сбоку от активной фигуры */}
+//       <div
+//         className={`skate-note skate-note--${notePos.side} ${
+//           activeFigure ? "skate-note--visible" : ""
+//         }`}
+//       >
+//         {activeFigure && (
+//           <>
+//             <span className="skate-note__tag">Зона парку</span>
+//             <h4 className="skate-note__title">{activeFigure.title}</h4>
+//             <p className="skate-note__text">{activeFigure.note}</p>
+//           </>
+//         )}
+//       </div>
+//     </div>
+//   );
+// }
 import { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
 import "./Skatepark.css";
-import ParkMap from "./park.svg?react";
+
+/**
+ * ПОЧЕМУ РАНЬШЕ НЕ ОТОБРАЖАЛОСЬ:
+ * `import ParkMap from "./park.svg?react"` — это синтаксис vite-plugin-svgr
+ * (и только если он настроен с exportAsDefault: true). В Next.js такого
+ * лоадера нет "из коробки", поэтому импорт падал / возвращал не то, что
+ * ожидалось, и React не мог отрендерить компонент — экран просто оставался
+ * пустым, без явной ошибки в интерфейсе.
+ *
+ * Исправление: больше не импортируем SVG как React-компонент во время
+ * сборки. Вместо этого грузим сам файл .svg как обычный текстовый ресурс
+ * в рантайме (fetch) и вставляем его в DOM. Это работает одинаково
+ * в Vite, Next.js, CRA — без специальных лоадеров и конфигов.
+ *
+ * ЧТО НУЖНО СДЕЛАТЬ У СЕБЯ:
+ * Положи park.svg (и, если есть, park-mobile.svg — вертикальная версия
+ * карты для телефона) в папку /public. Тогда пути ниже ("/park.svg",
+ * "/park-mobile.svg") будут работать как есть.
+ */
+const SVG_DESKTOP = "/park.svg";
+const SVG_MOBILE = "/park-mobile.svg"; // сделай вертикальную версию svg с теми же id, что и у path'ов ниже. Если файла нет — просто оставь ту же карту, она растянется под вертикальный контейнер.
 
 // Базовое фото парка (общий план, без подсветки)
 const BASE_IMAGE =
   "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257521/voltparkvisual2_k4c3fr.jpg";
+// Вертикальный кроп базового фото для телефонов (замени на свою вертикальную фотографию)
+const BASE_IMAGE_MOBILE = BASE_IMAGE;
 
-// Каждая фигура: id должен ТОЧНО совпадать с id path в park.svg,
+// Каждая фигура: id должен ТОЧНО совпадать с id path в svg,
 // image — картинка именно этой фигуры, note — короткая "журнальная" подпись сбоку.
+// imageMobile — необязательный вертикальный кроп той же картинки для телефона.
 const figures = [
   { id: "ramp", title: "Рампа", note: "Класична рампа для набору швидкості й повітряних трюків.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual12_unvhp8.jpg" },
   { id: "quater3", title: "Квотер 3", note: "Один із трьох квотерів парку, свій розмір і свій характер.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual11_cewrz7.jpg" },
@@ -507,19 +703,76 @@ const figures = [
 
 const figureById = Object.fromEntries(figures.map((f) => [f.id, f]));
 
+function useIsMobile(breakpoint = 720) {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia(`(max-width: ${breakpoint}px)`);
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, [breakpoint]);
+  return isMobile;
+}
+
 export default function Skatepark() {
   const svgWrapRef = useRef(null);
   const layers = useRef({});
   const [active, setActive] = useState(null);
   const [notePos, setNotePos] = useState({ side: "right" });
+  const [svgMarkup, setSvgMarkup] = useState(null);
+  const [svgFailed, setSvgFailed] = useState(false);
+
+  const isMobile = useIsMobile();
 
   const isTouch =
     typeof window !== "undefined" &&
     window.matchMedia("(pointer: coarse)").matches;
 
+  // Грузим нужную версию карты (десктоп/мобайл) как текст и вставляем в DOM.
+  useEffect(() => {
+    let cancelled = false;
+    setSvgMarkup(null);
+    setSvgFailed(false);
+
+    const src = isMobile ? SVG_MOBILE : SVG_DESKTOP;
+
+    fetch(src)
+      .then((res) => {
+        if (!res.ok) throw new Error(`SVG not found: ${src}`);
+        return res.text();
+      })
+      .then((text) => {
+        if (cancelled) return;
+        // убираем фиксированные width/height у корневого <svg>, чтобы он
+        // тянулся на 100% контейнера через CSS, а не был зажат атрибутами
+        const cleaned = text
+          .replace(/<svg([^>]*)\swidth="[^"]*"/i, "<svg$1")
+          .replace(/<svg([^>]*)\sheight="[^"]*"/i, "<svg$1");
+        setSvgMarkup(cleaned);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          // Фолбэк на десктопную карту, если мобильной нет
+          if (isMobile) {
+            fetch(SVG_DESKTOP)
+              .then((r) => (r.ok ? r.text() : Promise.reject()))
+              .then((text) => !cancelled && setSvgMarkup(text))
+              .catch(() => !cancelled && setSvgFailed(true));
+          } else {
+            setSvgFailed(true);
+          }
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isMobile]);
+
   const showLayer = (id, clientX) => {
     setActive(id);
-    // если фигура в правой половине экрана — карточка выезжает слева, и наоборот
     if (typeof window !== "undefined" && typeof clientX === "number") {
       setNotePos({ side: clientX > window.innerWidth / 2 ? "left" : "right" });
     }
@@ -542,9 +795,11 @@ export default function Skatepark() {
     });
   };
 
+  // Навешиваем интерактивность на path'ы ПОСЛЕ того, как svg реально
+  // оказался в DOM (зависит от svgMarkup, а не только от монтирования).
   useEffect(() => {
     const root = svgWrapRef.current;
-    if (!root) return;
+    if (!root || !svgMarkup) return;
 
     const paths = root.querySelectorAll("path[id]");
     const cleanupFns = [];
@@ -610,33 +865,41 @@ export default function Skatepark() {
       cleanupFns.forEach((fn) => fn());
       if (outsideTapHandler) document.removeEventListener("click", outsideTapHandler);
     };
-  }, [isTouch]);
+  }, [isTouch, svgMarkup]);
 
   const activeFigure = active ? figureById[active] : null;
+  const baseImage = isMobile ? BASE_IMAGE_MOBILE : BASE_IMAGE;
 
   return (
     // data-cursor-trail="off" выключает CursorImageTrail именно в этой зоне
-    <div className="skatepark" data-cursor-trail="off">
-      {/* Базовое фото — видно всегда */}
-      <img className="park-image" src={BASE_IMAGE} alt="Скейтпарк, загальний вигляд" />
+    <div className={`skatepark ${isMobile ? "skatepark--mobile" : ""}`} data-cursor-trail="off">
+      <img className="park-image" src={baseImage} alt="Скейтпарк, загальний вигляд" />
 
-      {/* Слой картинки для каждой фигуры — проявляется поверх базового при наведении */}
       {figures.map((item) => (
         <img
           key={item.id}
           ref={(el) => (layers.current[item.id] = el)}
           className="park-layer"
-          src={item.image}
+          src={isMobile && item.imageMobile ? item.imageMobile : item.image}
           alt={item.title}
         />
       ))}
 
-      {/* SVG поверх всего — прозрачные path работают как hit-зоны для наведения */}
-      <div ref={svgWrapRef} className="park-svg-wrap">
-        <ParkMap className="park-svg" />
-      </div>
+      <div
+        ref={svgWrapRef}
+        className="park-svg-wrap"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={svgMarkup ? { __html: svgMarkup } : undefined}
+      />
 
-      {/* Журнальная заметка сбоку от активной фигуры */}
+      {svgFailed && (
+        <div className="skate-fallback">
+          Не вдалося завантажити карту парку. Перевір, що файл{" "}
+          <code>{isMobile ? "park-mobile.svg" : "park.svg"}</code> лежить у папці{" "}
+          <code>/public</code>.
+        </div>
+      )}
+
       <div
         className={`skate-note skate-note--${notePos.side} ${
           activeFigure ? "skate-note--visible" : ""
