@@ -272,19 +272,12 @@ border-radius:8px;
   opacity: 1;
 } */ 
 .skatepark {
-  /* position: relative;
+  position: relative;
   width: 100%;
   aspect-ratio: 2304 / 775; /* совпадает с viewBox park.svg — задаёт высоту контейнеру */
-  /* overflow: hidden;
-  user-select: none;
-  background: #0a0a0a; заглушка-фон, пока не загрузилось фото */ 
-    position: relative;
-  width: 100%;
- height: 100vh !important;
   overflow: hidden;
   user-select: none;
-  background: #0a0a0a;
-
+  background: #0a0a0a; /* заглушка-фон, пока не загрузилось фото */
 }
 
 /* На телефоне карта/фото вертикальные — подстрой это соотношение под
@@ -355,7 +348,7 @@ border-radius:8px;
 /* Path'ы — единственные интерактивные элементы: полностью невидимые hit-зоны.
    Никакой заливки/обводки при hover — раньше это давало эффект "скелетов",
    просвечивающих поверх фото. Подсказку теперь даёт только фото-слой + заметка сбоку. */
-.park-svg-wrap path {
+.park-svg path {
   fill: transparent;
   stroke: transparent;
   pointer-events: auto;
