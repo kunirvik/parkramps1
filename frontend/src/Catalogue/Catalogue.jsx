@@ -5,7 +5,6 @@ import LoadingScreen from "../LoadingScreen/LodingScreen";
 import SocialButtons from "../SocialButtons/SocialButtons";
 import { gsap } from "gsap";
 import Footer from "../Footer/Footer";
-import Skatepark from "../Skatepark/Skatepark";
 
  const CLOUDINARY = import.meta.env.VITE_CLOUDINARY_BASE_URL; 
  
@@ -350,7 +349,6 @@ return (
 
 
 <Footer></Footer>
-<Skatepark></Skatepark>
       
     </div> 
 
