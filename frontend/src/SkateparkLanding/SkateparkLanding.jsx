@@ -1808,14 +1808,14 @@ const LOGO_PARTNER_1 = null; // логотип школи роллердрому
 const LOGO_PARTNER_2 = null; // логотип школи роллердрому №2
 
 const GALLERY_ITEMS = [
-  { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual12_unvhp8.jpg", caption: "Рампа. Заливка бетону" },
+  { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual12_unvhp8.jpg", caption: "Рампа. " },
   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual11_cewrz7.jpg", caption: "Квотер 3. Каркас" },
   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257520/volt_park_visual10_2_oo1az0.jpg", caption: "Ролл-ін. Перші метри" },
-  { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual9_2_jrzknr.jpg", caption: "Бенк. Опалубка" },
+  { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual9_2_jrzknr.jpg", caption: "Бенк. " },
   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual13_z6hp1g.jpg", caption: "Бокс. Монтаж" },
   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/voltparkvisual4_rrbeeo.jpg", caption: "Джампбокс. Розмітка" },
-  { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/voltparkvisual3_kpnpkk.jpg", caption: "Флайбокс. Форма" },
-  { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/volt_park_visual5_2_w899yo.jpg", caption: "Волкано. Вигин" },
+  { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/voltparkvisual3_kpnpkk.jpg", caption: "Флайбокс. " },
+  { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/volt_park_visual5_2_w899yo.jpg", caption: "Волкано. " },
 ];
 
 // Контакти під кожен вид співпраці — постав свої реальні
