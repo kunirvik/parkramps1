@@ -210,7 +210,7 @@ border-radius:8px;
 
 }  */
 
-.skatepark {
+/* .skatepark {
   position: relative;
   width: 100%;
   overflow: hidden;
@@ -228,13 +228,13 @@ border-radius:8px;
   position: absolute;
   inset: 0;
   pointer-events: none; /* критично! */
-}
+/* }
 
 .park-svg-wrap {
   position: absolute;
   inset: 0;
   z-index: 10; /* поверх картинок */
-}
+/* }
 
 .park-svg {
   width: 100%;
@@ -243,14 +243,14 @@ border-radius:8px;
 }
 
 /* убираем яркие debug-цвета из исходного SVG и включаем клики только на path */
-.park-svg path {
+/* .park-svg path {
   fill: transparent;
   pointer-events: auto;
   cursor: pointer;
-}
+} */ 
 
 /* лёгкая подсветка контура, чтобы видеть, что hover вообще срабатывает */
-.park-svg path:hover {
+/* .park-svg path:hover {
   fill: rgba(255, 255, 255, 0.15);
 }
 
@@ -263,6 +263,89 @@ border-radius:8px;
   color: white;
   font-size: 12px;
   text-transform: uppercase;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.skate-tooltip--visible {
+  opacity: 1;
+} */ 
+ .skatepark {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2304 / 775; /* совпадает с viewBox park.svg — задаёт высоту контейнеру */
+  overflow: hidden;
+  user-select: none;
+  background: #0a0a0a; /* заглушка-фон, пока не загрузилось фото */
+}
+
+/* Базовое фото и слои фигур занимают весь контейнер и лежат друг на друге */
+.park-image,
+.park-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none; /* клики должны идти на SVG, а не на картинки */
+}
+
+/* Базовое фото — всегда полностью видимое, лежит в самом низу */
+.park-image {
+  z-index: 1;
+  opacity: 1;
+}
+
+/* Картинки фигур изначально невидимы, GSAP включает нужную через opacity */
+.park-layer {
+  z-index: 2;
+  opacity: 0;
+  will-change: opacity;
+}
+
+/* SVG-обёртка лежит выше всех картинок и содержит только hit-зоны */
+.park-svg-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none; /* сама обёртка кликов не ловит */
+}
+
+.park-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Path'ы — единственные интерактивные элементы: невидимая заливка + курсор */
+.park-svg path {
+  fill: transparent;
+  stroke: transparent;
+  pointer-events: auto;
+  cursor: pointer;
+  outline: none;
+}
+
+/* Лёгкая рамка при наведении/фокусе — помогает видеть активную зону без картинки */
+.park-svg path:hover,
+.park-svg path:focus-visible {
+  fill: rgba(255, 255, 255, 0.08);
+  stroke: rgba(255, 255, 255, 0.35);
+  stroke-width: 2;
+}
+
+.skate-tooltip {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 20;
+  padding: 6px 12px;
+  background: black;
+  color: white;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.2s ease;
