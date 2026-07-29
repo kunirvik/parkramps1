@@ -814,7 +814,7 @@ import { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
 import "./Skatepark.css";
 import ParkMapDesktop from "./park.svg?react";
-import ParkMapMobile from "./park-mobile.svg?react"; // ← замени на свой мобильный SVG
+// import ParkMapMobile from "./park-mobile.svg?react"; // ← замени на свой мобильный SVG
 
 // Базовые фото парка
 const BASE_IMAGE_DESKTOP =
@@ -960,7 +960,7 @@ export default function Skatepark() {
   }, [isTouch, isMobile]);
 
   const activeFigure = active ? figureById[active] : null;
-  const ParkMap = isMobile ? ParkMapMobile : ParkMapDesktop;
+  const ParkMap = ParkMapDesktop;
   const baseImage = isMobile ? BASE_IMAGE_MOBILE : BASE_IMAGE_DESKTOP;
 
   return (
