@@ -1782,7 +1782,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import "./Landing.css";
-import Skatepark from "../Skatepark/Skatepark";
+import Skatepark from "../InteractiveParkMap/InteractiveParkMap";
 import CursorImageTrail from "../CursorImageTrail/CursorImageTrail";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -2010,25 +2010,7 @@ function InfoStats() {
   );
 }
 
-function ParkSection() {
-  const ref = useScrollReveal(".reveal");
-  return (
-    <section className="park-section" ref={ref}>
-      <div className="section-head reveal">
-        <span className="section-head__tag">Карта парку</span>
-        <h2 className="section-head__title">Наведи на фігуру</h2>
-        <p className="section-head__sub">
-          У парку: 2 бокси, 3 квотери різних розмірів, великий квотерволл, рампа, бенк,
-          ролл-ін.
-        </p>
-      </div>
-     {/* <div className="reveal"> */}
-        <Skatepark />
-        {/* </div> */}
-    
-    </section>
-  );
-}
+
 
 function Gallery() {
   const trackRef = useRef(null);
@@ -2157,7 +2139,7 @@ export default function LandingPage() {
       <Header />
       <Hero />
       <InfoStats />
-      <ParkSection />
+     <InteractiveParkMap baseImage="https://res.cloudinary.com/dbx6muxub/image/upload/v1785257521/voltparkvisual2_k4c3fr.jpg" />
 
          {/* <Skatepark /> */}
     
