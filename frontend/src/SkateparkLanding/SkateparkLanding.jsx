@@ -1782,9 +1782,8 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import "./Landing.css";
-import Skatepark from "../InteractiveParkMap/InteractiveParkMap";
+import InteractiveParkMap from "../InteractiveParkMap/InteractiveParkMap";
 import CursorImageTrail from "../CursorImageTrail/CursorImageTrail";
-
 gsap.registerPlugin(ScrollTrigger);
 
 // ─── Демо-контент — замени на свои реальные фото/видео/логотипы ─────
