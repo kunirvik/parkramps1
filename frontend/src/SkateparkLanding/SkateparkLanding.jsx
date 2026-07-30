@@ -1782,7 +1782,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import "./Landing.css";
-import InteractiveParkMap from "../InteractiveParkMap/InteractiveParkMap";
+import Skatepark from "../Skatepark/Skatepark";
 import CursorImageTrail from "../CursorImageTrail/CursorImageTrail";
 gsap.registerPlugin(ScrollTrigger);
 
@@ -2138,9 +2138,10 @@ export default function LandingPage() {
       <Header />
       <Hero />
       <InfoStats />
-     <InteractiveParkMap baseImage="https://res.cloudinary.com/dbx6muxub/image/upload/v1785257521/voltparkvisual2_k4c3fr.jpg" />
+     
 
-         {/* <Skatepark /> */}
+   
+   
     
  
       <Gallery />
