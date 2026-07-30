@@ -2140,8 +2140,7 @@ export default function LandingPage() {
       <InfoStats />
      
 
-   
-   
+         <Skatepark />
     
  
       <Gallery />
