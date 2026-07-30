@@ -1782,8 +1782,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import "./Landing.css";
-import ParkMap from "../Skatepark/ParkMap";
-
+import Skatepark from "../Skatepark/Skatepark";
 import CursorImageTrail from "../CursorImageTrail/CursorImageTrail";
 gsap.registerPlugin(ScrollTrigger);
 
@@ -2140,13 +2139,8 @@ export default function LandingPage() {
       <Hero />
       <InfoStats />
      
-{/* 
-         <Skatepark /> */}
 
-         <ParkMap onFigureHover={(figure, e) => {
-  if (!figure) return setTooltip(null);
-  setTooltip({ title: figure.title, note: figure.note, x: e.clientX, y: e.clientY });
-}} />
+         <Skatepark />
     
  
       <Gallery />
