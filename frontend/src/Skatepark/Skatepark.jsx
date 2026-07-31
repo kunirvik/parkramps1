@@ -978,8 +978,7 @@ export default function Skatepark() {
         <img
           key={item.id}
           ref={(el) => (layers.current[item.id] = el)}
-          // className="absolute inset-0 z-[2] w-full h-full object-cover object-top opacity-0 pointer-events-none will-change-[opacity]"
-          className="absolute inset-0 z-[1] w-full h-full object-cover object-center opacity-100 pointer-events-none"
+          className="absolute inset-0 z-[2] w-full h-full object-cover object-top opacity-0 pointer-events-none will-change-[opacity]"
           src={item.image}
           alt={item.title}
         />
