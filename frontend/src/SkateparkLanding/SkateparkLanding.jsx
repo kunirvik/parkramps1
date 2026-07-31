@@ -1806,7 +1806,7 @@ const LOGO_PARTNER_1 =
 // const LOGO_PARTNER_2 = null; // логотип школи роллердрому №2
 
 const GALLERY_ITEMS = [
-  { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual12_unvhp8.jpg", caption: "Рампа. " },
+  { type: "video", src: "https://res.cloudinary.com/dbx6muxub/video/upload/v1785510085/video_2026-07-31_18-01-11_svtroo.mp4", caption: "Рампа. " },
   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual11_cewrz7.jpg", caption: "Квотер 3. Каркас" },
   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257520/volt_park_visual10_2_oo1az0.jpg", caption: "Ролл-ін. Перші метри" },
   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual9_2_jrzknr.jpg", caption: "Бенк. " },
