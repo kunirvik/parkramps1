@@ -1496,7 +1496,12 @@ const figures = [
 //   );
 // }
 
+ 
 const figureById = Object.fromEntries(figures.map((f) => [f.id, f]));
+ 
+// id фигуры, на которой на мобилке показываем пульсирующую точку-подсказку "тисни сюди"
+// (выберите любую заметную/крупную фигуру из списка выше)
+const HINT_FIGURE_ID = "box";
  
 export default function Skatepark() {
   const svgWrapRef = useRef(null);
@@ -1526,8 +1531,15 @@ export default function Skatepark() {
   const ParkMap = isMobile ? ParkMapMobile : ParkMapDesktop;
   const baseImage = isMobile ? BASE_IMAGE_MOBILE : BASE_IMAGE_DESKTOP;
  
+  // Подсказка "тут всё кликабельно" — шиммер по всей карте + пульсирующая точка на одной фигуре.
+  // Показывается только на мобилке и только пока пользователь ни разу не тапнул ни по одной фигуре.
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const [hintDotPos, setHintDotPos] = useState(null); // { xPercent, yPercent } в координатах viewBox
+  const shimmerRef = useRef(null);
+ 
   const showLayer = (id, clientX) => {
     setActive(id);
+    setHasInteracted(true); // первый тап/ховер по любой фигуре — прячем шиммер и точку-подсказку насовсем
     // На мобилке карточка всегда прижата к низу (см. noteSideClasses/isMobile ниже),
     // поэтому лево/право по clientX считаем только на десктопе.
     if (!isMobile && typeof window !== "undefined" && typeof clientX === "number") {
@@ -1553,6 +1565,31 @@ export default function Skatepark() {
   };
  
   useEffect(() => {
+    if (!isMobile || hasInteracted) return;
+    const timer = setTimeout(() => setHasInteracted(true), 6000); // подсказка гаснет сама через 6с
+    return () => clearTimeout(timer);
+  }, [isMobile, hasInteracted]);
+ 
+  // Шиммер-эффект "тут всё кликабельно": светлая диагональная полоса дважды
+  // проходит по всей карте при заходе на мобилку, затем сама останавливается.
+  // Если пользователь тапнул раньше — showLayer уже поставил hasInteracted=true,
+  // и таймлайн ниже прерывается досрочно.
+  useEffect(() => {
+    if (!isMobile || hasInteracted) return;
+    const el = shimmerRef.current;
+    if (!el) return;
+ 
+    const tl = gsap.timeline({ repeat: 1, repeatDelay: 0.6, delay: 0.5 });
+    tl.fromTo(
+      el,
+      { xPercent: -130, opacity: 0.9 },
+      { xPercent: 130, opacity: 0.9, duration: 1.1, ease: "power1.inOut" }
+    );
+ 
+    return () => tl.kill();
+  }, [isMobile, hasInteracted]);
+ 
+  useEffect(() => {
     const root = svgWrapRef.current;
     if (!root) return;
  
@@ -1563,6 +1600,24 @@ export default function Skatepark() {
  
     const paths = root.querySelectorAll("path[id]");
     const cleanupFns = [];
+ 
+    // Позиция точки-подсказки: берём реальный bbox path'а HINT_FIGURE_ID
+    // и переводим его в проценты относительно viewBox, чтобы точка легла
+    // ровно на фигуру при любом размере блока.
+    if (isMobile) {
+      const svgEl = root.querySelector("svg");
+      const hintPath = root.querySelector(`path#${CSS.escape(HINT_FIGURE_ID)}`);
+      if (svgEl && hintPath && svgEl.viewBox?.baseVal) {
+        const { x: vbX, y: vbY, width: vbW, height: vbH } = svgEl.viewBox.baseVal;
+        const bbox = hintPath.getBBox();
+        const cx = bbox.x + bbox.width / 2;
+        const cy = bbox.y + bbox.height / 2;
+        setHintDotPos({
+          xPercent: ((cx - vbX) / vbW) * 100,
+          yPercent: ((cy - vbY) / vbH) * 100,
+        });
+      }
+    }
  
     paths.forEach((path) => {
       const figure = figureById[path.id];
@@ -1623,7 +1678,7 @@ export default function Skatepark() {
       cleanupFns.forEach((fn) => fn());
       if (outsideTapHandler) document.removeEventListener("click", outsideTapHandler);
     };
-  }, [isTouch]);
+  }, [isTouch, isMobile]);
  
   const activeFigure = active ? figureById[active] : null;
  
@@ -1700,6 +1755,32 @@ export default function Skatepark() {
           preserveAspectRatio="xMidYMid slice"
         />
       </div>
+ 
+      {/* Подсказка "тут всё кликабельно" — только на мобилке, до первого тапа пользователя */}
+      {isMobile && !hasInteracted && (
+        <>
+          {/* Диагональная светлая полоса, дважды пробегает по карте (см. useEffect выше) */}
+          <div
+            ref={shimmerRef}
+            className="absolute inset-0 z-[15] pointer-events-none opacity-0"
+            style={{
+              background:
+                "linear-gradient(75deg, transparent 42%, rgba(242,240,230,0.55) 50%, transparent 58%)",
+            }}
+          />
+ 
+          {/* Пульсирующая точка-подсказка на выбранной фигуре (HINT_FIGURE_ID) */}
+          {hintDotPos && (
+            <div
+              className="absolute z-[16] -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+              style={{ left: `${hintDotPos.xPercent}%`, top: `${hintDotPos.yPercent}%` }}
+            >
+              <span className="absolute inset-0 rounded-full bg-[#d4ff3f]/70 animate-ping" />
+              <span className="relative block w-3.5 h-3.5 rounded-full bg-[#d4ff3f] shadow-[0_0_10px_rgba(212,255,63,0.8)]" />
+            </div>
+          )}
+        </>
+      )}
  
       {/* Журнальная заметка — на десктопе сбоку от активной фигуры, на мобилке снизу на всю ширину */}
       <div className={noteClasses}>
