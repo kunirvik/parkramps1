@@ -1951,7 +1951,7 @@ function Hero() {
         <source src={HERO_VIDEO_MOBILE}  type="video/mp4" />
         <source src={HERO_VIDEO_DESKTOP} type="video/mp4" />
       </video>
-      <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/15 to-black/85" />
+      <div className="absolute inset-0  from-black/35 via-black/15 to-black/85" />
       <div className="relative z-[2] text-center px-6">
        <span className="stamp hero-reveal inline-block rotate-[-6deg] border-3 px-3 py-1 font-futura text-xs font-bold uppercase tracking-widest">
             Йде будівництво
