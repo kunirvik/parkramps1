@@ -1917,7 +1917,7 @@ function Header() {
       <div className="flex gap-3.5 max-[720px]:gap-2">
         <div className="header-logo flex items-center h-9 max-[720px]:h-[26px]">
           {LOGO_PARTNER_1 ? (
-            <img src={LOGO_PARTNER_1} alt="Школа роллердрому" className="h-full w-auto object-contain [filter:brightness(0)_invert(1)]" />
+            <img src={LOGO_PARTNER_1} alt="Школа роллердрому" className="h-full w-auto object-contain " />
           ) : (
             <span className="font-mono text-[10px] max-[720px]:text-[8px] tracking-[0.06em] uppercase text-[#f2f0e6]/65 border border-dashed border-[#f2f0e6]/40 px-2.5 py-2 max-[720px]:px-[7px] max-[720px]:py-1.5 whitespace-nowrap">
               ЛОГО ШКОЛИ 1
@@ -1956,7 +1956,7 @@ function Hero() {
        <span className="stamp hero-reveal inline-block rotate-[-6deg] border-3 px-3 py-1 font-futura text-xs font-bold uppercase tracking-widest">
             Йде будівництво
             </span>
-        <h1 className="hero-title font-[futura text-[clamp(48px,11vw,148px)] leading-[0.9] tracking-[0.01em] text-[#f2f0e6] m-0 overflow-hidden">
+        <h1 className="hero-title font-[futura text-[clamp(48px,11vw,148px)] leading-[0.9] tracking-[0.01em]  m-0 overflow-hidden">
           {"SKATEPARK".split("").map((ch, i) => (
             <span key={i} className="inline-block overflow-hidden">
               {ch}
