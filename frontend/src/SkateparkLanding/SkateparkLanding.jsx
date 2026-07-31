@@ -1953,10 +1953,10 @@ function Hero() {
       </video>
       <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/15 to-black/85" />
       <div className="relative z-[2] text-center px-6">
-        <span className="hero-eyebrow block font-mono text-[clamp(12px,1.6vw,15px)] tracking-[0.14em] uppercase text-[#f2f0e6] opacity-85 mb-2.5">
-          Нарешті. Критий.
-        </span>
-        <h1 className="hero-title font-['Anton','Arial_Narrow',sans-serif] text-[clamp(48px,11vw,148px)] leading-[0.9] tracking-[0.01em] text-[#f2f0e6] m-0 overflow-hidden">
+       <span className="stamp hero-reveal inline-block rotate-[-6deg] border-3 px-3 py-1 font-futura text-xs font-bold uppercase tracking-widest">
+            Йде будівництво
+            </span>
+        <h1 className="hero-title font-[futura text-[clamp(48px,11vw,148px)] leading-[0.9] tracking-[0.01em] text-[#f2f0e6] m-0 overflow-hidden">
           {"SKATEPARK".split("").map((ch, i) => (
             <span key={i} className="inline-block overflow-hidden">
               {ch}
@@ -1970,7 +1970,7 @@ function Hero() {
         </p>
       </div>
       <div className="hero-scroll absolute bottom-8 left-1/2 -translate-x-1/2 z-[2] flex flex-col items-center gap-2 font-mono text-[11px] tracking-[0.14em] uppercase text-[#f2f0e6]">
-        <span>Гортай</span>
+        <span>i</span>
         <div className="w-px h-8 bg-[#d4ff3f] animate-[scrollpulse_1.6s_ease-in-out_infinite]" />
       </div>
     </section>
