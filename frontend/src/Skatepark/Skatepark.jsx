@@ -1027,16 +1027,244 @@
 //     </div>
 //   );
 // }
+// import { useRef, useState, useEffect } from "react";
+// import gsap from "gsap";
+// import ParkMap from "./park.svg?react";
+
+// // Базовое фото парка (общий план, без подсветки)
+// const BASE_IMAGE =
+//   "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257521/voltparkvisual2_k4c3fr.jpg";
+
+// // Каждая фигура: id должен ТОЧНО совпадать с id path в park.svg,
+// // image — картинка именно этой фигуры, note — короткая "журнальная" подпись сбоку.
+// const figures = [
+//   { id: "ramp", title: "Рампа", note: "Класична рампа для набору швидкості й повітряних трюків.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual12_unvhp8.jpg" },
+//   { id: "quater3", title: "Квотер 3", note: "Один із трьох квотерів парку, свій розмір і свій характер.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual11_cewrz7.jpg" },
+//   { id: "roll-in", title: "Ролл-ін", note: "Заїзд, з якого стартують у секцію з фігурами.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257520/volt_park_visual10_2_oo1az0.jpg" },
+//   { id: "bank", title: "Бенк", note: "Похила поверхня для зв'язок і плавних переходів.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual9_2_jrzknr.jpg" },
+//   { id: "box", title: "Бокс", note: "Один із двох боксів парку — для слайдів і грайндів.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual13_z6hp1g.jpg" },
+//   { id: "jumpbox", title: "Джампбокс", note: "Фігура для стрибків і відпрацювання ейр-трюків.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/voltparkvisual4_rrbeeo.jpg" },
+//   { id: "flybox", title: "Флайбокс", note: "Одна з фірмових фігур парку з ухилом в ейр.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/voltparkvisual3_kpnpkk.jpg" },
+//   { id: "volcano", title: "Волкано", note: "Фігура для складніших заходів і виходів.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/volt_park_visual5_2_w899yo.jpg" },
+//   { id: "quater2", title: "Квотер 2", note: "Другий квотер — частина великої ейр-зони.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual6_2_gl0q0k.jpg" },
+//   { id: "vertwall", title: "Vert wall", note: "Вертикальна стіна для найвищого рівня катання.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual8_2_zwmivn.jpg" },
+//   { id: "quater", title: "Квотер", note: "Базовий квотер парку, з нього зручно починати.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/volt_park_visual7_2_rrpf7v.jpg" },
+//   { id: "box2", title: "Бокс", note: "Один із двох боксів парку — для слайдів і грайндів.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual14_dnjash.jpg" },
+//   { id: "wallride", title: "Бокс", note: "Один із двох боксів парку — для слайдів і грайндів.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual15_ktwiqp.jpg" },
+// ];
+
+// const figureById = Object.fromEntries(figures.map((f) => [f.id, f]));
+
+// export default function Skatepark() {
+//   const svgWrapRef = useRef(null);
+//   const layers = useRef({});
+//   const [active, setActive] = useState(null);
+//   const [notePos, setNotePos] = useState({ side: "right" });
+
+//   const isTouch =
+//     typeof window !== "undefined" &&
+//     window.matchMedia("(pointer: coarse)").matches;
+
+//   const showLayer = (id, clientX) => {
+//     setActive(id);
+//     // если фигура в правой половине экрана — карточка выезжает слева, и наоборот
+//     if (typeof window !== "undefined" && typeof clientX === "number") {
+//       setNotePos({ side: clientX > window.innerWidth / 2 ? "left" : "right" });
+//     }
+//     Object.entries(layers.current).forEach(([key, el]) => {
+//       if (!el) return;
+//       gsap.to(el, {
+//         opacity: key === id ? 1 : 0,
+//         duration: 0.35,
+//         ease: "power2.out",
+//         overwrite: true,
+//       });
+//     });
+//   };
+
+//   const hideAllLayers = () => {
+//     setActive(null);
+//     Object.values(layers.current).forEach((el) => {
+//       if (!el) return;
+//       gsap.to(el, { opacity: 0, duration: 0.35, ease: "power2.out", overwrite: true });
+//     });
+//   };
+
+//   useEffect(() => {
+//     const root = svgWrapRef.current;
+//     if (!root) return;
+
+//     // Прозрачность/курсор/pointer-events у path теперь задаются CSS-классами
+//     // на обёртке (см. className ниже) — они применяются сразу при первом рендере,
+//     // ДО этого эффекта, поэтому больше нет вспышки цветных path при загрузке.
+//     // Здесь остаётся только a11y-разметка и обработчики событий.
+
+//     const paths = root.querySelectorAll("path[id]");
+//     const cleanupFns = [];
+
+//     paths.forEach((path) => {
+//       const figure = figureById[path.id];
+//       if (!figure) return;
+
+//       path.setAttribute("tabindex", "0");
+//       path.setAttribute("role", "button");
+//       path.setAttribute("aria-label", figure.title);
+
+//       if (isTouch) {
+//         const onTap = (e) => {
+//           e.stopPropagation();
+//           setActive((prev) => {
+//             const next = prev === figure.id ? null : figure.id;
+//             if (next) showLayer(next, e.clientX);
+//             else hideAllLayers();
+//             return next;
+//           });
+//         };
+//         path.addEventListener("click", onTap);
+//         cleanupFns.push(() => path.removeEventListener("click", onTap));
+//       } else {
+//         const onEnter = (e) => showLayer(figure.id, e.clientX);
+//         const onMove = (e) => {
+//           if (typeof window !== "undefined") {
+//             setNotePos({ side: e.clientX > window.innerWidth / 2 ? "left" : "right" });
+//           }
+//         };
+//         const onLeave = () => hideAllLayers();
+//         const onFocus = (e) => showLayer(figure.id, e.target.getBoundingClientRect().x);
+//         const onBlur = () => hideAllLayers();
+
+//         path.addEventListener("mouseenter", onEnter);
+//         path.addEventListener("mousemove", onMove);
+//         path.addEventListener("mouseleave", onLeave);
+//         path.addEventListener("focus", onFocus);
+//         path.addEventListener("blur", onBlur);
+
+//         cleanupFns.push(() => {
+//           path.removeEventListener("mouseenter", onEnter);
+//           path.removeEventListener("mousemove", onMove);
+//           path.removeEventListener("mouseleave", onLeave);
+//           path.removeEventListener("focus", onFocus);
+//           path.removeEventListener("blur", onBlur);
+//         });
+//       }
+//     });
+
+//     let outsideTapHandler;
+//     if (isTouch) {
+//       outsideTapHandler = (e) => {
+//         if (!root.contains(e.target)) hideAllLayers();
+//       };
+//       document.addEventListener("click", outsideTapHandler);
+//     }
+
+//     return () => {
+//       cleanupFns.forEach((fn) => fn());
+//       if (outsideTapHandler) document.removeEventListener("click", outsideTapHandler);
+//     };
+//   }, [isTouch]);
+
+//   const activeFigure = active ? figureById[active] : null;
+
+//   const noteSideClasses =
+//     notePos.side === "left"
+//       ? "left-6 rotate-2"
+//       : "right-6 -rotate-2";
+
+//   return (
+//     // data-cursor-trail="off" выключает CursorImageTrail именно в этой зоне
+//     //
+//     // Важно: высоту секции теперь задаёт САМО базовое фото (оно в потоке,
+//     // position: static, w-full h-auto) — а не aspect-ratio-класс.
+//     // Раз высота берётся из реального фото, SVG (viewBox 2477x1274) и все
+//     // остальные слои с absolute inset-0 растягиваются на 100%/100% этого же
+//     // блока и совпадают с фото автоматически, какие бы пропорции у фото ни были.
+//     // Если захотите вернуть фиксированную рамку — добавьте сюда
+//     // aspect-[2477/1274] (по пропорциям viewBox) и уберите object-cover ниже,
+//     // либо оставьте как есть, если исходники уже кадрированы под нужный кадр.
+//     <div
+//       data-cursor-trail="off"
+//       className="relative w-full overflow-hidden select-none bg-[#0a0a0a]"
+//     >
+//       {/* Базовое фото — в потоке документа, задаёт высоту всей секции */}
+//       <img
+//         className="relative z-[1] block w-full h-auto object-cover object-top pointer-events-none"
+//         src={BASE_IMAGE}
+//         alt="Скейтпарк, загальний вигляд"
+//       />
+
+//       {/* Слой картинки для каждой фигуры — проявляется поверх базового при наведении */}
+//       {figures.map((item) => (
+//         <img
+//           key={item.id}
+//           ref={(el) => (layers.current[item.id] = el)}
+//           className="absolute inset-0 z-[2] w-full h-full object-cover object-top opacity-0 pointer-events-none will-change-[opacity]"
+//           src={item.image}
+//           alt={item.title}
+//         />
+//       ))}
+
+//       {/* SVG поверх всего — прозрачные path работают как hit-зоны для наведения.
+//           fill-transparent/stroke-transparent/pointer-events-auto/cursor-pointer
+//           заданы CSS-классами (а не inline-стилями в JS), поэтому они применяются
+//           мгновенно при первом рендере — никакой вспышки цветных path при загрузке. */}
+//       <div
+//         ref={svgWrapRef}
+//         className="absolute inset-0 z-10 pointer-events-none [&_path]:fill-transparent [&_path]:stroke-transparent [&_path]:pointer-events-auto [&_path]:cursor-pointer [&_path]:outline-none"
+//       >
+//         <ParkMap
+//           className="w-full h-full block"
+//           preserveAspectRatio="xMidYMid slice"
+//         />
+//       </div>
+
+//       {/* Журнальная заметка сбоку от активной фигуры */}
+//       <div
+//         className={`
+//           absolute top-1/2 z-20 -translate-y-1/2 scale-[0.96]
+//           w-[min(240px,42%)] max-[720px]:w-[min(200px,60%)]
+//           p-[14px_16px_16px] max-[720px]:p-[10px_12px_12px]
+//           bg-[#f2f0e6] text-[#111]
+//           shadow-[0_10px_24px_rgba(0,0,0,0.35)]
+//           opacity-0 pointer-events-none
+//           transition-[opacity,transform] duration-250 ease-out
+//           [clip-path:polygon(0%_2%,3%_0%,97%_1%,100%_3%,99%_97%,96%_100%,2%_99%,0%_96%)]
+//           ${noteSideClasses}
+//           ${activeFigure ? "opacity-100 scale-100" : ""}
+//         `}
+//       >
+//         {activeFigure && (
+//           <>
+//             <span className="inline-block font-['Space_Mono',monospace] text-[10px] tracking-[0.12em] uppercase bg-[#111] text-[#d4ff3f] px-1.5 py-0.5 mb-2">
+//               Зона парку
+//             </span>
+//             <h4 className="m-0 mb-1.5 font-['Anton','Arial_Narrow',sans-serif] text-[22px] max-[720px]:text-[18px] leading-none uppercase">
+//               {activeFigure.title}
+//             </h4>
+//             <p className="m-0 text-[13px] max-[720px]:text-[12px] leading-[1.4]">
+//               {activeFigure.note}
+//             </p>
+//           </>
+//         )}
+//       </div>
+//     </div>
+//   );
+// }
 import { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
-import ParkMap from "./park.svg?react";
+import ParkMapDesktop from "./park.svg?react";
+import ParkMapMobile from "./park-mobile.svg?react"; // отдельный SVG с той же структурой id, но под вертикальный кадр
 
 // Базовое фото парка (общий план, без подсветки)
-const BASE_IMAGE =
+const BASE_IMAGE_DESKTOP =
   "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257521/voltparkvisual2_k4c3fr.jpg";
+const BASE_IMAGE_MOBILE =
+  "https://res.cloudinary.com/dbx6muxub/image/upload/vXXXXXXX/voltpark_mobile_base.jpg"; // ваше вертикальное фото
 
 // Каждая фигура: id должен ТОЧНО совпадать с id path в park.svg,
 // image — картинка именно этой фигуры, note — короткая "журнальная" подпись сбоку.
+// image — фото для десктопного (горизонтального) SVG
+// mobileImage — то же фото, но скадрированное/подготовленное под вертикальний park-mobile.svg
+// (если mobileImage не указан — на мобилке используется тот же image, что и на десктопе)
 const figures = [
   { id: "ramp", title: "Рампа", note: "Класична рампа для набору швидкості й повітряних трюків.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual12_unvhp8.jpg" },
   { id: "quater3", title: "Квотер 3", note: "Один із трьох квотерів парку, свій розмір і свій характер.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual11_cewrz7.jpg" },
@@ -1064,6 +1292,24 @@ export default function Skatepark() {
   const isTouch =
     typeof window !== "undefined" &&
     window.matchMedia("(pointer: coarse)").matches;
+
+  // Отдельный брейкпоинт под "мобильную" версию SVG/фото (совпадает с max-[720px] в остальной верстке).
+  // Слушаем через matchMedia + resize, чтобы переключение SVG/фото происходило и при повороте
+  // экрана / ресайзе окна, а не только при первом рендере.
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(max-width: 720px)").matches
+  );
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(max-width: 720px)");
+    const onChange = (e) => setIsMobile(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
+  const ParkMap = isMobile ? ParkMapMobile : ParkMapDesktop;
+  const baseImage = isMobile ? BASE_IMAGE_MOBILE : BASE_IMAGE_DESKTOP;
 
   const showLayer = (id, clientX) => {
     setActive(id);
@@ -1188,7 +1434,7 @@ export default function Skatepark() {
       {/* Базовое фото — в потоке документа, задаёт высоту всей секции */}
       <img
         className="relative z-[1] block w-full h-auto object-cover object-top pointer-events-none"
-        src={BASE_IMAGE}
+        src={baseImage}
         alt="Скейтпарк, загальний вигляд"
       />
 
@@ -1198,7 +1444,7 @@ export default function Skatepark() {
           key={item.id}
           ref={(el) => (layers.current[item.id] = el)}
           className="absolute inset-0 z-[2] w-full h-full object-cover object-top opacity-0 pointer-events-none will-change-[opacity]"
-          src={item.image}
+          src={isMobile && item.mobileImage ? item.mobileImage : item.image}
           alt={item.title}
         />
       ))}
