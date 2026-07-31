@@ -1258,7 +1258,7 @@ import ParkMapMobile from "./park-mobile.svg?react"; // отдельный SVG �
 const BASE_IMAGE_DESKTOP =
   "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257521/voltparkvisual2_k4c3fr.jpg";
 const BASE_IMAGE_MOBILE =
-  "https://res.cloudinary.com/dbx6muxub/image/upload/vXXXXXXX/voltpark_mobile_base.jpg"; // ваше вертикальное фото
+  "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503281/voltparkvisual2_h7bxoy.jpg"; // ваше вертикальное фото
 
 // Каждая фигура: id должен ТОЧНО совпадать с id path в park.svg,
 // image — картинка именно этой фигуры, note — короткая "журнальная" подпись сбоку.
