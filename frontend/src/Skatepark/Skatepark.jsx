@@ -1281,25 +1281,240 @@ const figures = [
   { id: "wallride", mobileImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503281/volt_park_visual15_xgkol6.jpg", title: "Бокс", note: "Один із двох боксів парку — для слайдів і грайндів.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual15_ktwiqp.jpg" },
 ];
 
-const figureById = Object.fromEntries(figures.map((f) => [f.id, f]));
+// const figureById = Object.fromEntries(figures.map((f) => [f.id, f]));
 
+// export default function Skatepark() {
+//   const svgWrapRef = useRef(null);
+//   const layers = useRef({});
+//   const [active, setActive] = useState(null);
+//   const [notePos, setNotePos] = useState({ side: "right" });
+
+//   const isTouch =
+//     typeof window !== "undefined" &&
+//     window.matchMedia("(pointer: coarse)").matches;
+
+//   // Отдельный брейкпоинт под "мобильную" версию SVG/фото (совпадает с max-[720px] в остальной верстке).
+//   // Слушаем через matchMedia + resize, чтобы переключение SVG/фото происходило и при повороте
+//   // экрана / ресайзе окна, а не только при первом рендере.
+//   const [isMobile, setIsMobile] = useState(
+//     () => typeof window !== "undefined" && window.matchMedia("(max-width: 720px)").matches
+//   );
+
+//   useEffect(() => {
+//     if (typeof window === "undefined") return;
+//     const mq = window.matchMedia("(max-width: 720px)");
+//     const onChange = (e) => setIsMobile(e.matches);
+//     mq.addEventListener("change", onChange);
+//     return () => mq.removeEventListener("change", onChange);
+//   }, []);
+
+//   const ParkMap = isMobile ? ParkMapMobile : ParkMapDesktop;
+//   const baseImage = isMobile ? BASE_IMAGE_MOBILE : BASE_IMAGE_DESKTOP;
+
+//   const showLayer = (id, clientX) => {
+//     setActive(id);
+//     // если фигура в правой половине экрана — карточка выезжает слева, и наоборот
+//     if (typeof window !== "undefined" && typeof clientX === "number") {
+//       setNotePos({ side: clientX > window.innerWidth / 2 ? "left" : "right" });
+//     }
+//     Object.entries(layers.current).forEach(([key, el]) => {
+//       if (!el) return;
+//       gsap.to(el, {
+//         opacity: key === id ? 1 : 0,
+//         duration: 0.35,
+//         ease: "power2.out",
+//         overwrite: true,
+//       });
+//     });
+//   };
+
+//   const hideAllLayers = () => {
+//     setActive(null);
+//     Object.values(layers.current).forEach((el) => {
+//       if (!el) return;
+//       gsap.to(el, { opacity: 0, duration: 0.35, ease: "power2.out", overwrite: true });
+//     });
+//   };
+
+//   useEffect(() => {
+//     const root = svgWrapRef.current;
+//     if (!root) return;
+
+//     // Прозрачность/курсор/pointer-events у path теперь задаются CSS-классами
+//     // на обёртке (см. className ниже) — они применяются сразу при первом рендере,
+//     // ДО этого эффекта, поэтому больше нет вспышки цветных path при загрузке.
+//     // Здесь остаётся только a11y-разметка и обработчики событий.
+
+//     const paths = root.querySelectorAll("path[id]");
+//     const cleanupFns = [];
+
+//     paths.forEach((path) => {
+//       const figure = figureById[path.id];
+//       if (!figure) return;
+
+//       path.setAttribute("tabindex", "0");
+//       path.setAttribute("role", "button");
+//       path.setAttribute("aria-label", figure.title);
+
+//       if (isTouch) {
+//         const onTap = (e) => {
+//           e.stopPropagation();
+//           setActive((prev) => {
+//             const next = prev === figure.id ? null : figure.id;
+//             if (next) showLayer(next, e.clientX);
+//             else hideAllLayers();
+//             return next;
+//           });
+//         };
+//         path.addEventListener("click", onTap);
+//         cleanupFns.push(() => path.removeEventListener("click", onTap));
+//       } else {
+//         const onEnter = (e) => showLayer(figure.id, e.clientX);
+//         const onMove = (e) => {
+//           if (typeof window !== "undefined") {
+//             setNotePos({ side: e.clientX > window.innerWidth / 2 ? "left" : "right" });
+//           }
+//         };
+//         const onLeave = () => hideAllLayers();
+//         const onFocus = (e) => showLayer(figure.id, e.target.getBoundingClientRect().x);
+//         const onBlur = () => hideAllLayers();
+
+//         path.addEventListener("mouseenter", onEnter);
+//         path.addEventListener("mousemove", onMove);
+//         path.addEventListener("mouseleave", onLeave);
+//         path.addEventListener("focus", onFocus);
+//         path.addEventListener("blur", onBlur);
+
+//         cleanupFns.push(() => {
+//           path.removeEventListener("mouseenter", onEnter);
+//           path.removeEventListener("mousemove", onMove);
+//           path.removeEventListener("mouseleave", onLeave);
+//           path.removeEventListener("focus", onFocus);
+//           path.removeEventListener("blur", onBlur);
+//         });
+//       }
+//     });
+
+//     let outsideTapHandler;
+//     if (isTouch) {
+//       outsideTapHandler = (e) => {
+//         if (!root.contains(e.target)) hideAllLayers();
+//       };
+//       document.addEventListener("click", outsideTapHandler);
+//     }
+
+//     return () => {
+//       cleanupFns.forEach((fn) => fn());
+//       if (outsideTapHandler) document.removeEventListener("click", outsideTapHandler);
+//     };
+//   }, [isTouch]);
+
+//   const activeFigure = active ? figureById[active] : null;
+
+//   const noteSideClasses =
+//     notePos.side === "left"
+//       ? "left-6 rotate-2"
+//       : "right-6 -rotate-2";
+
+//   return (
+//     // data-cursor-trail="off" выключает CursorImageTrail именно в этой зоне
+//     //
+//     // Важно: высоту секции теперь задаёт САМО базовое фото (оно в потоке,
+//     // position: static, w-full h-auto) — а не aspect-ratio-класс.
+//     // Раз высота берётся из реального фото, SVG (viewBox 2477x1274) и все
+//     // остальные слои с absolute inset-0 растягиваются на 100%/100% этого же
+//     // блока и совпадают с фото автоматически, какие бы пропорции у фото ни были.
+//     // Если захотите вернуть фиксированную рамку — добавьте сюда
+//     // aspect-[2477/1274] (по пропорциям viewBox) и уберите object-cover ниже,
+//     // либо оставьте как есть, если исходники уже кадрированы под нужный кадр.
+//     <div
+//       data-cursor-trail="off"
+//       className="relative w-full overflow-hidden select-none bg-[#0a0a0a]"
+//     >
+//       {/* Базовое фото — в потоке документа, задаёт высоту всей секции */}
+//       <img
+//         className="relative z-[1] block w-full h-auto object-cover object-top pointer-events-none"
+//         src={baseImage}
+//         alt="Скейтпарк, загальний вигляд"
+//       />
+
+//       {/* Слой картинки для каждой фигуры — проявляется поверх базового при наведении */}
+//       {figures.map((item) => (
+//         <img
+//           key={item.id}
+//           ref={(el) => (layers.current[item.id] = el)}
+//           className="absolute inset-0 z-[2] w-full h-full object-cover object-top opacity-0 pointer-events-none will-change-[opacity]"
+//           src={isMobile && item.mobileImage ? item.mobileImage : item.image}
+//           alt={item.title}
+//         />
+//       ))}
+
+//       {/* SVG поверх всего — прозрачные path работают как hit-зоны для наведения.
+//           fill-transparent/stroke-transparent/pointer-events-auto/cursor-pointer
+//           заданы CSS-классами (а не inline-стилями в JS), поэтому они применяются
+//           мгновенно при первом рендере — никакой вспышки цветных path при загрузке. */}
+//       <div
+//         ref={svgWrapRef}
+//         className="absolute inset-0 z-10 pointer-events-none [&_path]:fill-transparent [&_path]:stroke-transparent [&_path]:pointer-events-auto [&_path]:cursor-pointer [&_path]:outline-none"
+//       >
+//         <ParkMap
+//           className="w-full h-full block"
+//           preserveAspectRatio="xMidYMid slice"
+//         />
+//       </div>
+
+//       {/* Журнальная заметка сбоку от активной фигуры */}
+//       <div
+//         className={`
+//           absolute top-1/2 z-20 -translate-y-1/2 scale-[0.96]
+//           w-[min(240px,42%)] max-[720px]:w-[min(200px,60%)]
+//           p-[14px_16px_16px] max-[720px]:p-[10px_12px_12px]
+//           bg-[#f2f0e6] text-[#111]
+//           shadow-[0_10px_24px_rgba(0,0,0,0.35)]
+//           opacity-0 pointer-events-none
+//           transition-[opacity,transform] duration-250 ease-out
+//           [clip-path:polygon(0%_2%,3%_0%,97%_1%,100%_3%,99%_97%,96%_100%,2%_99%,0%_96%)]
+//           ${noteSideClasses}
+//           ${activeFigure ? "opacity-100 scale-100" : ""}
+//         `}
+//       >
+//         {activeFigure && (
+//           <>
+//             <span className="inline-block font-['Space_Mono',monospace] text-[10px] tracking-[0.12em] uppercase bg-[#111] text-[#d4ff3f] px-1.5 py-0.5 mb-2">
+//               Зона парку
+//             </span>
+//             <h4 className="m-0 mb-1.5 font-['Anton','Arial_Narrow',sans-serif] text-[22px] max-[720px]:text-[18px] leading-none uppercase">
+//               {activeFigure.title}
+//             </h4>
+//             <p className="m-0 text-[13px] max-[720px]:text-[12px] leading-[1.4]">
+//               {activeFigure.note}
+//             </p>
+//           </>
+//         )}
+//       </div>
+//     </div>
+//   );
+// }
+
+const figureById = Object.fromEntries(figures.map((f) => [f.id, f]));
+ 
 export default function Skatepark() {
   const svgWrapRef = useRef(null);
   const layers = useRef({});
   const [active, setActive] = useState(null);
   const [notePos, setNotePos] = useState({ side: "right" });
-
+ 
   const isTouch =
     typeof window !== "undefined" &&
     window.matchMedia("(pointer: coarse)").matches;
-
+ 
   // Отдельный брейкпоинт под "мобильную" версию SVG/фото (совпадает с max-[720px] в остальной верстке).
   // Слушаем через matchMedia + resize, чтобы переключение SVG/фото происходило и при повороте
   // экрана / ресайзе окна, а не только при первом рендере.
   const [isMobile, setIsMobile] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(max-width: 720px)").matches
   );
-
+ 
   useEffect(() => {
     if (typeof window === "undefined") return;
     const mq = window.matchMedia("(max-width: 720px)");
@@ -1307,14 +1522,15 @@ export default function Skatepark() {
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
   }, []);
-
+ 
   const ParkMap = isMobile ? ParkMapMobile : ParkMapDesktop;
   const baseImage = isMobile ? BASE_IMAGE_MOBILE : BASE_IMAGE_DESKTOP;
-
+ 
   const showLayer = (id, clientX) => {
     setActive(id);
-    // если фигура в правой половине экрана — карточка выезжает слева, и наоборот
-    if (typeof window !== "undefined" && typeof clientX === "number") {
+    // На мобилке карточка всегда прижата к низу (см. noteSideClasses/isMobile ниже),
+    // поэтому лево/право по clientX считаем только на десктопе.
+    if (!isMobile && typeof window !== "undefined" && typeof clientX === "number") {
       setNotePos({ side: clientX > window.innerWidth / 2 ? "left" : "right" });
     }
     Object.entries(layers.current).forEach(([key, el]) => {
@@ -1327,7 +1543,7 @@ export default function Skatepark() {
       });
     });
   };
-
+ 
   const hideAllLayers = () => {
     setActive(null);
     Object.values(layers.current).forEach((el) => {
@@ -1335,27 +1551,27 @@ export default function Skatepark() {
       gsap.to(el, { opacity: 0, duration: 0.35, ease: "power2.out", overwrite: true });
     });
   };
-
+ 
   useEffect(() => {
     const root = svgWrapRef.current;
     if (!root) return;
-
+ 
     // Прозрачность/курсор/pointer-events у path теперь задаются CSS-классами
     // на обёртке (см. className ниже) — они применяются сразу при первом рендере,
     // ДО этого эффекта, поэтому больше нет вспышки цветных path при загрузке.
     // Здесь остаётся только a11y-разметка и обработчики событий.
-
+ 
     const paths = root.querySelectorAll("path[id]");
     const cleanupFns = [];
-
+ 
     paths.forEach((path) => {
       const figure = figureById[path.id];
       if (!figure) return;
-
+ 
       path.setAttribute("tabindex", "0");
       path.setAttribute("role", "button");
       path.setAttribute("aria-label", figure.title);
-
+ 
       if (isTouch) {
         const onTap = (e) => {
           e.stopPropagation();
@@ -1371,20 +1587,20 @@ export default function Skatepark() {
       } else {
         const onEnter = (e) => showLayer(figure.id, e.clientX);
         const onMove = (e) => {
-          if (typeof window !== "undefined") {
+          if (!isMobile && typeof window !== "undefined") {
             setNotePos({ side: e.clientX > window.innerWidth / 2 ? "left" : "right" });
           }
         };
         const onLeave = () => hideAllLayers();
         const onFocus = (e) => showLayer(figure.id, e.target.getBoundingClientRect().x);
         const onBlur = () => hideAllLayers();
-
+ 
         path.addEventListener("mouseenter", onEnter);
         path.addEventListener("mousemove", onMove);
         path.addEventListener("mouseleave", onLeave);
         path.addEventListener("focus", onFocus);
         path.addEventListener("blur", onBlur);
-
+ 
         cleanupFns.push(() => {
           path.removeEventListener("mouseenter", onEnter);
           path.removeEventListener("mousemove", onMove);
@@ -1394,7 +1610,7 @@ export default function Skatepark() {
         });
       }
     });
-
+ 
     let outsideTapHandler;
     if (isTouch) {
       outsideTapHandler = (e) => {
@@ -1402,20 +1618,42 @@ export default function Skatepark() {
       };
       document.addEventListener("click", outsideTapHandler);
     }
-
+ 
     return () => {
       cleanupFns.forEach((fn) => fn());
       if (outsideTapHandler) document.removeEventListener("click", outsideTapHandler);
     };
   }, [isTouch]);
-
+ 
   const activeFigure = active ? figureById[active] : null;
-
-  const noteSideClasses =
-    notePos.side === "left"
-      ? "left-6 rotate-2"
-      : "right-6 -rotate-2";
-
+ 
+  // Десктоп: карточка стоит слева/справа от курсора, по центру высоты блока.
+  // Мобилка: клика без курсора недостаточно для лево/право — карточка вместо этого
+  // прижата к низу блока на всю ширину, как нижний "sheet".
+  const noteClasses = isMobile
+    ? `
+        absolute left-3 right-3 bottom-3 z-20
+        p-[14px_16px_16px]
+        bg-[#f2f0e6] text-[#111]
+        shadow-[0_10px_24px_rgba(0,0,0,0.35)]
+        opacity-0 translate-y-3 pointer-events-none
+        transition-[opacity,transform] duration-250 ease-out
+        [clip-path:polygon(0%_2%,3%_0%,97%_1%,100%_3%,99%_97%,96%_100%,2%_99%,0%_96%)]
+        ${activeFigure ? "opacity-100 translate-y-0" : ""}
+      `
+    : `
+        absolute top-1/2 z-20 -translate-y-1/2 scale-[0.96]
+        w-[min(240px,42%)]
+        p-[14px_16px_16px]
+        bg-[#f2f0e6] text-[#111]
+        shadow-[0_10px_24px_rgba(0,0,0,0.35)]
+        opacity-0 pointer-events-none
+        transition-[opacity,transform] duration-250 ease-out
+        [clip-path:polygon(0%_2%,3%_0%,97%_1%,100%_3%,99%_97%,96%_100%,2%_99%,0%_96%)]
+        ${notePos.side === "left" ? "left-6 rotate-2" : "right-6 -rotate-2"}
+        ${activeFigure ? "opacity-100 scale-100" : ""}
+      `;
+ 
   return (
     // data-cursor-trail="off" выключает CursorImageTrail именно в этой зоне
     //
@@ -1437,7 +1675,7 @@ export default function Skatepark() {
         src={baseImage}
         alt="Скейтпарк, загальний вигляд"
       />
-
+ 
       {/* Слой картинки для каждой фигуры — проявляется поверх базового при наведении */}
       {figures.map((item) => (
         <img
@@ -1448,7 +1686,7 @@ export default function Skatepark() {
           alt={item.title}
         />
       ))}
-
+ 
       {/* SVG поверх всего — прозрачные path работают как hit-зоны для наведения.
           fill-transparent/stroke-transparent/pointer-events-auto/cursor-pointer
           заданы CSS-классами (а не inline-стилями в JS), поэтому они применяются
@@ -1462,22 +1700,9 @@ export default function Skatepark() {
           preserveAspectRatio="xMidYMid slice"
         />
       </div>
-
-      {/* Журнальная заметка сбоку от активной фигуры */}
-      <div
-        className={`
-          absolute top-1/2 z-20 -translate-y-1/2 scale-[0.96]
-          w-[min(240px,42%)] max-[720px]:w-[min(200px,60%)]
-          p-[14px_16px_16px] max-[720px]:p-[10px_12px_12px]
-          bg-[#f2f0e6] text-[#111]
-          shadow-[0_10px_24px_rgba(0,0,0,0.35)]
-          opacity-0 pointer-events-none
-          transition-[opacity,transform] duration-250 ease-out
-          [clip-path:polygon(0%_2%,3%_0%,97%_1%,100%_3%,99%_97%,96%_100%,2%_99%,0%_96%)]
-          ${noteSideClasses}
-          ${activeFigure ? "opacity-100 scale-100" : ""}
-        `}
-      >
+ 
+      {/* Журнальная заметка — на десктопе сбоку от активной фигуры, на мобилке снизу на всю ширину */}
+      <div className={noteClasses}>
         {activeFigure && (
           <>
             <span className="inline-block font-['Space_Mono',monospace] text-[10px] tracking-[0.12em] uppercase bg-[#111] text-[#d4ff3f] px-1.5 py-0.5 mb-2">
@@ -1495,7 +1720,6 @@ export default function Skatepark() {
     </div>
   );
 }
-
 // import { useRef, useState, useEffect } from "react";
 // import gsap from "gsap";
 // import "./Skatepark.css";
