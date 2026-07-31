@@ -1971,7 +1971,7 @@ function Hero() {
             </span>
           ))}
         </h1>
-        <p className="hero-sub mt-[18px] font-mono text-[clamp(13px,1.6vw,16px)] tracking-[0.04em] text-[#d4ff3f] uppercase">
+        <p className="hero-sub mt-[18px] font-mono text-[clamp(13px,1.6vw,16px)] tracking-[0.04em] [rgba(223, 48, 239, 0.86)] uppercase">
           Перший критий скейтпарк на правому березі Києва. Зелена лінія.
           <br />
           1000 м² для катання будь-якого рівня, у будь-яку погоду.
