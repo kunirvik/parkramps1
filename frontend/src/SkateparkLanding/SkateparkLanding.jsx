@@ -1808,7 +1808,7 @@ const LOGO_PARTNER_1 =
 const GALLERY_ITEMS = [
   { type: "video", src: "https://res.cloudinary.com/dbx6muxub/video/upload/v1785510085/video_2026-07-31_18-01-11_svtroo.mp4", caption: "Рампа. " },
   { type: "video", src: "https://res.cloudinary.com/dbx6muxub/video/upload/v1785513025/video_2026-07-31_18-49-25_ehskzk.mp4", caption: "Квотер 3. Каркас" },
-  { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257520/volt_park_visual10_2_oo1az0.jpg", caption: "Ролл-ін. Перші метри" },
+  { type: "video", src: "https://res.cloudinary.com/dbx6muxub/video/upload/v1785514190/video_2026-07-29_11-16-20_ljxjkk.mp4", caption: "Ролл-ін. Перші метри" },
   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual9_2_jrzknr.jpg", caption: "Бенк. " },
   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual13_z6hp1g.jpg", caption: "Бокс. Монтаж" },
   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/voltparkvisual4_rrbeeo.jpg", caption: "Джампбокс. Розмітка" },
@@ -2083,6 +2083,7 @@ function Gallery() {
             {item.type === "video" ? (
   <video
     src={item.src}
+     autoPlay
     controls
     playsInline
     preload="metadata"
