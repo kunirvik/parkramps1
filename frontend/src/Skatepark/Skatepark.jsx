@@ -964,7 +964,7 @@ export default function Skatepark() {
     // data-cursor-trail="off" выключает CursorImageTrail именно в этой зоне
     <div
       data-cursor-trail="off"
-      className="relative w-full h-auto aspect-[2304/775] overflow-hidden select-none bg-[#0a0a0a]"
+      className="relative w-full h-auto  overflow-hidden select-none bg-[#0a0a0a]"
     >
       {/* Базовое фото — видно всегда */}
       <img
