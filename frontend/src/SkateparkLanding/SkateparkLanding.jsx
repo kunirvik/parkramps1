@@ -1807,7 +1807,7 @@ const LOGO_PARTNER_1 =
 
 const GALLERY_ITEMS = [
   { type: "video", src: "https://res.cloudinary.com/dbx6muxub/video/upload/v1785510085/video_2026-07-31_18-01-11_svtroo.mp4", caption: "Рампа. " },
-  { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual11_cewrz7.jpg", caption: "Квотер 3. Каркас" },
+  { type: "video", src: "https://res.cloudinary.com/dbx6muxub/video/upload/v1785513025/video_2026-07-31_18-49-25_ehskzk.mp4", caption: "Квотер 3. Каркас" },
   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257520/volt_park_visual10_2_oo1az0.jpg", caption: "Ролл-ін. Перші метри" },
   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual9_2_jrzknr.jpg", caption: "Бенк. " },
   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual13_z6hp1g.jpg", caption: "Бокс. Монтаж" },
@@ -2080,7 +2080,23 @@ function Gallery() {
             <span className="absolute top-3 left-3 z-[2] font-mono text-xs text-[#0d0d0d] bg-[#d4ff3f] px-[7px] py-0.5">
               {String(i + 1).padStart(2, "0")}
             </span>
-            <img src={item.src} alt={item.caption} loading="lazy" className="w-full h-full object-cover block" />
+            {item.type === "video" ? (
+  <video
+    src={item.src}
+    controls
+    playsInline
+    preload="metadata"
+    className="w-full h-full object-cover block"
+  />
+) : (
+  <img
+    src={item.src}
+    alt={item.caption}
+    loading="lazy"
+    className="w-full h-full object-cover block"
+  />
+)}
+            {/* <img src={item.src} alt={item.caption} loading="lazy" className="w-full h-full object-cover block" /> */}
             <span className="absolute left-0 right-0 bottom-0 z-[2] px-3 py-3.5 font-mono text-xs tracking-[0.02em] text-[#f2f0e6] bg-gradient-to-t from-black/85 to-transparent">
               {item.caption}
             </span>
