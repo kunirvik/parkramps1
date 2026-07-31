@@ -1295,11 +1295,20 @@ export default function Skatepark() {
   const layers = useRef({});
   const [active, setActive] = useState(null);
   // const [notePos, setNotePos] = useState({ side: "right" });
- const [notePos, setNotePos] = useState({
+//  const [notePos, setNotePos] = useState({
+//   left: 0,
+//   top: 0,
+//   side: "right",
+// });
+
+const [notePos, setNotePos] = useState({
   left: 0,
   top: 0,
   side: "right",
+  vertical: "bottom",
 });
+
+ 
   const isTouch =
     typeof window !== "undefined" &&
     window.matchMedia("(pointer: coarse)").matches;
@@ -1347,49 +1356,139 @@ export default function Skatepark() {
   //   });
   // };
 
-  const showLayer = (id, clientX) => {
+//   const showLayer = (id, clientX) => {
+//   setActive(id);
+//   setHasInteracted(true);
+
+//   const root = svgWrapRef.current;
+//   const path = root?.querySelector(`path#${CSS.escape(id)}`);
+//   const svg = root?.querySelector("svg");
+
+//   if (path && svg) {
+//     const pathBox = path.getBoundingClientRect();
+//     const rootBox = root.getBoundingClientRect();
+
+//     const figureCenterX =
+//       pathBox.left + pathBox.width / 2 - rootBox.left;
+
+//     const figureCenterY =
+//       pathBox.top + pathBox.height / 2 - rootBox.top;
+
+//     const cardWidth = Math.min(260, rootBox.width * 0.38);
+//     const gap = 16;
+
+//     // Сначала пробуем поставить карточку справа от фигуры.
+//     let side = "right";
+//     let left = figureCenterX + pathBox.width / 2 + gap;
+
+//     // Если справа места нет — ставим слева.
+//     if (left + cardWidth > rootBox.width - 12) {
+//       side = "left";
+//       left =
+//         figureCenterX -
+//         pathBox.width / 2 -
+//         cardWidth -
+//         gap;
+//     }
+
+//     // Ограничиваем карточку границами стекла.
+//     left = Math.max(12, Math.min(left, rootBox.width - cardWidth - 12));
+
+//     // Центрируем карточку относительно выбранной фигуры.
+//     const cardHeight = 150;
+
+//     let top = figureCenterY - cardHeight / 2;
+
+//     top = Math.max(
+//       12,
+//       Math.min(top, rootBox.height - cardHeight - 12)
+//     );
+
+//     setNotePos({
+//       left,
+//       top,
+//       side,
+//     });
+//   }
+
+//   Object.entries(layers.current).forEach(([key, el]) => {
+//     if (!el) return;
+
+//     gsap.to(el, {
+//       opacity: key === id ? 1 : 0,
+//       duration: 0.35,
+//       ease: "power2.out",
+//       overwrite: true,
+//     });
+//   });
+// };
+
+const showLayer = (id, clientX) => {
   setActive(id);
   setHasInteracted(true);
 
   const root = svgWrapRef.current;
   const path = root?.querySelector(`path#${CSS.escape(id)}`);
-  const svg = root?.querySelector("svg");
 
-  if (path && svg) {
-    const pathBox = path.getBoundingClientRect();
-    const rootBox = root.getBoundingClientRect();
+  if (!root || !path) return;
 
-    const figureCenterX =
-      pathBox.left + pathBox.width / 2 - rootBox.left;
+  const rootBox = root.getBoundingClientRect();
+  const pathBox = path.getBoundingClientRect();
 
-    const figureCenterY =
-      pathBox.top + pathBox.height / 2 - rootBox.top;
+  const figureX =
+    pathBox.left + pathBox.width / 2 - rootBox.left;
 
-    const cardWidth = Math.min(260, rootBox.width * 0.38);
-    const gap = 16;
+  const figureY =
+    pathBox.top + pathBox.height / 2 - rootBox.top;
 
-    // Сначала пробуем поставить карточку справа от фигуры.
-    let side = "right";
-    let left = figureCenterX + pathBox.width / 2 + gap;
+  const gap = 14;
 
-    // Если справа места нет — ставим слева.
-    if (left + cardWidth > rootBox.width - 12) {
-      side = "left";
-      left =
-        figureCenterX -
-        pathBox.width / 2 -
-        cardWidth -
+  // ==========================================
+  // МОБИЛЬНЫЙ — карточка сверху или снизу
+  // ==========================================
+
+  if (isMobile) {
+    const cardWidth = Math.min(rootBox.width - 24, 300);
+    const cardHeight = 145;
+
+    // Центрируем карточку относительно фигуры
+    let left = figureX - cardWidth / 2;
+
+    // Не даём карточке выйти за края
+    left = Math.max(
+      12,
+      Math.min(left, rootBox.width - cardWidth - 12)
+    );
+
+    // Сколько места сверху и снизу от фигуры
+    const spaceTop = pathBox.top - rootBox.top;
+    const spaceBottom =
+      rootBox.height -
+      (pathBox.bottom - rootBox.top);
+
+    let top;
+    let vertical;
+
+    // Если сверху достаточно места — показываем сверху
+    if (spaceTop >= cardHeight + gap) {
+      top =
+        figureY -
+        pathBox.height / 2 -
+        cardHeight -
         gap;
+
+      vertical = "top";
+    } else {
+      // Иначе показываем снизу
+      top =
+        figureY +
+        pathBox.height / 2 +
+        gap;
+
+      vertical = "bottom";
     }
 
-    // Ограничиваем карточку границами стекла.
-    left = Math.max(12, Math.min(left, rootBox.width - cardWidth - 12));
-
-    // Центрируем карточку относительно выбранной фигуры.
-    const cardHeight = 150;
-
-    let top = figureCenterY - cardHeight / 2;
-
+    // Дополнительная защита от выхода за границы
     top = Math.max(
       12,
       Math.min(top, rootBox.height - cardHeight - 12)
@@ -1398,21 +1497,87 @@ export default function Skatepark() {
     setNotePos({
       left,
       top,
-      side,
+      side: "center",
+      vertical,
     });
   }
 
-  Object.entries(layers.current).forEach(([key, el]) => {
-    if (!el) return;
+  // ==========================================
+  // ДЕСКТОП — карточка слева или справа
+  // ==========================================
 
-    gsap.to(el, {
-      opacity: key === id ? 1 : 0,
-      duration: 0.35,
-      ease: "power2.out",
-      overwrite: true,
+  else {
+    const cardWidth = Math.min(
+      260,
+      rootBox.width * 0.38
+    );
+
+    const cardHeight = 150;
+
+    let side = "right";
+
+    let left =
+      figureX +
+      pathBox.width / 2 +
+      gap;
+
+    // Справа нет места → ставим слева
+    if (
+      left + cardWidth >
+      rootBox.width - 12
+    ) {
+      side = "left";
+
+      left =
+        figureX -
+        pathBox.width / 2 -
+        cardWidth -
+        gap;
+    }
+
+    left = Math.max(
+      12,
+      Math.min(
+        left,
+        rootBox.width - cardWidth - 12
+      )
+    );
+
+    let top =
+      figureY -
+      cardHeight / 2;
+
+    top = Math.max(
+      12,
+      Math.min(
+        top,
+        rootBox.height - cardHeight - 12
+      )
+    );
+
+    setNotePos({
+      left,
+      top,
+      side,
+      vertical: "center",
     });
-  });
+  }
+
+  // Плавно показываем активную фотографию
+  Object.entries(layers.current).forEach(
+    ([key, el]) => {
+      if (!el) return;
+
+      gsap.to(el, {
+        opacity: key === id ? 1 : 0,
+        duration: 0.35,
+        ease: "power2.out",
+        overwrite: true,
+      });
+    }
+  );
 };
+
 
 
  
@@ -1659,35 +1824,59 @@ export default function Skatepark() {
       {/* Журнальная заметка — на десктопе сбоку от 
       активной фигуры, на мобилке снизу на всю ширину */}
       {/* <div className={noteClasses}> */}
-      <div
-  className={noteClasses}
+      
+<div
+  className={`
+    absolute z-20
+    w-[min(260px,calc(100%-24px))]
+    p-[14px_16px_16px]
+    bg-[rgba(242,240,230,0.78)]
+    backdrop-blur-xl
+    border border-white/40
+    text-[#111]
+    shadow-[0_10px_30px_rgba(0,0,0,0.3)]
+    pointer-events-none
+    opacity-0
+    transition-[opacity,transform] duration-250 ease-out
+    ${
+      activeFigure
+        ? "opacity-100"
+        : ""
+    }
+  `}
   style={
     activeFigure
       ? {
           left: `${notePos.left}px`,
           top: `${notePos.top}px`,
           transform:
-            notePos.side === "left"
+            isMobile
               ? "rotate(-1deg)"
-              : "rotate(1deg)",
+              : notePos.side === "left"
+              ? "rotate(2deg)"
+              : "rotate(-2deg)",
         }
       : undefined
   }
 >
-        {activeFigure && (
-          <>
-            <span className="inline-block font-['Space_Mono',monospace] text-[10px] tracking-[0.12em] uppercase bg-[#111] text-[#d4ff3f] px-1.5 py-0.5 mb-2">
-              Зона парку
-            </span>
-            <h4 className="m-0 mb-1.5 font-['Anton','Arial_Narrow',sans-serif] text-[22px] max-[720px]:text-[18px] leading-none uppercase">
-              {activeFigure.title}
-            </h4>
-            <p className="m-0 text-[13px] max-[720px]:text-[12px] leading-[1.4]">
-              {activeFigure.note}
-            </p>
-          </>
-        )}
-      </div>
+  {activeFigure && (
+    <>
+      <span className="inline-block font-['Space_Mono',monospace] text-[10px] tracking-[0.12em] uppercase bg-[#111] text-[#d4ff3f] px-1.5 py-0.5 mb-2">
+        Зона парку
+      </span>
+
+      <h4 className="m-0 mb-1.5 font-['Anton','Arial_Narrow',sans-serif] text-[22px] max-[720px]:text-[18px] leading-none uppercase">
+        {activeFigure.title}
+      </h4>
+
+      <p className="m-0 text-[13px] max-[720px]:text-[12px] leading-[1.4]">
+        {activeFigure.note}
+      </p>
+    </>
+  )}
+</div>
+
+
     </div>
   );
 }
