@@ -1953,10 +1953,18 @@ function Hero() {
       </video>
       <div className="absolute inset-0  from-black/35 via-black/15 to-black/85" />
       <div className="relative z-[2] text-center px-6">
-       <span className="stamp hero-reveal inline-block rotate-[-6deg] border-3 px-3 py-1 font-futura text-xs font-bold uppercase tracking-widest">
+       {/* <span className="stamp hero-reveal inline-block rotate-[-6deg] border-3 px-3 py-1 font-futura text-xs font-bold uppercase tracking-widest">
             Йде будівництво
-            </span>
-        <h1 className="hero-title text- font-[futura bold text-[clamp(48px,11vw,148px)] leading-[0.9] tracking-[0.01em]  m-0 overflow-hidden">
+            </span> */}
+
+            <span className="stamp hero-reveal inline-block rotate-[-6deg] p-[3px] font-futura text-xs font-bold uppercase tracking-widest
+  bg-[repeating-linear-gradient(135deg,#facc15_0px,#facc15_7px,#171717_7px,#171717_14px)]
+  shadow-[2px_3px_0_rgba(0,0,0,0.25)]">
+  <span className="block bg-yellow-400/90 px-3 py-1 text-black">
+    Йде будівництво
+  </span>
+</span>
+        <h1 className="hero-title text-[rgba(112, 110, 110, 0.82)] font-[futura bold text-[clamp(48px,11vw,148px)] leading-[0.9] tracking-[0.01em]  m-0 overflow-hidden">
           {"SKATEPARK".split("").map((ch, i) => (
             <span key={i} className="inline-block overflow-hidden">
               {ch}
@@ -1970,7 +1978,7 @@ function Hero() {
         </p>
       </div>
       <div className="hero-scroll absolute bottom-8 left-1/2 -translate-x-1/2 z-[2] flex flex-col items-center gap-2 font-mono text-[11px] tracking-[0.14em] uppercase text-[#f2f0e6]">
-        <span>i</span>
+        <span>info </span>
         <div className="w-px h-8 bg-[#d4ff3f] animate-[scrollpulse_1.6s_ease-in-out_infinite]" />
       </div>
     </section>
