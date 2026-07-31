@@ -1948,7 +1948,7 @@ function Hero() {
         playsInline
         poster={BG_PHOTO_1}
       >
-        <source src={HERO_VIDEO_MOBILE} media="(max-width: 720px)" type="video/mp4" />
+        <source src={HERO_VIDEO_MOBILE}  type="video/mp4" />
         <source src={HERO_VIDEO_DESKTOP} type="video/mp4" />
       </video>
       <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/15 to-black/85" />
