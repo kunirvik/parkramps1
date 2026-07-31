@@ -1964,14 +1964,14 @@ function Hero() {
     Йде будівництво
   </span>
 </span>
-        <h1 className="hero-title text-[rgba(239, 220, 48, 0.86)] font-[futura bold text-[clamp(48px,11vw,148px)] leading-[0.9] tracking-[0.01em]  m-0 overflow-hidden">
+        <h1 className="hero-title text-[rgba(239, 220, 48, 0.86)] font-furura font-bold font-[text-[clamp(48px,11vw,148px)] leading-[0.9] tracking-[0.01em]  m-0 overflow-hidden">
           {"SKATEPARK".split("").map((ch, i) => (
             <span key={i} className="inline-block overflow-hidden">
               {ch}
             </span>
           ))}
         </h1>
-        <p className="hero-sub mt-[18px] font-mono text-[clamp(13px,1.6vw,16px)] tracking-[0.04em] [rgba(223, 48, 239, 0.86)] uppercase">
+        <p className="hero-sub mt-[18px] text-[rgba(223, 48, 239, 0.86)] font-futura text-[clamp(13px,1.6vw,16px)] tracking-[0.04em]  uppercase">
           Перший критий скейтпарк на правому березі Києва. Зелена лінія.
           <br />
           1000 м² для катання будь-якого рівня, у будь-яку погоду.
