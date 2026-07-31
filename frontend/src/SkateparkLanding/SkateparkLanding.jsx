@@ -1905,7 +1905,7 @@ function Header() {
       {/* Забудовник / проєктувальники */}
       <div className="header-logo flex items-center h-9 max-[720px]:h-[26px]">
         {LOGO_BUILDER ? (
-          <img src={LOGO_BUILDER} alt="Забудовник" className="h-full w-auto object-contain [filter:brightness(0)_invert(1)]" />
+          <img src={LOGO_BUILDER} alt="Забудовник" className="h-full w-auto object-contain" />
         ) : (
           <span className="font-mono text-[10px] max-[720px]:text-[8px] tracking-[0.06em] uppercase text-[#f2f0e6]/65 border border-dashed border-[#f2f0e6]/40 px-2.5 py-2 max-[720px]:px-[7px] max-[720px]:py-1.5 whitespace-nowrap">
             ЛОГО БУДІВЕЛЬНИКА
