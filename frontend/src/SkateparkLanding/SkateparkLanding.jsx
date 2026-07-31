@@ -1802,7 +1802,7 @@ const BG_PHOTO_3 =
 // Логотипи шапки — поставь свои файлы (SVG/PNG с прозрачным фоном)
 const LOGO_BUILDER = "https://res.cloudinary.com/dbx6muxub/image/upload/v1785509136/volt_wvh3zg.png"; // логотип забудовника/проєктувальників
 const LOGO_PARTNER_1 =
-  "https://res.cloudinary.com/dbx6muxub/image/upload/v1785326790/%D0%BF%D0%B0%D1%80%D0%BA_%D1%80%D1%8D%D0%BC%D0%BF%D1%81_%D0%B8%D0%BD%D0%B2%D0%B5%D1%80%D1%8111_fag6kp.png"; // логотип школи роллердрому №1
+  "https://res.cloudinary.com/dbx6muxub/image/upload/v1785513844/%D0%BF%D0%B0%D1%80%D0%BA_%D1%80%D1%8D%D0%BC%D0%BF%D1%81_%D0%B1%D0%B5%D0%BB%D1%8B%D0%B9_i1whzt.png"; // логотип школи роллердрому №1
 // const LOGO_PARTNER_2 = null; // логотип школи роллердрому №2
 
 const GALLERY_ITEMS = [
