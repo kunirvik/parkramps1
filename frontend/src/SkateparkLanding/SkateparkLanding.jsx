@@ -1964,7 +1964,7 @@ function Hero() {
     Йде будівництво
   </span>
 </span>
-        <h1 className="hero-title text-[#3D8759] font-futura font-bold text-[clamp(48px,11vw,148px)] leading-[0.9] tracking-[0.01em]  m-0 overflow-hidden">
+        <h1 className="hero-title text-[#DBDB27] font-futura font-bold text-[clamp(48px,11vw,148px)] leading-[0.9] tracking-[0.01em]  m-0 overflow-hidden">
           {"SKATEPARK".split("").map((ch, i) => (
             <span key={i} className="inline-block overflow-hidden">
               {ch}
