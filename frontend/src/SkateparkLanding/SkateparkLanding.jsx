@@ -1919,7 +1919,7 @@ function Header() {
           {LOGO_PARTNER_1 ? (
             <img src={LOGO_PARTNER_1} alt="Школа роллердрому" className="h-full w-auto object-contain " />
           ) : (
-            <span className="font-mono text-[10px] max-[720px]:text-[8px] tracking-[0.06em] uppercase text-[#f2f0e6]/65 border border-dashed border-[#f2f0e6]/40 px-2.5 py-2 max-[720px]:px-[7px] max-[720px]:py-1.5 whitespace-nowrap">
+            <span className="font-mono text-[10px] max-[720px]:text-[8px] tracking-[0.06em] uppercase text-[rgba(9, 8, 0, 0.85)] border border-dashed border-[#f2f0e6]/40 px-2.5 py-2 max-[720px]:px-[7px] max-[720px]:py-1.5 whitespace-nowrap">
               ЛОГО ШКОЛИ 1
             </span>
           )}
@@ -1964,7 +1964,7 @@ function Hero() {
     Йде будівництво
   </span>
 </span>
-        <h1 className="hero-title text-[rgba(239, 220, 48, 0.86)] font-futura font-bold text-[clamp(48px,11vw,148px)] leading-[0.9] tracking-[0.01em]  m-0 overflow-hidden">
+        <h1 className="hero-title text-[rgba(39, 201, 120, 0.97)] font-futura font-bold text-[clamp(48px,11vw,148px)] leading-[0.9] tracking-[0.01em]  m-0 overflow-hidden">
           {"SKATEPARK".split("").map((ch, i) => (
             <span key={i} className="inline-block overflow-hidden">
               {ch}
