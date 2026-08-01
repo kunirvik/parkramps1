@@ -1960,9 +1960,9 @@ function Hero() {
 
 <span className="stamp hero-reveal inline-block rotate-[-6deg]">
   <img
-    src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785603120/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._19_10_46_nxv1ik.png"
+    src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785601959/photo_2026-08-01_19-24-11_zhmkcu.png"
     alt="Йде будівництво"
-    className="w-[clamp(100px,5vw,200px)] h-auto"
+    className="w-[clamp(150px,10vw,300px)] grayscale h-auto"
   />
 </span>
 
@@ -1977,7 +1977,7 @@ function Hero() {
       
 <h1 className="hero-title m-0 overflow-hidden">
   <img
-    src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785600683/logo_rj5cmm.png"
+    src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785603120/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._19_10_46_nxv1ik.png"
     alt="SKATEPARK"
     className="w-[clamp(180px,300vw,500px)] h-auto mx-auto "
   />
@@ -1988,7 +1988,7 @@ function Hero() {
   <img
     src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785603136/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._19_44_01_vdh7y4.png"
     alt="Опис скейтпарку"
-    className="w-[clamp(260px,60vw,700px)] h-auto object-contain"
+    className="w-[clamp(260px,60vw,700px)] grayscale-[70%] opacity-75 h-auto object-contain"
   />
 </div>
 
