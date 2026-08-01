@@ -1960,7 +1960,7 @@ function Hero() {
 
 <span className="stamp hero-reveal inline-block rotate-[-6deg]">
   <img
-    src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785601959/photo_2026-08-01_19-24-11_zhmkcu.png"
+    src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785603120/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._19_10_46_nxv1ik.png"
     alt="Йде будівництво"
     className="w-[clamp(100px,5vw,200px)] h-auto"
   />
@@ -1979,17 +1979,28 @@ function Hero() {
   <img
     src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785600683/logo_rj5cmm.png"
     alt="SKATEPARK"
-    className="w-[clamp(180px,300vw,500px)] h-auto mx-auto grayscale"
+    className="w-[clamp(180px,300vw,500px)] h-auto mx-auto "
   />
 </h1>
 
 
+<div className="hero-sub mt-[18px] flex justify-center">
+  <img
+    src="/images/sub-text.png"
+    alt="Опис скейтпарку"
+    className="w-[clamp(260px,60vw,700px)] h-auto object-contain"
+  />
+</div>
+
+{/*  
         <p className="hero-sub mt-[18px] text-[rgba(6, 6, 6, 0.69)] font-futura font-bold text-[clamp(13px,1.6vw,16px)] tracking-[0.04em]  uppercase">
           Критий екстримкомплекс на правому березі Києва. Зелена лінія.
           <br />
           1000 м² бетонного покриття для катання будь-якого рівня, у будь-яку погоду.
-        </p>
+        </p> */}
       </div>
+
+
       <div className="hero-scroll absolute bottom-8 left-1/2 -translate-x-1/2 z-[2] flex flex-col items-center gap-2 font-mono text-[11px] tracking-[0.14em] uppercase text-[#f2f0e6]">
         <span>info </span>
         <div className="w-px h-8 bg-[#d4ff3f] animate-[scrollpulse_1.6s_ease-in-out_infinite]" />
