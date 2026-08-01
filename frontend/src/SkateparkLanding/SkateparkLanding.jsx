@@ -1962,7 +1962,7 @@ function Hero() {
   <img
     src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785601959/photo_2026-08-01_19-24-11_zhmkcu.png"
     alt="Йде будівництво"
-    className="w-[clamp(20px,3vw,30px)] h-auto"
+    className="w-[clamp(50px,5vw,100px)] h-auto"
   />
 </span>
 
@@ -1979,7 +1979,7 @@ function Hero() {
   <img
     src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785600683/logo_rj5cmm.png"
     alt="SKATEPARK"
-    className="w-[clamp(280px,70vw,1000px)] h-auto mx-auto grayscale"
+    className="w-[clamp(180px,300vw,500px)] h-auto mx-auto grayscale"
   />
 </h1>
 
