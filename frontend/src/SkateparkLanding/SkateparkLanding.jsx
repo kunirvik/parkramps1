@@ -1986,7 +1986,7 @@ function Hero() {
 
 <div className="hero-sub mt-[18px] flex justify-center">
   <img
-    src="/images/sub-text.png"
+    src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785603136/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._19_44_01_vdh7y4.png"
     alt="Опис скейтпарку"
     className="w-[clamp(260px,60vw,700px)] h-auto object-contain"
   />
