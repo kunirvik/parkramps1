@@ -1958,6 +1958,14 @@ function Hero() {
             </span> */}
 
 
+<span className="stamp hero-reveal inline-block rotate-[-6deg]">
+  <img
+    src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785601959/photo_2026-08-01_19-24-11_zhmkcu.png"
+    alt="Йде будівництво"
+    className="w-[clamp(120px,18vw,220px)] h-auto"
+  />
+</span>
+
 
         {/* <h1 className="hero-title  font-futura font-bold text-[clamp(48px,11vw,148px)] leading-[0.9] tracking-[0.01em]  m-0 overflow-hidden">
           {"SKATEPARK".split("").map((ch, i) => (
@@ -1971,7 +1979,7 @@ function Hero() {
   <img
     src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785600683/logo_rj5cmm.png"
     alt="SKATEPARK"
-    className="w-[clamp(280px,70vw,1000px)] h-auto mx-auto"
+    className="w-[clamp(280px,70vw,1000px)] h-auto mx-auto filter brightness-0 invert"
   />
 </h1>
 
