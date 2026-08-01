@@ -1988,7 +1988,7 @@ function Hero() {
   <img
     src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785603136/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._19_44_01_vdh7y4.png"
     alt="Опис скейтпарку"
-    className="w-[clamp(260px,60vw,700px)] grayscale-[30%] opacity-95 h-auto object-contain"
+    className="w-[clamp(160px,40vw,400px)] grayscale-[30%] opacity-95 h-auto object-contain"
   />
 </div>
 
