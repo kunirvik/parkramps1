@@ -2568,13 +2568,13 @@ function Hero() {
 
 <div className="hero-sub mt-[18px] flex justify-center">
   <img
-    src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785603136/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._19_44_01_vdh7y4.png"
+    src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785607686/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._21_07_29_mb1lu3.png"
     alt="Опис скейтпарку"
-    className="w-[clamp(160px,40vw,400px)] grayscale-[30%] opacity-95 h-auto object-contain"
+    className="w-[clamp(160px,40vw,400px)]  h-auto object-contain"
   />
 </div>
 
-{/*  
+{/*  grayscale-[30%] opacity-95
         <p className="hero-sub mt-[18px] text-[rgba(6, 6, 6, 0.69)] font-futura font-bold text-[clamp(13px,1.6vw,16px)] tracking-[0.04em]  uppercase">
           Критий екстримкомплекс на правому березі Києва. Зелена лінія.
           <br />
