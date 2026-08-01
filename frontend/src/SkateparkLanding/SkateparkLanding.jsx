@@ -1957,20 +1957,25 @@ function Hero() {
             Йде будівництво
             </span> */}
 
-            <span className="stamp hero-reveal inline-block rotate-[-6deg] p-[3px] font-futura text-xs font-bold uppercase tracking-widest
-  bg-[repeating-linear-gradient(135deg,#facc15_0px,#facc15_7px,#171717_7px,#171717_14px)]
-  shadow-[2px_3px_0_rgba(0,0,0,0.25)]">
-  <span className="block bg-yellow-400/90 px-3 py-1 text-black">
-    Йде будівництво
-  </span>
-</span>
-        <h1 className="hero-title  font-futura font-bold text-[clamp(48px,11vw,148px)] leading-[0.9] tracking-[0.01em]  m-0 overflow-hidden">
+
+ */}
+        {/* <h1 className="hero-title  font-futura font-bold text-[clamp(48px,11vw,148px)] leading-[0.9] tracking-[0.01em]  m-0 overflow-hidden">
           {"SKATEPARK".split("").map((ch, i) => (
             <span key={i} className="inline-block  text-[rgba(6, 6, 6, 0.69)] overflow-hidden">
               {ch}
             </span>
           ))}
-        </h1>
+        </h1> */}
+        ```jsx
+<h1 className="hero-title m-0 overflow-hidden">
+  <img
+    src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785600683/logo_rj5cmm.png"
+    alt="SKATEPARK"
+    className="w-[clamp(280px,70vw,1000px)] h-auto mx-auto"
+  />
+</h1>
+```
+
         <p className="hero-sub mt-[18px] text-[rgba(6, 6, 6, 0.69)] font-futura font-bold text-[clamp(13px,1.6vw,16px)] tracking-[0.04em]  uppercase">
           Критий екстримкомплекс на правому березі Києва. Зелена лінія.
           <br />
