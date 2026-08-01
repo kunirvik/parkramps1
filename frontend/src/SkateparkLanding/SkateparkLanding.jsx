@@ -2525,7 +2525,7 @@ function Hero() {
           чтобы браузер один раз выбрал первый попавшийся <source> и застрял на нём. */}
       <video
         key={heroVideoSrc}
-        className="absolute inset-0 w-full h-full object-contain"
+        className="absolute inset-0 w-full h-full object-cover"
         autoPlay
         muted
         loop
@@ -2533,7 +2533,7 @@ function Hero() {
         poster={BG_PHOTO_1}
         src={heroVideoSrc}
       />
-      <div className="absolute inset-0  from-black/35 via-black/15 to-black/85" />
+      <div className="absolute inset-0  bg-gradient-to-b from-black/35 via-black/15 to-black/85" />
       <div className="relative z-[2] text-center px-6">
        {/* <span className="stamp hero-reveal inline-block rotate-[-6deg] border-3 px-3 py-1 font-futura text-xs font-bold uppercase tracking-widest">
             Йде будівництво
