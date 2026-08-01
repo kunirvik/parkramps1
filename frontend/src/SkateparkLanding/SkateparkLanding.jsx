@@ -1964,17 +1964,17 @@ function Hero() {
     Йде будівництво
   </span>
 </span>
-        <h1 className="hero-title text-[#DBDB27] font-futura font-bold text-[clamp(48px,11vw,148px)] leading-[0.9] tracking-[0.01em]  m-0 overflow-hidden">
+        <h1 className="hero-title  font-futura font-bold text-[clamp(48px,11vw,148px)] leading-[0.9] tracking-[0.01em]  m-0 overflow-hidden">
           {"SKATEPARK".split("").map((ch, i) => (
-            <span key={i} className="inline-block overflow-hidden">
+            <span key={i} className="inline-block  text-[rgba(6, 6, 6, 0.69)] overflow-hidden">
               {ch}
             </span>
           ))}
         </h1>
-        <p className="hero-sub mt-[18px] text-[rgba(223,48,239,0.86)] font-futura font-light text-[clamp(13px,1.6vw,16px)] tracking-[0.04em]  uppercase">
-          Перший критий скейтпарк на правому березі Києва. Зелена лінія.
+        <p className="hero-sub mt-[18px] text-[rgba(6, 6, 6, 0.69)] font-futura font-bold text-[clamp(13px,1.6vw,16px)] tracking-[0.04em]  uppercase">
+          Критий екстримкомплекс на правому березі Києва. Зелена лінія.
           <br />
-          1000 м² для катання будь-якого рівня, у будь-яку погоду.
+          1000 м² бетонного покриття для катання будь-якого рівня, у будь-яку погоду.
         </p>
       </div>
       <div className="hero-scroll absolute bottom-8 left-1/2 -translate-x-1/2 z-[2] flex flex-col items-center gap-2 font-mono text-[11px] tracking-[0.14em] uppercase text-[#f2f0e6]">
@@ -2018,7 +2018,7 @@ function InfoStats() {
             data-rotate="-1"
           >
             <span className="font-['Anton','Arial_Narrow',sans-serif] text-[34px] text-[#d4ff3f] leading-none">1000 м²</span>
-            <span className="text-[12.5px] leading-[1.4] text-[#f2f0e6] opacity-85">загальна площа парку</span>
+            <span className="text-[12.5px] leading-[1.4] text-[#f2f0e6] opacity-85">загальна площа локації</span>
           </div>
           <div
             className="reveal bg-[#0d0d0d] border border-[#d4ff3f]/35 px-[22px] py-5 w-[220px] flex flex-col gap-2"
@@ -2034,7 +2034,7 @@ function InfoStats() {
             data-rotate="-1.5"
           >
             <span className="font-['Anton','Arial_Narrow',sans-serif] text-[34px] text-[#d4ff3f] leading-none">525 м²</span>
-            <span className="text-[12.5px] leading-[1.4] text-[#f2f0e6] opacity-85">флету для роллердрому</span>
+            <span className="text-[12.5px] leading-[1.4] text-[#f2f0e6] opacity-85">флету для тренувань</span>
           </div>
         </div>
 
