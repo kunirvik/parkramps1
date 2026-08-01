@@ -2704,10 +2704,18 @@ function Hero() {
       </div>
 
 
-      <div className="hero-scroll absolute bottom-8 left-1/2 -translate-x-1/2 z-[2] flex flex-col items-center gap-2 font-mono text-[11px] tracking-[0.14em] uppercase text-[#f2f0e6]">
+      {/* <div className="hero-scroll absolute bottom-8 left-1/2 -translate-x-1/2 z-[2] flex flex-col items-center gap-2 font-mono text-[11px] tracking-[0.14em] uppercase text-[#f2f0e6]">
         <span>info </span>
         <div className="w-px h-8 bg-[#d4ff3f] animate-[scrollpulse_1.6s_ease-in-out_infinite]" />
-      </div>
+      </div> */}
+<div className="hero-scroll absolute bottom-8 left-1/2 -translate-x-1/2 z-[2] flex flex-col items-center gap-2 font-mono text-[11px] tracking-[0.14em] uppercase ">
+  <img
+    src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785611591/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._22_12_58_tjii8z.png"
+    alt="info"
+    className="w-[clamp(100px,40vw,200px)]  h-auto object-contain contrast-[150%]  "
+  />
+</div> 
+      
     </section>
   );
 }
