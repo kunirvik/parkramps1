@@ -1940,7 +1940,7 @@ function Hero() {
 
   return (
     <section className="relative h-[100svh] w-full overflow-hidden flex flex-col items-center justify-center">
-      <video
+      {/* <video
         className="absolute inset-0 w-full h-full object-contain"
         autoPlay
         muted
@@ -1950,7 +1950,18 @@ function Hero() {
       >
         <source src={HERO_VIDEO_MOBILE}  type="video/mp4" />
         <source src={HERO_VIDEO_DESKTOP} type="video/mp4" />
-      </video>
+      </video> */}
+
+        <source
+    src={HERO_VIDEO_MOBILE}
+    type="video/mp4"
+    media="(max-width: 720px)"
+  />
+  <source
+    src={HERO_VIDEO_DESKTOP}
+    type="video/mp4"
+    media="(min-width: 721px)"
+  />
       <div className="absolute inset-0  from-black/35 via-black/15 to-black/85" />
       <div className="relative z-[2] text-center px-6">
        {/* <span className="stamp hero-reveal inline-block rotate-[-6deg] border-3 px-3 py-1 font-futura text-xs font-bold uppercase tracking-widest">
