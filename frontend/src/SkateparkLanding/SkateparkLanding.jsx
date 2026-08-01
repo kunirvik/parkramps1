@@ -1917,7 +1917,7 @@ function Header() {
       <div className="flex gap-3.5 max-[720px]:gap-2">
         <div className="header-logo flex items-center h-9 max-[720px]:h-[26px]">
           {LOGO_PARTNER_1 ? (
-            <img src={LOGO_PARTNER_1} alt="Школа роллердрому" className="h-full w-auto object-contain " />
+            <img src={LOGO_PARTNER_1} alt="Школа роллердрому" className="h-full w-auto object-contain brightness-0 " />
           ) : (
             <span className="font-mono text-[10px] max-[720px]:text-[8px] tracking-[0.06em] uppercase text-[rgba(9, 8, 0, 0.85)] border border-dashed border-[#f2f0e6]/40 px-2.5 py-2 max-[720px]:px-[7px] max-[720px]:py-1.5 whitespace-nowrap">
               ЛОГО ШКОЛИ 1
@@ -1962,7 +1962,7 @@ function Hero() {
   <img
     src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785601959/photo_2026-08-01_19-24-11_zhmkcu.png"
     alt="Йде будівництво"
-    className="w-[clamp(50px,5vw,100px)] h-auto"
+    className="w-[clamp(100px,5vw,200px)] h-auto"
   />
 </span>
 
