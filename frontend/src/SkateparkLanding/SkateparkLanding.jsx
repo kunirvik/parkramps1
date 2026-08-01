@@ -2477,7 +2477,7 @@ function Header() {
           <img
             src={LOGO_BUILDER}
             alt="Забудовник"
-            className="header-logo-img h-full w-auto object-contain"
+            className="header-logo-img h-full w-auto object-contain brightness-0"
           />
         ) : (
           <span className="header-logo-img font-mono text-[10px] max-[720px]:text-[8px] tracking-[0.06em] uppercase text-[rgba(9, 8, 0, 0.85)] border border-dashed border-[#f2f0e6]/40 px-2.5 py-2 max-[720px]:px-[7px] max-[720px]:py-1.5 whitespace-nowrap">
