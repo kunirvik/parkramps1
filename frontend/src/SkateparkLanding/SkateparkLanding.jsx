@@ -1941,7 +1941,7 @@ function Hero() {
   return (
     <section className="relative h-[100svh] w-full overflow-hidden flex flex-col items-center justify-center">
       <video
-        className="absolute inset-0 w-full h-full object-cover [filter:saturate(1.15)_contrast(1.05)]"
+        className="absolute inset-0 w-full h-full object-cover "
         autoPlay
         muted
         loop
@@ -1988,7 +1988,7 @@ function Hero() {
   <img
     src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785603136/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._19_44_01_vdh7y4.png"
     alt="Опис скейтпарку"
-    className="w-[clamp(260px,60vw,700px)] grayscale-[70%] opacity-75 h-auto object-contain"
+    className="w-[clamp(260px,60vw,700px)] grayscale-[30%] opacity-95 h-auto object-contain"
   />
 </div>
 
