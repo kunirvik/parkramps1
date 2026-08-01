@@ -2307,6 +2307,7 @@
 //     </div>
 //   );
 // }
+
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -2350,7 +2351,7 @@ const CATEGORIES = [
     id: "partners",
     tag: "01 — Партнери",
     title: "Партнерам",
-    text: "Розміщення рекламної продукції на локації.ю  Брендування фігур, логотипи, банери, партнерські програми — розглядаємо всі варіанти співпраці. Підтримуй спорт і вкладайся у майбутнє.",
+    text: "Розміщення рекламної продукції на локації. Брендування фігур, логотипи, банери, партнерські програми — розглядаємо всі варіанти співпраці. Підтримуй спорт і вкладайся у майбутнє.",
     contacts: [{ label: "Пошта", value: "partners@voltpark.ua", href: "mailto:partners@voltpark.ua" }],
   },
   {
@@ -2381,6 +2382,128 @@ const CATEGORIES = [
     ],
   },
 ];
+
+// ─── Розгорнуті варіанти співпраці для кожної категорії ─────────────
+// Це "продажна" частина: показуємо клієнту весь спектр можливостей,
+// навіть той, про який він сам ще не подумав.
+const COLLAB_DETAILS = {
+  partners: [
+    {
+      title: "Брендування фігур",
+      desc: "Назва рампи, квотера чи флайбоксу на честь бренду — райдери катають фігуру, яка щодня на слуху.",
+    },
+    {
+      title: "Банери та вивіски",
+      desc: "Розміщення на паркані, воротах, трибуні для глядачів — постійна візуальна присутність на локації.",
+    },
+    {
+      title: "Титульне спонсорство змагань",
+      desc: "«Кубок від [бренд]» — лого на афішах, стрімах, кубках і медалях учасників.",
+    },
+    {
+      title: "Промо та семплінг наживо",
+      desc: "Роздача продукції, дегустації, тест-драйви прямо на локації в дні з високою відвідуваністю.",
+    },
+    {
+      title: "Digital-присутність",
+      desc: "Лого на сайті, в сторіз, у відеорелізах будівництва та в анонсах відкриття.",
+    },
+    {
+      title: "Спільний мерч",
+      desc: "Лімітована колаборація — худі, кепки, наліпки з подвійним брендуванням.",
+    },
+    {
+      title: "Point-of-sale на території",
+      desc: "Кав'ярня, вендинг, шоурум-куточок бренду — постійна точка контакту з аудиторією парку.",
+    },
+    {
+      title: "Корпоративні івенти",
+      desc: "Оренда парку під тімбілдинг, презентацію продукту чи закриту вечірку бренду.",
+    },
+  ],
+  coaches: [
+    {
+      title: "Слоти під тренування",
+      desc: "Окремий час у розкладі, зарезервований під приватні або групові заняття — без перетину з вільним катанням.",
+    },
+    {
+      title: "Власна школа на нашій базі",
+      desc: "Веди школу під своїм брендом — ми даємо простір, покриття і трафік відвідувачів.",
+    },
+    {
+      title: "Комісія із залучених учнів",
+      desc: "Приводиш свою клієнтську базу — отримуєш відсоток з абонементів та разових візитів.",
+    },
+    {
+      title: "Суддівство та методична підтримка",
+      desc: "Участь в організації змагань, оцінюванні райдерів, розробці програм для новачків.",
+    },
+    {
+      title: "Контент-співпраця",
+      desc: "Зйомка навчальних відео та розборів трюків для соцмереж парку — з посиланням на твій акаунт.",
+    },
+    {
+      title: "Виїзні кемпи та збори",
+      desc: "Оренда всього парку під інтенсив на кілька днів — для твоєї команди чи запрошених учнів.",
+    },
+    {
+      title: "Менторська програма",
+      desc: "Курування юніорської секції парку на постійній основі, з окремою домовленістю про оплату.",
+    },
+  ],
+  riders: [
+    {
+      title: "Тестове катання до відкриття",
+      desc: "Проходки 1+1 за відео — розіграємо серед перших підписників і відберемо найцікавіші заявки.",
+    },
+    {
+      title: "Райдер-команда парку",
+      desc: "Амбасадорство: знижки, мерч, пріоритетний доступ на івенти в обмін на присутність у нашому контенті.",
+    },
+    {
+      title: "Промо-зйомки",
+      desc: "Знімаємось разом для роликів парку — твої трюки, твоє ім'я в титрах, охоплення нашої аудиторії.",
+    },
+    {
+      title: "Джем-сесії та внутрішні змагання",
+      desc: "Регулярні неформальні збори по фігурах — від флету до боксів, з призами від партнерів.",
+    },
+    {
+      title: "Програма постійного райдера",
+      desc: "Накопичувальні знижки та бонуси за регулярні відвідування й активність у комʼюніті.",
+    },
+    {
+      title: "Закриті події комʼюніті",
+      desc: "Запрошення на приватні катання, прев'ю нових фігур і зустрічі з райдерами-гостями.",
+    },
+  ],
+  media: [
+    {
+      title: "Ексклюзивні репортажі з будівництва",
+      desc: "Доступ на майданчик до офіційного відкриття — зйомка процесу, якого ще ніхто не бачив.",
+    },
+    {
+      title: "Прес-тур на відкритті",
+      desc: "Персональний огляд парку з командою проєкту, коментарі архітекторів і будівельників.",
+    },
+    {
+      title: "Акредитація на заходи",
+      desc: "Постійний доступ на змагання та джеми для зйомки й репортажів на постійній основі.",
+    },
+    {
+      title: "Спільний контент",
+      desc: "Reels/TikTok прямо на локації — обладнання, освітлення і фігури парку в твоєму розпорядженні.",
+    },
+    {
+      title: "Партнерські публікації та розіграші",
+      desc: "Спільні проходки чи мерч для розіграшу серед твоєї аудиторії.",
+    },
+    {
+      title: "Інтерв'ю зсередини",
+      desc: "Розмови із засновниками, тренерами й райдерами парку — готовий інфопривід під будь-який формат.",
+    },
+  ],
+};
 
 // ─── Токены (raw-значения в Tailwind arbitrary classes) ──
 // ink: #0d0d0d · paper: #f2f0e6 · volt: #d4ff3f · concrete: #8a8a83 · tape: #ff3d1a
@@ -2467,26 +2590,18 @@ function Header() {
   return (
     <header
       ref={ref}
-      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-[18px] max-[720px]:px-4 max-[720px]:py-3.5"
+      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-[18px] max-[720px]:px-4 max-[720px]:py-3.5 bg-gradient-to-b from-black/55 to-transparent"
     >
-      {/* Забудовник / проєктувальники.
-          Технiка автоконтрасту: картинку перетворюємо на суцільний білий силует
-          (brightness-0 invert), а mix-blend-difference "вираховує" її з того,
-          що реально намальовано під заголовком у цю мить. Різниця білого і
-          світлого фону — темна (лого читається чорним), різниця білого і
-          темного фону — світла (лого читається білим). Працює само по собі,
-          без JS і без визначення кольору вручну — тому в header більше немає
-          власного напівпрозорого фону/градієнта: він би "забруднював" те, з
-          чим порівнюється лого, і контраст перестав би бути точним. */}
+      {/* Забудовник / проєктувальники */}
       <div className="header-logo flex items-center h-9 max-[720px]:h-[26px]">
         {LOGO_BUILDER ? (
           <img
             src={LOGO_BUILDER}
             alt="Забудовник"
-            className="header-logo-img h-full w-auto object-contain brightness-0 invert mix-blend-difference"
+            className="header-logo-img h-full w-auto object-contain grayscale-[100%]"
           />
         ) : (
-          <span className="header-logo-img font-mono text-[10px] max-[720px]:text-[8px] tracking-[0.06em] uppercase text-white mix-blend-difference border border-dashed border-white/40 px-2.5 py-2 max-[720px]:px-[7px] max-[720px]:py-1.5 whitespace-nowrap">
+          <span className="header-logo-img font-mono text-[10px] max-[720px]:text-[8px] tracking-[0.06em] uppercase text-[rgba(9, 8, 0, 0.85)] border border-dashed border-[#f2f0e6]/40 px-2.5 py-2 max-[720px]:px-[7px] max-[720px]:py-1.5 whitespace-nowrap">
             ЛОГО БУДІВЕЛЬНИКА
           </span>
         )}
@@ -2499,10 +2614,10 @@ function Header() {
             <img
               src={LOGO_PARTNER_1}
               alt="Школа роллердрому"
-              className="header-logo-img h-full w-auto object-contain brightness-0 invert mix-blend-difference"
+              className="header-logo-img h-full w-auto object-contain brightness-100 invert"
             />
           ) : (
-            <span className="header-logo-img font-mono text-[10px] max-[720px]:text-[8px] tracking-[0.06em] uppercase text-white mix-blend-difference border border-dashed border-white/40 px-2.5 py-2 max-[720px]:px-[7px] max-[720px]:py-1.5 whitespace-nowrap">
+            <span className="header-logo-img font-mono text-[10px] max-[720px]:text-[8px] tracking-[0.06em] uppercase text-[rgba(9, 8, 0, 0.85)] border border-dashed border-[#f2f0e6]/40 px-2.5 py-2 max-[720px]:px-[7px] max-[720px]:py-1.5 whitespace-nowrap">
               ЛОГО ШКОЛИ 1
             </span>
           )}
@@ -2531,7 +2646,7 @@ function Hero() {
           чтобы браузер один раз выбрал первый попавшийся <source> и застрял на нём. */}
       <video
         key={heroVideoSrc}
-        className="absolute inset-0 w-full h-full object-contain"
+        className="absolute inset-0 w-full h-full object-cover"
         autoPlay
         muted
         loop
@@ -2539,7 +2654,7 @@ function Hero() {
         poster={BG_PHOTO_1}
         src={heroVideoSrc}
       />
-      <div className="absolute inset-0  from-black/35 via-black/15 to-black/85" />
+      <div className="absolute inset-0  bg-gradient-to-b from-black/35 via-black/15 to-black/85" />
       <div className="relative z-[2] text-center px-6">
        {/* <span className="stamp hero-reveal inline-block rotate-[-6deg] border-3 px-3 py-1 font-futura text-xs font-bold uppercase tracking-widest">
             Йде будівництво
@@ -2574,25 +2689,25 @@ function Hero() {
 
 <div className="hero-sub mt-[18px] flex justify-center">
   <img
-    src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785603136/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._19_44_01_vdh7y4.png"
+    src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785611236/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._22_05_19_xyntd7.png"
     alt="Опис скейтпарку"
-    className="w-[clamp(160px,40vw,400px)] grayscale-[30%] opacity-95 h-auto object-contain"
+    className="w-[clamp(160px,40vw,400px)]  h-auto object-contain contrast-[150%]  "
   />
 </div>
 
-{/*  
-        <p className="hero-sub mt-[18px] text-[rgba(6, 6, 6, 0.69)] font-futura font-bold text-[clamp(13px,1.6vw,16px)] tracking-[0.04em]  uppercase">
-          Критий екстримкомплекс на правому березі Києва. Зелена лінія.
-          <br />
-          1000 м² бетонного покриття для катання будь-якого рівня, у будь-яку погоду.
-        </p> */}
+
       </div>
 
 
-      <div className="hero-scroll absolute bottom-8 left-1/2 -translate-x-1/2 z-[2] flex flex-col items-center gap-2 font-mono text-[11px] tracking-[0.14em] uppercase text-[#f2f0e6]">
-        <span>info </span>
-        <div className="w-px h-8 bg-[#d4ff3f] animate-[scrollpulse_1.6s_ease-in-out_infinite]" />
-      </div>
+   
+<div className="hero-scroll absolute bottom-8 left-1/2 -translate-x-1/2 z-[2] flex flex-col items-center gap-2 font-mono text-[11px] tracking-[0.14em] uppercase ">
+  <img
+    src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785611591/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._22_12_58_tjii8z.png"
+    alt="info"
+    className="w-[clamp(100px,40vw,200px)]  h-auto object-contain contrast-[150%]  "
+  />
+</div> 
+      
     </section>
   );
 }
@@ -2744,8 +2859,116 @@ function Gallery() {
   );
 }
 
+// ─── Панель "Детальніше" — виїжджає збоку при кліку на категорію ────
+function CollabPanel({ category, onClose }) {
+  const isOpen = Boolean(category);
+
+  // Esc закриває панель
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [isOpen, onClose]);
+
+  const items = category ? COLLAB_DETAILS[category.id] ?? [] : [];
+
+  return (
+    <div
+      className={`fixed inset-0 z-[100] ${isOpen ? "" : "pointer-events-none"}`}
+      aria-hidden={!isOpen}
+    >
+      {/* Затемнення */}
+      <div
+        onClick={onClose}
+        className={`absolute inset-0 bg-black/75 backdrop-blur-[2px] transition-opacity duration-400 ${
+          isOpen ? "opacity-100" : "opacity-0"
+        }`}
+      />
+
+      {/* Панель */}
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={category ? category.title : undefined}
+        className={`absolute top-0 right-0 h-full w-full max-w-[520px] bg-[#f2f0e6] text-[#0d0d0d] overflow-y-auto shadow-[-20px_0_50px_rgba(0,0,0,0.5)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        {category && (
+          <div className="px-7 py-9 max-[720px]:px-5 max-[720px]:py-7">
+            <div className="flex items-start justify-between gap-4 mb-6">
+              <span className="inline-block font-mono text-[11px] tracking-[0.1em] uppercase text-[#ff3d1a] border border-[#ff3d1a] px-2.5 py-1">
+                {category.tag}
+              </span>
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Закрити"
+                className="shrink-0 w-9 h-9 flex items-center justify-center border border-[#0d0d0d]/25 font-mono text-sm cursor-pointer bg-transparent transition-colors duration-200 hover:bg-[#0d0d0d] hover:text-[#f2f0e6]"
+              >
+                ✕
+              </button>
+            </div>
+
+            <h3 className="font-['Anton','Arial_Narrow',sans-serif] text-[clamp(30px,5vw,42px)] uppercase leading-[0.95] m-0 mb-3.5">
+              {category.title}
+            </h3>
+            <p className="text-sm leading-[1.6] m-0 mb-8 text-[#0d0d0d]/80">{category.text}</p>
+
+            <span className="block font-mono text-[11px] tracking-[0.12em] uppercase text-[#0d0d0d]/50 mb-4 border-t border-dashed border-[#0d0d0d]/25 pt-5">
+              Формати співпраці
+            </span>
+
+            <ul className="list-none m-0 p-0 flex flex-col gap-4 mb-8">
+              {items.map((item, i) => (
+                <li key={item.title} className="flex gap-3.5 items-start">
+                  <span className="shrink-0 mt-0.5 font-mono text-[11px] text-[#0d0d0d] bg-[#d4ff3f] w-6 h-6 flex items-center justify-center rotate-[-4deg]">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div>
+                    <p className="font-semibold text-[14.5px] leading-[1.3] m-0 mb-1">{item.title}</p>
+                    <p className="text-[13.5px] leading-[1.5] m-0 text-[#0d0d0d]/75">{item.desc}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            <div className="border-t border-dashed border-[#0d0d0d]/25 pt-5">
+              <span className="block font-mono text-[11px] tracking-[0.12em] uppercase text-[#0d0d0d]/50 mb-3">
+                Зв'язатись
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {category.contacts.map((c) => (
+                  <a
+                    key={c.label}
+                    href={c.href}
+                    className="flex flex-col gap-0.5 no-underline text-[#0d0d0d] bg-[#0d0d0d]/[0.06] px-3 py-2 min-w-[140px] transition-colors duration-200 hover:bg-[#d4ff3f] focus-visible:bg-[#d4ff3f]"
+                  >
+                    <span className="font-mono text-[10px] tracking-[0.08em] uppercase opacity-60">{c.label}</span>
+                    <span className="font-mono text-[13px]">{c.value}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function Categories() {
   const ref = useScrollReveal(".reveal", { stagger: 0.1 });
+  const [openId, setOpenId] = useState(null);
+  const activeCategory = CATEGORIES.find((c) => c.id === openId) ?? null;
+
   return (
     <section
       ref={ref}
@@ -2763,9 +2986,11 @@ function Categories() {
       </div>
       <div className="relative z-[2] max-w-[1080px] mx-auto grid grid-cols-2 max-[720px]:grid-cols-1 gap-5">
         {CATEGORIES.map((cat) => (
-          <div
+          <button
             key={cat.id}
-            className="relative bg-[#f2f0e6] text-[#0d0d0d] pt-[30px] px-6 pb-6 shadow-[0_12px_26px_rgba(0,0,0,0.4)]"
+            type="button"
+            onClick={() => setOpenId(cat.id)}
+            className="reveal relative text-left bg-[#f2f0e6] text-[#0d0d0d] pt-[30px] px-6 pb-6 shadow-[0_12px_26px_rgba(0,0,0,0.4)] cursor-pointer border-none transition-transform duration-200 hover:-translate-y-1 focus-visible:-translate-y-1"
             data-rotate={cat.id === "riders" ? "-1.5" : "1"}
           >
             <span className="absolute -top-4 right-5 z-[2] flex items-center justify-center w-[52px] h-[52px] rounded-full bg-[#d4ff3f] text-[#0d0d0d] font-mono text-[11px] tracking-[0.02em] text-center rotate-[-8deg] shadow-[0_6px_14px_rgba(0,0,0,0.35)]">
@@ -2776,21 +3001,15 @@ function Categories() {
             </span>
             <h3 className="font-['Anton','Arial_Narrow',sans-serif] text-2xl uppercase m-0 mb-2.5">{cat.title}</h3>
             <p className="text-sm leading-[1.5] m-0 mb-[18px]">{cat.text}</p>
-            <div className="flex flex-wrap gap-2 border-t border-dashed border-[#0d0d0d]/25 pt-3.5">
-              {cat.contacts.map((c) => (
-                <a
-                  key={c.label}
-                  href={c.href}
-                  className="flex flex-col gap-0.5 no-underline text-[#0d0d0d] bg-[#0d0d0d]/[0.06] px-3 py-2 min-w-[130px] transition-colors duration-200 hover:bg-[#d4ff3f] focus-visible:bg-[#d4ff3f]"
-                >
-                  <span className="font-mono text-[10px] tracking-[0.08em] uppercase opacity-60">{c.label}</span>
-                  <span className="font-mono text-[13px]">{c.value}</span>
-                </a>
-              ))}
-            </div>
-          </div>
+            <span className="inline-flex items-center gap-1.5 font-mono text-[11px] tracking-[0.08em] uppercase border-t border-dashed border-[#0d0d0d]/25 pt-3.5 w-full">
+              Детальніше про співпрацю
+              <span aria-hidden="true">→</span>
+            </span>
+          </button>
         ))}
       </div>
+
+      <CollabPanel category={activeCategory} onClose={() => setOpenId(null)} />
     </section>
   );
 }
@@ -2895,812 +3114,6 @@ export default function LandingPage() {
     </div>
   );
 }
-// import { useEffect, useRef, useState } from "react";
-// import gsap from "gsap";
-// import { ScrollTrigger } from "gsap/ScrollTrigger";
-// import Skatepark from "../Skatepark/Skatepark";
-// import CursorImageTrail from "../CursorImageTrail/CursorImageTrail";
-// gsap.registerPlugin(ScrollTrigger);
-
-// // ─── Демо-контент — замени на свои реальные фото/видео/логотипы ─────
-// const HERO_VIDEO_DESKTOP =
-//   "https://res.cloudinary.com/dbx6muxub/video/upload/v1785325905/volt_park_visual2kwide_sjelea.mp4"; // placeholder
-// const HERO_VIDEO_MOBILE =
-//   "https://res.cloudinary.com/dbx6muxub/video/upload/v1785509291/volt_park_visual5_ymogb5.mp4"; // вертикальное видео для телефона — замени на своё
-
-// const BG_PHOTO_1 =
-//   "https://res.cloudinary.com/dbx6muxub/image/upload/v1785509360/volt_park_visual4_zzykei.jpg";
-// const BG_PHOTO_2 =
-//   "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual8_2_zwmivn.jpg";
-// const BG_PHOTO_3 =
-//   "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual6_2_gl0q0k.jpg";
-
-// // Логотипи шапки — поставь свои файлы (SVG/PNG с прозрачным фоном)
-// const LOGO_BUILDER = "https://res.cloudinary.com/dbx6muxub/image/upload/v1785509136/volt_wvh3zg.png"; // логотип забудовника/проєктувальників
-// const LOGO_PARTNER_1 =
-//   "https://res.cloudinary.com/dbx6muxub/image/upload/v1785513844/%D0%BF%D0%B0%D1%80%D0%BA_%D1%80%D1%8D%D0%BC%D0%BF%D1%81_%D0%B1%D0%B5%D0%BB%D1%8B%D0%B9_i1whzt.png"; // логотип школи роллердрому №1
-// // const LOGO_PARTNER_2 = null; // логотип школи роллердрому №2
-
-// const GALLERY_ITEMS = [
-//   { type: "video", src: "https://res.cloudinary.com/dbx6muxub/video/upload/v1785510085/video_2026-07-31_18-01-11_svtroo.mp4", caption: "Рампа. " },
-//   { type: "video", src: "https://res.cloudinary.com/dbx6muxub/video/upload/v1785513025/video_2026-07-31_18-49-25_ehskzk.mp4", caption: "Квотер 3. Каркас" },
-//   { type: "video", src: "https://res.cloudinary.com/dbx6muxub/video/upload/v1785514190/video_2026-07-29_11-16-20_ljxjkk.mp4", caption: "Ролл-ін. Перші метри" },
-//   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual9_2_jrzknr.jpg", caption: "Бенк. " },
-//   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual13_z6hp1g.jpg", caption: "Бокс. Монтаж" },
-//   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/voltparkvisual4_rrbeeo.jpg", caption: "Джампбокс. Розмітка" },
-//   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/voltparkvisual3_kpnpkk.jpg", caption: "Флайбокс. " },
-//   { type: "image", src: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/volt_park_visual5_2_w899yo.jpg", caption: "Волкано. " },
-// ];
-
-// // Контакти під кожен вид співпраці — постав свої реальні
-// const CATEGORIES = [
-//   {
-//     id: "partners",
-//     tag: "01 — Партнери",
-//     title: "Партнерам",
-//     text: "Розміщення рекламної продукції на локації. Брендування фігур, логотипи, банери, партнерські програми — розглядаємо всі варіанти співпраці. Підтримуй спорт і вкладайся у майбутнє.",
-//     contacts: [{ label: "Пошта", value: "partners@voltpark.ua", href: "mailto:partners@voltpark.ua" }],
-//   },
-//   {
-//     id: "coaches",
-//     tag: "02 — Тренери",
-//     title: "Тренерам",
-//     text: "Працюй зі своєю клієнтською базою або розвивай кар'єру з нуля. Тренуй на нашій локації — для тренерів відведено окремий час, щоб не перетинатись із катаючими.",
-//     contacts: [
-//       { label: "Telegram", value: "@voltpark_coach", href: "https://t.me/voltpark_coach" },
-//       { label: "Тел.", value: "+38 (0__) ___-__-__", href: "tel:+380000000000" },
-//     ],
-//   },
-//   {
-//     id: "riders",
-//     tag: "03 — Райдери",
-//     title: "Райдерам",
-//     text: "Парк відкриється для всіх, але в тебе є шанс потрапити на тестове катання раніше за інших. Розіграємо кілька проходок 1+1 та відберемо учасників за відео.",
-//     contacts: [{ label: "Заявка", value: "форма нижче ↓", href: "#cta" }],
-//   },
-//   {
-//     id: "media",
-//     tag: "04 — Медіа",
-//     title: "Блогерам і медіа",
-//     text: "Можливо, саме тобі випаде унікальна нагода завітати до нас на етапах будівництва та зняти свій репортаж з майданчика.",
-//     contacts: [
-//       { label: "Telegram", value: "@voltpark_media", href: "https://t.me/voltpark_media" },
-//       { label: "Пошта", value: "media@voltpark.ua", href: "mailto:media@voltpark.ua" },
-//     ],
-//   },
-// ];
-
-// // ─── Розгорнуті варіанти співпраці для кожної категорії ─────────────
-// // Це "продажна" частина: показуємо клієнту весь спектр можливостей,
-// // навіть той, про який він сам ще не подумав.
-// const COLLAB_DETAILS = {
-//   partners: [
-//     {
-//       title: "Брендування фігур",
-//       desc: "Назва рампи, квотера чи флайбоксу на честь бренду — райдери катають фігуру, яка щодня на слуху.",
-//     },
-//     {
-//       title: "Банери та вивіски",
-//       desc: "Розміщення на паркані, воротах, трибуні для глядачів — постійна візуальна присутність на локації.",
-//     },
-//     {
-//       title: "Титульне спонсорство змагань",
-//       desc: "«Кубок від [бренд]» — лого на афішах, стрімах, кубках і медалях учасників.",
-//     },
-//     {
-//       title: "Промо та семплінг наживо",
-//       desc: "Роздача продукції, дегустації, тест-драйви прямо на локації в дні з високою відвідуваністю.",
-//     },
-//     {
-//       title: "Digital-присутність",
-//       desc: "Лого на сайті, в сторіз, у відеорелізах будівництва та в анонсах відкриття.",
-//     },
-//     {
-//       title: "Спільний мерч",
-//       desc: "Лімітована колаборація — худі, кепки, наліпки з подвійним брендуванням.",
-//     },
-//     {
-//       title: "Point-of-sale на території",
-//       desc: "Кав'ярня, вендинг, шоурум-куточок бренду — постійна точка контакту з аудиторією парку.",
-//     },
-//     {
-//       title: "Корпоративні івенти",
-//       desc: "Оренда парку під тімбілдинг, презентацію продукту чи закриту вечірку бренду.",
-//     },
-//   ],
-//   coaches: [
-//     {
-//       title: "Слоти під тренування",
-//       desc: "Окремий час у розкладі, зарезервований під приватні або групові заняття — без перетину з вільним катанням.",
-//     },
-//     {
-//       title: "Власна школа на нашій базі",
-//       desc: "Веди школу під своїм брендом — ми даємо простір, покриття і трафік відвідувачів.",
-//     },
-//     {
-//       title: "Комісія із залучених учнів",
-//       desc: "Приводиш свою клієнтську базу — отримуєш відсоток з абонементів та разових візитів.",
-//     },
-//     {
-//       title: "Суддівство та методична підтримка",
-//       desc: "Участь в організації змагань, оцінюванні райдерів, розробці програм для новачків.",
-//     },
-//     {
-//       title: "Контент-співпраця",
-//       desc: "Зйомка навчальних відео та розборів трюків для соцмереж парку — з посиланням на твій акаунт.",
-//     },
-//     {
-//       title: "Виїзні кемпи та збори",
-//       desc: "Оренда всього парку під інтенсив на кілька днів — для твоєї команди чи запрошених учнів.",
-//     },
-//     {
-//       title: "Менторська програма",
-//       desc: "Курування юніорської секції парку на постійній основі, з окремою домовленістю про оплату.",
-//     },
-//   ],
-//   riders: [
-//     {
-//       title: "Тестове катання до відкриття",
-//       desc: "Проходки 1+1 за відео — розіграємо серед перших підписників і відберемо найцікавіші заявки.",
-//     },
-//     {
-//       title: "Райдер-команда парку",
-//       desc: "Амбасадорство: знижки, мерч, пріоритетний доступ на івенти в обмін на присутність у нашому контенті.",
-//     },
-//     {
-//       title: "Промо-зйомки",
-//       desc: "Знімаємось разом для роликів парку — твої трюки, твоє ім'я в титрах, охоплення нашої аудиторії.",
-//     },
-//     {
-//       title: "Джем-сесії та внутрішні змагання",
-//       desc: "Регулярні неформальні збори по фігурах — від флету до боксів, з призами від партнерів.",
-//     },
-//     {
-//       title: "Програма постійного райдера",
-//       desc: "Накопичувальні знижки та бонуси за регулярні відвідування й активність у комʼюніті.",
-//     },
-//     {
-//       title: "Закриті події комʼюніті",
-//       desc: "Запрошення на приватні катання, прев'ю нових фігур і зустрічі з райдерами-гостями.",
-//     },
-//   ],
-//   media: [
-//     {
-//       title: "Ексклюзивні репортажі з будівництва",
-//       desc: "Доступ на майданчик до офіційного відкриття — зйомка процесу, якого ще ніхто не бачив.",
-//     },
-//     {
-//       title: "Прес-тур на відкритті",
-//       desc: "Персональний огляд парку з командою проєкту, коментарі архітекторів і будівельників.",
-//     },
-//     {
-//       title: "Акредитація на заходи",
-//       desc: "Постійний доступ на змагання та джеми для зйомки й репортажів на постійній основі.",
-//     },
-//     {
-//       title: "Спільний контент",
-//       desc: "Reels/TikTok прямо на локації — обладнання, освітлення і фігури парку в твоєму розпорядженні.",
-//     },
-//     {
-//       title: "Партнерські публікації та розіграші",
-//       desc: "Спільні проходки чи мерч для розіграшу серед твоєї аудиторії.",
-//     },
-//     {
-//       title: "Інтерв'ю зсередини",
-//       desc: "Розмови із засновниками, тренерами й райдерами парку — готовий інфопривід під будь-який формат.",
-//     },
-//   ],
-// };
-
-// // ─── Токены (raw-значения в Tailwind arbitrary classes) ──
-// // ink: #0d0d0d · paper: #f2f0e6 · volt: #d4ff3f · concrete: #8a8a83 · tape: #ff3d1a
-// // display: Anton · body: Inter · mono: Space Mono
-
-// // Общий брейкпоинт "мобильный" — совпадает с max-[720px] в остальной верстке.
-// const MOBILE_QUERY = "(max-width: 720px)";
-
-// function useIsMobile() {
-//   const [isMobile, setIsMobile] = useState(
-//     () => typeof window !== "undefined" && window.matchMedia(MOBILE_QUERY).matches
-//   );
-
-//   useEffect(() => {
-//     if (typeof window === "undefined") return;
-//     const mq = window.matchMedia(MOBILE_QUERY);
-//     const onChange = (e) => setIsMobile(e.matches);
-//     mq.addEventListener("change", onChange);
-//     return () => mq.removeEventListener("change", onChange);
-//   }, []);
-
-//   return isMobile;
-// }
-
-// function useScrollReveal(selector, options = {}) {
-//   const ref = useRef(null);
-//   useEffect(() => {
-//     const root = ref.current;
-//     if (!root) return;
-//     const els = root.querySelectorAll(selector);
-//     const ctx = gsap.context(() => {
-//       els.forEach((el, i) => {
-//         gsap.fromTo(
-//           el,
-//           { opacity: 0, y: 40, rotate: options.rotateFrom ?? 0 },
-//           {
-//             opacity: 1,
-//             y: 0,
-//             rotate: el.dataset.rotate ? Number(el.dataset.rotate) : 0,
-//             duration: 0.8,
-//             ease: "power3.out",
-//             delay: i * (options.stagger ?? 0.08),
-//             scrollTrigger: { trigger: el, start: "top 85%" },
-//           }
-//         );
-//       });
-//     }, root);
-//     return () => ctx.revert();
-//   }, [selector, options.stagger, options.rotateFrom]);
-//   return ref;
-// }
-
-// function Header() {
-//   const ref = useRef(null);
-
-//   useEffect(() => {
-//     // Заход шапки — как и было.
-//     gsap.fromTo(
-//       ".header-logo",
-//       { opacity: 0, y: -18 },
-//       { opacity: 1, y: 0, duration: 0.7, stagger: 0.12, delay: 0.3, ease: "power2.out" }
-//     );
-
-//     // Логотипи стартуют крупнее (акцент на бренде на входе) и плавно
-//     // "усаживаются" до обычного размера при первых ~220px скролла.
-//     gsap.set(".header-logo-img", { scale: 1.45, transformOrigin: "center" });
-//     const scaleTween = gsap.to(".header-logo-img", {
-//       scale: 1,
-//       ease: "none",
-//       scrollTrigger: {
-//         trigger: document.body,
-//         start: "top top",
-//         end: "+=220",
-//         scrub: true,
-//       },
-//     });
-
-//     return () => {
-//       scaleTween.scrollTrigger?.kill();
-//       scaleTween.kill();
-//     };
-//   }, []);
-
-//   return (
-//     <header
-//       ref={ref}
-//       className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-[18px] max-[720px]:px-4 max-[720px]:py-3.5 bg-gradient-to-b from-black/55 to-transparent"
-//     >
-//       {/* Забудовник / проєктувальники */}
-//       <div className="header-logo flex items-center h-9 max-[720px]:h-[26px]">
-//         {LOGO_BUILDER ? (
-//           <img
-//             src={LOGO_BUILDER}
-//             alt="Забудовник"
-//             className="header-logo-img h-full w-auto object-contain grayscale-[100%]"
-//           />
-//         ) : (
-//           <span className="header-logo-img font-mono text-[10px] max-[720px]:text-[8px] tracking-[0.06em] uppercase text-[rgba(9, 8, 0, 0.85)] border border-dashed border-[#f2f0e6]/40 px-2.5 py-2 max-[720px]:px-[7px] max-[720px]:py-1.5 whitespace-nowrap">
-//             ЛОГО БУДІВЕЛЬНИКА
-//           </span>
-//         )}
-//       </div>
-
-//       {/* Школа роллердрому, яка звернулась за реалізацією — 2 логотипи */}
-//       <div className="flex gap-3.5 max-[720px]:gap-2">
-//         <div className="header-logo flex items-center h-9 max-[720px]:h-[26px]">
-//           {LOGO_PARTNER_1 ? (
-//             <img
-//               src={LOGO_PARTNER_1}
-//               alt="Школа роллердрому"
-//               className="header-logo-img h-full w-auto object-contain brightness-100 invert"
-//             />
-//           ) : (
-//             <span className="header-logo-img font-mono text-[10px] max-[720px]:text-[8px] tracking-[0.06em] uppercase text-[rgba(9, 8, 0, 0.85)] border border-dashed border-[#f2f0e6]/40 px-2.5 py-2 max-[720px]:px-[7px] max-[720px]:py-1.5 whitespace-nowrap">
-//               ЛОГО ШКОЛИ 1
-//             </span>
-//           )}
-//         </div>
-//       </div>
-//     </header>
-//   );
-// }
-
-// function Hero() {
-//   const isMobile = useIsMobile();
-//   const heroVideoSrc = isMobile ? HERO_VIDEO_MOBILE : HERO_VIDEO_DESKTOP;
-
-//   useEffect(() => {
-//     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-//     tl.fromTo(".hero-eyebrow", { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.5 })
-//       .fromTo(".hero-title span", { yPercent: 120 }, { yPercent: 0, duration: 1, stagger: 0.05 }, "-=0.1")
-//       .fromTo(".hero-sub", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6 }, "-=0.5")
-//       .fromTo(".hero-scroll", { opacity: 0 }, { opacity: 1, duration: 0.6 }, "-=0.3");
-//   }, []);
-
-//   return (
-//     <section className="relative h-[100svh] w-full overflow-hidden flex flex-col items-center justify-center">
-//       {/* key={heroVideoSrc} — при переключении брейкпоинта (ресайз/поворот экрана)
-//           видео-тег пересоздаётся и грузит именно нужный источник, вместо того
-//           чтобы браузер один раз выбрал первый попавшийся <source> и застрял на нём. */}
-//       <video
-//         key={heroVideoSrc}
-//         className="absolute inset-0 w-full h-full object-cover"
-//         autoPlay
-//         muted
-//         loop
-//         playsInline
-//         poster={BG_PHOTO_1}
-//         src={heroVideoSrc}
-//       />
-//       <div className="absolute inset-0  bg-gradient-to-b from-black/35 via-black/15 to-black/85" />
-//       <div className="relative z-[2] text-center px-6">
-//        {/* <span className="stamp hero-reveal inline-block rotate-[-6deg] border-3 px-3 py-1 font-futura text-xs font-bold uppercase tracking-widest">
-//             Йде будівництво
-//             </span> */}
-
-
-// <span className="stamp hero-reveal inline-block rotate-[-6deg]">
-//   <img
-//     src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785601959/photo_2026-08-01_19-24-11_zhmkcu.png"
-//     alt="Йде будівництво"
-//     className="w-[clamp(150px,10vw,300px)] grayscale h-auto"
-//   />
-// </span>
-
-
-//         {/* <h1 className="hero-title  font-futura font-bold text-[clamp(48px,11vw,148px)] leading-[0.9] tracking-[0.01em]  m-0 overflow-hidden">
-//           {"SKATEPARK".split("").map((ch, i) => (
-//             <span key={i} className="inline-block  text-[rgba(6, 6, 6, 0.69)] overflow-hidden">
-//               {ch}
-//             </span>
-//           ))}
-//         </h1> */}
-      
-// <h1 className="hero-title m-0 overflow-hidden">
-//   <img
-//     src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785603120/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._19_10_46_nxv1ik.png"
-//     alt="SKATEPARK"
-//     className="w-[clamp(180px,300vw,500px)] h-auto mx-auto "
-//   />
-// </h1>
-
-
-// <div className="hero-sub mt-[18px] flex justify-center">
-//   <img
-//     src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785611236/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._22_05_19_xyntd7.png"
-//     alt="Опис скейтпарку"
-//     className="w-[clamp(160px,40vw,400px)]  h-auto object-contain contrast-[150%]  "
-//   />
-// </div>
-
-
-//       </div>
-
-
-   
-// <div className="hero-scroll absolute bottom-8 left-1/2 -translate-x-1/2 z-[2] flex flex-col items-center gap-2 font-mono text-[11px] tracking-[0.14em] uppercase ">
-//   <img
-//     src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785611591/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._22_12_58_tjii8z.png"
-//     alt="info"
-//     className="w-[clamp(100px,40vw,200px)]  h-auto object-contain contrast-[150%]  "
-//   />
-// </div> 
-      
-//     </section>
-//   );
-// }
-
-// function InfoStats() {
-//   const ref = useScrollReveal(".reveal");
-//   return (
-//     <section
-//       ref={ref}
-//       className="relative py-25 px-5 bg-cover bg-center"
-//       style={{ backgroundImage: `url(${BG_PHOTO_2})` }}
-//     >
-//       <div className="absolute inset-0 bg-black/55" />
-//       <div className="relative z-[2] max-w-[980px] mx-auto flex flex-col gap-8 items-center">
-//         <div
-//           className="reveal relative bg-[#f2f0e6] text-[#0d0d0d] px-7 py-6 max-w-[560px] shadow-[0_14px_30px_rgba(0,0,0,0.4)] before:content-[''] before:absolute before:-top-3.5 before:left-1/2 before:-translate-x-1/2 before:rotate-[-3deg] before:w-[110px] before:h-7 before:bg-[#d4ff3f]/85 before:shadow-[0_2px_6px_rgba(0,0,0,0.3)]"
-//           data-rotate="-2"
-//         >
-//           <span className="inline-block font-mono text-[11px] uppercase tracking-[0.12em] bg-[#0d0d0d] text-[#d4ff3f] px-2 py-0.5 mb-2.5">
-//             Нарешті
-//           </span>
-//           <h2 className="font-['Anton','Arial_Narrow',sans-serif] text-[clamp(24px,4vw,36px)] leading-[1.05] uppercase m-0 mb-2.5">
-//             Критий парк у Києві
-//           </h2>
-//           <p className="text-sm leading-[1.55] m-0">
-//             Правий берег. Зелена лінія. Будівництво відбудеться у кілька етапів — з ухилом
-//             в ейр, для тренувань у квотерах і на флайбоксах. Лінії розраховані на всі рівні
-//             катання.
-//           </p>
-//         </div>
-
-//         <div className="flex flex-wrap gap-[18px] justify-center">
-//           <div
-//             className="reveal bg-[#0d0d0d] border border-[#d4ff3f]/35 px-[22px] py-5 w-[220px] flex flex-col gap-2"
-//             data-rotate="-1"
-//           >
-//             <span className="font-['Anton','Arial_Narrow',sans-serif] text-[34px] text-[#d4ff3f] leading-none">1000 м²</span>
-//             <span className="text-[12.5px] leading-[1.4] text-[#f2f0e6] opacity-85">загальна площа локації</span>
-//           </div>
-//           <div
-//             className="reveal bg-[#0d0d0d] border border-[#d4ff3f]/35 px-[22px] py-5 w-[220px] flex flex-col gap-2"
-//             data-rotate="1.5"
-//           >
-//             <span className="font-['Anton','Arial_Narrow',sans-serif] text-[34px] text-[#d4ff3f] leading-none">475 м²</span>
-//             <span className="text-[12.5px] leading-[1.4] text-[#f2f0e6] opacity-85">
-//               крита ейр-зона: вертвол, флайбокси, спайн, квотери різних розмірів, рампа
-//             </span>
-//           </div>
-//           <div
-//             className="reveal bg-[#0d0d0d] border border-[#d4ff3f]/35 px-[22px] py-5 w-[220px] flex flex-col gap-2"
-//             data-rotate="-1.5"
-//           >
-//             <span className="font-['Anton','Arial_Narrow',sans-serif] text-[34px] text-[#d4ff3f] leading-none">525 м²</span>
-//             <span className="text-[12.5px] leading-[1.4] text-[#f2f0e6] opacity-85">флету для тренувань</span>
-//           </div>
-//         </div>
-
-//         <div
-//           className="reveal bg-[#f2f0e6] text-[#0d0d0d] px-7 py-6 max-w-[560px] shadow-[0_14px_30px_rgba(0,0,0,0.4)] [clip-path:polygon(1%_3%,98%_0%,100%_98%,2%_100%)]"
-//           data-rotate="1"
-//         >
-//           <p className="text-sm leading-[1.55] m-0">
-//             Різноманітність фігур дозволяє новачку поступово підіймати свій рівень, а про
-//             може поєднувати частини парку між собою. Парк поділений на кілька умовних зон —
-//             кожен знайде свою улюблену фігуру.
-//           </p>
-//         </div>
-//       </div>
-//     </section>
-//   );
-// }
-
-// function Gallery() {
-//   const trackRef = useRef(null);
-
-//   const scrollBy = (dir) => {
-//     const el = trackRef.current;
-//     if (!el) return;
-//     el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: "smooth" });
-//   };
-
-//   return (
-//     <section className="py-25 px-4 max-[720px]:px-4 bg-[#050505]">
-//       <div className="max-w-[640px] mx-auto mb-10 px-6 text-center relative z-[2]">
-//         <span className="inline-block font-mono text-[11px] tracking-[0.14em] uppercase text-[#d4ff3f] mb-2.5">
-//           Стрічка будівництва
-//         </span>
-//         <h2 className="font-['Anton','Arial_Narrow',sans-serif] text-[clamp(28px,5vw,48px)] leading-none m-0 mb-3 text-[#f2f0e6] uppercase">
-//           Слідкуй за процесом
-//         </h2>
-//         <p className="text-[15px] leading-[1.5] text-[#8a8a83] m-0">
-//           Сезон надворі закінчиться, але ми вже готуємо для вас дещо цікаве — фото і відео
-//           прямо з майданчика.
-//         </p>
-//       </div>
-//       <div
-//         ref={trackRef}
-//         className="flex gap-4 overflow-x-auto px-6 pb-5 [scroll-snap-type:x_mandatory] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-//       >
-//         {GALLERY_ITEMS.map((item, i) => (
-//           <div
-//             key={i}
-//             className="relative flex-none w-[min(78vw,320px)] aspect-[9/14] [scroll-snap-align:start] overflow-hidden bg-[#111] max-[720px]:w-[70vw]"
-//           >
-//             <span className="absolute top-3 left-3 z-[2] font-mono text-xs text-[#0d0d0d] bg-[#d4ff3f] px-[7px] py-0.5">
-//               {String(i + 1).padStart(2, "0")}
-//             </span>
-//             {item.type === "video" ? (
-//   <video
-//     src={item.src}
-//      autoPlay
-//     controls
-//     playsInline
-//     preload="metadata"
-//     className="w-full h-full object-cover block"
-//   />
-// ) : (
-//   <img
-//     src={item.src}
-//     alt={item.caption}
-//     loading="lazy"
-//     className="w-full h-full object-cover block"
-//   />
-// )}
-//             {/* <img src={item.src} alt={item.caption} loading="lazy" className="w-full h-full object-cover block" /> */}
-//             <span className="absolute left-0 right-0 bottom-0 z-[2] px-3 py-3.5 font-mono text-xs tracking-[0.02em] text-[#f2f0e6] bg-gradient-to-t from-black/85 to-transparent">
-//               {item.caption}
-//             </span>
-//           </div>
-//         ))}
-//       </div>
-//       <div className="flex gap-2.5 justify-center mt-2">
-//         <button
-//           aria-label="Назад"
-//           onClick={() => scrollBy(-1)}
-//           className="w-10 h-10 rounded-full border border-[#d4ff3f] bg-transparent text-[#d4ff3f] text-base cursor-pointer transition-colors duration-200 hover:bg-[#d4ff3f] hover:text-[#0d0d0d] focus-visible:bg-[#d4ff3f] focus-visible:text-[#0d0d0d]"
-//         >
-//           ←
-//         </button>
-//         <button
-//           aria-label="Вперед"
-//           onClick={() => scrollBy(1)}
-//           className="w-10 h-10 rounded-full border border-[#d4ff3f] bg-transparent text-[#d4ff3f] text-base cursor-pointer transition-colors duration-200 hover:bg-[#d4ff3f] hover:text-[#0d0d0d] focus-visible:bg-[#d4ff3f] focus-visible:text-[#0d0d0d]"
-//         >
-//           →
-//         </button>
-//       </div>
-//     </section>
-//   );
-// }
-
-// // ─── Панель "Детальніше" — виїжджає збоку при кліку на категорію ────
-// function CollabPanel({ category, onClose }) {
-//   const isOpen = Boolean(category);
-
-//   // Esc закриває панель
-//   useEffect(() => {
-//     if (!isOpen) return;
-//     const onKey = (e) => {
-//       if (e.key === "Escape") onClose();
-//     };
-//     window.addEventListener("keydown", onKey);
-//     document.body.style.overflow = "hidden";
-//     return () => {
-//       window.removeEventListener("keydown", onKey);
-//       document.body.style.overflow = "";
-//     };
-//   }, [isOpen, onClose]);
-
-//   const items = category ? COLLAB_DETAILS[category.id] ?? [] : [];
-
-//   return (
-//     <div
-//       className={`fixed inset-0 z-[100] ${isOpen ? "" : "pointer-events-none"}`}
-//       aria-hidden={!isOpen}
-//     >
-//       {/* Затемнення */}
-//       <div
-//         onClick={onClose}
-//         className={`absolute inset-0 bg-black/75 backdrop-blur-[2px] transition-opacity duration-400 ${
-//           isOpen ? "opacity-100" : "opacity-0"
-//         }`}
-//       />
-
-//       {/* Панель */}
-//       <div
-//         role="dialog"
-//         aria-modal="true"
-//         aria-label={category ? category.title : undefined}
-//         className={`absolute top-0 right-0 h-full w-full max-w-[520px] bg-[#f2f0e6] text-[#0d0d0d] overflow-y-auto shadow-[-20px_0_50px_rgba(0,0,0,0.5)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-//           isOpen ? "translate-x-0" : "translate-x-full"
-//         }`}
-//       >
-//         {category && (
-//           <div className="px-7 py-9 max-[720px]:px-5 max-[720px]:py-7">
-//             <div className="flex items-start justify-between gap-4 mb-6">
-//               <span className="inline-block font-mono text-[11px] tracking-[0.1em] uppercase text-[#ff3d1a] border border-[#ff3d1a] px-2.5 py-1">
-//                 {category.tag}
-//               </span>
-//               <button
-//                 type="button"
-//                 onClick={onClose}
-//                 aria-label="Закрити"
-//                 className="shrink-0 w-9 h-9 flex items-center justify-center border border-[#0d0d0d]/25 font-mono text-sm cursor-pointer bg-transparent transition-colors duration-200 hover:bg-[#0d0d0d] hover:text-[#f2f0e6]"
-//               >
-//                 ✕
-//               </button>
-//             </div>
-
-//             <h3 className="font-['Anton','Arial_Narrow',sans-serif] text-[clamp(30px,5vw,42px)] uppercase leading-[0.95] m-0 mb-3.5">
-//               {category.title}
-//             </h3>
-//             <p className="text-sm leading-[1.6] m-0 mb-8 text-[#0d0d0d]/80">{category.text}</p>
-
-//             <span className="block font-mono text-[11px] tracking-[0.12em] uppercase text-[#0d0d0d]/50 mb-4 border-t border-dashed border-[#0d0d0d]/25 pt-5">
-//               Формати співпраці
-//             </span>
-
-//             <ul className="list-none m-0 p-0 flex flex-col gap-4 mb-8">
-//               {items.map((item, i) => (
-//                 <li key={item.title} className="flex gap-3.5 items-start">
-//                   <span className="shrink-0 mt-0.5 font-mono text-[11px] text-[#0d0d0d] bg-[#d4ff3f] w-6 h-6 flex items-center justify-center rotate-[-4deg]">
-//                     {String(i + 1).padStart(2, "0")}
-//                   </span>
-//                   <div>
-//                     <p className="font-semibold text-[14.5px] leading-[1.3] m-0 mb-1">{item.title}</p>
-//                     <p className="text-[13.5px] leading-[1.5] m-0 text-[#0d0d0d]/75">{item.desc}</p>
-//                   </div>
-//                 </li>
-//               ))}
-//             </ul>
-
-//             <div className="border-t border-dashed border-[#0d0d0d]/25 pt-5">
-//               <span className="block font-mono text-[11px] tracking-[0.12em] uppercase text-[#0d0d0d]/50 mb-3">
-//                 Зв'язатись
-//               </span>
-//               <div className="flex flex-wrap gap-2">
-//                 {category.contacts.map((c) => (
-//                   <a
-//                     key={c.label}
-//                     href={c.href}
-//                     className="flex flex-col gap-0.5 no-underline text-[#0d0d0d] bg-[#0d0d0d]/[0.06] px-3 py-2 min-w-[140px] transition-colors duration-200 hover:bg-[#d4ff3f] focus-visible:bg-[#d4ff3f]"
-//                   >
-//                     <span className="font-mono text-[10px] tracking-[0.08em] uppercase opacity-60">{c.label}</span>
-//                     <span className="font-mono text-[13px]">{c.value}</span>
-//                   </a>
-//                 ))}
-//               </div>
-//             </div>
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// }
-
-// function Categories() {
-//   const ref = useScrollReveal(".reveal", { stagger: 0.1 });
-//   const [openId, setOpenId] = useState(null);
-//   const activeCategory = CATEGORIES.find((c) => c.id === openId) ?? null;
-
-//   return (
-//     <section
-//       ref={ref}
-//       className="relative py-25 px-5 bg-cover bg-center"
-//       style={{ backgroundImage: `url(${BG_PHOTO_3})` }}
-//     >
-//       <div className="absolute inset-0 bg-black/72" />
-//       <div className="max-w-[640px] mx-auto mb-10 px-6 text-center relative z-[2]">
-//         <span className="inline-block font-mono text-[11px] tracking-[0.14em] uppercase text-[#d4ff3f] mb-2.5">
-//           Співпраця
-//         </span>
-//         <h2 className="font-['Anton','Arial_Narrow',sans-serif] text-[clamp(28px,5vw,48px)] leading-none m-0 mb-3 text-[#f2f0e6] uppercase">
-//           Для кого цей парк
-//         </h2>
-//       </div>
-//       <div className="relative z-[2] max-w-[1080px] mx-auto grid grid-cols-2 max-[720px]:grid-cols-1 gap-5">
-//         {CATEGORIES.map((cat) => (
-//           <button
-//             key={cat.id}
-//             type="button"
-//             onClick={() => setOpenId(cat.id)}
-//             className="reveal relative text-left bg-[#f2f0e6] text-[#0d0d0d] pt-[30px] px-6 pb-6 shadow-[0_12px_26px_rgba(0,0,0,0.4)] cursor-pointer border-none transition-transform duration-200 hover:-translate-y-1 focus-visible:-translate-y-1"
-//             data-rotate={cat.id === "riders" ? "-1.5" : "1"}
-//           >
-//             <span className="absolute -top-4 right-5 z-[2] flex items-center justify-center w-[52px] h-[52px] rounded-full bg-[#d4ff3f] text-[#0d0d0d] font-mono text-[11px] tracking-[0.02em] text-center rotate-[-8deg] shadow-[0_6px_14px_rgba(0,0,0,0.35)]">
-//               {cat.tag.split(" — ")[0]}
-//             </span>
-//             <span className="inline-block font-mono text-[11px] tracking-[0.1em] uppercase text-[#ff3d1a] mb-2.5">
-//               {cat.tag}
-//             </span>
-//             <h3 className="font-['Anton','Arial_Narrow',sans-serif] text-2xl uppercase m-0 mb-2.5">{cat.title}</h3>
-//             <p className="text-sm leading-[1.5] m-0 mb-[18px]">{cat.text}</p>
-//             <span className="inline-flex items-center gap-1.5 font-mono text-[11px] tracking-[0.08em] uppercase border-t border-dashed border-[#0d0d0d]/25 pt-3.5 w-full">
-//               Детальніше про співпрацю
-//               <span aria-hidden="true">→</span>
-//             </span>
-//           </button>
-//         ))}
-//       </div>
-
-//       <CollabPanel category={activeCategory} onClose={() => setOpenId(null)} />
-//     </section>
-//   );
-// }
-
-// function CTA() {
-//   const [sent, setSent] = useState(false);
-
-//   const handleSubmit = (e) => {
-//     e.preventDefault();
-//     // TODO: подключить реальную отправку (API / Telegram-бот / форма)
-//     setSent(true);
-//   };
-
-//   return (
-//     <section id="cta" className="relative py-[120px] px-5 text-center bg-[#0d0d0d] overflow-hidden">
-//       <div className="absolute top-10 right-[6%] max-[720px]:top-5 max-[720px]:right-5 font-mono text-xs tracking-[0.1em] uppercase text-[#ff3d1a] border-2 border-[#ff3d1a] rounded-full w-24 h-24 max-[720px]:w-[76px] max-[720px]:h-[76px] max-[720px]:text-[10px] flex items-center justify-center text-center rotate-[-14deg] p-1.5">
-//         Місця обмежені
-//       </div>
-//       <div className="max-w-[560px] mx-auto relative z-[2]">
-//         <h2 className="font-['Anton','Arial_Narrow',sans-serif] text-[clamp(30px,5vw,48px)] uppercase m-0 mb-3.5 text-[#f2f0e6]">
-//           Запишись на тестове катання
-//         </h2>
-//         <p className="text-[#8a8a83] text-[15px] leading-[1.55] m-0 mb-8">
-//           Ще до відкриття — обмежена кількість місць. Community-партнери отримують проходки
-//           для медіа на етапі будівництва за домовленістю, плюс проходки на відкриття.
-//         </p>
-
-//         {sent ? (
-//           <p className="font-mono text-[#d4ff3f] text-[15px]">Дякуємо! Ми зв'яжемось із тобою найближчим часом.</p>
-//         ) : (
-//           <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
-//             <input
-//               type="text"
-//               placeholder="Ім'я"
-//               required
-//               className="bg-transparent border border-[#f2f0e6]/35 text-[#f2f0e6] px-4 py-3.5 text-sm placeholder:text-[#f2f0e6]/50"
-//             />
-//             <input
-//               type="tel"
-//               placeholder="Телефон або Telegram"
-//               required
-//               className="bg-transparent border border-[#f2f0e6]/35 text-[#f2f0e6] px-4 py-3.5 text-sm placeholder:text-[#f2f0e6]/50"
-//             />
-//             <select
-//               defaultValue=""
-//               className="bg-transparent border border-[#f2f0e6]/35 text-[#f2f0e6] px-4 py-3.5 text-sm"
-//             >
-//               <option value="" disabled>
-//                 Рівень катання
-//               </option>
-//               <option value="beginner">Новачок</option>
-//               <option value="middle">Середній</option>
-//               <option value="pro">Про</option>
-//             </select>
-//             <button
-//               type="submit"
-//               className="mt-2 bg-[#d4ff3f] text-[#0d0d0d] border-none px-5 py-[15px] font-mono text-[13px] tracking-[0.08em] uppercase cursor-pointer transition-transform duration-150 hover:-translate-y-0.5"
-//             >
-//               Залишити заявку
-//             </button>
-//           </form>
-//         )}
-//       </div>
-//     </section>
-//   );
-// }
-
-// function Footer() {
-//   return (
-//     <footer className="py-8 px-6 flex flex-wrap items-center justify-between gap-3 border-t border-[#f2f0e6]/15 font-mono text-xs tracking-[0.04em]">
-//       <span className="font-['Anton','Arial_Narrow',sans-serif] text-base tracking-[0.02em] text-[#f2f0e6]">
-//         VOLT SKATEPARK
-//       </span>
-//       <span className="text-[#f2f0e6]">Київ · Правий берег · Зелена лінія</span>
-//       <div className="flex gap-4">
-//         <a href="#cta" className="no-underline opacity-80 hover:opacity-100 hover:text-[#d4ff3f] text-[#f2f0e6]">
-//           Instagram
-//         </a>
-//         <a href="#cta" className="no-underline opacity-80 hover:opacity-100 hover:text-[#d4ff3f] text-[#f2f0e6]">
-//           Telegram
-//         </a>
-//       </div>
-//     </footer>
-//   );
-// }
-
-// export default function LandingPage() {
-//   return (
-//     <div className="bg-[#0d0d0d] text-[#f2f0e6] font-sans overflow-x-hidden motion-reduce:[&_*]:!duration-[0.001ms] motion-reduce:[&_*]:!animate-none">
-//       {/* трейл выключается автоматически внутри зон с data-cursor-trail="off" */}
-//       <CursorImageTrail />
-//       <Header />
-//       <Hero />
-//       <InfoStats />
-
-//       <Skatepark />
-
-//       <Gallery />
-//       <Categories />
-//       <CTA />
-//       <Footer />
-//     </div>
-//   );
-// }
 // import { useEffect, useRef, useState } from "react";
 // import gsap from "gsap";
 // import { ScrollTrigger } from "gsap/ScrollTrigger";
