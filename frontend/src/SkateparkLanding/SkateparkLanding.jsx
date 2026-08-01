@@ -1905,7 +1905,7 @@ function Header() {
       {/* Забудовник / проєктувальники */}
       <div className="header-logo flex items-center h-9 max-[720px]:h-[26px]">
         {LOGO_BUILDER ? (
-          <img src={LOGO_BUILDER} alt="Забудовник" className="h-full w-auto object-contain" />
+          <img src={LOGO_BUILDER} alt="Забудовник" className="h-full w-auto object-contain " />
         ) : (
           <span className="font-mono text-[10px] max-[720px]:text-[8px] tracking-[0.06em] uppercase text-[rgba(9, 8, 0, 0.85)] border border-dashed border-[#f2f0e6]/40 px-2.5 py-2 max-[720px]:px-[7px] max-[720px]:py-1.5 whitespace-nowrap">
             ЛОГО БУДІВЕЛЬНИКА
@@ -1962,7 +1962,7 @@ function Hero() {
   <img
     src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785601959/photo_2026-08-01_19-24-11_zhmkcu.png"
     alt="Йде будівництво"
-    className="w-[clamp(120px,18vw,220px)] h-auto"
+    className="w-[clamp(20px,3vw,30px)] h-auto"
   />
 </span>
 
@@ -1979,7 +1979,7 @@ function Hero() {
   <img
     src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785600683/logo_rj5cmm.png"
     alt="SKATEPARK"
-    className="w-[clamp(280px,70vw,1000px)] h-auto mx-auto filter brightness-0 invert"
+    className="w-[clamp(280px,70vw,1000px)] h-auto mx-auto grayscale"
   />
 </h1>
 
