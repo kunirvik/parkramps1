@@ -116,6 +116,24 @@ body{
  background: #ff00fb00;
 
 }
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212, 255, 63, 0.8) transparent;
+}
+
+html::-webkit-scrollbar {
+  width: 4px;
+}
+
+html::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html::-webkit-scrollbar-thumb {
+  background: #d4ff3f;
+  border-radius: 999px;
+}
  
 /* Цвет обычной точки */
 .custom-swiper-pagination .swiper-pagination-bullet {
