@@ -2627,6 +2627,91 @@ function Header() {
   );
 }
 
+// function Hero() {
+//   const isMobile = useIsMobile();
+//   const heroVideoSrc = isMobile ? HERO_VIDEO_MOBILE : HERO_VIDEO_DESKTOP;
+
+//   useEffect(() => {
+//     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+//     tl.fromTo(".hero-eyebrow", { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.5 })
+//       .fromTo(".hero-title span", { yPercent: 120 }, { yPercent: 0, duration: 1, stagger: 0.05 }, "-=0.1")
+//       .fromTo(".hero-sub", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6 }, "-=0.5")
+//       .fromTo(".hero-scroll", { opacity: 0 }, { opacity: 1, duration: 0.6 }, "-=0.3");
+//   }, []);
+
+//   return (
+//     <section className="relative h-[100svh] w-full overflow-hidden flex flex-col items-center justify-center">
+//       {/* key={heroVideoSrc} — при переключении брейкпоинта (ресайз/поворот экрана)
+//           видео-тег пересоздаётся и грузит именно нужный источник, вместо того
+//           чтобы браузер один раз выбрал первый попавшийся <source> и застрял на нём. */}
+//       <video
+//         key={heroVideoSrc}
+//         className="absolute inset-0 w-full h-full object-cover"
+//         autoPlay
+//         muted
+//         loop
+//         playsInline
+//         poster={BG_PHOTO_1}
+//         src={heroVideoSrc}
+//       />
+//       <div className="absolute inset-0  bg-gradient-to-b from-black/35 via-black/15 to-black/85" />
+//       <div className="relative z-[2] text-center px-6">
+//        {/* <span className="stamp hero-reveal inline-block rotate-[-6deg] border-3 px-3 py-1 font-futura text-xs font-bold uppercase tracking-widest">
+//             Йде будівництво
+//             </span> */}
+
+
+// <span className="stamp hero-reveal inline-block rotate-[-6deg]">
+//   <img
+//     src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785601959/photo_2026-08-01_19-24-11_zhmkcu.png"
+//     alt="Йде будівництво"
+//     className="w-[clamp(150px,10vw,300px)] grayscale h-auto"
+//   />
+// </span>
+
+
+//         {/* <h1 className="hero-title  font-futura font-bold text-[clamp(48px,11vw,148px)] leading-[0.9] tracking-[0.01em]  m-0 overflow-hidden">
+//           {"SKATEPARK".split("").map((ch, i) => (
+//             <span key={i} className="inline-block  text-[rgba(6, 6, 6, 0.69)] overflow-hidden">
+//               {ch}
+//             </span>
+//           ))}
+//         </h1> */}
+      
+// <h1 className="hero-title m-0 overflow-hidden">
+//   <img
+//     src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785603120/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._19_10_46_nxv1ik.png"
+//     alt="SKATEPARK"
+//     className="w-[clamp(180px,300vw,500px)] h-auto mx-auto "
+//   />
+// </h1>
+
+
+// <div className="hero-sub mt-[18px] flex justify-center">
+//   <img
+//     src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785611236/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._22_05_19_xyntd7.png"
+//     alt="Опис скейтпарку"
+//     className="w-[clamp(160px,40vw,400px)]  h-auto object-contain contrast-[150%]  "
+//   />
+// </div>
+
+
+//       </div>
+
+
+   
+// <div className="hero-scroll absolute bottom-8 left-1/2 -translate-x-1/2 z-[2] flex flex-col items-center gap-2 font-mono text-[11px] tracking-[0.14em] uppercase ">
+//   <img
+//     src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785611591/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._22_12_58_tjii8z.png"
+//     alt="info"
+//     className="w-[clamp(100px,40vw,200px)]  h-auto object-contain contrast-[150%]  "
+//   />
+// </div> 
+      
+//     </section>
+//   );
+// }
+
 function Hero() {
   const isMobile = useIsMobile();
   const heroVideoSrc = isMobile ? HERO_VIDEO_MOBILE : HERO_VIDEO_DESKTOP;
@@ -2635,12 +2720,11 @@ function Hero() {
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
     tl.fromTo(".hero-eyebrow", { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.5 })
       .fromTo(".hero-title span", { yPercent: 120 }, { yPercent: 0, duration: 1, stagger: 0.05 }, "-=0.1")
-      .fromTo(".hero-sub", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6 }, "-=0.5")
-      .fromTo(".hero-scroll", { opacity: 0 }, { opacity: 1, duration: 0.6 }, "-=0.3");
+      .fromTo(".hero-sub", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6 }, "-=0.5");
   }, []);
 
   return (
-    <section className="relative h-[100svh] w-full overflow-hidden flex flex-col items-center justify-center">
+    <section id="hero" className="relative h-[100svh] w-full overflow-hidden flex flex-col items-center justify-center">
       {/* key={heroVideoSrc} — при переключении брейкпоинта (ресайз/поворот экрана)
           видео-тег пересоздаётся и грузит именно нужный источник, вместо того
           чтобы браузер один раз выбрал первый попавшийся <source> и застрял на нём. */}
@@ -2656,66 +2740,124 @@ function Hero() {
       />
       <div className="absolute inset-0  bg-gradient-to-b from-black/35 via-black/15 to-black/85" />
       <div className="relative z-[2] text-center px-6">
-       {/* <span className="stamp hero-reveal inline-block rotate-[-6deg] border-3 px-3 py-1 font-futura text-xs font-bold uppercase tracking-widest">
-            Йде будівництво
-            </span> */}
+        <span className="stamp hero-reveal inline-block rotate-[-6deg]">
+          <img
+            src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785601959/photo_2026-08-01_19-24-11_zhmkcu.png"
+            alt="Йде будівництво"
+            className="w-[clamp(150px,10vw,300px)] grayscale h-auto"
+          />
+        </span>
 
+        <h1 className="hero-title m-0 overflow-hidden">
+          <img
+            src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785603120/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._19_10_46_nxv1ik.png"
+            alt="SKATEPARK"
+            className="w-[clamp(180px,300vw,500px)] h-auto mx-auto "
+          />
+        </h1>
 
-<span className="stamp hero-reveal inline-block rotate-[-6deg]">
-  <img
-    src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785601959/photo_2026-08-01_19-24-11_zhmkcu.png"
-    alt="Йде будівництво"
-    className="w-[clamp(150px,10vw,300px)] grayscale h-auto"
-  />
-</span>
-
-
-        {/* <h1 className="hero-title  font-futura font-bold text-[clamp(48px,11vw,148px)] leading-[0.9] tracking-[0.01em]  m-0 overflow-hidden">
-          {"SKATEPARK".split("").map((ch, i) => (
-            <span key={i} className="inline-block  text-[rgba(6, 6, 6, 0.69)] overflow-hidden">
-              {ch}
-            </span>
-          ))}
-        </h1> */}
-      
-<h1 className="hero-title m-0 overflow-hidden">
-  <img
-    src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785603120/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._19_10_46_nxv1ik.png"
-    alt="SKATEPARK"
-    className="w-[clamp(180px,300vw,500px)] h-auto mx-auto "
-  />
-</h1>
-
-
-<div className="hero-sub mt-[18px] flex justify-center">
-  <img
-    src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785611236/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._22_05_19_xyntd7.png"
-    alt="Опис скейтпарку"
-    className="w-[clamp(160px,40vw,400px)]  h-auto object-contain contrast-[150%]  "
-  />
-</div>
-
-
+        <div className="hero-sub mt-[18px] flex justify-center">
+          <img
+            src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785611236/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._22_05_19_xyntd7.png"
+            alt="Опис скейтпарку"
+            className="w-[clamp(160px,40vw,400px)]  h-auto object-contain contrast-[150%]  "
+          />
+        </div>
       </div>
-
-
-   
-<div className="hero-scroll absolute bottom-8 left-1/2 -translate-x-1/2 z-[2] flex flex-col items-center gap-2 font-mono text-[11px] tracking-[0.14em] uppercase ">
-  <img
-    src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785611591/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._22_12_58_tjii8z.png"
-    alt="info"
-    className="w-[clamp(100px,40vw,200px)]  h-auto object-contain contrast-[150%]  "
-  />
-</div> 
-      
     </section>
   );
-}
+} 
+
+const SECTION_ORDER = ["hero", "info-stats", "skatepark", "gallery", "categories", "cta"];
+
+function ScrollNextArrow() {
+  const btnRef = useRef(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Определяем текущую секцию по скроллу
+  useEffect(() => {
+    const handleScroll = () => {
+      let idx = 0;
+      for (let i = 0; i < SECTION_ORDER.length; i++) {
+        const el = document.getElementById(SECTION_ORDER[i]);
+        if (!el) continue;
+        const rect = el.getBoundingClientRect();
+        if (rect.top <= window.innerHeight * 0.5) idx = i;
+      }
+      setCurrentIndex(idx);
+    };
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+    };
+  }, []);
+
+  const isLast = currentIndex >= SECTION_ORDER.length - 1;
+
+  // Появление при монтировании + запуск "дыхательного" бега вверх-вниз
+  useEffect(() => {
+    const el = btnRef.current;
+    if (!el) return;
+
+    const tl = gsap.timeline({ delay: 1.4 }); // выходит после основной анимации Hero
+    tl.fromTo(
+      el,
+      { opacity: 0, y: 20, scale: 0.85 },
+      { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: "power3.out" }
+    ).to(el, {
+      y: 10,
+      duration: 0.9,
+      ease: "power1.inOut",
+      repeat: -1,
+      yoyo: true,
+    });
+
+    return () => tl.kill();
+  }, []);
+
+  // Плавное скрытие/показ на последней секции
+  useEffect(() => {
+    const el = btnRef.current;
+    if (!el) return;
+    gsap.to(el, {
+      opacity: isLast ? 0 : 1,
+      duration: 0.4,
+      ease: "power2.out",
+      pointerEvents: isLast ? "none" : "auto",
+    });
+  }, [isLast]);
+
+  const handleClick = () => {
+    const nextId = SECTION_ORDER[Math.min(currentIndex + 1, SECTION_ORDER.length - 1)];
+    document.getElementById(nextId)?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  return (
+    <button
+      ref={btnRef}
+      type="button"
+      onClick={handleClick}
+      aria-label="Прокрутити до наступного блоку"
+      className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center gap-2 bg-transparent border-none cursor-pointer opacity-0"
+    >
+      <img
+        src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785611591/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._22_12_58_tjii8z.png"
+        alt="Скролити далі"
+        className="w-[clamp(80px,30vw,140px)] h-auto object-contain contrast-[150%]"
+      />
+    </button>
+  );
+} 
 
 function InfoStats() {
   const ref = useScrollReveal(".reveal");
   return (
     <section
+
+     id="info-stats" 
       ref={ref}
       className="relative py-25 px-5 bg-cover bg-center"
       style={{ backgroundImage: `url(${BG_PHOTO_2})` }}
@@ -2790,7 +2932,7 @@ function Gallery() {
   };
 
   return (
-    <section className="py-25 px-4 max-[720px]:px-4 bg-[#050505]">
+    <section id="gallery"   className="py-25 px-4 max-[720px]:px-4 bg-[#050505]">
       <div className="max-w-[640px] mx-auto mb-10 px-6 text-center relative z-[2]">
         <span className="inline-block font-mono text-[11px] tracking-[0.14em] uppercase text-[#d4ff3f] mb-2.5">
           Стрічка будівництва
@@ -2970,8 +3112,9 @@ function Categories() {
   const activeCategory = CATEGORIES.find((c) => c.id === openId) ?? null;
 
   return (
-    <section
+    <section  
       ref={ref}
+      id="categories"
       className="relative py-25 px-5 bg-cover bg-center"
       style={{ backgroundImage: `url(${BG_PHOTO_3})` }}
     >
@@ -3104,9 +3247,11 @@ export default function LandingPage() {
       <Header />
       <Hero />
       <InfoStats />
-
-      <Skatepark />
-
+   <ScrollNextArrow />
+      {/* <Skatepark /> */}
+      <div id="skatepark">
+        <Skatepark />
+      </div>
       <Gallery />
       <Categories />
       <CTA />
