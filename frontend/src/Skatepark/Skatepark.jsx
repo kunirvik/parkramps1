@@ -2843,6 +2843,583 @@
 //     </section>
 //   );
 // }
+//топчик!!!!!!!!!!!
+// import { useRef, useState, useEffect } from "react";
+// import gsap from "gsap";
+// import { ScrollTrigger } from "gsap/ScrollTrigger";
+// import ParkMapDesktop from "./park.svg?react";
+// import ParkMapMobile from "./park-mobile.svg?react"; // отдельный SVG с той же структурой id, но под вертикальный кадр
+
+// gsap.registerPlugin(ScrollTrigger);
+
+// // Базовое фото парка (общий план, без подсветки)
+// const BASE_IMAGE_DESKTOP =
+//   "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257521/voltparkvisual2_k4c3fr.jpg";
+// const BASE_IMAGE_MOBILE =
+//   "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503281/voltparkvisual2_h7bxoy.jpg"; // ваше вертикальное фото
+
+// // Каждая фигура: id должен ТОЧНО совпадать с id path в park.svg,
+// // image — картинка именно этой фигуры, note — короткая "журнальная" подпись сбоку.
+// // image — фото для десктопного (горизонтального) SVG
+// // mobileImage — то же фото, но скадрированное/подготовленное под вертикальний park-mobile.svg
+// // (если mobileImage не указан — на мобилке используется тот же image, что и на десктопе)
+// const figures = [
+//   { id: "ramp", mobileImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503281/volt_park_visual12_kuncse.jpg", title: "Рампа", note: "Класична рампа для набору швидкості й повітряних трюків.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual12_unvhp8.jpg" },
+//   { id: "quater3", mobileImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503280/volt_park_visual11_vjekyg.jpg", title: "Квотер 3", note: "Один із трьох квотерів парку, свій розмір і свій характер.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual11_cewrz7.jpg" },
+//   { id: "roll-in", mobileImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503280/volt_park_visual10_2_accbsl.jpg", title: "Ролл-ін", note: "Заїзд, з якого стартують у секцію з фігурами.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257520/volt_park_visual10_2_oo1az0.jpg" },
+//   { id: "bank", mobileImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503280/volt_park_visual9_2_nnmnay.jpg", title: "Бенк", note: "Похила поверхня для зв'язок і плавних переходів.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual9_2_jrzknr.jpg" },
+//   { id: "box", mobileImage:  "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503281/volt_park_visual13_l168i9.jpg", title: "Бокс", note: "Один із двох боксів парку — для слайдів і грайндів.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual13_z6hp1g.jpg" },
+//   { id: "jumpbox", mobileImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503281/voltparkvisual3_x9m10k.jpg", title: "Джампбокс", note: "Фігура для стрибків і відпрацювання ейр-трюків.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/voltparkvisual4_rrbeeo.jpg" },
+//   { id: "flybox", mobileImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503281/voltparkvisual4_f9b6hb.jpg", title: "Флайбокс", note: "Одна з фірмових фігур парку з ухилом в ейр.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/voltparkvisual3_kpnpkk.jpg" },
+//   { id: "volcano", mobileImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503280/volt_park_visual5_2_qdoyk5.jpg", title: "Волкано", note: "Фігура для складніших заходів і виходів.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/volt_park_visual5_2_w899yo.jpg" },
+//   { id: "quater2", mobileImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503280/volt_park_visual6_2_jxskkx.jpg", title: "Квотер 2", note: "Другий квотер — частина великої ейр-зони.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual6_2_gl0q0k.jpg" },
+//   { id: "vertwall", mobileImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503280/volt_park_visual8_2_zk97cn.jpg", title: "Vert wall", note: "Вертикальна стіна для найвищого рівня катання.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual8_2_zwmivn.jpg" },
+//   { id: "quater", mobileImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503280/volt_park_visual7_2_qm6fku.jpg", title: "Квотер", note: "Базовий квотер парку, з нього зручно починати.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/volt_park_visual7_2_rrpf7v.jpg" },
+//   { id: "box2", mobileImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503281/volt_park_visual14_rwvnmc.jpg", title: "Бокс", note: "Один із двох боксів парку — для слайдів і грайндів.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual14_dnjash.jpg" },
+//   { id: "wallride", mobileImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503281/volt_park_visual15_xgkol6.jpg", title: "Бокс", note: "Один із двох боксів парку — для слайдів і грайндів.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual15_ktwiqp.jpg" },
+// ];
+
+
+
+ 
+// const figureById = Object.fromEntries(figures.map((f) => [f.id, f]));
+ 
+// // id фигуры, на которой показываем пульсирующую точку-подсказку "тисни/наведи сюди"
+// // (выберите любую заметную/крупную фигуру из списка выше) — работает и на мобилке, и на десктопе
+// const HINT_FIGURE_ID = "box";
+ 
+// export default function Skatepark() {
+//   const svgWrapRef = useRef(null);
+//   const layers = useRef({});
+//   const [active, setActive] = useState(null);
+//   const [notePos, setNotePos] = useState({
+//     left: 0,
+//     top: 0,
+//     side: "right",
+//     vertical: "bottom",
+//   });
+
+//   const isTouch =
+//     typeof window !== "undefined" &&
+//     window.matchMedia("(pointer: coarse)").matches;
+ 
+//   // Отдельный брейкпоинт под "мобильную" версию SVG/фото (совпадает с max-[720px] в остальной верстке).
+//   // Слушаем через matchMedia + resize, чтобы переключение SVG/фото происходило и при повороте
+//   // экрана / ресайзе окна, а не только при первом рендере.
+//   const [isMobile, setIsMobile] = useState(
+//     () => typeof window !== "undefined" && window.matchMedia("(max-width: 720px)").matches
+//   );
+ 
+//   useEffect(() => {
+//     if (typeof window === "undefined") return;
+//     const mq = window.matchMedia("(max-width: 720px)");
+//     const onChange = (e) => setIsMobile(e.matches);
+//     mq.addEventListener("change", onChange);
+//     return () => mq.removeEventListener("change", onChange);
+//   }, []);
+ 
+//   const ParkMap = isMobile ? ParkMapMobile : ParkMapDesktop;
+//   const baseImage = isMobile ? BASE_IMAGE_MOBILE : BASE_IMAGE_DESKTOP;
+ 
+//   // Подсказка "тут всё кликабельно": на мобилке — шиммер по всій карті + текстовий
+//   // чіп біля пульсуючої точки, на десктопі — текстова підказка над картою + та сама
+//   // пульсуюча точка (щоб було зрозуміло, що по фігурах можна наводити курсором).
+//   // Ховається одразу, тільки-но користувач вибрав першу фігуру (клік/тап/hover/фокус),
+//   // і більше не з'являється — див. showLayer нижче.
+//   const [hasInteracted, setHasInteracted] = useState(false);
+//   const [hintDotPos, setHintDotPos] = useState(null); // { xPercent, yPercent } в координатах viewBox
+//   const shimmerRef = useRef(null);
+
+//   // Секция может быть далеко от старта страницы — если запускать 6-секундный
+//   // таймер подсказки сразу при монтировании, пользователь может дойти до
+//   // карты уже после того, как подсказка "сама" погасла. Поэтому таймер и
+//   // шиммер стартуют только когда секция реально появилась во вьюпорте.
+//   const sectionRef = useRef(null);
+//   const [hasEnteredView, setHasEnteredView] = useState(false);
+
+//   useEffect(() => {
+//     if (typeof IntersectionObserver === "undefined") {
+//       setHasEnteredView(true);
+//       return;
+//     }
+//     const el = sectionRef.current;
+//     if (!el) return;
+
+//     const observer = new IntersectionObserver(
+//       ([entry]) => {
+//         if (entry.isIntersecting) {
+//           setHasEnteredView(true);
+//           observer.disconnect();
+//         }
+//       },
+//       { threshold: 0.25 }
+//     );
+//     observer.observe(el);
+//     return () => observer.disconnect();
+//   }, []);
+
+//   // Появление всей секции скейтпарка при скролле — мягкий fade+slide-up,
+//   // как и у остальных блоков (reveal-паттерн).
+//   useEffect(() => {
+//     const el = sectionRef.current;
+//     if (!el) return;
+//     const ctx = gsap.context(() => {
+//       gsap.fromTo(
+//         el,
+//         { opacity: 0, y: 60 },
+//         {
+//           opacity: 1,
+//           y: 0,
+//           duration: 1,
+//           ease: "power3.out",
+//           scrollTrigger: { trigger: el, start: "top 80%" },
+//         }
+//       );
+//     });
+//     return () => ctx.revert();
+//   }, []);
+ 
+ 
+
+// const showLayer = (id, clientX) => {
+//   setActive(id);
+//   setHasInteracted(true);
+
+//   const root = svgWrapRef.current;
+//   const path = root?.querySelector(`path#${CSS.escape(id)}`);
+
+//   if (!root || !path) return;
+
+//   const rootBox = root.getBoundingClientRect();
+//   const pathBox = path.getBoundingClientRect();
+
+//   const figureX =
+//     pathBox.left + pathBox.width / 2 - rootBox.left;
+
+//   const figureY =
+//     pathBox.top + pathBox.height / 2 - rootBox.top;
+
+//   const gap = 14;
+
+//   // ==========================================
+//   // МОБИЛЬНЫЙ — карточка сверху или снизу
+//   // ==========================================
+
+//   if (isMobile) {
+//     const cardWidth = Math.min(rootBox.width - 24, 300);
+//     const cardHeight = 145;
+
+//     // Центрируем карточку относительно фигуры
+//     let left = figureX - cardWidth / 2;
+
+//     // Не даём карточке выйти за края
+//     left = Math.max(
+//       12,
+//       Math.min(left, rootBox.width - cardWidth - 12)
+//     );
+
+//     // Сколько места сверху и снизу от фигуры
+//     const spaceTop = pathBox.top - rootBox.top;
+//     const spaceBottom =
+//       rootBox.height -
+//       (pathBox.bottom - rootBox.top);
+
+//     let top;
+//     let vertical;
+
+//     // Если сверху достаточно места — показываем сверху
+//     if (spaceTop >= cardHeight + gap) {
+//       top =
+//         figureY -
+//         pathBox.height / 2 -
+//         cardHeight -
+//         gap;
+
+//       vertical = "top";
+//     } else {
+//       // Иначе показываем снизу
+//       top =
+//         figureY +
+//         pathBox.height / 2 +
+//         gap;
+
+//       vertical = "bottom";
+//     }
+
+//     // Дополнительная защита от выхода за границы
+//     top = Math.max(
+//       12,
+//       Math.min(top, rootBox.height - cardHeight - 12)
+//     );
+
+//     setNotePos({
+//       left,
+//       top,
+//       side: "center",
+//       vertical,
+//     });
+//   }
+
+//   // ==========================================
+//   // ДЕСКТОП — карточка слева или справа
+//   // ==========================================
+
+//   else {
+//     const cardWidth = Math.min(
+//       260,
+//       rootBox.width * 0.38
+//     );
+
+//     const cardHeight = 150;
+
+//     let side = "right";
+
+//     let left =
+//       figureX +
+//       pathBox.width / 2 +
+//       gap;
+
+//     // Справа нет места → ставим слева
+//     if (
+//       left + cardWidth >
+//       rootBox.width - 12
+//     ) {
+//       side = "left";
+
+//       left =
+//         figureX -
+//         pathBox.width / 2 -
+//         cardWidth -
+//         gap;
+//     }
+
+//     left = Math.max(
+//       12,
+//       Math.min(
+//         left,
+//         rootBox.width - cardWidth - 12
+//       )
+//     );
+
+//     let top =
+//       figureY -
+//       cardHeight / 2;
+
+//     top = Math.max(
+//       12,
+//       Math.min(
+//         top,
+//         rootBox.height - cardHeight - 12
+//       )
+//     );
+
+//     setNotePos({
+//       left,
+//       top,
+//       side,
+//       vertical: "center",
+//     });
+//   }
+
+//   // Плавно показываем активную фотографию
+//   Object.entries(layers.current).forEach(
+//     ([key, el]) => {
+//       if (!el) return;
+
+//       gsap.to(el, {
+//         opacity: key === id ? 1 : 0,
+//         duration: 0.35,
+//         ease: "power2.out",
+//         overwrite: true,
+//       });
+//     }
+//   );
+// };
+
+
+
+ 
+//   const hideAllLayers = () => {
+//     setActive(null);
+//     Object.values(layers.current).forEach((el) => {
+//       if (!el) return;
+//       gsap.to(el, { opacity: 0, duration: 0.35, ease: "power2.out", overwrite: true });
+//     });
+//   };
+ 
+//   useEffect(() => {
+//     if (!hasEnteredView || hasInteracted) return;
+//     // Подсказка гаснет сама через 6с ПОСЛЕ того, как секция появилась во
+//     // вьюпорте — а не через 6с после монтирования страницы. Так подсказка
+//     // всегда застаёт пользователя, если он доскроллил до карты позже.
+//     const timer = setTimeout(() => setHasInteracted(true), 6000);
+//     return () => clearTimeout(timer);
+//   }, [hasEnteredView, hasInteracted]);
+ 
+//   // Шиммер-эффект "тут всё кликабельно": светлая диагональная полоса дважды
+//   // проходит по всей карте, когда секция появляется во вьюпорте на мобилке,
+//   // затем сама останавливается. Если пользователь тапнул раньше — showLayer
+//   // уже поставил hasInteracted=true, и таймлайн ниже прерывается досрочно.
+//   useEffect(() => {
+//     if (!isMobile || !hasEnteredView || hasInteracted) return;
+//     const el = shimmerRef.current;
+//     if (!el) return;
+ 
+//     const tl = gsap.timeline({ repeat: 1, repeatDelay: 0.6, delay: 0.5 });
+//     tl.fromTo(
+//       el,
+//       { xPercent: -130, opacity: 0.9 },
+//       { xPercent: 130, opacity: 0.9, duration: 1.1, ease: "power1.inOut" }
+//     );
+ 
+//     return () => tl.kill();
+//   }, [isMobile, hasEnteredView, hasInteracted]);
+ 
+//   useEffect(() => {
+//     const root = svgWrapRef.current;
+//     if (!root) return;
+ 
+//     // Прозрачность/курсор/pointer-events у path теперь задаются CSS-классами
+//     // на обёртке (см. className ниже) — они применяются сразу при первом рендере,
+//     // ДО этого эффекта, поэтому больше нет вспышки цветных path при загрузке.
+//     // Здесь остаётся только a11y-разметка и обработчики событий.
+ 
+//     const paths = root.querySelectorAll("path[id]");
+//     const cleanupFns = [];
+ 
+//     // Позиция точки-подсказки: берём реальный bbox path'а HINT_FIGURE_ID
+//     // и переводим его в проценты относительно viewBox, чтобы точка легла
+//     // ровно на фигуру при любом размере блока. Считаем и на мобилке, и на
+//     // десктопе — точка-подсказка теперь показывается в обоих случаях.
+//     const svgEl = root.querySelector("svg");
+//     const hintPath = root.querySelector(`path#${CSS.escape(HINT_FIGURE_ID)}`);
+//     if (svgEl && hintPath && svgEl.viewBox?.baseVal) {
+//       const { x: vbX, y: vbY, width: vbW, height: vbH } = svgEl.viewBox.baseVal;
+//       const bbox = hintPath.getBBox();
+//       const cx = bbox.x + bbox.width / 2;
+//       const cy = bbox.y + bbox.height / 2;
+//       setHintDotPos({
+//         xPercent: ((cx - vbX) / vbW) * 100,
+//         yPercent: ((cy - vbY) / vbH) * 100,
+//       });
+//     }
+ 
+//     paths.forEach((path) => {
+//       const figure = figureById[path.id];
+//       if (!figure) return;
+ 
+//       path.setAttribute("tabindex", "0");
+//       path.setAttribute("role", "button");
+//       path.setAttribute("aria-label", figure.title);
+ 
+//       if (isTouch) {
+//         const onTap = (e) => {
+//           e.stopPropagation();
+//           setActive((prev) => {
+//             const next = prev === figure.id ? null : figure.id;
+//             if (next) showLayer(next, e.clientX);
+//             else hideAllLayers();
+//             return next;
+//           });
+//         };
+//         path.addEventListener("click", onTap);
+//         cleanupFns.push(() => path.removeEventListener("click", onTap));
+//       } else {
+//         const onEnter = (e) => showLayer(figure.id, e.clientX);
+//         // const onMove = (e) => {
+//         //   if (!isMobile && typeof window !== "undefined") {
+//         //     setNotePos({ side: e.clientX > window.innerWidth / 2 ? "left" : "right" });
+//         //   }
+//         // };
+//         const onLeave = () => hideAllLayers();
+//         const onFocus = (e) => showLayer(figure.id, e.target.getBoundingClientRect().x);
+//         const onBlur = () => hideAllLayers();
+ 
+//         path.addEventListener("mouseenter", onEnter);
+//         // path.addEventListener("mousemove", onMove);
+//         path.addEventListener("mouseleave", onLeave);
+//         path.addEventListener("focus", onFocus);
+//         path.addEventListener("blur", onBlur);
+ 
+//         cleanupFns.push(() => {
+//           path.removeEventListener("mouseenter", onEnter);
+//           // path.removeEventListener("mousemove", onMove);
+//           path.removeEventListener("mouseleave", onLeave);
+//           path.removeEventListener("focus", onFocus);
+//           path.removeEventListener("blur", onBlur);
+//         });
+//       }
+//     });
+ 
+//     let outsideTapHandler;
+//     if (isTouch) {
+//       outsideTapHandler = (e) => {
+//         if (!root.contains(e.target)) hideAllLayers();
+//       };
+//       document.addEventListener("click", outsideTapHandler);
+//     }
+ 
+//     return () => {
+//       cleanupFns.forEach((fn) => fn());
+//       if (outsideTapHandler) document.removeEventListener("click", outsideTapHandler);
+//     };
+//   }, [isTouch, isMobile]);
+ 
+//   const activeFigure = active ? figureById[active] : null;
+ 
+//   return (
+//     <section ref={sectionRef} className="relative bg-[#0a0a0a] min-h-[100svh] flex flex-col justify-center">
+//       {/* Заголовок-підказка над картою — той самий патерн, що й у Gallery/Categories,
+//           щоб зона одразу читалась як окрема інтерактивна секція, а не просто фото. */}
+//       <div className="max-w-[640px] mx-auto pt-16 pb-8 max-[720px]:pt-12 max-[720px]:pb-6 px-6 text-center relative z-[2]">
+//         <span className="inline-block font-mono text-[11px] tracking-[0.14em] uppercase text-[#d4ff3f] mb-2.5">
+//           Карта парку
+//         </span>
+//         <h2 className="font-['Anton','Arial_Narrow',sans-serif] text-[clamp(28px,5vw,48px)] leading-none m-0 mb-3 text-[#f2f0e6] uppercase">
+//           Інтерактивна карта
+//         </h2>
+//         <p className="text-[15px] leading-[1.5] text-[#8a8a83] m-0">
+//           {isTouch
+//             ? "Торкнись будь-якої фігури на карті — з'явиться фото і опис саме цього елемента."
+//             : "Наведи курсор на будь-яку фігуру на карті — з'явиться фото і опис саме цього елемента."}
+//         </p>
+//       </div>
+
+//       {/* data-cursor-trail="off" выключает CursorImageTrail именно в этой зоне.
+//           Высота этого блока теперь фиксирована (h-[100svh] на карте секции),
+//           а фото растягивается через object-cover, чтобы карта помещалась
+//           в один экран вместе с заголовком выше. SVG (viewBox 2477x1274) и
+//           все остальные слои с absolute inset-0 растягиваются на 100%/100%
+//           этого же блока и совпадают с фото автоматически. */}
+//       <div
+//         data-cursor-trail="off"
+//         className="relative w-full flex-1 min-h-0 overflow-hidden select-none bg-[#0a0a0a]"
+//       >
+//         {/* Базовое фото — растягивается на всю доступную высоту блока */}
+//         <img
+//           className="relative z-[1] block w-full h-full object-cover object-top pointer-events-none"
+//           src={baseImage}
+//           alt="Скейтпарк, загальний вигляд"
+//         />
+
+//         {/* Слой картинки для каждой фигуры — проявляется поверх базового при наведении */}
+//         {figures.map((item) => (
+//           <img
+//             key={item.id}
+//             ref={(el) => (layers.current[item.id] = el)}
+//             className="absolute inset-0 z-[2] w-full h-full object-cover object-top opacity-0 pointer-events-none will-change-[opacity]"
+//             src={isMobile && item.mobileImage ? item.mobileImage : item.image}
+//             alt={item.title}
+//           />
+//         ))}
+
+//         {/* SVG поверх всего — прозрачные path работают как hit-зоны для наведения.
+//             fill-transparent/stroke-transparent/pointer-events-auto/cursor-pointer
+//             заданы CSS-классами (а не inline-стилями в JS), поэтому они применяются
+//             мгновенно при первом рендере — никакой вспышки цветных path при загрузке. */}
+//         <div
+//           ref={svgWrapRef}
+//           className="absolute inset-0 z-10 pointer-events-none [&_path]:fill-transparent [&_path]:stroke-transparent [&_path]:pointer-events-auto [&_path]:cursor-pointer [&_path]:outline-none"
+//         >
+//           <ParkMap
+//             className="w-full h-full block"
+//             preserveAspectRatio="xMidYMid slice"
+//           />
+//         </div>
+
+//         {/* Подсказка "тут всё кликабельно" — показывается до первого выбора фигуры,
+//             на мобилке и на десктопе. Мобилка: шиммер + текстовий чіп біля точки.
+//             Десктоп: текстовий чіп біля точки з підказкою навести курсор. */}
+//         {hasEnteredView && !hasInteracted && (
+//           <>
+//             {/* Диагональная светлая полоса — только на мобилке, дважды пробегает по карте */}
+//             {isMobile && (
+//               <div
+//                 ref={shimmerRef}
+//                 className="absolute inset-0 z-[15] pointer-events-none opacity-0"
+//                 style={{
+//                   background:
+//                     "linear-gradient(75deg, transparent 42%, rgba(242,240,230,0.55) 50%, transparent 58%)",
+//                 }}
+//               />
+//             )}
+
+//             {/* Пульсирующая точка-подсказка на выбранной фигуре (HINT_FIGURE_ID) +
+//                 текстовый чип рядом с ней, чтобы было однозначно понятно, что делать. */}
+//             {hintDotPos && (
+//               <div
+//                 className="absolute z-[16] -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+//                 style={{ left: `${hintDotPos.xPercent}%`, top: `${hintDotPos.yPercent}%` }}
+//               >
+//                 <span className="absolute inset-0 rounded-full bg-[#d4ff3f]/70 animate-ping" />
+//                 <span className="relative block w-3.5 h-3.5 rounded-full bg-[#d4ff3f] shadow-[0_0_10px_rgba(212,255,63,0.8)]" />
+
+//                 <span
+//                   className={`absolute left-1/2 -translate-x-1/2 whitespace-nowrap font-mono text-[11px] tracking-[0.04em] uppercase text-[#0d0d0d] bg-[#d4ff3f] px-2.5 py-1 shadow-[0_6px_16px_rgba(0,0,0,0.4)] ${
+//                     isMobile ? "-top-9" : "-top-10"
+//                   }`}
+//                 >
+//                   {isMobile ? "👆 Тисни на фігуру" : "🖱 Наведи курсором"}
+//                 </span>
+//               </div>
+//             )}
+//           </>
+//         )}
+
+//         {/* Журнальная заметка — на десктопе сбоку от активной фигуры,
+//             на мобилке снизу/сверху рядом с ней */}
+//         <div
+//           className={`
+//             absolute z-20
+//             w-[min(260px,calc(100%-24px))]
+//             p-[14px_16px_16px]
+//             bg-[rgba(242,240,230,0.78)]
+//             backdrop-blur-xl
+//             border border-white/40
+//             text-[#111]
+//             shadow-[0_10px_30px_rgba(0,0,0,0.3)]
+//             pointer-events-none
+//             opacity-0
+//             transition-[opacity,transform] duration-250 ease-out
+//             ${activeFigure ? "opacity-100" : ""}
+//           `}
+//           style={
+//             activeFigure
+//               ? {
+//                   left: `${notePos.left}px`,
+//                   top: `${notePos.top}px`,
+//                   transform: isMobile
+//                     ? "rotate(-1deg)"
+//                     : notePos.side === "left"
+//                     ? "rotate(2deg)"
+//                     : "rotate(-2deg)",
+//                 }
+//               : undefined
+//           }
+//         >
+//           {activeFigure && (
+//             <>
+//               <span className="inline-block font-['Space_Mono',monospace] text-[10px] tracking-[0.12em] uppercase bg-[#111] text-[#d4ff3f] px-1.5 py-0.5 mb-2">
+//                 Зона парку
+//               </span>
+
+//               <h4 className="m-0 mb-1.5 font-['Anton','Arial_Narrow',sans-serif] text-[22px] max-[720px]:text-[18px] leading-none uppercase">
+//                 {activeFigure.title}
+//               </h4>
+
+//               <p className="m-0 text-[13px] max-[720px]:text-[12px] leading-[1.4]">
+//                 {activeFigure.note}
+//               </p>
+//             </>
+//           )}
+//         </div>
+//       </div>
+//     </section>
+//   );
+// } топчик!!!!!!!!!!!! 
+
+
+
 import { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -3417,579 +3994,6 @@ const showLayer = (id, clientX) => {
     </section>
   );
 }
-// import { useRef, useState, useEffect } from "react";
-// import gsap from "gsap";
-// import { ScrollTrigger } from "gsap/ScrollTrigger";
-// import ParkMapDesktop from "./park.svg?react";
-// import ParkMapMobile from "./park-mobile.svg?react"; // отдельный SVG с той же структурой id, но под вертикальный кадр
-
-// gsap.registerPlugin(ScrollTrigger);
-
-// // Базовое фото парка (общий план, без подсветки)
-// const BASE_IMAGE_DESKTOP =
-//   "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257521/voltparkvisual2_k4c3fr.jpg";
-// const BASE_IMAGE_MOBILE =
-//   "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503281/voltparkvisual2_h7bxoy.jpg"; // ваше вертикальное фото
-
-// // Каждая фигура: id должен ТОЧНО совпадать с id path в park.svg,
-// // image — картинка именно этой фигуры, note — короткая "журнальная" подпись сбоку.
-// // image — фото для десктопного (горизонтального) SVG
-// // mobileImage — то же фото, но скадрированное/подготовленное под вертикальний park-mobile.svg
-// // (если mobileImage не указан — на мобилке используется тот же image, что и на десктопе)
-// const figures = [
-//   { id: "ramp", mobileImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503281/volt_park_visual12_kuncse.jpg", title: "Рампа", note: "Класична рампа для набору швидкості й повітряних трюків.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual12_unvhp8.jpg" },
-//   { id: "quater3", mobileImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503280/volt_park_visual11_vjekyg.jpg", title: "Квотер 3", note: "Один із трьох квотерів парку, свій розмір і свій характер.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual11_cewrz7.jpg" },
-//   { id: "roll-in", mobileImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503280/volt_park_visual10_2_accbsl.jpg", title: "Ролл-ін", note: "Заїзд, з якого стартують у секцію з фігурами.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257520/volt_park_visual10_2_oo1az0.jpg" },
-//   { id: "bank", mobileImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503280/volt_park_visual9_2_nnmnay.jpg", title: "Бенк", note: "Похила поверхня для зв'язок і плавних переходів.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual9_2_jrzknr.jpg" },
-//   { id: "box", mobileImage:  "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503281/volt_park_visual13_l168i9.jpg", title: "Бокс", note: "Один із двох боксів парку — для слайдів і грайндів.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual13_z6hp1g.jpg" },
-//   { id: "jumpbox", mobileImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503281/voltparkvisual3_x9m10k.jpg", title: "Джампбокс", note: "Фігура для стрибків і відпрацювання ейр-трюків.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/voltparkvisual4_rrbeeo.jpg" },
-//   { id: "flybox", mobileImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503281/voltparkvisual4_f9b6hb.jpg", title: "Флайбокс", note: "Одна з фірмових фігур парку з ухилом в ейр.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/voltparkvisual3_kpnpkk.jpg" },
-//   { id: "volcano", mobileImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503280/volt_park_visual5_2_qdoyk5.jpg", title: "Волкано", note: "Фігура для складніших заходів і виходів.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/volt_park_visual5_2_w899yo.jpg" },
-//   { id: "quater2", mobileImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503280/volt_park_visual6_2_jxskkx.jpg", title: "Квотер 2", note: "Другий квотер — частина великої ейр-зони.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual6_2_gl0q0k.jpg" },
-//   { id: "vertwall", mobileImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503280/volt_park_visual8_2_zk97cn.jpg", title: "Vert wall", note: "Вертикальна стіна для найвищого рівня катання.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257519/volt_park_visual8_2_zwmivn.jpg" },
-//   { id: "quater", mobileImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503280/volt_park_visual7_2_qm6fku.jpg", title: "Квотер", note: "Базовий квотер парку, з нього зручно починати.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785257518/volt_park_visual7_2_rrpf7v.jpg" },
-//   { id: "box2", mobileImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503281/volt_park_visual14_rwvnmc.jpg", title: "Бокс", note: "Один із двох боксів парку — для слайдів і грайндів.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual14_dnjash.jpg" },
-//   { id: "wallride", mobileImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785503281/volt_park_visual15_xgkol6.jpg", title: "Бокс", note: "Один із двох боксів парку — для слайдів і грайндів.", image: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785308365/volt_park_visual15_ktwiqp.jpg" },
-// ];
-
-
-
- 
-// const figureById = Object.fromEntries(figures.map((f) => [f.id, f]));
- 
-// // id фигуры, на которой показываем пульсирующую точку-подсказку "тисни/наведи сюди"
-// // (выберите любую заметную/крупную фигуру из списка выше) — работает и на мобилке, и на десктопе
-// const HINT_FIGURE_ID = "box";
- 
-// export default function Skatepark() {
-//   const svgWrapRef = useRef(null);
-//   const layers = useRef({});
-//   const [active, setActive] = useState(null);
-//   const [notePos, setNotePos] = useState({
-//     left: 0,
-//     top: 0,
-//     side: "right",
-//     vertical: "bottom",
-//   });
-
-//   const isTouch =
-//     typeof window !== "undefined" &&
-//     window.matchMedia("(pointer: coarse)").matches;
- 
-//   // Отдельный брейкпоинт под "мобильную" версию SVG/фото (совпадает с max-[720px] в остальной верстке).
-//   // Слушаем через matchMedia + resize, чтобы переключение SVG/фото происходило и при повороте
-//   // экрана / ресайзе окна, а не только при первом рендере.
-//   const [isMobile, setIsMobile] = useState(
-//     () => typeof window !== "undefined" && window.matchMedia("(max-width: 720px)").matches
-//   );
- 
-//   useEffect(() => {
-//     if (typeof window === "undefined") return;
-//     const mq = window.matchMedia("(max-width: 720px)");
-//     const onChange = (e) => setIsMobile(e.matches);
-//     mq.addEventListener("change", onChange);
-//     return () => mq.removeEventListener("change", onChange);
-//   }, []);
- 
-//   const ParkMap = isMobile ? ParkMapMobile : ParkMapDesktop;
-//   const baseImage = isMobile ? BASE_IMAGE_MOBILE : BASE_IMAGE_DESKTOP;
- 
-//   // Подсказка "тут всё кликабельно": на мобилке — шиммер по всій карті + текстовий
-//   // чіп біля пульсуючої точки, на десктопі — текстова підказка над картою + та сама
-//   // пульсуюча точка (щоб було зрозуміло, що по фігурах можна наводити курсором).
-//   // Ховається одразу, тільки-но користувач вибрав першу фігуру (клік/тап/hover/фокус),
-//   // і більше не з'являється — див. showLayer нижче.
-//   const [hasInteracted, setHasInteracted] = useState(false);
-//   const [hintDotPos, setHintDotPos] = useState(null); // { xPercent, yPercent } в координатах viewBox
-//   const shimmerRef = useRef(null);
-
-//   // Секция может быть далеко от старта страницы — если запускать 6-секундный
-//   // таймер подсказки сразу при монтировании, пользователь может дойти до
-//   // карты уже после того, как подсказка "сама" погасла. Поэтому таймер и
-//   // шиммер стартуют только когда секция реально появилась во вьюпорте.
-//   const sectionRef = useRef(null);
-//   const [hasEnteredView, setHasEnteredView] = useState(false);
-
-//   useEffect(() => {
-//     if (typeof IntersectionObserver === "undefined") {
-//       setHasEnteredView(true);
-//       return;
-//     }
-//     const el = sectionRef.current;
-//     if (!el) return;
-
-//     const observer = new IntersectionObserver(
-//       ([entry]) => {
-//         if (entry.isIntersecting) {
-//           setHasEnteredView(true);
-//           observer.disconnect();
-//         }
-//       },
-//       { threshold: 0.25 }
-//     );
-//     observer.observe(el);
-//     return () => observer.disconnect();
-//   }, []);
-
-//   // Появление всей секции скейтпарка при скролле — мягкий fade+slide-up,
-//   // как и у остальных блоков (reveal-паттерн).
-//   useEffect(() => {
-//     const el = sectionRef.current;
-//     if (!el) return;
-//     const ctx = gsap.context(() => {
-//       gsap.fromTo(
-//         el,
-//         { opacity: 0, y: 60 },
-//         {
-//           opacity: 1,
-//           y: 0,
-//           duration: 1,
-//           ease: "power3.out",
-//           scrollTrigger: { trigger: el, start: "top 80%" },
-//         }
-//       );
-//     });
-//     return () => ctx.revert();
-//   }, []);
- 
- 
-
-// const showLayer = (id, clientX) => {
-//   setActive(id);
-//   setHasInteracted(true);
-
-//   const root = svgWrapRef.current;
-//   const path = root?.querySelector(`path#${CSS.escape(id)}`);
-
-//   if (!root || !path) return;
-
-//   const rootBox = root.getBoundingClientRect();
-//   const pathBox = path.getBoundingClientRect();
-
-//   const figureX =
-//     pathBox.left + pathBox.width / 2 - rootBox.left;
-
-//   const figureY =
-//     pathBox.top + pathBox.height / 2 - rootBox.top;
-
-//   const gap = 14;
-
-//   // ==========================================
-//   // МОБИЛЬНЫЙ — карточка сверху или снизу
-//   // ==========================================
-
-//   if (isMobile) {
-//     const cardWidth = Math.min(rootBox.width - 24, 300);
-//     const cardHeight = 145;
-
-//     // Центрируем карточку относительно фигуры
-//     let left = figureX - cardWidth / 2;
-
-//     // Не даём карточке выйти за края
-//     left = Math.max(
-//       12,
-//       Math.min(left, rootBox.width - cardWidth - 12)
-//     );
-
-//     // Сколько места сверху и снизу от фигуры
-//     const spaceTop = pathBox.top - rootBox.top;
-//     const spaceBottom =
-//       rootBox.height -
-//       (pathBox.bottom - rootBox.top);
-
-//     let top;
-//     let vertical;
-
-//     // Если сверху достаточно места — показываем сверху
-//     if (spaceTop >= cardHeight + gap) {
-//       top =
-//         figureY -
-//         pathBox.height / 2 -
-//         cardHeight -
-//         gap;
-
-//       vertical = "top";
-//     } else {
-//       // Иначе показываем снизу
-//       top =
-//         figureY +
-//         pathBox.height / 2 +
-//         gap;
-
-//       vertical = "bottom";
-//     }
-
-//     // Дополнительная защита от выхода за границы
-//     top = Math.max(
-//       12,
-//       Math.min(top, rootBox.height - cardHeight - 12)
-//     );
-
-//     setNotePos({
-//       left,
-//       top,
-//       side: "center",
-//       vertical,
-//     });
-//   }
-
-//   // ==========================================
-//   // ДЕСКТОП — карточка слева или справа
-//   // ==========================================
-
-//   else {
-//     const cardWidth = Math.min(
-//       260,
-//       rootBox.width * 0.38
-//     );
-
-//     const cardHeight = 150;
-
-//     let side = "right";
-
-//     let left =
-//       figureX +
-//       pathBox.width / 2 +
-//       gap;
-
-//     // Справа нет места → ставим слева
-//     if (
-//       left + cardWidth >
-//       rootBox.width - 12
-//     ) {
-//       side = "left";
-
-//       left =
-//         figureX -
-//         pathBox.width / 2 -
-//         cardWidth -
-//         gap;
-//     }
-
-//     left = Math.max(
-//       12,
-//       Math.min(
-//         left,
-//         rootBox.width - cardWidth - 12
-//       )
-//     );
-
-//     let top =
-//       figureY -
-//       cardHeight / 2;
-
-//     top = Math.max(
-//       12,
-//       Math.min(
-//         top,
-//         rootBox.height - cardHeight - 12
-//       )
-//     );
-
-//     setNotePos({
-//       left,
-//       top,
-//       side,
-//       vertical: "center",
-//     });
-//   }
-
-//   // Плавно показываем активную фотографию
-//   Object.entries(layers.current).forEach(
-//     ([key, el]) => {
-//       if (!el) return;
-
-//       gsap.to(el, {
-//         opacity: key === id ? 1 : 0,
-//         duration: 0.35,
-//         ease: "power2.out",
-//         overwrite: true,
-//       });
-//     }
-//   );
-// };
-
-
-
- 
-//   const hideAllLayers = () => {
-//     setActive(null);
-//     Object.values(layers.current).forEach((el) => {
-//       if (!el) return;
-//       gsap.to(el, { opacity: 0, duration: 0.35, ease: "power2.out", overwrite: true });
-//     });
-//   };
- 
-//   useEffect(() => {
-//     if (!hasEnteredView || hasInteracted) return;
-//     // Подсказка гаснет сама через 6с ПОСЛЕ того, как секция появилась во
-//     // вьюпорте — а не через 6с после монтирования страницы. Так подсказка
-//     // всегда застаёт пользователя, если он доскроллил до карты позже.
-//     const timer = setTimeout(() => setHasInteracted(true), 6000);
-//     return () => clearTimeout(timer);
-//   }, [hasEnteredView, hasInteracted]);
- 
-//   // Шиммер-эффект "тут всё кликабельно": светлая диагональная полоса дважды
-//   // проходит по всей карте, когда секция появляется во вьюпорте на мобилке,
-//   // затем сама останавливается. Если пользователь тапнул раньше — showLayer
-//   // уже поставил hasInteracted=true, и таймлайн ниже прерывается досрочно.
-//   useEffect(() => {
-//     if (!isMobile || !hasEnteredView || hasInteracted) return;
-//     const el = shimmerRef.current;
-//     if (!el) return;
- 
-//     const tl = gsap.timeline({ repeat: 1, repeatDelay: 0.6, delay: 0.5 });
-//     tl.fromTo(
-//       el,
-//       { xPercent: -130, opacity: 0.9 },
-//       { xPercent: 130, opacity: 0.9, duration: 1.1, ease: "power1.inOut" }
-//     );
- 
-//     return () => tl.kill();
-//   }, [isMobile, hasEnteredView, hasInteracted]);
- 
-//   useEffect(() => {
-//     const root = svgWrapRef.current;
-//     if (!root) return;
- 
-//     // Прозрачность/курсор/pointer-events у path теперь задаются CSS-классами
-//     // на обёртке (см. className ниже) — они применяются сразу при первом рендере,
-//     // ДО этого эффекта, поэтому больше нет вспышки цветных path при загрузке.
-//     // Здесь остаётся только a11y-разметка и обработчики событий.
- 
-//     const paths = root.querySelectorAll("path[id]");
-//     const cleanupFns = [];
- 
-//     // Позиция точки-подсказки: берём реальный bbox path'а HINT_FIGURE_ID
-//     // и переводим его в проценты относительно viewBox, чтобы точка легла
-//     // ровно на фигуру при любом размере блока. Считаем и на мобилке, и на
-//     // десктопе — точка-подсказка теперь показывается в обоих случаях.
-//     const svgEl = root.querySelector("svg");
-//     const hintPath = root.querySelector(`path#${CSS.escape(HINT_FIGURE_ID)}`);
-//     if (svgEl && hintPath && svgEl.viewBox?.baseVal) {
-//       const { x: vbX, y: vbY, width: vbW, height: vbH } = svgEl.viewBox.baseVal;
-//       const bbox = hintPath.getBBox();
-//       const cx = bbox.x + bbox.width / 2;
-//       const cy = bbox.y + bbox.height / 2;
-//       setHintDotPos({
-//         xPercent: ((cx - vbX) / vbW) * 100,
-//         yPercent: ((cy - vbY) / vbH) * 100,
-//       });
-//     }
- 
-//     paths.forEach((path) => {
-//       const figure = figureById[path.id];
-//       if (!figure) return;
- 
-//       path.setAttribute("tabindex", "0");
-//       path.setAttribute("role", "button");
-//       path.setAttribute("aria-label", figure.title);
- 
-//       if (isTouch) {
-//         const onTap = (e) => {
-//           e.stopPropagation();
-//           setActive((prev) => {
-//             const next = prev === figure.id ? null : figure.id;
-//             if (next) showLayer(next, e.clientX);
-//             else hideAllLayers();
-//             return next;
-//           });
-//         };
-//         path.addEventListener("click", onTap);
-//         cleanupFns.push(() => path.removeEventListener("click", onTap));
-//       } else {
-//         const onEnter = (e) => showLayer(figure.id, e.clientX);
-//         // const onMove = (e) => {
-//         //   if (!isMobile && typeof window !== "undefined") {
-//         //     setNotePos({ side: e.clientX > window.innerWidth / 2 ? "left" : "right" });
-//         //   }
-//         // };
-//         const onLeave = () => hideAllLayers();
-//         const onFocus = (e) => showLayer(figure.id, e.target.getBoundingClientRect().x);
-//         const onBlur = () => hideAllLayers();
- 
-//         path.addEventListener("mouseenter", onEnter);
-//         // path.addEventListener("mousemove", onMove);
-//         path.addEventListener("mouseleave", onLeave);
-//         path.addEventListener("focus", onFocus);
-//         path.addEventListener("blur", onBlur);
- 
-//         cleanupFns.push(() => {
-//           path.removeEventListener("mouseenter", onEnter);
-//           // path.removeEventListener("mousemove", onMove);
-//           path.removeEventListener("mouseleave", onLeave);
-//           path.removeEventListener("focus", onFocus);
-//           path.removeEventListener("blur", onBlur);
-//         });
-//       }
-//     });
- 
-//     let outsideTapHandler;
-//     if (isTouch) {
-//       outsideTapHandler = (e) => {
-//         if (!root.contains(e.target)) hideAllLayers();
-//       };
-//       document.addEventListener("click", outsideTapHandler);
-//     }
- 
-//     return () => {
-//       cleanupFns.forEach((fn) => fn());
-//       if (outsideTapHandler) document.removeEventListener("click", outsideTapHandler);
-//     };
-//   }, [isTouch, isMobile]);
- 
-//   const activeFigure = active ? figureById[active] : null;
- 
-//   return (
-//     <section ref={sectionRef} className="relative bg-[#0a0a0a] min-h-[100svh] flex flex-col justify-center">
-//       {/* Заголовок-підказка над картою — той самий патерн, що й у Gallery/Categories,
-//           щоб зона одразу читалась як окрема інтерактивна секція, а не просто фото. */}
-//       <div className="max-w-[640px] mx-auto pt-16 pb-8 max-[720px]:pt-12 max-[720px]:pb-6 px-6 text-center relative z-[2]">
-//         <span className="inline-block font-mono text-[11px] tracking-[0.14em] uppercase text-[#d4ff3f] mb-2.5">
-//           Карта парку
-//         </span>
-//         <h2 className="font-['Anton','Arial_Narrow',sans-serif] text-[clamp(28px,5vw,48px)] leading-none m-0 mb-3 text-[#f2f0e6] uppercase">
-//           Інтерактивна карта
-//         </h2>
-//         <p className="text-[15px] leading-[1.5] text-[#8a8a83] m-0">
-//           {isTouch
-//             ? "Торкнись будь-якої фігури на карті — з'явиться фото і опис саме цього елемента."
-//             : "Наведи курсор на будь-яку фігуру на карті — з'явиться фото і опис саме цього елемента."}
-//         </p>
-//       </div>
-
-//       {/* data-cursor-trail="off" выключает CursorImageTrail именно в этой зоне.
-//           Высота этого блока теперь фиксирована (h-[100svh] на карте секции),
-//           а фото растягивается через object-cover, чтобы карта помещалась
-//           в один экран вместе с заголовком выше. SVG (viewBox 2477x1274) и
-//           все остальные слои с absolute inset-0 растягиваются на 100%/100%
-//           этого же блока и совпадают с фото автоматически. */}
-//       <div
-//         data-cursor-trail="off"
-//         className="relative w-full flex-1 min-h-0 overflow-hidden select-none bg-[#0a0a0a]"
-//       >
-//         {/* Базовое фото — растягивается на всю доступную высоту блока */}
-//         <img
-//           className="relative z-[1] block w-full h-full object-cover object-top pointer-events-none"
-//           src={baseImage}
-//           alt="Скейтпарк, загальний вигляд"
-//         />
-
-//         {/* Слой картинки для каждой фигуры — проявляется поверх базового при наведении */}
-//         {figures.map((item) => (
-//           <img
-//             key={item.id}
-//             ref={(el) => (layers.current[item.id] = el)}
-//             className="absolute inset-0 z-[2] w-full h-full object-cover object-top opacity-0 pointer-events-none will-change-[opacity]"
-//             src={isMobile && item.mobileImage ? item.mobileImage : item.image}
-//             alt={item.title}
-//           />
-//         ))}
-
-//         {/* SVG поверх всего — прозрачные path работают как hit-зоны для наведения.
-//             fill-transparent/stroke-transparent/pointer-events-auto/cursor-pointer
-//             заданы CSS-классами (а не inline-стилями в JS), поэтому они применяются
-//             мгновенно при первом рендере — никакой вспышки цветных path при загрузке. */}
-//         <div
-//           ref={svgWrapRef}
-//           className="absolute inset-0 z-10 pointer-events-none [&_path]:fill-transparent [&_path]:stroke-transparent [&_path]:pointer-events-auto [&_path]:cursor-pointer [&_path]:outline-none"
-//         >
-//           <ParkMap
-//             className="w-full h-full block"
-//             preserveAspectRatio="xMidYMid slice"
-//           />
-//         </div>
-
-//         {/* Подсказка "тут всё кликабельно" — показывается до первого выбора фигуры,
-//             на мобилке и на десктопе. Мобилка: шиммер + текстовий чіп біля точки.
-//             Десктоп: текстовий чіп біля точки з підказкою навести курсор. */}
-//         {hasEnteredView && !hasInteracted && (
-//           <>
-//             {/* Диагональная светлая полоса — только на мобилке, дважды пробегает по карте */}
-//             {isMobile && (
-//               <div
-//                 ref={shimmerRef}
-//                 className="absolute inset-0 z-[15] pointer-events-none opacity-0"
-//                 style={{
-//                   background:
-//                     "linear-gradient(75deg, transparent 42%, rgba(242,240,230,0.55) 50%, transparent 58%)",
-//                 }}
-//               />
-//             )}
-
-//             {/* Пульсирующая точка-подсказка на выбранной фигуре (HINT_FIGURE_ID) +
-//                 текстовый чип рядом с ней, чтобы было однозначно понятно, что делать. */}
-//             {hintDotPos && (
-//               <div
-//                 className="absolute z-[16] -translate-x-1/2 -translate-y-1/2 pointer-events-none"
-//                 style={{ left: `${hintDotPos.xPercent}%`, top: `${hintDotPos.yPercent}%` }}
-//               >
-//                 <span className="absolute inset-0 rounded-full bg-[#d4ff3f]/70 animate-ping" />
-//                 <span className="relative block w-3.5 h-3.5 rounded-full bg-[#d4ff3f] shadow-[0_0_10px_rgba(212,255,63,0.8)]" />
-
-//                 <span
-//                   className={`absolute left-1/2 -translate-x-1/2 whitespace-nowrap font-mono text-[11px] tracking-[0.04em] uppercase text-[#0d0d0d] bg-[#d4ff3f] px-2.5 py-1 shadow-[0_6px_16px_rgba(0,0,0,0.4)] ${
-//                     isMobile ? "-top-9" : "-top-10"
-//                   }`}
-//                 >
-//                   {isMobile ? "👆 Тисни на фігуру" : "🖱 Наведи курсором"}
-//                 </span>
-//               </div>
-//             )}
-//           </>
-//         )}
-
-//         {/* Журнальная заметка — на десктопе сбоку от активной фигуры,
-//             на мобилке снизу/сверху рядом с ней */}
-//         <div
-//           className={`
-//             absolute z-20
-//             w-[min(260px,calc(100%-24px))]
-//             p-[14px_16px_16px]
-//             bg-[rgba(242,240,230,0.78)]
-//             backdrop-blur-xl
-//             border border-white/40
-//             text-[#111]
-//             shadow-[0_10px_30px_rgba(0,0,0,0.3)]
-//             pointer-events-none
-//             opacity-0
-//             transition-[opacity,transform] duration-250 ease-out
-//             ${activeFigure ? "opacity-100" : ""}
-//           `}
-//           style={
-//             activeFigure
-//               ? {
-//                   left: `${notePos.left}px`,
-//                   top: `${notePos.top}px`,
-//                   transform: isMobile
-//                     ? "rotate(-1deg)"
-//                     : notePos.side === "left"
-//                     ? "rotate(2deg)"
-//                     : "rotate(-2deg)",
-//                 }
-//               : undefined
-//           }
-//         >
-//           {activeFigure && (
-//             <>
-//               <span className="inline-block font-['Space_Mono',monospace] text-[10px] tracking-[0.12em] uppercase bg-[#111] text-[#d4ff3f] px-1.5 py-0.5 mb-2">
-//                 Зона парку
-//               </span>
-
-//               <h4 className="m-0 mb-1.5 font-['Anton','Arial_Narrow',sans-serif] text-[22px] max-[720px]:text-[18px] leading-none uppercase">
-//                 {activeFigure.title}
-//               </h4>
-
-//               <p className="m-0 text-[13px] max-[720px]:text-[12px] leading-[1.4]">
-//                 {activeFigure.note}
-//               </p>
-//             </>
-//           )}
-//         </div>
-//       </div>
-//     </section>
-//   );
-// } 
 // import { useRef, useState, useEffect } from "react";
 // import gsap from "gsap";
 // import "./Skatepark.css";

@@ -2701,15 +2701,13 @@ function Hero() {
 
 const SECTION_ORDER = ["hero", "info-stats", "skatepark", "gallery", "categories", "cta"];
 
-function ScrollNextArrow() {
-  const btnRef = useRef(null);
+function useSectionScroll() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  // Пока идёт скролл — стрелка полупрозрачная, чтобы не мешать чтению
-  // текущей секции; как только скролл остановился — снова непрозрачная.
+  // Пока идёт скролл — стрелки полупрозрачные, чтобы не мешать чтению
+  // текущей секции; как только скролл остановился — снова непрозрачные.
   const [isScrolling, setIsScrolling] = useState(false);
   const scrollTimeout = useRef(null);
 
-  // Определяем текущую секцию по скроллу
   useEffect(() => {
     const handleScroll = () => {
       let idx = 0;
@@ -2735,20 +2733,27 @@ function ScrollNextArrow() {
     };
   }, []);
 
-  const isLast = currentIndex >= SECTION_ORDER.length - 1;
+  return { currentIndex, isScrolling };
+}
 
-  // Появление при монтировании + запуск "дыхательного" бега вверх-вниз
+function ScrollArrowButton({ direction, visible, isScrolling, onClick, delay }) {
+  const btnRef = useRef(null);
+
+  // Появление при монтировании + запуск "дыхательного" бега вверх-вниз.
+  // Стрелка "вверх" бежит в противоположную сторону (вверх-вниз зеркально),
+  // чтобы направление дыхания совпадало с направлением клика.
   useEffect(() => {
     const el = btnRef.current;
     if (!el) return;
 
-    const tl = gsap.timeline({ delay: 1.4 }); // выходит после основной анимации Hero
+    const breathDistance = direction === "down" ? 10 : -10;
+    const tl = gsap.timeline({ delay });
     tl.fromTo(
       el,
       { opacity: 0, y: 20, scale: 0.85 },
       { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: "power3.out" }
     ).to(el, {
-      y: 10,
+      y: breathDistance,
       duration: 0.9,
       ease: "power1.inOut",
       repeat: -1,
@@ -2756,41 +2761,71 @@ function ScrollNextArrow() {
     });
 
     return () => tl.kill();
-  }, []);
+  }, [direction, delay]);
 
-  // Плавное скрытие/показ на последней секции + полупрозрачность во время скролла
+  // Плавное скрытие/показ + полупрозрачность во время скролла
   useEffect(() => {
     const el = btnRef.current;
     if (!el) return;
     gsap.to(el, {
-      opacity: isLast ? 0 : isScrolling ? 0.35 : 1,
+      opacity: !visible ? 0 : isScrolling ? 0.35 : 1,
       duration: 0.3,
       ease: "power2.out",
-      pointerEvents: isLast ? "none" : "auto",
+      pointerEvents: !visible ? "none" : "auto",
     });
-  }, [isLast, isScrolling]);
-
-  const handleClick = () => {
-    const nextId = SECTION_ORDER[Math.min(currentIndex + 1, SECTION_ORDER.length - 1)];
-    document.getElementById(nextId)?.scrollIntoView({ behavior: "smooth" });
-  };
+  }, [visible, isScrolling]);
 
   return (
     <button
       ref={btnRef}
       type="button"
-      onClick={handleClick}
-      aria-label="Прокрутити до наступного блоку"
-      className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center gap-2 bg-transparent border-none cursor-pointer opacity-0"
+      onClick={onClick}
+      aria-label={direction === "down" ? "Прокрутити до наступного блоку" : "Прокрутити до попереднього блоку"}
+      className="z-40 flex flex-col items-center gap-2 bg-transparent border-none cursor-pointer opacity-0"
     >
       <img
         src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785611591/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._22_12_58_tjii8z.png"
-        alt="Скролити далі"
-        className="w-[clamp(80px,30vw,140px)] h-auto object-contain contrast-[150%]"
+        alt={direction === "down" ? "Скролити далі" : "Скролити назад"}
+        className={`w-[clamp(56px,20vw,90px)] h-auto object-contain contrast-[150%] ${
+          direction === "up" ? "rotate-180" : ""
+        }`}
       />
     </button>
   );
-} 
+}
+
+function ScrollNav() {
+  const { currentIndex, isScrolling } = useSectionScroll();
+  const isFirst = currentIndex <= 0;
+  const isLast = currentIndex >= SECTION_ORDER.length - 1;
+
+  const goTo = (dir) => {
+    const nextIndex =
+      dir === "down"
+        ? Math.min(currentIndex + 1, SECTION_ORDER.length - 1)
+        : Math.max(currentIndex - 1, 0);
+    document.getElementById(SECTION_ORDER[nextIndex])?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  return (
+    <div className="fixed bottom-8 max-[720px]:bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-5 max-[720px]:gap-3">
+      <ScrollArrowButton
+        direction="up"
+        visible={!isFirst}
+        isScrolling={isScrolling}
+        onClick={() => goTo("up")}
+        delay={1.4}
+      />
+      <ScrollArrowButton
+        direction="down"
+        visible={!isLast}
+        isScrolling={isScrolling}
+        onClick={() => goTo("down")}
+        delay={1.4}
+      />
+    </div>
+  );
+}
 
 function InfoStats() {
   const ref = useScrollReveal(".reveal");
@@ -3236,7 +3271,7 @@ export default function LandingPage() {
       <Header />
       <Hero />
       <InfoStats />
-   <ScrollNextArrow />
+   <ScrollNav />
       {/* <Skatepark /> */}
       <div id="skatepark">
         <Skatepark />
@@ -3248,6 +3283,7 @@ export default function LandingPage() {
     </div>
   );
 }
+//топчик!!!!!!!!!!!!!!!!! 
 // import { useEffect, useRef, useState } from "react";
 // import gsap from "gsap";
 // import { ScrollTrigger } from "gsap/ScrollTrigger";
