@@ -2997,7 +2997,7 @@ function Gallery() {
           </div>
         ))}
       </div>
-      <div className="flex gap-2.5 justify-center mt-2 max-[720px]:mt-1">
+      {/* <div className="flex gap-2.5 justify-center mt-2 max-[720px]:mt-1">
         <button
           aria-label="Назад"
           onClick={() => scrollBy(-1)}
@@ -3014,7 +3014,30 @@ function Gallery() {
         >
           →
         </button>
-      </div>
+      </div> */}
+      <button
+  aria-label="Назад"
+  onClick={() => scrollBy(-1)}
+  className="flex items-center justify-center w-10 h-10 max-[720px]:w-8 max-[720px]:h-8 rounded-full border border-[#d4ff3f] bg-transparent cursor-pointer transition-colors duration-200 hover:bg-[#d4ff3f]"
+>
+  <img
+    src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785611591/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._22_12_58_tjii8z.png"
+    alt=""
+    className="w-4 h-4 object-contain rotate-90"
+  />
+</button>
+
+<button
+  aria-label="Вперёд"
+  onClick={() => scrollBy(1)}
+  className="flex items-center justify-center w-10 h-10 max-[720px]:w-8 max-[720px]:h-8 rounded-full border border-[#d4ff3f] bg-transparent cursor-pointer transition-colors duration-200 hover:bg-[#d4ff3f]"
+>
+  <img
+    src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785611591/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._22_12_58_tjii8z.png"
+    alt=""
+    className="w-4 h-4 object-contain -rotate-90"
+  />
+</button> 
     </section>
   );
 }
