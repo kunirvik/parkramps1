@@ -2942,7 +2942,7 @@ function Gallery() {
         <h2 className="font-['Anton','Arial_Narrow',sans-serif] text-[clamp(24px,5vw,48px)] leading-none m-0 mb-3 max-[720px]:mb-2 text-[#f2f0e6] uppercase">
           Слідкуй за процесом
         </h2>
-        <p className="text-[15px] max-[720px]:text-[12.5px] leading-[1.5] max-[720px]:leading-[1.35] text-[#8a8a83] m-0 mb-5 max-[720px]:mb-3">
+        <p className="text-[15px] max-[720px]:text-[12.5px] leading-[1.5] max-[720px]:leading-[1.35] text-[#FFFF8F] m-0 mb-5 max-[720px]:mb-3">
           Сезон надворі закінчиться, але ми вже готуємо для вас дещо цікаве — фото і відео
           прямо з майданчика.
         </p>
@@ -3211,7 +3211,7 @@ function CTA() {
   };
 
   return (
-    <section id="cta" className="relative h-[100svh] flex items-center justify-center py-16 max-[720px]:py-6 px-5 text-center bg-[6D857C] overflow-hidden">
+    <section id="cta" className="relative h-[100svh] flex items-center justify-center py-16 max-[720px]:py-6 px-5 text-center bg-[#707070] overflow-hidden">
       <div className="absolute top-10 right-[6%] max-[720px]:top-4 max-[720px]:right-4 font-mono text-xs tracking-[0.1em] uppercase text-[#ff3d1a] border-2 border-[#ff3d1a] rounded-full w-24 h-24 max-[720px]:w-[64px] max-[720px]:h-[64px] max-[720px]:text-[9px] flex items-center justify-center text-center rotate-[-14deg] p-1.5">
         Місця обмежені
       </div>
@@ -3219,7 +3219,7 @@ function CTA() {
         <h2 className="font-['Anton','Arial_Narrow',sans-serif] text-[clamp(24px,5vw,48px)] uppercase m-0 mb-3.5 max-[720px]:mb-2 text-[#f2f0e6]">
           Запишись на тестове катання
         </h2>
-        <p className="text-[#8a8a83] text-[15px] max-[720px]:text-[12.5px] leading-[1.55] max-[720px]:leading-[1.35] m-0 mb-8 max-[720px]:mb-4">
+        <p className="text-[#FFFF8F] text-[15px] max-[720px]:text-[12.5px] leading-[1.55] max-[720px]:leading-[1.35] m-0 mb-8 max-[720px]:mb-4">
           Ще до відкриття — обмежена кількість місць. Community-партнери отримують проходки
           для медіа на етапі будівництва за домовленістю, плюс проходки на відкриття.
         </p>
