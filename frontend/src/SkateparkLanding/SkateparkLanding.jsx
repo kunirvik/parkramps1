@@ -3211,7 +3211,7 @@ function CTA() {
   };
 
   return (
-    <section id="cta" className="relative h-[100svh] flex items-center justify-center py-16 max-[720px]:py-6 px-5 text-center bg-[#0d0d0d] overflow-hidden">
+    <section id="cta" className="relative h-[100svh] flex items-center justify-center py-16 max-[720px]:py-6 px-5 text-center bg-[6D857C] overflow-hidden">
       <div className="absolute top-10 right-[6%] max-[720px]:top-4 max-[720px]:right-4 font-mono text-xs tracking-[0.1em] uppercase text-[#ff3d1a] border-2 border-[#ff3d1a] rounded-full w-24 h-24 max-[720px]:w-[64px] max-[720px]:h-[64px] max-[720px]:text-[9px] flex items-center justify-center text-center rotate-[-14deg] p-1.5">
         Місця обмежені
       </div>

@@ -3844,7 +3844,7 @@ const showLayer = (id, clientX) => {
   const activeFigure = active ? figureById[active] : null;
  
   return (
-    <section ref={sectionRef} className="relative bg-[rgba(10,10,10,0.9)] h-[100svh] flex flex-col justify-center overflow-hidden">
+    <section ref={sectionRef} className="relative bg-[#6D857C] h-[100svh] flex flex-col justify-center overflow-hidden">
       {/* Заголовок-підказка над картою — той самий патерн, що й у Gallery/Categories,
           щоб зона одразу читалась як окрема інтерактивна секція, а не просто фото. */}
       <div className="max-w-[640px] mx-auto pt-16 pb-6 max-[720px]:pt-8 max-[720px]:pb-3 px-6 text-center relative z-[2]">
