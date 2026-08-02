@@ -3001,8 +3001,10 @@ function Gallery() {
         <button
           aria-label="Назад"
           onClick={() => scrollBy(-1)}
-          className="w-10 h-10 max-[720px]:w-8 max-[720px]:h-8 rounded-full border border-[#d4ff3f] bg-transparent text-[#d4ff3f] text-base cursor-pointer transition-colors duration-200 hover:bg-[#d4ff3f] hover:text-[#0d0d0d] focus-visible:bg-[#d4ff3f] focus-visible:text-[#0d0d0d]"
-        >
+          // className="w-10 h-10 max-[720px]:w-8 max-[720px]:h-8 rounded-full border border-[#d4ff3f] bg-transparent text-[#d4ff3f] text-base cursor-pointer transition-colors duration-200 hover:bg-[#d4ff3f] hover:text-[#0d0d0d] focus-visible:bg-[#d4ff3f] focus-visible:text-[#0d0d0d]"
+                className="w-10 h-10 max-[720px]:w-8 max-[720px]:h-8 rounded-full border border-[#d4ff3f] bg-transparent text-[#d4ff3f] text-base cursor-pointer transition-colors duration-200 hover:bg-[#d4ff3f] hover:text-[#0d0d0d] focus-visible:bg-[#d4ff3f] focus-visible:text-[#0d0d0d]"
+
+      >
           ←
         </button>
         <button
