@@ -2864,7 +2864,7 @@ function InfoStats() {
       <div className="absolute inset-0 bg-black/55" />
       <div className="relative z-[2] w-full max-w-[980px] mx-auto flex flex-col gap-8 max-[720px]:gap-4 items-center">
         <div
-          className="reveal relative bg-[#f2f0e6] text-[#0d0d0d] px-7 py-6 max-[720px]:px-5 max-[720px]:py-4 max-w-[560px] max-[720px]:max-w-[92vw] shadow-[0_14px_30px_rgba(0,0,0,0.4)] before:content-[''] before:absolute before:-top-3.5 before:left-1/2 before:-translate-x-1/2 before:rotate-[-3deg] before:w-[110px] before:h-7 before:bg-[#d4ff3f]/85 before:shadow-[0_2px_6px_rgba(0,0,0,0.3)]"
+          className="reveal relative bg-[#FFFF8F] text-[#0d0d0d] px-7 py-6 max-[720px]:px-5 max-[720px]:py-4 max-w-[560px] max-[720px]:max-w-[92vw] shadow-[0_14px_30px_rgba(0,0,0,0.4)] before:content-[''] before:absolute before:-top-3.5 before:left-1/2 before:-translate-x-1/2 before:rotate-[-3deg] before:w-[110px] before:h-7 before:bg-[#d4ff3f]/85 before:shadow-[0_2px_6px_rgba(0,0,0,0.3)]"
           data-rotate="-2"
         >
           <span className="inline-block font-mono text-[11px] uppercase tracking-[0.12em] bg-[#0d0d0d] text-[#d4ff3f] px-2 py-0.5 mb-2.5 max-[720px]:mb-1.5">
@@ -2934,7 +2934,7 @@ function Gallery() {
   };
 
   return (
-    <section id="gallery" className="h-[100svh] flex flex-col justify-center py-16 max-[720px]:py-6 px-4 max-[720px]:px-4 bg-[#050505] overflow-hidden">
+    <section id="gallery" className="h-[100svh] flex flex-col justify-center py-16 max-[720px]:py-6 px-4 max-[720px]:px-4 bg-[#707070] overflow-hidden">
       <div className="max-w-[640px] mx-auto mb-10 max-[720px]:mb-4 px-6 text-center relative z-[2]">
         <span className="inline-block font-mono text-[11px] max-[720px]:text-[10px] tracking-[0.14em] uppercase text-[#d4ff3f] mb-2.5 max-[720px]:mb-1.5">
           Стрічка будівництва

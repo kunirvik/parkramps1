@@ -3497,19 +3497,11 @@ export default function Skatepark() {
   const ParkMap = isMobile ? ParkMapMobile : ParkMapDesktop;
   const baseImage = isMobile ? BASE_IMAGE_MOBILE : BASE_IMAGE_DESKTOP;
  
-  // Подсказка "тут всё кликабельно": на мобилке — шиммер по всій карті + текстовий
-  // чіп біля пульсуючої точки, на десктопі — текстова підказка над картою + та сама
-  // пульсуюча точка (щоб було зрозуміло, що по фігурах можна наводити курсором).
-  // Ховається одразу, тільки-но користувач вибрав першу фігуру (клік/тап/hover/фокус),
-  // і більше не з'являється — див. showLayer нижче.
   const [hasInteracted, setHasInteracted] = useState(false);
   const [hintDotPos, setHintDotPos] = useState(null); // { xPercent, yPercent } в координатах viewBox
   const shimmerRef = useRef(null);
 
-  // Секция может быть далеко от старта страницы — если запускать 6-секундный
-  // таймер подсказки сразу при монтировании, пользователь может дойти до
-  // карты уже после того, как подсказка "сама" погасла. Поэтому таймер и
-  // шиммер стартуют только когда секция реально появилась во вьюпорте.
+  
   const sectionRef = useRef(null);
   const [hasEnteredView, setHasEnteredView] = useState(false);
 
@@ -3534,8 +3526,7 @@ export default function Skatepark() {
     return () => observer.disconnect();
   }, []);
 
-  // Появление всей секции скейтпарка при скролле — мягкий fade+slide-up,
-  // как и у остальных блоков (reveal-паттерн).
+  
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
@@ -3585,10 +3576,10 @@ const showLayer = (id, clientX) => {
     const cardWidth = Math.min(rootBox.width - 24, 300);
     const cardHeight = 145;
 
-    // Центрируем карточку относительно фигуры
+  
     let left = figureX - cardWidth / 2;
 
-    // Не даём карточке выйти за края
+  
     left = Math.max(
       12,
       Math.min(left, rootBox.width - cardWidth - 12)
@@ -3603,7 +3594,7 @@ const showLayer = (id, clientX) => {
     let top;
     let vertical;
 
-    // Если сверху достаточно места — показываем сверху
+   
     if (spaceTop >= cardHeight + gap) {
       top =
         figureY -
@@ -3622,7 +3613,7 @@ const showLayer = (id, clientX) => {
       vertical = "bottom";
     }
 
-    // Дополнительная защита от выхода за границы
+
     top = Math.max(
       12,
       Math.min(top, rootBox.height - cardHeight - 12)
@@ -3697,7 +3688,7 @@ const showLayer = (id, clientX) => {
     });
   }
 
-  // Плавно показываем активную фотографию
+  
   Object.entries(layers.current).forEach(
     ([key, el]) => {
       if (!el) return;
@@ -3725,17 +3716,12 @@ const showLayer = (id, clientX) => {
  
   useEffect(() => {
     if (!hasEnteredView || hasInteracted) return;
-    // Подсказка гаснет сама через 6с ПОСЛЕ того, как секция появилась во
-    // вьюпорте — а не через 6с после монтирования страницы. Так подсказка
-    // всегда застаёт пользователя, если он доскроллил до карты позже.
+    
     const timer = setTimeout(() => setHasInteracted(true), 6000);
     return () => clearTimeout(timer);
   }, [hasEnteredView, hasInteracted]);
  
-  // Шиммер-эффект "тут всё кликабельно": светлая диагональная полоса дважды
-  // проходит по всей карте, когда секция появляется во вьюпорте на мобилке,
-  // затем сама останавливается. Если пользователь тапнул раньше — showLayer
-  // уже поставил hasInteracted=true, и таймлайн ниже прерывается досрочно.
+  
   useEffect(() => {
     if (!isMobile || !hasEnteredView || hasInteracted) return;
     const el = shimmerRef.current;
@@ -3755,18 +3741,11 @@ const showLayer = (id, clientX) => {
     const root = svgWrapRef.current;
     if (!root) return;
  
-    // Прозрачность/курсор/pointer-events у path теперь задаются CSS-классами
-    // на обёртке (см. className ниже) — они применяются сразу при первом рендере,
-    // ДО этого эффекта, поэтому больше нет вспышки цветных path при загрузке.
-    // Здесь остаётся только a11y-разметка и обработчики событий.
  
     const paths = root.querySelectorAll("path[id]");
     const cleanupFns = [];
  
-    // Позиция точки-подсказки: берём реальный bbox path'а HINT_FIGURE_ID
-    // и переводим его в проценты относительно viewBox, чтобы точка легла
-    // ровно на фигуру при любом размере блока. Считаем и на мобилке, и на
-    // десктопе — точка-подсказка теперь показывается в обоих случаях.
+    
     const svgEl = root.querySelector("svg");
     const hintPath = root.querySelector(`path#${CSS.escape(HINT_FIGURE_ID)}`);
     if (svgEl && hintPath && svgEl.viewBox?.baseVal) {
@@ -3802,11 +3781,7 @@ const showLayer = (id, clientX) => {
         cleanupFns.push(() => path.removeEventListener("click", onTap));
       } else {
         const onEnter = (e) => showLayer(figure.id, e.clientX);
-        // const onMove = (e) => {
-        //   if (!isMobile && typeof window !== "undefined") {
-        //     setNotePos({ side: e.clientX > window.innerWidth / 2 ? "left" : "right" });
-        //   }
-        // };
+
         const onLeave = () => hideAllLayers();
         const onFocus = (e) => showLayer(figure.id, e.target.getBoundingClientRect().x);
         const onBlur = () => hideAllLayers();
@@ -3854,32 +3829,26 @@ const showLayer = (id, clientX) => {
         <h2 className="font-['Anton','Arial_Narrow',sans-serif] text-[clamp(22px,5vw,48px)] leading-none m-0 mb-3 max-[720px]:mb-1 text-[#f2f0e6] uppercase">
           Інтерактивна карта
         </h2>
-        <p className="text-[15px] max-[720px]:text-[12px] leading-[1.5] max-[720px]:leading-[1.3] text-[#8a8a83] m-0 max-[720px]:hidden">
+        <p className="text-[15px] max-[720px]:text-[12px] leading-[1.5] max-[720px]:leading-[1.3] text-[#FFFF8F] m-0 max-[720px]:hidden">
           {isTouch
             ? "Торкнись будь-якої фігури на карті — з'явиться фото і опис саме цього елемента."
             : "Наведи курсор на будь-яку фігуру на карті — з'явиться фото і опис саме цього елемента."}
         </p>
       </div>
 
-      {/* data-cursor-trail="off" выключает CursorImageTrail именно в этой зоне.
-          Блок занимает весь остаток экрана (flex-1). Фото и SVG используют
-          object-contain / preserveAspectRatio="xMidYMid meet" — то есть карта
-          масштабируется ЦЕЛИКОМ, без обрезки (в отличие от object-cover/"slice",
-          который срезал часть фигур, если пропорции контейнера не совпадали
-          с пропорциями фото). Если пропорции не совпадают — по бокам или
-          сверху/снизу просто чёрные поля, а не обрезанная карта. */}
+  
       <div
         data-cursor-trail="off"
         className="relative w-full flex-1 min-h-0 overflow-hidden select-none bg-[#707070]"
       >
-        {/* Базовое фото — вписывается целиком в доступную область без обрезки */}
+
         <img
           className="relative z-[1] block w-full h-full object-contain pointer-events-none"
           src={baseImage}
           alt="Скейтпарк, загальний вигляд"
         />
 
-        {/* Слой картинки для каждой фигуры — проявляется поверх базового при наведении */}
+       
         {figures.map((item) => (
           <img
             key={item.id}
@@ -3890,10 +3859,7 @@ const showLayer = (id, clientX) => {
           />
         ))}
 
-        {/* SVG поверх всего — прозрачные path работают как hit-зоны для наведения.
-            preserveAspectRatio="xMidYMid meet" (аналог object-contain) — SVG
-            масштабируется той же логикой, что и фото выше, поэтому хитбоксы
-            фигур всегда совпадают с тем, что реально видно на экране. */}
+      
         <div
           ref={svgWrapRef}
           className="absolute inset-0 z-10 pointer-events-none [&_path]:fill-transparent [&_path]:stroke-transparent [&_path]:pointer-events-auto [&_path]:cursor-pointer [&_path]:outline-none"
@@ -3904,12 +3870,10 @@ const showLayer = (id, clientX) => {
           />
         </div>
 
-        {/* Подсказка "тут всё кликабельно" — показывается до первого выбора фигуры,
-            на мобилке и на десктопе. Мобилка: шиммер + текстовий чіп біля точки.
-            Десктоп: текстовий чіп біля точки з підказкою навести курсор. */}
+       
         {hasEnteredView && !hasInteracted && (
           <>
-            {/* Диагональная светлая полоса — только на мобилке, дважды пробегает по карте */}
+          
             {isMobile && (
               <div
                 ref={shimmerRef}
@@ -3921,8 +3885,7 @@ const showLayer = (id, clientX) => {
               />
             )}
 
-            {/* Пульсирующая точка-подсказка на выбранной фигуре (HINT_FIGURE_ID) +
-                текстовый чип рядом с ней, чтобы было однозначно понятно, что делать. */}
+            
             {hintDotPos && (
               <div
                 className="absolute z-[16] -translate-x-1/2 -translate-y-1/2 pointer-events-none"
