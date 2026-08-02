@@ -2701,6 +2701,66 @@ function Hero() {
 
 const SECTION_ORDER = ["hero", "info-stats", "skatepark", "gallery", "categories", "cta"];
 
+function ScrollTopArrow() {
+  const btnRef = useRef(null);
+  const [isLast, setIsLast] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const scrollTimeout = useRef(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const lastId = SECTION_ORDER[SECTION_ORDER.length - 1];
+      const el = document.getElementById(lastId);
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        setIsLast(rect.top <= window.innerHeight * 0.5);
+      }
+      setIsScrolling(true);
+      clearTimeout(scrollTimeout.current);
+      scrollTimeout.current = setTimeout(() => setIsScrolling(false), 150);
+    };
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+      clearTimeout(scrollTimeout.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    const el = btnRef.current;
+    if (!el) return;
+    gsap.to(el, {
+      opacity: isLast ? (isScrolling ? 0.35 : 1) : 0,
+      duration: 0.3,
+      ease: "power2.out",
+      pointerEvents: isLast ? "auto" : "none",
+    });
+  }, [isLast, isScrolling]);
+
+  const handleClick = () => {
+    document.getElementById(SECTION_ORDER[0])?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  return (
+    <button
+      ref={btnRef}
+      type="button"
+      onClick={handleClick}
+      aria-label="Прокрутити нагору"
+      className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center gap-2 bg-transparent border-none cursor-pointer opacity-0"
+    >
+      <img
+        src="https://res.cloudinary.com/dbx6muxub/image/upload/v1785611591/ChatGPT_Image_1_%D0%B0%D0%B2%D0%B3._2026_%D0%B3._22_12_58_tjii8z.png"
+        alt="Прокрутити нагору"
+        className="w-[clamp(80px,30vw,140px)] h-auto object-contain contrast-[150%] rotate-180"
+      />
+    </button>
+  );
+} 
+
 function ScrollNextArrow() {
   const btnRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -3237,6 +3297,8 @@ export default function LandingPage() {
       <Hero />
       <InfoStats />
    <ScrollNextArrow />
+   
+ <ScrollTopArrow />
       {/* <Skatepark /> */}
       <div id="skatepark">
         <Skatepark />
