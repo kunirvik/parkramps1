@@ -108,8 +108,10 @@ export function useSlideAnimation({ imageData, refs, thumbsShown, updateState, o
 
     gsap.set(transitionEl, {
       position: "absolute",
-      top: top - window.scrollY,
-      left: left - window.scrollX,
+       top: top,     // без вычитания
+  left: left,
+      // top: top - window.scrollY,
+      // left: left - window.scrollX,
       width,
       height,
       zIndex: 1000,
@@ -121,8 +123,11 @@ export function useSlideAnimation({ imageData, refs, thumbsShown, updateState, o
     });
 
     gsap.to(transitionEl, {
-      top: finalRect.top - window.scrollY,
-      left: finalRect.left - window.scrollX,
+      
+       top: finalRect.top,
+  left: finalRect.left,
+      // top: finalRect.top - window.scrollY,
+      // left: finalRect.left - window.scrollX,
       width: finalRect.width,
       height: finalRect.height,
       borderRadius: "12px",

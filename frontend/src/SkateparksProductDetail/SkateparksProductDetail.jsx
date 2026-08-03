@@ -472,6 +472,7 @@ const handleMouseEnter = useCallback(
           left: 0 !important;
           width: 100vw !important;
           height: 100vh !important;
+          
           overflow: hidden !important;
           pointer-events: none !important;
         }
