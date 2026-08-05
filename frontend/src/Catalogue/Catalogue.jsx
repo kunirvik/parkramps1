@@ -131,17 +131,75 @@ const handleMouseMove = (e, productId) => {
     setTooltip({ ...tooltip, show: false });
   };
 
-const handleClick = async (product, e) => {
-   setTooltipLocked(true);
-  if (isMobile) {
+// const handleClick = async (product, e) => {
+//    setTooltipLocked(true);
+//   if (isMobile) {
 
-  e.currentTarget.classList.add("hide-tooltip");
-}
+//   e.currentTarget.classList.add("hide-tooltip");
+// }
   
-setTooltip({ show: false, x: 0, y: 0, productId: null });
+// setTooltip({ show: false, x: 0, y: 0, productId: null });
 
 
-  const imgElement = e.currentTarget.querySelector('img');
+//   const imgElement = e.currentTarget.querySelector('img');
+//   const imgRect = imgElement.getBoundingClientRect();
+
+//   const imageData = {
+//     id: product.id,
+//     src: product.image,
+//     rect: {
+//       top: imgRect.top,
+//       left: imgRect.left,
+//       width: imgRect.width,
+//       height: imgRect.height,
+//     },
+//   };
+
+//   try {
+//     await preloadImage(product.image);
+//   } catch (error) {
+//     console.warn("Не удалось предзагрузить изображение:", error);
+//   }
+
+//   setSelectedProduct(product.id);
+
+//   setTimeout(() => {
+//     switch (product.category) {
+//       case "sets":
+//         navigate(`/product/sets/1`, { state: { imageData } });
+//         break;
+//       case "ramps":
+//         navigate(`/product/ramps/1`, { state: { imageData } });
+//         break;
+//       case "skateparks":
+//         navigate(`/product/skateparks/1`, { state: { imageData } });
+//         break;
+//       // case "diy":
+//       //   navigate(`/projectpage`, { state: { imageData } });
+//       //   break;
+//       // default:
+//       //   console.warn("Неизвестная категория:", product.category);
+//     }
+//   }, 400);
+// };
+const handleClick = async (product, e) => {
+  setTooltipLocked(true);
+
+  if (isMobile) {
+    e.currentTarget.classList.add("hide-tooltip");
+  }
+
+  setTooltip({
+    show: false,
+    x: 0,
+    y: 0,
+    productId: null,
+  });
+
+  const imgElement = e.currentTarget.querySelector("img");
+  if (!imgElement) return;
+
+  // Берём rect ДО любых изменений состояния
   const imgRect = imgElement.getBoundingClientRect();
 
   const imageData = {
@@ -163,26 +221,38 @@ setTooltip({ show: false, x: 0, y: 0, productId: null });
 
   setSelectedProduct(product.id);
 
-  setTimeout(() => {
+  const navigateToProduct = () => {
     switch (product.category) {
       case "sets":
-        navigate(`/product/sets/1`, { state: { imageData } });
+        navigate("/product/sets/1", {
+          state: { imageData },
+        });
         break;
-      case "ramps":
-        navigate(`/product/ramps/1`, { state: { imageData } });
-        break;
-      case "skateparks":
-        navigate(`/product/skateparks/1`, { state: { imageData } });
-        break;
-      // case "diy":
-      //   navigate(`/projectpage`, { state: { imageData } });
-      //   break;
-      // default:
-      //   console.warn("Неизвестная категория:", product.category);
-    }
-  }, 400);
-};
 
+      case "ramps":
+        navigate("/product/ramps/1", {
+          state: { imageData },
+        });
+        break;
+
+      case "skateparks":
+        navigate("/product/skateparks/1", {
+          state: { imageData },
+        });
+        break;
+
+      default:
+        break;
+    }
+  };
+
+  // На мобильном не ждём 400ms
+  if (isMobile) {
+    navigateToProduct();
+  } else {
+    setTimeout(navigateToProduct, 400);
+  }
+};
 
 
 useEffect(() => {

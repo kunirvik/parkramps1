@@ -1122,7 +1122,8 @@ const handleStageClick = useCallback(() => {
 }} 
         ><div className="order-2 lg:order-2">
           <Swiper
-          className="custom-swiper h-[clamp(250px,calc(100px+19.5vw),600px)]"
+          // className="custom-swiper h-[clamp(250px,calc(100px+19.5vw),600px)]"
+          className="custom-swiper h-[min(62vh,600px)] lg:h-[clamp(250px,calc(100px+19.5vw),600px)]"
             // className="custom-swiper h-[250px] sm:h-[300px] md:h-[350px]"
             modules={[Pagination, Mousewheel, Thumbs]}
             pagination={{ clickable: true, el: ".custom-swiper-pagination" }}
@@ -1161,7 +1162,8 @@ const handleStageClick = useCallback(() => {
                         : product.altImages[state.selectedImageIndices[index] - 1]
                     }
                     alt={product.name}
-                    className="max-h-full py-10 w-auto object-contain"
+                    // className="max-h-full py-10 w-auto object-contain"
+                    className="max-h-full lg:py-10 w-auto object-contain"
                     draggable="false"
                     // onTouchStart={() => onTouchStart(index, product)}
                     // onTouchEnd={() => onTouchEnd(index)}
