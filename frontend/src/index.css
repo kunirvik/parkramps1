@@ -1,8 +1,28 @@
 @import "tailwindcss";
 @import "@tabler/icons-webfont/dist/tabler-icons.min.css";
-
+/* 
 body{
     background-color: black;
+} */
+/* body {
+  background:
+    rgba(0, 0, 0, 0.77)
+    url("https://res.cloudinary.com/dbx6muxub/image/upload/v1780563482/project-brightness-50_fbitrl.png")
+    center / cover no-repeat;
+} */
+
+body::before {
+  background-image: url("https://res.cloudinary.com/dbx6muxub/image/upload/v1780563482/project-brightness-50_fbitrl.png");
+  background-size: cover;
+  background-position: center;
+}
+
+@media (max-width: 768px) {
+  body::before {
+    background-image: url("https://res.cloudinary.com/dbx6muxub/image/upload/v1784653098/project2_qewlhy.webp");
+    background-size: contain;
+    background-position: top center;
+  }
 }
 /* src/index.css или любой другой файл стилей */
 @layer base {

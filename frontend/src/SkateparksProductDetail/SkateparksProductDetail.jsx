@@ -527,7 +527,7 @@ const handleMouseEnter = useCallback(
     <>
       <div className="flex flex-col  min-h-screen overflow-hidden">
     
-      <div
+      {/* <div
     className="
       fixed inset-0
       bg-[rgba(0,0,0,0.77)]
@@ -540,7 +540,7 @@ const handleMouseEnter = useCallback(
         "url('https://res.cloudinary.com/dbx6muxub/image/upload/v1780563482/project-brightness-50_fbitrl.png')",
     }}
   />
-    
+     */}
         <div className="z-50 flex-shrink-0">
           <SocialButtons
             ref={socialButtonsRef}
