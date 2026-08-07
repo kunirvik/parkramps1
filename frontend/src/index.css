@@ -26,7 +26,7 @@ body::before {
 @media (max-width: 768px) {
   body::before {
     background-image: url("https://res.cloudinary.com/dbx6muxub/image/upload/v1784653098/project2_qewlhy.webp");
-    background-size: contain;
+    background-size: cover;
     background-position: top center;
   }
 }
