@@ -18,7 +18,8 @@ body::before {
   z-index: -1;
 
   background-image: url("https://res.cloudinary.com/dbx6muxub/image/upload/v1780563482/project-brightness-50_fbitrl.png");
-  background-size: cover;
+  /* background-size: cover; */
+   background-size: 100% 100%;
   background-position: center;
   background-repeat: no-repeat;
 }
