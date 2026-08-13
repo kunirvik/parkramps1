@@ -222,7 +222,7 @@
 
 import { Link, useLocation } from "react-router-dom"
 import { memo } from "react"
-import { getSection } from "./config/sections"
+import { getSection } from "./section"
 
 function getYoutubeID(url = "") {
   const m = url.match(/(?:\?v=|\/embed\/|\.be\/)([a-zA-Z0-9_-]{11})/)
