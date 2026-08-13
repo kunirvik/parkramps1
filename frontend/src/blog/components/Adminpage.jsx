@@ -1112,7 +1112,7 @@
 // }
 
 import { useEffect, useState, useRef, useCallback } from "react"
-import { SECTIONS, getSection } from "./config/sections"
+import { SECTIONS, getSection } from "./sections"
 
 const API_URL   = import.meta.env.VITE_API_URL
 // const API_URL = "http://localhost:5001"

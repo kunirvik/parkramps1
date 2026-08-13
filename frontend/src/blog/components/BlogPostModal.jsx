@@ -553,7 +553,7 @@ import { useParams, useNavigate } from "react-router-dom"
 import { useEffect, useState, useCallback, memo } from "react"
 import { usePostsContext } from "./BlogPage"
 import TelegramComments from "../components/TelegramComments"
-import { getSection, resolveCta } from "./config/sections"
+import { getSection, resolveCta } from "./section"
 
 // ─── Helpers ──────────────────────────────────────────────────────────────
 

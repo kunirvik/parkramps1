@@ -329,7 +329,7 @@
 import { useEffect, useState, useRef, useCallback, createContext, useContext, lazy, Suspense } from "react"
 import { HeroCard } from "./BlogCard"
 import SocialButtons from "../../SocialButtons/SocialButtons"
-import { SECTIONS, getSection } from "./config/sections"
+import { SECTIONS, getSection } from "./sections"
 
 // Lazy load для оптимизации
 const BlogFeed = lazy(() => import("./BlogFeed"))
