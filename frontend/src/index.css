@@ -4,12 +4,15 @@
 body{
     background-color: black;
 } */
-/* body {
+
+html{
+  background-color: black;
+}
+body {
   background:
     rgba(0, 0, 0, 0.77)
-    url("https://res.cloudinary.com/dbx6muxub/image/upload/v1780563482/project-brightness-50_fbitrl.png")
-    center / cover no-repeat;
-} */
+ 
+}
 
 body::before {
   content: "";
