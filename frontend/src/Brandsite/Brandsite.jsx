@@ -4,33 +4,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import "./Brandsite.css";
 
-/* ============================================================
-   BrandSite — hero-страница в стиле Palace Skateboards.
 
-   ЧТО ЗДЕСЬ ЕСТЬ:
-   1) Плавающая капсула-хедер с маленьким вращающимся 3D-объектом
-      слева от лого. При скролле объект меняется на другой
-      (headerModelUrl -> headerModelUrlAlt).
-   2) Hero: фото-фон + большая 3D-модель (зеркальное/стеклянное
-      физическое стекло — transmission + envMap) по центру,
-      которая крутится, а при скролле "растворяется" и как бы
-      сливается с фото (canvas тает и немного увеличивается,
-      фон-фото одновременно расфокусируется -> становится резким).
-
-   КАК ПОДКЛЮЧИТЬ СВОЮ 3D-МОДЕЛЬ:
-     <BrandSite config={{
-       heroModelUrl: "/models/logo.glb",       // твоя модель для hero
-       headerModelUrl: "/models/icon-a.glb",   // модель в хедере (до скролла)
-       headerModelUrlAlt: "/models/icon-b.glb",// модель в хедере (после скролла)
-       heroImage: "/img/hero.jpg",
-     }} />
-
-   Если URL моделей не передать — используются процедурные
-   стеклянные фигуры (работает "из коробки" для превью).
-
-   Зависимости: react, three (npm i three).
-   Модули three/examples/jsm/* идут в комплекте с пакетом three.
-============================================================= */
 
 const DEFAULT_CONFIG = {
   logoText: "YOUR BRAND",
@@ -235,7 +209,7 @@ function HeroModel({ modelUrl }){
     mount.appendChild(renderer.domElement);
 
     const pmrem = new THREE.PMREMGenerator(renderer);
-    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.05).texture;
+    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.02).texture;
 
     const key = new THREE.PointLight(0xffffff, 3);
     key.position.set(3, 4, 5);
