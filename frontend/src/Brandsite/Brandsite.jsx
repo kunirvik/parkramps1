@@ -18,7 +18,7 @@ const DEFAULT_CONFIG = {
   heroImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785509354/volt_park_visual5_y7b5ab.jpg", // ссылка на своё фото для фона hero
   heroModelUrl: "https://res.cloudinary.com/dbx6muxub/image/upload/v1786811336/model_eteyx8.glb", // ссылка на свой .glb для центра hero
   headerModelUrl: "https://res.cloudinary.com/dbx6muxub/image/upload/v1786811336/model_eteyx8.glb", // .glb для хедера (состояние 1)
-  headerModelUrlAlt: null, // .glb для хедера (состояние 2, после скролла)
+  headerModelUrlAlt: "https://res.cloudinary.com/dbx6muxub/image/upload/v1786811336/model_eteyx8.glb", // .glb для хедера (состояние 2, после скролла)
   heroLines: [
     { text: "Manor Place", tone: "dim2" },
     { text: "Your Brand South2 West8", tone: "dim" },
