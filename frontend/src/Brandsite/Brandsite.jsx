@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
-import "./BrandSite.css";
+import "./Brandsite.css";
 
 /* ============================================================
    BrandSite — hero-страница в стиле Palace Skateboards.
