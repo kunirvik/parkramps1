@@ -121,9 +121,10 @@
 .brand-site .hero-bg{
   position:absolute;inset:0;
   background-size:cover;background-position:center;
-  filter:blur(6px) brightness(0.72) saturate(0.9);
-  transform:scale(1.06);
-  transition:filter 0.1s linear;
+}
+.brand-site .hero-bg::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.35));
 }
 .brand-site .hero-bg.no-photo{
   background:
@@ -139,9 +140,8 @@
   position:absolute;inset:0;
   display:flex;align-items:center;justify-content:center;
   z-index:5;
-  pointer-events:none;
 }
-.brand-site .hero-model-wrap canvas{display:block;}
+.brand-site .hero-model-wrap canvas{display:block;touch-action:none;}
 
 .brand-site .hero-lines{
   position:absolute;left:32px;top:50%;transform:translateY(-50%);

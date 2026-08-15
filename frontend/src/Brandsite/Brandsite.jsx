@@ -1,10 +1,44 @@
 import React, { useState, useEffect, useRef } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import "./Brandsite.css";
 
+/* ============================================================
+   BrandSite — hero-страница в стиле Palace Skateboards.
 
+   ЧТО ЗДЕСЬ ЕСТЬ:
+   1) Плавающая капсула-хедер с маленьким вращающимся 3D-объектом
+      слева от лого. При скролле объект меняется на другой
+      (headerModelUrl -> headerModelUrlAlt).
+   2) Hero: фото-фон + большая 3D-модель (настоящее зеркало —
+      metalness:1, roughness:0, envMap = само hero-фото) по центру.
+      Сцена стартует с автовращения. Как только пользователь
+      зажимает мышь на модели и тащит — вращение полностью
+      переходит под его контроль (перетаскивание = поворот по X/Y,
+      как в orbit-controls), при отпускании остаётся инерция,
+      которая плавно гаснет и снова переходит в автовращение.
+      Модель всегда непрозрачна; "слияние" с фоном — оптический
+      эффект самого зеркала: когда модель разворачивается почти
+      ребром к камере, её видимая площадь схлопывается и сквозь
+      неё остаётся в основном отражение/фон, то есть в этот момент
+      она визуально "выравнивается" с фотографией за ней.
+
+   КАК ПОДКЛЮЧИТЬ СВОЮ 3D-МОДЕЛЬ:
+     <BrandSite config={{
+       heroModelUrl: "/models/logo.glb",       // твоя модель для hero
+       headerModelUrl: "/models/icon-a.glb",   // модель в хедере (до скролла)
+       headerModelUrlAlt: "/models/icon-b.glb",// модель в хедере (после скролла)
+       heroImage: "/img/hero.jpg",
+     }} />
+
+   Если URL моделей не передать — используются процедурные
+   стеклянные фигуры (работает "из коробки" для превью).
+
+   Зависимости: react, three (npm i three).
+   Модули three/examples/jsm/* идут в комплекте с пакетом three.
+============================================================= */
 
 const DEFAULT_CONFIG = {
   logoText: "YOUR BRAND",
@@ -15,10 +49,10 @@ const DEFAULT_CONFIG = {
     { label: "Advice", href: "#" },
     { label: "Cart", href: "#" },
   ],
-  heroImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785509354/volt_park_visual5_y7b5ab.jpg", // ссылка на своё фото для фона hero
+  heroImage: "", // ссылка на своё фото для фона hero
   heroModelUrl: null, // ссылка на свой .glb для центра hero
-  headerModelUrl: "https://res.cloudinary.com/dbx6muxub/image/upload/v1786811336/model_eteyx8.glb", // .glb для хедера (состояние 1)
-  headerModelUrlAlt: "https://res.cloudinary.com/dbx6muxub/image/upload/v1786811336/model_eteyx8.glb", // .glb для хедера (состояние 2, после скролла)
+  headerModelUrl: null, // .glb для хедера (состояние 1)
+  headerModelUrlAlt: null, // .glb для хедера (состояние 2, после скролла)
   heroLines: [
     { text: "Manor Place", tone: "dim2" },
     { text: "Your Brand South2 West8", tone: "dim" },
@@ -48,20 +82,28 @@ const DEFAULT_CONFIG = {
   shops: ["Магазин RU", "Магазин EU", "Магазин US"],
 };
 
-/* ---------- общий загрузчик: своя модель или процедурная заглушка ---------- */
-function loadGlassMesh({ url, fallbackGeo, color = 0xffffff, onReady }){
-  const material = new THREE.MeshPhysicalMaterial({
-    color,
-    metalness: 0.1,
-    roughness: 0.06,
-    transmission: 1,
-    thickness: 1.2,
-    ior: 1.4,
-    iridescence: 0.6,
-    iridescenceIOR: 1.3,
-    reflectivity: 0.6,
-    envMapIntensity: 1.4,
+/* ---------- зеркальный (хромированный) материал ----------
+   metalness:1, roughness:0 = настоящее зеркало: никакой прозрачности,
+   вся картинка вокруг (в т.ч. envMap с hero-фото) отражается в поверхности.
+   При повороте модели меняется её нормаль относительно камеры —
+   поэтому отражение "плывёт" по поверхности, как в реальном зеркале. */
+function makeMirrorMaterial(){
+  return new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    metalness: 1,
+    roughness: 0.04,
+    envMapIntensity: 1.3,
+    transparent: false,
+    opacity: 1,
   });
+}
+
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath("https://www.gstatic.com/draco/versioned/decoders/1.5.6/");
+
+/* ---------- общий загрузчик: своя модель или процедурная заглушка ---------- */
+function loadMirrorMesh({ url, fallbackGeo, onReady, label = "model" }){
+  const material = makeMirrorMaterial();
 
   if (!url) {
     const mesh = new THREE.Mesh(fallbackGeo, material);
@@ -71,6 +113,7 @@ function loadGlassMesh({ url, fallbackGeo, color = 0xffffff, onReady }){
 
   let cancelled = false;
   const loader = new GLTFLoader();
+  loader.setDRACOLoader(dracoLoader);
   loader.load(
     url,
     (gltf) => {
@@ -82,8 +125,12 @@ function loadGlassMesh({ url, fallbackGeo, color = 0xffffff, onReady }){
       onReady(group);
     },
     undefined,
-    () => {
-      // если своя модель не загрузилась — показываем заглушку, чтобы сцена не была пустой
+    (err) => {
+      // ВАЖНО: если модель не грузится, ошибка попадёт сюда — смотри консоль браузера.
+      // Частые причины: неверный путь (файл должен лежать в /public и путь начинаться с "/"),
+      // CORS на другом домене, модель сжата Draco без прописанного decoder-пути (уже подключён выше),
+      // либо .gltf ссылается на .bin/текстуры, которые не выложены рядом с ним.
+      console.error(`[BrandSite] Не удалось загрузить ${label} (${url}):`, err);
       if (cancelled) return;
       const mesh = new THREE.Mesh(fallbackGeo, material);
       onReady(mesh);
@@ -127,20 +174,20 @@ function HeaderOrb({ modelUrl, modelUrlAlt }){
       scene.add(current);
     };
 
-    dispose1 = loadGlassMesh({
+    dispose1 = loadMirrorMesh({
       url: modelUrl,
       fallbackGeo: new THREE.IcosahedronGeometry(1, 0),
-      color: 0x1f3bff,
+      label: "headerModelUrl",
       onReady: setMesh,
     });
 
     // второе состояние (после скролла) грузим сразу, чтобы переключение было мгновенным
     let altObj = null;
     if (modelUrlAlt !== undefined) {
-      dispose2 = loadGlassMesh({
+      dispose2 = loadMirrorMesh({
         url: modelUrlAlt,
         fallbackGeo: new THREE.OctahedronGeometry(1.1, 0),
-        color: 0xd4ff3f,
+        label: "headerModelUrlAlt",
         onReady: (obj) => { altObj = obj; obj.visible = false; scene.add(obj); },
       });
     }
@@ -189,8 +236,8 @@ function HeaderOrb({ modelUrl, modelUrlAlt }){
   return <div className="header-orb" ref={mountRef}></div>;
 }
 
-/* ---------- большая hero-модель: крутится, при скролле "тает" в фото ---------- */
-function HeroModel({ modelUrl }){
+/* ---------- большая hero-модель: настоящее зеркало, отражающее hero-фото ---------- */
+function HeroModel({ modelUrl, heroImage }){
   const mountRef = useRef(null);
   const canvasWrapRef = useRef(null);
 
@@ -209,64 +256,106 @@ function HeroModel({ modelUrl }){
     mount.appendChild(renderer.domElement);
 
     const pmrem = new THREE.PMREMGenerator(renderer);
-    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.02).texture;
+    // запасной студийный env — используется, пока (или если) фото не загрузилось
+    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.05).texture;
 
-    const key = new THREE.PointLight(0xffffff, 3);
+    // ---- главное: envMap = само hero-фото ----
+    // Так модель буквально отражает фон. Поворот модели меняет нормали
+    // относительно камеры — значит меняется и то, какой участок фото
+    // "смотрит" в объектив, то есть отражение реально едет по поверхности.
+    let envTexture = null;
+    if (heroImage) {
+      const texLoader = new THREE.TextureLoader();
+      texLoader.load(
+        heroImage,
+        (tex) => {
+          tex.mapping = THREE.EquirectangularReflectionMapping;
+          if ("colorSpace" in tex) tex.colorSpace = THREE.SRGBColorSpace;
+          else tex.encoding = THREE.sRGBEncoding;
+          envTexture = tex;
+          scene.environment = tex;
+        },
+        undefined,
+        (err) => console.error("[BrandSite] Не удалось загрузить heroImage как envMap:", err)
+      );
+    }
+
+    const key = new THREE.PointLight(0xffffff, 1.5);
     key.position.set(3, 4, 5);
     scene.add(key);
-    const rim = new THREE.PointLight(0x1f3bff, 2);
-    rim.position.set(-4, -2, -3);
-    scene.add(rim);
 
     let current = null;
-    const dispose = loadGlassMesh({
+    const dispose = loadMirrorMesh({
       url: modelUrl,
-      fallbackGeo: new THREE.IcosahedronGeometry(1.8, 1),
-      color: 0xffffff,
+      fallbackGeo: new THREE.CylinderGeometry(1.7, 1.7, 0.18, 72),
+      label: "heroModelUrl",
       onReady: (obj) => { current = obj; scene.add(obj); },
     });
 
-    let mouseX = 0, mouseY = 0;
-    const onMove = (e) => {
-      mouseX = e.clientX / window.innerWidth - 0.5;
-      mouseY = e.clientY / window.innerHeight - 0.5;
+    /* ---------- drag-to-rotate с захватом мыши + инерция ---------- */
+    const canvas = renderer.domElement;
+    canvas.style.cursor = "grab";
+
+    const state = {
+      dragging: false,
+      lastX: 0, lastY: 0,
+      velX: 0, velY: 0,
+      idleSpeed: 0.006, // скорость автовращения в состоянии покоя
     };
-    window.addEventListener("mousemove", onMove);
+
+    const onPointerDown = (e) => {
+      state.dragging = true;
+      state.lastX = e.clientX;
+      state.lastY = e.clientY;
+      state.velX = 0; state.velY = 0;
+      canvas.setPointerCapture(e.pointerId);
+      canvas.style.cursor = "grabbing";
+    };
+    const onPointerMove = (e) => {
+      if (!state.dragging || !current) return;
+      const dx = e.clientX - state.lastX;
+      const dy = e.clientY - state.lastY;
+      state.lastX = e.clientX;
+      state.lastY = e.clientY;
+      const sensitivity = 0.008;
+      current.rotation.y += dx * sensitivity;
+      current.rotation.x += dy * sensitivity;
+      // запоминаем скорость жеста — пригодится для инерции после отпускания
+      state.velX = dx * sensitivity;
+      state.velY = dy * sensitivity;
+    };
+    const endDrag = (e) => {
+      if (!state.dragging) return;
+      state.dragging = false;
+      canvas.style.cursor = "grab";
+      try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
+    };
+    canvas.addEventListener("pointerdown", onPointerDown);
+    canvas.addEventListener("pointermove", onPointerMove);
+    canvas.addEventListener("pointerup", endDrag);
+    canvas.addEventListener("pointercancel", endDrag);
 
     let raf;
     const animate = () => {
       if (current) {
-        current.rotation.y += 0.006;
-        current.rotation.x += 0.0025;
-        current.rotation.x += (mouseY * 0.6 - current.rotation.x) * 0.01;
-        current.rotation.y += (mouseX * 0.6 - current.rotation.y) * 0.01;
+        if (state.dragging) {
+          // во время перетаскивания вращение полностью управляется курсором (см. onPointerMove)
+        } else if (Math.abs(state.velX) > 0.0002 || Math.abs(state.velY) > 0.0002) {
+          // инерция после отпускания — плавно гасим скорость жеста
+          current.rotation.y += state.velX;
+          current.rotation.x += state.velY;
+          state.velX *= 0.94;
+          state.velY *= 0.94;
+        } else {
+          // авто-вращение в состоянии покоя
+          current.rotation.y += state.idleSpeed;
+          current.rotation.x += state.idleSpeed * 0.35;
+        }
       }
       renderer.render(scene, camera);
       raf = requestAnimationFrame(animate);
     };
     animate();
-
-    // ---- скролл: модель растворяется и "сливается" с фото ----
-    const heroEl = mount.closest(".hero");
-    const wrap = canvasWrapRef.current;
-    const bg = heroEl ? heroEl.querySelector(".hero-bg") : null;
-
-    const onScroll = () => {
-      if (!heroEl) return;
-      const heroHeight = heroEl.offsetHeight;
-      const progress = Math.min(Math.max(window.scrollY / heroHeight, 0), 1);
-      // модель тает и немного растёт, будто расходится в частицы фото
-      wrap.style.opacity = String(1 - progress);
-      wrap.style.transform = `scale(${1 + progress * 0.5})`;
-      // фото одновременно проявляется из размытия — эффект слияния
-      if (bg) {
-        const blur = 6 * (1 - progress);
-        const brightness = 0.72 + progress * 0.28;
-        bg.style.filter = `blur(${blur}px) brightness(${brightness}) saturate(0.9)`;
-      }
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
 
     const onResize = () => {
       size = getSize();
@@ -278,16 +367,21 @@ function HeroModel({ modelUrl }){
 
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("scroll", onScroll);
+      canvas.removeEventListener("pointerdown", onPointerDown);
+      canvas.removeEventListener("pointermove", onPointerMove);
+      canvas.removeEventListener("pointerup", endDrag);
+      canvas.removeEventListener("pointercancel", endDrag);
       window.removeEventListener("resize", onResize);
       dispose();
+      if (envTexture) envTexture.dispose();
       mount.removeChild(renderer.domElement);
       renderer.dispose();
       pmrem.dispose();
     };
-  }, [modelUrl]);
+  }, [modelUrl, heroImage]);
 
+  // Модель всегда полностью непрозрачна и видна — никакого fade при скролле.
+  // Фото при этом всегда остаётся позади, как самостоятельный слой фона.
   return (
     <div className="hero-model-wrap" ref={canvasWrapRef}>
       <div ref={mountRef} style={{ width: "70vmin", height: "70vmin", maxWidth: 560, maxHeight: 560 }}></div>
@@ -347,7 +441,7 @@ function Hero({ cfg }){
         )}
       </div>
 
-      <HeroModel modelUrl={cfg.heroModelUrl} />
+      <HeroModel modelUrl={cfg.heroModelUrl} heroImage={cfg.heroImage} />
 
       <div className="hero-lines">
         {cfg.heroLines.map((l, i) => (
