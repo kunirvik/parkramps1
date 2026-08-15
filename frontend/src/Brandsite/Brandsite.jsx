@@ -16,7 +16,7 @@ const DEFAULT_CONFIG = {
     { label: "Cart", href: "#" },
   ],
   heroImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785509354/volt_park_visual5_y7b5ab.jpg", // ссылка на своё фото для фона hero
-  heroModelUrl: "https://res.cloudinary.com/dbx6muxub/image/upload/v1786811336/model_eteyx8.glb", // ссылка на свой .glb для центра hero
+  heroModelUrl: null, // ссылка на свой .glb для центра hero
   headerModelUrl: "https://res.cloudinary.com/dbx6muxub/image/upload/v1786811336/model_eteyx8.glb", // .glb для хедера (состояние 1)
   headerModelUrlAlt: "https://res.cloudinary.com/dbx6muxub/image/upload/v1786811336/model_eteyx8.glb", // .glb для хедера (состояние 2, после скролла)
   heroLines: [
