@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import * as THREE from "three";
-import "./BrandSite.css";
+import "../Brandsite/Brandsite.css";
 
 /* ============================================================
    BrandSite — компонент-страница в стиле Palace Skateboards
