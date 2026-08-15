@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
-import "./BrandSite.css";
+import "./Brandsite.css";
 
 /* ============================================================
    BrandSite — hero-страница в стиле Palace Skateboards.
