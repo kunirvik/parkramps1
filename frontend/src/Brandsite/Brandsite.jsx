@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
-import "./Brandsite.css";
+import "./BrandSite.css";
 
 /* ============================================================
    BrandSite — hero-страница в стиле Palace Skateboards.
@@ -46,8 +46,8 @@ const DEFAULT_CONFIG = {
     { label: "Advice", href: "#" },
     { label: "Cart", href: "#" },
   ],
-  heroImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785509327/volt_park_visual9_lsorlm.jpg", // ссылка на своё фото для фона hero
-  heroModelUrl: "https://res.cloudinary.com/dbx6muxub/image/upload/v1786811336/model_eteyx8.glb", // ссылка на свой .glb для центра hero
+  heroImage: "", // ссылка на своё фото для фона hero
+  heroModelUrl: null, // ссылка на свой .glb для центра hero
   heroMirrorRestRotationY: 0, // угол (в радианах), в который модель довернётся и "сольётся" с фоном после отпускания мыши — подбери на глаз под свою модель
   headerModelUrl: null, // .glb для хедера (состояние 1)
   headerModelUrlAlt: null, // .glb для хедера (состояние 2, после скролла)
@@ -306,6 +306,8 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }){
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     if ("outputColorSpace" in renderer) renderer.outputColorSpace = THREE.SRGBColorSpace;
     else renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.1;
     mount.appendChild(renderer.domElement);
 
     scene.add(new THREE.HemisphereLight(0xffffff, 0x333333, 1.1));
@@ -317,7 +319,7 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }){
        Именно это отражает зеркало — сюда НЕ добавляется сама модель,
        поэтому не нужно её прятать/показывать на каждый кадр захвата. */
     const reflectionScene = new THREE.Scene();
-    reflectionScene.background = new THREE.Color(0x1a1a1a); // цвет "пустоты" вокруг фото-плоскостей в отражении
+    reflectionScene.background = new THREE.Color(0x9a9488); // нейтральный фон "пустоты" на случай, если фото ещё не загрузилось — тон подобран близко к paper-фону, чтобы модель не выглядела сломанной/чёрной
 
     let photoTexture = null;
     const buildReflectionPlanes = (tex) => {
@@ -330,9 +332,12 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }){
       const back = new THREE.Mesh(new THREE.PlaneGeometry(26, 15), mat);
       back.position.set(0, 0, -16);
       reflectionScene.add(back);
+
+      console.log("[BrandSite] Отражение: heroImage успешно подключён к зеркалу.");
     };
 
     if (heroImage) {
+      console.log("[BrandSite] Загружаю heroImage для отражения:", heroImage);
       const texLoader = new THREE.TextureLoader();
       texLoader.setCrossOrigin("anonymous"); // без этого текстура с другого домена (CDN/Cloudinary) не встанет в WebGL-текстуру
       texLoader.load(
@@ -343,8 +348,10 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }){
           buildReflectionPlanes(tex);
         },
         undefined,
-        (err) => console.error("[BrandSite] heroImage не загрузился для отражения:", err)
+        (err) => console.error("[BrandSite] heroImage НЕ загрузился для отражения (см. Network-таб на CORS/404):", err)
       );
+    } else {
+      console.warn("[BrandSite] heroImage не передан — зеркало отражает только нейтральный серый фон.");
     }
 
     /* ---------- CubeCamera: строит envMap из reflectionScene ---------- */
