@@ -15,7 +15,7 @@ import AdminPage from "./blog/components/Adminpage";
 import GalleryRoute from "./GalleryRoute";
 import MarketplacePage from "./Marketplacepage/Marketplacepage";
 import SkateparkLanding from "./SkateparkLanding/SkateparkLanding";
-
+import Brandsite from "./Brandsite/Brandsite";
 function App() {
   const location = useLocation();
 
@@ -28,6 +28,7 @@ function App() {
       {/* <Routes location={background || location} key={(background || location).pathname}> */}
 <Routes location={location} key={location.pathname}>
         <Route path="/" element={<MenuPage />} />
+        <Route path="/brandsite" element={<Brandsite />} />
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/catalogue" element={<Catalogue />} />
      <Route path="/gallery/all" element={<GalleryRoute />} />    
