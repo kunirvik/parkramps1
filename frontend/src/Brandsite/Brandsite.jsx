@@ -847,7 +847,7 @@ function HeroModel({ modelUrl, heroImage }) {
            * После загрузки сразу
            * обновляем отражение.
            */
-          updateEnvironment();
+        //   updateEnvironment();
         },
       });
 
@@ -1085,6 +1085,9 @@ function HeroModel({ modelUrl, heroImage }) {
         }
       );
     };
+    if (current) {
+  updateEnvironment();
+}
 
     // ==================================================
     // ANIMATION
