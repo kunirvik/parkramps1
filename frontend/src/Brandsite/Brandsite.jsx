@@ -46,8 +46,8 @@ const DEFAULT_CONFIG = {
     { label: "Advice", href: "#" },
     { label: "Cart", href: "#" },
   ],
-  heroImage: "", // ссылка на своё фото для фона hero
-  heroModelUrl: null, // ссылка на свой .glb для центра hero
+  heroImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785509327/volt_park_visual9_lsorlm.jpg", // ссылка на своё фото для фона hero
+  heroModelUrl: "https://res.cloudinary.com/dbx6muxub/image/upload/v1786811336/model_eteyx8.glb", // ссылка на свой .glb для центра hero
   heroMirrorRestRotationY: 0, // угол (в радианах), в который модель довернётся и "сольётся" с фоном после отпускания мыши — подбери на глаз под свою модель
   headerModelUrl: null, // .glb для хедера (состояние 1)
   headerModelUrlAlt: null, // .glb для хедера (состояние 2, после скролла)
