@@ -1,24 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import * as THREE from "three";
-import "../Brandsite/Brandsite.css";
+import "./Brandsite.css";
 
-/* ============================================================
-   BrandSite — компонент-страница в стиле Palace Skateboards
-   (шапка, hero-слайдер с Three.js акцентом, бегущая строка,
-   редакторская сетка, подписка, футер).
 
-   ИСПОЛЬЗОВАНИЕ:
-     import BrandSite from "./BrandSite";
-
-     <BrandSite config={{
-       logoText: "MY BRAND",
-       heroSlides: [{ src: "/img/hero-1.jpg", caption: "SS26" }],
-       ...
-     }} />
-
-   Если проп config не передан — используется DEFAULT_CONFIG ниже.
-   Требует установленных зависимостей: react, three.
-============================================================= */
 
 const DEFAULT_CONFIG = {
   logoText: "YOUR BRAND",
