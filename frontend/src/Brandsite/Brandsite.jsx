@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
-import "./Brandsite.css";
+import "./BrandSite.css";
 
 /* ============================================================
    BrandSite — hero-страница в стиле Palace Skateboards.
@@ -46,8 +46,8 @@ const DEFAULT_CONFIG = {
     { label: "Advice", href: "#" },
     { label: "Cart", href: "#" },
   ],
-  heroImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785509327/volt_park_visual9_lsorlm.jpg", // ссылка на своё фото для фона hero
-  heroModelUrl: "https://res.cloudinary.com/dbx6muxub/image/upload/v1786811336/model_eteyx8.glb", // ссылка на свой .glb для центра hero
+  heroImage: "", // ссылка на своё фото для фона hero
+  heroModelUrl: null, // ссылка на свой .glb для центра hero
   heroMirrorRestRotationY: 0, // угол (в радианах), в который модель довернётся и "сольётся" с фоном после отпускания мыши — подбери на глаз под свою модель
   headerModelUrl: null, // .glb для хедера (состояние 1)
   headerModelUrlAlt: null, // .glb для хедера (состояние 2, после скролла)
@@ -359,7 +359,11 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }){
       generateMipmaps: true,
       minFilter: THREE.LinearMipmapLinearFilter,
     });
-    cubeRT.texture.colorSpace = THREE.SRGBColorSpace;
+    // ВАЖНО: НЕ ставим тут colorSpace = SRGBColorSpace — это промежуточный
+    // рендер-таргет (уже в линейном пространстве после захвата), а не готовый
+    // sRGB-файл с диска. Если пометить его как sRGB, движок применит
+    // цветокоррекцию ВТОРОЙ раз при сэмплировании — картинка "выцветает"
+    // в плоский блёклый тон именно так, как было на скриншоте.
     const cubeCamera = new THREE.CubeCamera(0.1, 100, cubeRT);
     scene.add(cubeCamera);
 
@@ -458,7 +462,13 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }){
       state.envFrame++;
       if (state.envFrame >= CONFIG.envUpdateEveryFrame) {
         state.envFrame = 0;
+        // На время захвата отключаем тонмаппинг: иначе он "запекается" в саму
+        // текстуру отражения, а затем ПОВТОРНО применяется при финальном
+        // рендере модели — двойная цветокоррекция и даёт тот блёклый плоский вид.
+        const prevToneMapping = renderer.toneMapping;
+        renderer.toneMapping = THREE.NoToneMapping;
         cubeCamera.update(renderer, reflectionScene);
+        renderer.toneMapping = prevToneMapping;
       }
 
       renderer.render(scene, camera);
