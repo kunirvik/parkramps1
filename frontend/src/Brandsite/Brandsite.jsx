@@ -226,16 +226,16 @@ function HeroModel({ modelUrl, heroVideoUrl, restRotationY = 0 }) {
     const CONFIG = {
       modelSize: 2.8,
       cameraZ: 6,
-      reflectionSize: 512,
+      reflectionSize: 2048, // выше разрешение куб-карты — резче, читаемее отражение
       dragSensitivity: 0.008,
       inertiaDamping: 0.94,
       minVelocity: 0.00015,
       settleDelay: 500,
       settleSpeed: 0.045,
-      envUpdateEveryFrame: 2,
+      envUpdateEveryFrame: 1, // обновляем env каждый кадр — без "залипания" на старом смазанном кадре
       roomDistance: 12,
       roomHeight: 16,
-      ditherStrength: 0.035, // сила зернистости на поверхности модели (эффект "слияния" с видео)
+      ditherStrength: 0, // зерно выключено — оно и было одним из источников размытости
     };
 
     /* ---------- основная сцена ---------- */
