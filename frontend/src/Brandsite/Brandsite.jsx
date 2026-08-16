@@ -226,7 +226,7 @@ function HeroModel({ modelUrl, heroVideoUrl, restRotationY = 0 }) {
     const CONFIG = {
       modelSize: 2.8,
       cameraZ: 6,
-      reflectionSize: 1024,
+      reflectionSize: 512,
       dragSensitivity: 0.008,
       inertiaDamping: 0.94,
       minVelocity: 0.00015,
@@ -235,6 +235,7 @@ function HeroModel({ modelUrl, heroVideoUrl, restRotationY = 0 }) {
       envUpdateEveryFrame: 2,
       roomDistance: 12,
       roomHeight: 16,
+      ditherStrength: 0.035, // сила зернистости на поверхности модели (эффект "слияния" с видео)
     };
 
     /* ---------- основная сцена ---------- */
@@ -353,6 +354,9 @@ function HeroModel({ modelUrl, heroVideoUrl, restRotationY = 0 }) {
     }
 
     /* ---------- CubeCamera ---------- */
+    // Пониженное разрешение + mip-цепочка дают более мягкую, смазанную карту окружения —
+    // это часть того, почему у Palace отражение визуально "растворяется" в видео,
+    // а не читается как резкая зеркальная картинка.
     const cubeRT = new THREE.WebGLCubeRenderTarget(CONFIG.reflectionSize, {
       generateMipmaps: true,
       minFilter: THREE.LinearMipmapLinearFilter,
@@ -364,12 +368,48 @@ function HeroModel({ modelUrl, heroVideoUrl, restRotationY = 0 }) {
     const chromeMaterial = new THREE.MeshStandardMaterial({
       color: 0xffffff,
       metalness: 1,
-      roughness: 0,
+      // Небольшая шероховатость размывает блики — при roughness:0 модель всегда
+      // читается как резкое зеркальное пятно и никогда не "тает" в фоне.
+      roughness: 0.08,
       envMap: cubeRT.texture,
-      envMapIntensity: 2,
+      // intensity ~1 держит яркость отражения на уровне самого видео;
+      // при 2 отражение систематически светлее фона и слияние невозможно.
+      envMapIntensity: 1.0,
       transparent: false,
       side: THREE.DoubleSide,
     });
+
+    // Ordered dithering (Bayer 4x4) поверх материала — тот же зернистый шум,
+    // что даёт видео-компрессия у Palace, размывающий край модели с фоном.
+    chromeMaterial.onBeforeCompile = (shader) => {
+      shader.uniforms.uDitherStrength = { value: CONFIG.ditherStrength };
+      shader.fragmentShader = shader.fragmentShader.replace(
+        "#include <common>",
+        `
+        #include <common>
+        uniform float uDitherStrength;
+        float paletteBayer4x4(vec2 pos) {
+          int x = int(mod(pos.x, 4.0));
+          int y = int(mod(pos.y, 4.0));
+          int index = x + y * 4;
+          float bayer[16];
+          bayer[0]=0.0;  bayer[1]=8.0;  bayer[2]=2.0;  bayer[3]=10.0;
+          bayer[4]=12.0; bayer[5]=4.0;  bayer[6]=14.0; bayer[7]=6.0;
+          bayer[8]=3.0;  bayer[9]=11.0; bayer[10]=1.0; bayer[11]=9.0;
+          bayer[12]=15.0;bayer[13]=7.0; bayer[14]=13.0;bayer[15]=5.0;
+          return bayer[index] / 16.0;
+        }
+        `
+      );
+      shader.fragmentShader = shader.fragmentShader.replace(
+        "#include <dithering_fragment>",
+        `
+        #include <dithering_fragment>
+        float ditherThreshold = paletteBayer4x4(gl_FragCoord.xy) - 0.5;
+        gl_FragColor.rgb += ditherThreshold * uDitherStrength;
+        `
+      );
+    };
 
     /* ---------- загрузка GLB ---------- */
     let current = null;
@@ -741,7 +781,7 @@ export default function BrandSite({ config }) {
       <CookieBar />
     </div>
   );
-} 
+}
 // import React, { useState, useEffect, useRef } from "react";
 // import * as THREE from "three";
 // import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
