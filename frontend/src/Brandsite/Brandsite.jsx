@@ -700,226 +700,445 @@ function HeroModel({
        CREATE REFLECTION ROOM
     ========================================================= */
 
+    // const buildReflectionRoom = (texture) => {
+    //   // удалить старую комнату
+    //   reflectionObjects.forEach((obj) => {
+    //     reflectionScene.remove(obj);
+
+    //     if (obj.geometry) {
+    //       obj.geometry.dispose();
+    //     }
+
+    //     if (obj.material) {
+    //       obj.material.dispose();
+    //     }
+    //   });
+
+    //   reflectionObjects.length = 0;
+
+    //   texture.colorSpace = THREE.SRGBColorSpace;
+
+    //   texture.wrapS = THREE.ClampToEdgeWrapping;
+    //   texture.wrapT = THREE.ClampToEdgeWrapping;
+
+    //   texture.minFilter = THREE.LinearFilter;
+    //   texture.magFilter = THREE.LinearFilter;
+
+    //   texture.anisotropy =
+    //     renderer.capabilities.getMaxAnisotropy();
+
+    //   /*
+    //    * =======================================================
+    //    * FRONT
+    //    *
+    //    * Это главное отражение.
+    //    *
+    //    * Именно эта плоскость должна давать в chrome
+    //    * интерьер из heroImage.
+    //    * =======================================================
+    //    */
+
+    //   const frontMaterial =
+    //     new THREE.MeshBasicMaterial({
+    //       map: texture,
+    //       side: THREE.DoubleSide,
+    //     });
+
+    //   const front = new THREE.Mesh(
+    //     new THREE.PlaneGeometry(
+    //       24,
+    //       13.5
+    //     ),
+    //     frontMaterial
+    //   );
+
+    //   front.position.set(
+    //     0,
+    //     0,
+    //     -CONFIG.roomDistance
+    //   );
+
+    //   // смотрит внутрь комнаты
+    //   front.rotation.y = Math.PI;
+
+    //   reflectionScene.add(front);
+    //   reflectionObjects.push(front);
+
+    //   /*
+    //    * =======================================================
+    //    * BACK
+    //    * =======================================================
+    //    */
+
+    //   const backMaterial =
+    //     new THREE.MeshBasicMaterial({
+    //       map: texture,
+    //       side: THREE.DoubleSide,
+    //     });
+
+    //   const back = new THREE.Mesh(
+    //     new THREE.PlaneGeometry(
+    //       24,
+    //       13.5
+    //     ),
+    //     backMaterial
+    //   );
+
+    //   back.position.set(
+    //     0,
+    //     0,
+    //     CONFIG.roomDistance
+    //   );
+
+    //   reflectionScene.add(back);
+    //   reflectionObjects.push(back);
+
+    //   /*
+    //    * =======================================================
+    //    * LEFT
+    //    *
+    //    * Здесь намеренно используется та же фотография.
+    //    * Она даёт цветные блики при повороте объекта.
+    //    * =======================================================
+    //    */
+
+    //   const leftMaterial =
+    //     new THREE.MeshBasicMaterial({
+    //       map: texture,
+    //       side: THREE.DoubleSide,
+    //     });
+
+    //   const left = new THREE.Mesh(
+    //     new THREE.PlaneGeometry(
+    //       24,
+    //       13.5
+    //     ),
+    //     leftMaterial
+    //   );
+
+    //   left.position.set(
+    //     -CONFIG.roomDistance,
+    //     0,
+    //     0
+    //   );
+
+    //   left.rotation.y = Math.PI / 2;
+
+    //   reflectionScene.add(left);
+    //   reflectionObjects.push(left);
+
+    //   /*
+    //    * =======================================================
+    //    * RIGHT
+    //    * =======================================================
+    //    */
+
+    //   const rightMaterial =
+    //     new THREE.MeshBasicMaterial({
+    //       map: texture,
+    //       side: THREE.DoubleSide,
+    //     });
+
+    //   const right = new THREE.Mesh(
+    //     new THREE.PlaneGeometry(
+    //       24,
+    //       13.5
+    //     ),
+    //     rightMaterial
+    //   );
+
+    //   right.position.set(
+    //     CONFIG.roomDistance,
+    //     0,
+    //     0
+    //   );
+
+    //   right.rotation.y = -Math.PI / 2;
+
+    //   reflectionScene.add(right);
+    //   reflectionObjects.push(right);
+
+    //   /*
+    //    * =======================================================
+    //    * FLOOR
+    //    *
+    //    * Не используем фотографию снизу.
+    //    * Иначе отражение пола становится грязным.
+    //    * =======================================================
+    //    */
+
+    //   const floorMaterial =
+    //     new THREE.MeshBasicMaterial({
+    //       color: 0x5c5953,
+    //       side: THREE.DoubleSide,
+    //     });
+
+    //   const floor = new THREE.Mesh(
+    //     new THREE.PlaneGeometry(
+    //       28,
+    //       28
+    //     ),
+    //     floorMaterial
+    //   );
+
+    //   floor.position.y = -CONFIG.roomHeight / 2;
+    //   floor.rotation.x = Math.PI / 2;
+
+    //   reflectionScene.add(floor);
+    //   reflectionObjects.push(floor);
+
+    //   /*
+    //    * =======================================================
+    //    * CEILING
+    //    * =======================================================
+    //    */
+
+    //   const ceilingMaterial =
+    //     new THREE.MeshBasicMaterial({
+    //       color: 0xaaa69e,
+    //       side: THREE.DoubleSide,
+    //     });
+
+    //   const ceiling = new THREE.Mesh(
+    //     new THREE.PlaneGeometry(
+    //       28,
+    //       28
+    //     ),
+    //     ceilingMaterial
+    //   );
+
+    //   ceiling.position.y =
+    //     CONFIG.roomHeight / 2;
+
+    //   ceiling.rotation.x = Math.PI / 2;
+
+    //   reflectionScene.add(ceiling);
+    //   reflectionObjects.push(ceiling);
+
+    //   console.log(
+    //     "[BrandSite] Reflection room created"
+    //   );
+    // };
+
+
     const buildReflectionRoom = (texture) => {
-      // удалить старую комнату
-      reflectionObjects.forEach((obj) => {
-        reflectionScene.remove(obj);
+  reflectionObjects.forEach((obj) => {
+    reflectionScene.remove(obj);
 
-        if (obj.geometry) {
-          obj.geometry.dispose();
-        }
+    if (obj.geometry) {
+      obj.geometry.dispose();
+    }
 
-        if (obj.material) {
-          obj.material.dispose();
-        }
-      });
+    if (obj.material) {
+      obj.material.dispose();
+    }
+  });
 
-      reflectionObjects.length = 0;
+  reflectionObjects.length = 0;
 
-      texture.colorSpace = THREE.SRGBColorSpace;
+  texture.colorSpace = THREE.SRGBColorSpace;
 
-      texture.wrapS = THREE.ClampToEdgeWrapping;
-      texture.wrapT = THREE.ClampToEdgeWrapping;
+  texture.wrapS = THREE.ClampToEdgeWrapping;
+  texture.wrapT = THREE.ClampToEdgeWrapping;
 
-      texture.minFilter = THREE.LinearFilter;
-      texture.magFilter = THREE.LinearFilter;
+  texture.minFilter = THREE.LinearFilter;
+  texture.magFilter = THREE.LinearFilter;
 
-      texture.anisotropy =
-        renderer.capabilities.getMaxAnisotropy();
+  texture.anisotropy =
+    renderer.capabilities.getMaxAnisotropy();
 
-      /*
-       * =======================================================
-       * FRONT
-       *
-       * Это главное отражение.
-       *
-       * Именно эта плоскость должна давать в chrome
-       * интерьер из heroImage.
-       * =======================================================
-       */
+  /*
+   * =========================================================
+   * ФОТО — ТОЛЬКО НА ОДНОЙ СТЕНЕ
+   *
+   * Это принципиально.
+   *
+   * Не надо копировать одну фотографию на 4 стены.
+   * =========================================================
+   */
 
-      const frontMaterial =
-        new THREE.MeshBasicMaterial({
-          map: texture,
-          side: THREE.DoubleSide,
-        });
+  const photoMaterial =
+    new THREE.MeshBasicMaterial({
+      map: texture,
+      side: THREE.DoubleSide,
+    });
 
-      const front = new THREE.Mesh(
-        new THREE.PlaneGeometry(
-          24,
-          13.5
-        ),
-        frontMaterial
-      );
+  const photoWall = new THREE.Mesh(
+    new THREE.PlaneGeometry(
+      30,
+      16.875
+    ),
+    photoMaterial
+  );
 
-      front.position.set(
-        0,
-        0,
-        -CONFIG.roomDistance
-      );
+  /*
+   * Фото находится перед CubeCamera.
+   */
+  photoWall.position.set(
+    0,
+    0,
+    -CONFIG.roomDistance
+  );
 
-      // смотрит внутрь комнаты
-      front.rotation.y = Math.PI;
+  photoWall.rotation.y = Math.PI;
 
-      reflectionScene.add(front);
-      reflectionObjects.push(front);
+  reflectionScene.add(photoWall);
+  reflectionObjects.push(photoWall);
 
-      /*
-       * =======================================================
-       * BACK
-       * =======================================================
-       */
+  /*
+   * =========================================================
+   * ПРОТИВОПОЛОЖНАЯ СТЕНА
+   *
+   * НЕ чёрная.
+   * Это важно для фронтальных отражений.
+   * =========================================================
+   */
 
-      const backMaterial =
-        new THREE.MeshBasicMaterial({
-          map: texture,
-          side: THREE.DoubleSide,
-        });
+  const backMaterial =
+    new THREE.MeshBasicMaterial({
+      color: 0x888888,
+      side: THREE.DoubleSide,
+    });
 
-      const back = new THREE.Mesh(
-        new THREE.PlaneGeometry(
-          24,
-          13.5
-        ),
-        backMaterial
-      );
+  const backWall = new THREE.Mesh(
+    new THREE.PlaneGeometry(
+      30,
+      16.875
+    ),
+    backMaterial
+  );
 
-      back.position.set(
-        0,
-        0,
-        CONFIG.roomDistance
-      );
+  backWall.position.set(
+    0,
+    0,
+    CONFIG.roomDistance
+  );
 
-      reflectionScene.add(back);
-      reflectionObjects.push(back);
+  reflectionScene.add(backWall);
+  reflectionObjects.push(backWall);
 
-      /*
-       * =======================================================
-       * LEFT
-       *
-       * Здесь намеренно используется та же фотография.
-       * Она даёт цветные блики при повороте объекта.
-       * =======================================================
-       */
+  /*
+   * =========================================================
+   * LEFT
+   * =========================================================
+   */
 
-      const leftMaterial =
-        new THREE.MeshBasicMaterial({
-          map: texture,
-          side: THREE.DoubleSide,
-        });
+  const leftMaterial =
+    new THREE.MeshBasicMaterial({
+      color: 0x777777,
+      side: THREE.DoubleSide,
+    });
 
-      const left = new THREE.Mesh(
-        new THREE.PlaneGeometry(
-          24,
-          13.5
-        ),
-        leftMaterial
-      );
+  const leftWall = new THREE.Mesh(
+    new THREE.PlaneGeometry(
+      24,
+      16
+    ),
+    leftMaterial
+  );
 
-      left.position.set(
-        -CONFIG.roomDistance,
-        0,
-        0
-      );
+  leftWall.position.set(
+    -CONFIG.roomDistance,
+    0,
+    0
+  );
 
-      left.rotation.y = Math.PI / 2;
+  leftWall.rotation.y =
+    Math.PI / 2;
 
-      reflectionScene.add(left);
-      reflectionObjects.push(left);
+  reflectionScene.add(leftWall);
+  reflectionObjects.push(leftWall);
 
-      /*
-       * =======================================================
-       * RIGHT
-       * =======================================================
-       */
+  /*
+   * =========================================================
+   * RIGHT
+   * =========================================================
+   */
 
-      const rightMaterial =
-        new THREE.MeshBasicMaterial({
-          map: texture,
-          side: THREE.DoubleSide,
-        });
+  const rightMaterial =
+    new THREE.MeshBasicMaterial({
+      color: 0x999999,
+      side: THREE.DoubleSide,
+    });
 
-      const right = new THREE.Mesh(
-        new THREE.PlaneGeometry(
-          24,
-          13.5
-        ),
-        rightMaterial
-      );
+  const rightWall = new THREE.Mesh(
+    new THREE.PlaneGeometry(
+      24,
+      16
+    ),
+    rightMaterial
+  );
 
-      right.position.set(
-        CONFIG.roomDistance,
-        0,
-        0
-      );
+  rightWall.position.set(
+    CONFIG.roomDistance,
+    0,
+    0
+  );
 
-      right.rotation.y = -Math.PI / 2;
+  rightWall.rotation.y =
+    -Math.PI / 2;
 
-      reflectionScene.add(right);
-      reflectionObjects.push(right);
+  reflectionScene.add(rightWall);
+  reflectionObjects.push(rightWall);
 
-      /*
-       * =======================================================
-       * FLOOR
-       *
-       * Не используем фотографию снизу.
-       * Иначе отражение пола становится грязным.
-       * =======================================================
-       */
+  /*
+   * =========================================================
+   * FLOOR
+   * =========================================================
+   */
 
-      const floorMaterial =
-        new THREE.MeshBasicMaterial({
-          color: 0x5c5953,
-          side: THREE.DoubleSide,
-        });
+  const floorMaterial =
+    new THREE.MeshBasicMaterial({
+      color: 0x4c4a46,
+      side: THREE.DoubleSide,
+    });
 
-      const floor = new THREE.Mesh(
-        new THREE.PlaneGeometry(
-          28,
-          28
-        ),
-        floorMaterial
-      );
+  const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(
+      30,
+      30
+    ),
+    floorMaterial
+  );
 
-      floor.position.y = -CONFIG.roomHeight / 2;
-      floor.rotation.x = Math.PI / 2;
+  floor.position.y =
+    -CONFIG.roomHeight / 2;
 
-      reflectionScene.add(floor);
-      reflectionObjects.push(floor);
+  floor.rotation.x =
+    Math.PI / 2;
 
-      /*
-       * =======================================================
-       * CEILING
-       * =======================================================
-       */
+  reflectionScene.add(floor);
+  reflectionObjects.push(floor);
 
-      const ceilingMaterial =
-        new THREE.MeshBasicMaterial({
-          color: 0xaaa69e,
-          side: THREE.DoubleSide,
-        });
+  /*
+   * =========================================================
+   * CEILING
+   * =========================================================
+   */
 
-      const ceiling = new THREE.Mesh(
-        new THREE.PlaneGeometry(
-          28,
-          28
-        ),
-        ceilingMaterial
-      );
+  const ceilingMaterial =
+    new THREE.MeshBasicMaterial({
+      color: 0xb8b4ad,
+      side: THREE.DoubleSide,
+    });
 
-      ceiling.position.y =
-        CONFIG.roomHeight / 2;
+  const ceiling = new THREE.Mesh(
+    new THREE.PlaneGeometry(
+      30,
+      30
+    ),
+    ceilingMaterial
+  );
 
-      ceiling.rotation.x = Math.PI / 2;
+  ceiling.position.y =
+    CONFIG.roomHeight / 2;
 
-      reflectionScene.add(ceiling);
-      reflectionObjects.push(ceiling);
+  ceiling.rotation.x =
+    Math.PI / 2;
 
-      console.log(
-        "[BrandSite] Reflection room created"
-      );
-    };
-
+  reflectionScene.add(ceiling);
+  reflectionObjects.push(ceiling);
+};
     /* =========================================================
        LOAD HERO IMAGE
     ========================================================= */
@@ -1002,28 +1221,47 @@ function HeroModel({
        Он хорошо работает с динамическим CubeCamera envMap.
     ========================================================= */
 
+    // const chromeMaterial =
+    //   new THREE.MeshPhongMaterial({
+    //     color: 0xffffff,
+
+    //     // главное свойство зеркала
+    //     envMap: cubeRT.texture,
+
+    //     // насколько ярко отражается фото
+    //     reflectivity:
+    //       CONFIG.reflectionStrength,
+
+    //     // чем меньше — тем зеркало
+    //     shininess: 220,
+
+    //     // лёгкий холодный металлический оттенок
+    //     specular: 0xffffff,
+
+    //     transparent: false,
+    //     opacity: 1,
+
+    //     side: THREE.FrontSide,
+    //   });
     const chromeMaterial =
-      new THREE.MeshPhongMaterial({
-        color: 0xffffff,
+  new THREE.MeshPhongMaterial({
+    color: 0xffffff,
 
-        // главное свойство зеркала
-        envMap: cubeRT.texture,
+    envMap: cubeRT.texture,
 
-        // насколько ярко отражается фото
-        reflectivity:
-          CONFIG.reflectionStrength,
+    reflectivity: 1,
 
-        // чем меньше — тем зеркало
-        shininess: 220,
+    shininess: 300,
 
-        // лёгкий холодный металлический оттенок
-        specular: 0xffffff,
+    specular: 0xffffff,
 
-        transparent: false,
-        opacity: 1,
+    combine: THREE.MixOperation,
 
-        side: THREE.FrontSide,
-      });
+    transparent: false,
+    opacity: 1,
+
+    side: THREE.DoubleSide,
+  });
 
     /* =========================================================
        LOAD GLB
@@ -1084,8 +1322,53 @@ function HeroModel({
             cubeCamera.position
           );
         },
+
+        
+        onReady: (object) => {
+  fitAndCenter(
+    object,
+    CONFIG.modelSize
+  );
+
+  current = object;
+
+  scene.add(current);
+
+  const box =
+    new THREE.Box3()
+      .setFromObject(current);
+
+  const center =
+    new THREE.Vector3();
+
+  box.getCenter(center);
+
+  cubeCamera.position.copy(center);
+
+  /*
+   * DEBUG
+   */
+  current.traverse((child) => {
+    if (child.isMesh) {
+      console.log(
+        "[HeroModel] mesh:",
+        child.name,
+        "geometry:",
+        child.geometry,
+        "material:",
+        child.material
+      );
+
+      child.material = chromeMaterial;
+      child.material.side =
+        THREE.DoubleSide;
+      child.material.needsUpdate = true;
+    }
+  });
+},
       });
 
+      
     /* =========================================================
        DRAG / INERTIA / SETTLE
     ========================================================= */
