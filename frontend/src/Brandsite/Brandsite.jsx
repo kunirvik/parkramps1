@@ -361,15 +361,22 @@ function HeroModel({ modelUrl, heroVideoUrl, restRotationY = 0 }) {
     const cubeCamera = new THREE.CubeCamera(0.1, 100, cubeRT);
     scene.add(cubeCamera);
 
-    const chromeMaterial = new THREE.MeshStandardMaterial({
-      color: 0xffffff,
-      metalness: 1,
-      roughness: 0,
-      envMap: cubeRT.texture,
-      envMapIntensity: 2,
-      transparent: false,
-      side: THREE.DoubleSide,
-    });
+    // const chromeMaterial = new THREE.MeshStandardMaterial({
+    //   color: 0xffffff,
+    //   metalness: 1,
+    //   roughness: 0,
+    //   envMap: cubeRT.texture,
+    //   envMapIntensity: 2,
+    //   transparent: false,
+    //   side: THREE.DoubleSide,
+    // });
+    const chromeMaterial = new THREE.MeshBasicMaterial({
+  color: 0xffffff,
+  envMap: cubeRT.texture,
+  reflectivity: 1,
+  combine: THREE.MultiplyOperation, // или THREE.AddOperation для ярче/светлее
+  side: THREE.DoubleSide,
+});
 
     /* ---------- загрузка GLB ---------- */
     let current = null;
