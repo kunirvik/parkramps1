@@ -238,7 +238,7 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }) {
     const CONFIG = {
       modelSize: 2.8,
       cameraZ: 6,
-      reflectionSize: 512,
+      reflectionSize: 1024,
       dragSensitivity: 0.008,
       inertiaDamping: 0.94,
       minVelocity: 0.00015,
@@ -258,7 +258,7 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }) {
     const getSize = () => Math.min(mount.clientWidth || 560, mount.clientHeight || 560, 560);
     let size = getSize();
     renderer.setSize(size, size);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 3));
 
     if ("outputColorSpace" in renderer) renderer.outputColorSpace = THREE.SRGBColorSpace;
     else renderer.outputEncoding = THREE.sRGBEncoding;
