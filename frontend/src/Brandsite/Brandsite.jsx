@@ -361,7 +361,7 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }) {
       metalness: 1,
       roughness: 0,
       envMap: cubeRT.texture,
-      envMapIntensity: 1.2,
+      envMapIntensity: 2,
       transparent: false,
       // opacity: 1,
       side: THREE.DoubleSide,
