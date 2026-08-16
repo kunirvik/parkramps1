@@ -72,6 +72,7 @@ dracoLoader.setDecoderPath("https://www.gstatic.com/draco/versioned/decoders/1.5
    эта текстура обновляется (см. CubeCamera ниже), отражение обновляется сразу
    у всех мешей без повторного обхода дерева на каждый кадр. */
 function loadMeshWithMaterial({ url, fallbackGeo, material, onReady, label = "model" }){
+ console.log(`[BrandSite] loadMeshWithMaterial v2 CALLED for ${label}`);
   if (!url) {
     onReady(new THREE.Mesh(fallbackGeo, material));
     return () => {};
