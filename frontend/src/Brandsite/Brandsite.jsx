@@ -367,7 +367,7 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }) {
     //   side: THREE.DoubleSide,
     // });
 
-    const glassMaterial = new THREE.MeshPhysicalMaterial({
+    const chromeMaterial = new THREE.MeshPhysicalMaterial({
   color: 0xffffff,
   metalness: 0.1,             // Небольшая металлизированность для блеска граней
   roughness: 0.05,            // Почти идеальная гладкость
