@@ -1243,25 +1243,32 @@ function HeroModel({
 
     //     side: THREE.FrontSide,
     //   });
-    const chromeMaterial =
-  new THREE.MeshPhongMaterial({
-    color: 0xffffff,
+  //   const chromeMaterial =
+  // new THREE.MeshPhongMaterial({
+  //   color: 0xffffff,
 
-    envMap: cubeRT.texture,
+  //   envMap: cubeRT.texture,
 
-    reflectivity: 1,
+  //   reflectivity: 1,
 
-    shininess: 300,
+  //   shininess: 300,
 
-    specular: 0xffffff,
+  //   specular: 0xffffff,
 
-    combine: THREE.MixOperation,
+  //   combine: THREE.MixOperation,
 
-    transparent: false,
-    opacity: 1,
+  //   transparent: false,
+  //   opacity: 1,
 
-    side: THREE.DoubleSide,
-  });
+  //   side: THREE.DoubleSide,
+  // });
+  const chromeMaterial = new THREE.MeshBasicMaterial({
+  color: 0xffffff,
+  envMap: cubeRT.texture,
+  reflectivity: 1,
+  combine: THREE.MixOperation,
+  side: THREE.DoubleSide,
+});
 
     /* =========================================================
        LOAD GLB
@@ -1323,7 +1330,7 @@ function HeroModel({
           );
         },
 
-        
+
         onReady: (object) => {
   fitAndCenter(
     object,
