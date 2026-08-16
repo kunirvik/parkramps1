@@ -328,10 +328,15 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }) {
       reflectionScene.add(right);
       reflectionObjects.push(right);
 
-      // пол/потолок — плоский тон, чтобы отражение сверху/снизу не было "грязным"
+      // ФИКС: модель — гранёный "кристалл" с фасетами, смотрящими во все
+      // стороны, не только вбок. Если пол/потолок — плоский цвет, все
+      // фасеты, направленные вверх/вниз, отражают этот плоский цвет и
+      // модель выглядит почти однотонной. Кладём то же фото на пол и
+      // потолок — так отражение фото ловится независимо от того, куда
+      // смотрит конкретная грань.
       const floor = new THREE.Mesh(
         new THREE.PlaneGeometry(30, 30),
-        new THREE.MeshBasicMaterial({ color: 0x4c4a46, side: THREE.DoubleSide })
+        new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
       );
       floor.position.y = -CONFIG.roomHeight / 2;
       floor.rotation.x = Math.PI / 2;
@@ -340,7 +345,7 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }) {
 
       const ceiling = new THREE.Mesh(
         new THREE.PlaneGeometry(30, 30),
-        new THREE.MeshBasicMaterial({ color: 0xb8b4ad, side: THREE.DoubleSide })
+        new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
       );
       ceiling.position.y = CONFIG.roomHeight / 2;
       ceiling.rotation.x = Math.PI / 2;
