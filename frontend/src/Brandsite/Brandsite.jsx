@@ -54,6 +54,7 @@ const DEFAULT_CONFIG = {
 function makeMirrorMaterial(extra = {}){
   return new THREE.MeshStandardMaterial({
     color: 0xffffff,
+    vertexColors: false, // явно, на случай если геометрия несёт color-атрибут
     metalness: 1,
     roughness: 0.12, // не 0 — на чистом нуле без ярких бликов форма "теряется" и кажется просто белой заливкой
     envMapIntensity: 1.5,
