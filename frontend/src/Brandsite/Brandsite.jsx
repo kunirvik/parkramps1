@@ -17,7 +17,7 @@ const DEFAULT_CONFIG = {
   heroImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785509327/volt_park_visual9_lsorlm.jpg",
   // НОВОЕ: видео, которое будет отражаться в модели (как на palace.com).
   // Если не задано — используется heroImage (старое поведение, статичное отражение).
-  heroVideoUrl: null, // например: "https://res.cloudinary.com/.../hero-reflection.mp4"
+  heroVideoUrl: "https://res.cloudinary.com/dbx6muxub/video/upload/v1785325905/volt_park_visual2kwide_sjelea.mp4", // например: "https://res.cloudinary.com/.../hero-reflection.mp4"
   heroModelUrl: "https://res.cloudinary.com/dbx6muxub/image/upload/v1786869663/logo_alatkf.glb",
   heroMirrorRestRotationY: 0,
   headerModelUrl: null,
