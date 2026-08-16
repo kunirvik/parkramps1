@@ -226,16 +226,15 @@ function HeroModel({ modelUrl, heroVideoUrl, restRotationY = 0 }) {
     const CONFIG = {
       modelSize: 2.8,
       cameraZ: 6,
-      reflectionSize: 2048, // выше разрешение куб-карты — резче, читаемее отражение
+      reflectionSize: 1024,
       dragSensitivity: 0.008,
       inertiaDamping: 0.94,
       minVelocity: 0.00015,
       settleDelay: 500,
       settleSpeed: 0.045,
-      envUpdateEveryFrame: 1, // обновляем env каждый кадр — без "залипания" на старом смазанном кадре
+      envUpdateEveryFrame: 2,
       roomDistance: 12,
       roomHeight: 16,
-      ditherStrength: 0, // зерно выключено — оно и было одним из источников размытости
     };
 
     /* ---------- основная сцена ---------- */
@@ -254,19 +253,6 @@ function HeroModel({ modelUrl, heroVideoUrl, restRotationY = 0 }) {
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.15;
     mount.appendChild(renderer.domElement);
-
-    // Канвас скрыт, пока не готовы (а) геометрия модели и (б) первый кадр видео.
-    // Без этого модель успевает отрендериться с чёрным envMap (видео ещё не отдало
-    // ни одного кадра) — вот откуда "сначала чёрная, потом появляются текстуры".
-    // Прячем сам рендер, а не отдельные текстуры, поэтому появление сразу цельное.
-    renderer.domElement.style.opacity = "0";
-    renderer.domElement.style.transition = "opacity 0.6s ease";
-    const readiness = { model: false, video: !heroVideoUrl };
-    const revealIfReady = () => {
-      if (readiness.model && readiness.video) {
-        renderer.domElement.style.opacity = "1";
-      }
-    };
 
     scene.add(new THREE.HemisphereLight(0xffffff, 0x333333, 1.4));
     const keyLight = new THREE.DirectionalLight(0xffffff, 2.5);
@@ -359,17 +345,6 @@ function HeroModel({ modelUrl, heroVideoUrl, restRotationY = 0 }) {
       videoTexture = new THREE.VideoTexture(videoEl);
       buildReflectionRoom(videoTexture);
 
-      // "loadeddata" стреляет, когда у видео уже есть хотя бы один декодированный
-      // кадр — до этого момента текстура физически черна, показывать её рано.
-      videoEl.addEventListener(
-        "loadeddata",
-        () => {
-          readiness.video = true;
-          revealIfReady();
-        },
-        { once: true }
-      );
-
       videoEl.play().catch((err) => {
         console.warn("[BrandSite] Автовоспроизведение видео заблокировано браузером:", err);
       });
@@ -378,9 +353,6 @@ function HeroModel({ modelUrl, heroVideoUrl, restRotationY = 0 }) {
     }
 
     /* ---------- CubeCamera ---------- */
-    // Пониженное разрешение + mip-цепочка дают более мягкую, смазанную карту окружения —
-    // это часть того, почему у Palace отражение визуально "растворяется" в видео,
-    // а не читается как резкая зеркальная картинка.
     const cubeRT = new THREE.WebGLCubeRenderTarget(CONFIG.reflectionSize, {
       generateMipmaps: true,
       minFilter: THREE.LinearMipmapLinearFilter,
@@ -392,48 +364,12 @@ function HeroModel({ modelUrl, heroVideoUrl, restRotationY = 0 }) {
     const chromeMaterial = new THREE.MeshStandardMaterial({
       color: 0xffffff,
       metalness: 1,
-      // Небольшая шероховатость размывает блики — при roughness:0 модель всегда
-      // читается как резкое зеркальное пятно и никогда не "тает" в фоне.
-      roughness: 0.08,
+      roughness: 0,
       envMap: cubeRT.texture,
-      // intensity ~1 держит яркость отражения на уровне самого видео;
-      // при 2 отражение систематически светлее фона и слияние невозможно.
-      envMapIntensity: 1.0,
+      envMapIntensity: 2,
       transparent: false,
       side: THREE.DoubleSide,
     });
-
-    // Ordered dithering (Bayer 4x4) поверх материала — тот же зернистый шум,
-    // что даёт видео-компрессия у Palace, размывающий край модели с фоном.
-    chromeMaterial.onBeforeCompile = (shader) => {
-      shader.uniforms.uDitherStrength = { value: CONFIG.ditherStrength };
-      shader.fragmentShader = shader.fragmentShader.replace(
-        "#include <common>",
-        `
-        #include <common>
-        uniform float uDitherStrength;
-        float paletteBayer4x4(vec2 pos) {
-          int x = int(mod(pos.x, 4.0));
-          int y = int(mod(pos.y, 4.0));
-          int index = x + y * 4;
-          float bayer[16];
-          bayer[0]=0.0;  bayer[1]=8.0;  bayer[2]=2.0;  bayer[3]=10.0;
-          bayer[4]=12.0; bayer[5]=4.0;  bayer[6]=14.0; bayer[7]=6.0;
-          bayer[8]=3.0;  bayer[9]=11.0; bayer[10]=1.0; bayer[11]=9.0;
-          bayer[12]=15.0;bayer[13]=7.0; bayer[14]=13.0;bayer[15]=5.0;
-          return bayer[index] / 16.0;
-        }
-        `
-      );
-      shader.fragmentShader = shader.fragmentShader.replace(
-        "#include <dithering_fragment>",
-        `
-        #include <dithering_fragment>
-        float ditherThreshold = paletteBayer4x4(gl_FragCoord.xy) - 0.5;
-        gl_FragColor.rgb += ditherThreshold * uDitherStrength;
-        `
-      );
-    };
 
     /* ---------- загрузка GLB ---------- */
     let current = null;
@@ -451,9 +387,6 @@ function HeroModel({ modelUrl, heroVideoUrl, restRotationY = 0 }) {
         const center = new THREE.Vector3();
         box.getCenter(center);
         cubeCamera.position.copy(center);
-
-        readiness.model = true;
-        revealIfReady();
       },
     });
 
@@ -535,14 +468,10 @@ function HeroModel({ modelUrl, heroVideoUrl, restRotationY = 0 }) {
 
       // VideoTexture сам помечает needsUpdate каждый кадр, пока видео играет —
       // руками ничего дергать не нужно, просто регулярно обновляем env-карту.
-      // Пока readiness.video === false, кадр видео ещё чёрный — не тратим на него
-      // апдейты cubeCamera и не "запекаем" чёрный кадр в mip-цепочку.
-      if (readiness.video) {
-        state.envFrame++;
-        if (state.envFrame >= CONFIG.envUpdateEveryFrame) {
-          state.envFrame = 0;
-          cubeCamera.update(renderer, reflectionScene);
-        }
+      state.envFrame++;
+      if (state.envFrame >= CONFIG.envUpdateEveryFrame) {
+        state.envFrame = 0;
+        cubeCamera.update(renderer, reflectionScene);
       }
 
       renderer.render(scene, camera);
@@ -639,10 +568,8 @@ function MenuOverlay({ cfg, open, onClose }) {
 
 function Hero({ cfg }) {
   const bgVideoRef = useRef(null);
-  const [bgVideoReady, setBgVideoReady] = useState(false);
 
   useEffect(() => {
-    setBgVideoReady(false);
     const v = bgVideoRef.current;
     if (v) {
       v.play().catch((err) => console.warn("[BrandSite] Автовоспроизведение фонового видео заблокировано:", err));
@@ -655,15 +582,12 @@ function Hero({ cfg }) {
         {cfg.heroVideoUrl ? (
           <video
             ref={bgVideoRef}
-            // Держим прозрачным, пока не пришёл первый декодированный кадр —
-            // иначе перед стартом видна чёрная заливка вместо контента.
-            className={"hero-bg-video" + (bgVideoReady ? " is-ready" : "")}
+            className="hero-bg-video"
             src={cfg.heroVideoUrl}
             autoPlay
             muted
             loop
             playsInline
-            onLoadedData={() => setBgVideoReady(true)}
           />
         ) : (
           <div className="hero-bg-label">
@@ -817,7 +741,7 @@ export default function BrandSite({ config }) {
       <CookieBar />
     </div>
   );
-}
+} 
 // import React, { useState, useEffect, useRef } from "react";
 // import * as THREE from "three";
 // import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
