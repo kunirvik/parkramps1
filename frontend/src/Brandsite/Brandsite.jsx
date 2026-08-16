@@ -356,35 +356,16 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }) {
     scene.add(cubeCamera);
 
    
-    // const chromeMaterial = new THREE.MeshStandardMaterial({
-    //   color: 0xffffff,
-    //   metalness: 1,
-    //   roughness: 0,
-    //   envMap: cubeRT.texture,
-    //   envMapIntensity: 1.2,
-    //   transparent: false,
-    //   opacity: 1,
-    //   side: THREE.DoubleSide,
-    // });
-
-    const chromeMaterial = new THREE.MeshPhysicalMaterial({
-  color: 0xffffff,
-  metalness: 0.1,             // Небольшая металлизированность для блеска граней
-  roughness: 0.05,            // Почти идеальная гладкость
-  transparent: true,
-  opacity: 1.0,
-  
-  // Ключевые свойства физического стекла:
-  transmission: 1.0,          // Полное пропускание света сквозь объект
-  ior: 1.5,                   // Индекс преломления (1.5 — стандартное стекло)
-  thickness: 2.0,             // Симулирует толщину геометрии (дает искажение заднего фона)
-  roughnessMap: null,         // Если нужно, сюда можно передать карту царапин
-  
-  // Источник отражений и преломлений
-  envMap: cubeRT.texture,
-  envMapIntensity: 1.5,
-  side: THREE.DoubleSide
-});
+    const chromeMaterial = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      metalness: 1,
+      roughness: 0,
+      envMap: cubeRT.texture,
+      envMapIntensity: 1.2,
+      transparent: false,
+      // opacity: 1,
+      side: THREE.DoubleSide,
+    });
 
     /* ---------- загрузка GLB ---------- */
     let current = null;
