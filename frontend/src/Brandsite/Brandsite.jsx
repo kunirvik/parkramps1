@@ -238,12 +238,10 @@ function HeaderOrb({ modelUrl, modelUrlAlt }) {
       и cubeCamera хотя бы дважды обновила отражение.
 
    3. МАТЕРИАЛ ЧИТАЕТСЯ НА ЛЮБОМ ФОНЕ.
-      Два цветных rim-света под углом к камере — контровые блики,
-      которые держат контур видимым, даже когда отражение по тону
-      совпадает с реальным фоном страницы. Сама модель при этом —
-      максимально чистое зеркало (roughness почти 0, без clearcoat-дымки,
-      без mip-блюра на куб-карте) — см. блок CubeCamera/chromeMaterial
-      ниже.
+      roughness: 0 заменён на небольшое значение + добавлен clearcoat
+      (MeshPhysicalMaterial). Плюс два цветных rim-света под углом к
+      камере — контровые блики, которые держат контур видимым, даже
+      когда отражение по тону совпадает с реальным фоном страницы.
    ========================================================================= */
 function HeroModel({ modelUrl, heroImage, heroVideoUrl, restRotationY = 0 }) {
   const mountRef = useRef(null);
@@ -254,9 +252,9 @@ function HeroModel({ modelUrl, heroImage, heroVideoUrl, restRotationY = 0 }) {
     if (!mount) return;
 
     const CONFIG = {
-      modelSize: 2.8,
+      modelSize: 5.8,
       cameraZ: 6,
-      reflectionSize: 2048, // выше разрешение куб-карты — резче видно детали отражения
+      reflectionSize: 1024,
       dragSensitivity: 0.008,
       inertiaDamping: 0.94,
       minVelocity: 0.00015,
@@ -414,31 +412,23 @@ function HeroModel({ modelUrl, heroImage, heroVideoUrl, restRotationY = 0 }) {
       console.warn("[BrandSite] Не задан ни heroVideoUrl, ни heroImage — отражать нечего.");
     }
 
-    /* ---------- CubeCamera ----------
-       generateMipmaps + LinearMipmapLinearFilter заставляли three.js
-       выбирать смазанный mip-уровень куб-карты в зависимости от
-       roughness материала (стандартный roughness-workflow для PBR).
-       Для настоящего зеркального вида это лишнее — отключаем mip-цепочку
-       и берём чистый Linear-семпл без блюра. */
+    /* ---------- CubeCamera ---------- */
     const cubeRT = new THREE.WebGLCubeRenderTarget(CONFIG.reflectionSize, {
-      generateMipmaps: false,
-      minFilter: THREE.LinearFilter,
+      generateMipmaps: true,
+      minFilter: THREE.LinearMipmapLinearFilter,
       magFilter: THREE.LinearFilter,
     });
     const cubeCamera = new THREE.CubeCamera(0.1, 100, cubeRT);
     scene.add(cubeCamera);
 
-    // Чистое зеркало: MeshStandardMaterial (без clearcoat-слоя, который
-    // добавлял поверх дополнительный размытый блик и визуально "давал дымку").
-    // roughness держим на минимальном ненулевом значении (не строго 0) —
-    // это стандартная практика, чтобы избежать шейдерных артефактов на
-    // идеально гладких металлах (деление на ноль в GGX-специкуляре).
-    const chromeMaterial = new THREE.MeshStandardMaterial({
+    const chromeMaterial = new THREE.MeshPhysicalMaterial({
       color: 0xffffff,
       metalness: 1,
-      roughness: 0.015,
+      roughness: 0.06,
       envMap: cubeRT.texture,
-      envMapIntensity: 1.9,
+      envMapIntensity: 1.8,
+      clearcoat: 1,
+      clearcoatRoughness: 0.18,
       side: THREE.DoubleSide,
     });
 
