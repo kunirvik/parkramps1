@@ -252,7 +252,7 @@ function HeroModel({ modelUrl, heroImage, heroVideoUrl, restRotationY = 0 }) {
     if (!mount) return;
 
     const CONFIG = {
-      modelSize: 2.8,
+      modelSize: 3.8,
       cameraZ: 6,
       reflectionSize: 1024,
       dragSensitivity: 0.008,
