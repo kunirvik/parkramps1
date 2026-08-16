@@ -206,13 +206,27 @@ uniform float uContrast;
         // THREE.VideoTexture по умолчанию flipY=true: v=0 у него соответствует
         // НИЗУ видео, а наш videoUV.y посчитан в CSS-логике (0=верх) — инвертируем
         vec2 sampleUV = vec2(videoUV.x, 1.0 - videoUV.y);
-        vec4 bg = texture2D(uVideoTex, sampleUV);
+vec4 bg = texture2D(uVideoTex, sampleUV);
 
-        // тонкий fresnel-блик по краям, чтобы читался объём модели
-        float fresnel = pow(1.0 - max(dot(normalize(vViewDir), normalize(vNormal)), 0.0), 2.5);
-        vec3 color = bg.rgb + fresnel * uFresnelStrength;
+// Тот же фон, но немного темнее,
+// чтобы модель не выглядела ярче оригинального видео.
+vec3 color = bg.rgb * uBrightness;
 
-        gl_FragColor = vec4(color, 1.0);
+// слегка уменьшаем контраст
+color = (color - 0.5) * uContrast + 0.5;
+
+// очень слабый Fresnel только для объёма
+float fresnel = pow(
+  1.0 - max(
+    dot(normalize(vViewDir), normalize(vNormal)),
+    0.0
+  ),
+  2.5
+);
+
+color += fresnel * uFresnelStrength;
+
+gl_FragColor = vec4(color, 1.0);
       }
     `,
   });
