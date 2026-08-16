@@ -387,41 +387,16 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }) {
        MeshStandardMaterial с metalness:1 не имеет diffuse-члена вообще —
        цвет поверхности целиком берётся из envMap, поэтому освещение
        больше не может "затемнить" отражение до чёрного. */
-    // const chromeMaterial = new THREE.MeshStandardMaterial({
-    //   color: 0xffffff,
-    //   metalness: 1,
-    //   roughness: 0.1,
-    //   envMap: cubeRT.texture,
-    //   envMapIntensity: 1.2,
-    //   transparent: false,
-    //   opacity: 1,
-    //   side: THREE.DoubleSide,
-    // });
-    const chromeMaterial = new THREE.MeshPhysicalMaterial({
-  color: 0xffffff,
-
-  // отражение
-  metalness: 0.65,
-  roughness: 0.08,
-
-  // стекло / преломление
-  transmission: 0.45,
-  thickness: 0.8,
-  ior: 1.45,
-
-  // дополнительные блики
-  clearcoat: 1.0,
-  clearcoatRoughness: 0.05,
-
-  // твоя CubeCamera
-  envMap: cubeRT.texture,
-  envMapIntensity: 1.8,
-
-  transparent: true,
-  opacity: 0.92,
-
-  side: THREE.DoubleSide,
-}); 
+    const chromeMaterial = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      metalness: 1,
+      roughness: 0.1,
+      envMap: cubeRT.texture,
+      envMapIntensity: 1.2,
+      transparent: false,
+      opacity: 1,
+      side: THREE.DoubleSide,
+    });
 
     /* ---------- загрузка GLB ---------- */
     let current = null;
