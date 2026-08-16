@@ -15,7 +15,7 @@ const DEFAULT_CONFIG = {
     { label: "Cart", href: "#" },
   ],
   heroImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785509327/volt_park_visual9_lsorlm.jpg",
-  heroModelUrl: "https://res.cloudinary.com/dbx6muxub/image/upload/v1786811336/model_eteyx8.glb",
+  heroModelUrl: null,
   heroMirrorRestRotationY: 0,
   headerModelUrl: null,
   headerModelUrlAlt: null,
