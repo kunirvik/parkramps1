@@ -5,37 +5,7 @@ import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import "./Brandsite.css";
 
-/* ============================================================
-   BrandSite — hero-страница в стиле Palace Skateboards.
 
-   ЧТО ЗДЕСЬ ЕСТЬ:
-   1) Плавающая капсула-хедер с маленьким вращающимся 3D-объектом
-      слева от лого. При скролле объект меняется на другой
-      (headerModelUrl -> headerModelUrlAlt).
-   2) Hero: фото-фон + большая 3D-модель (настоящий хром —
-      metalness:1, roughness>0, никакой прозрачности) по центру.
-      Отражение строится из копии hero-фото, размещённой в отдельной
-      "reflection-сцене" спереди и сзади модели и снятой CubeCamera —
-      то есть модель буквально отражает фото, а не имитацию.
-      Сцена стартует с тихого автовращения. Зажимаешь мышь и тащишь —
-      вращение по Y полностью под курсором. Отпускаешь — модель летит
-      по инерции, а затем сама доворачивается до heroMirrorRestRotationY
-      и останавливается в этой позе ("слияние" с фоном).
-
-   КАК ПОДКЛЮЧИТЬ СВОЮ 3D-МОДЕЛЬ:
-     <BrandSite config={{
-       heroModelUrl: "/models/logo.glb",       // твоя модель для hero
-       headerModelUrl: "/models/icon-a.glb",   // модель в хедере (до скролла)
-       headerModelUrlAlt: "/models/icon-b.glb",// модель в хедере (после скролла)
-       heroImage: "/img/hero.jpg",
-     }} />
-
-   Если URL моделей не передать — используются процедурные
-   стеклянные фигуры (работает "из коробки" для превью).
-
-   Зависимости: react, three (npm i three).
-   Модули three/examples/jsm/* идут в комплекте с пакетом three.
-============================================================= */
 
 const DEFAULT_CONFIG = {
   logoText: "YOUR BRAND",
@@ -116,7 +86,17 @@ function loadMeshWithMaterial({ url, fallbackGeo, material, onReady, label = "mo
       if (cancelled) return;
       const group = gltf.scene;
       group.traverse((child) => {
-        if (child.isMesh) child.material = material;
+        // if (child.isMesh) child.material = material;
+          if (child.isMesh) {
+    if (Array.isArray(child.material)) {
+      // растягиваем один и тот же материал на все группы,
+      // чтобы не было рассинхрона material.length vs geometry.groups.length
+      child.material = child.material.map(() => material);
+    } else {
+      child.material = material;
+    }
+    child.material.needsUpdate = true;
+  }
       });
       onReady(group);
     },
@@ -290,7 +270,7 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }){
       minVelocity: 0.00015,
       settleDelay: 500,      // мс паузы после отпускания мыши, прежде чем начать доворот
       settleSpeed: 0.045,
-      envUpdateEveryFrame: 2, // обновлять отражение раз в N кадров (дешевле для GPU)
+      envUpdateEveryFrame: 5, // обновлять отражение раз в N кадров (дешевле для GPU)
     };
 
     const getSize = () => Math.min(mount.clientWidth, mount.clientHeight, 560);
@@ -355,7 +335,7 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }){
     }
 
     /* ---------- CubeCamera: строит envMap из reflectionScene ---------- */
-    const cubeRT = new THREE.WebGLCubeRenderTarget(256, {
+    const cubeRT = new THREE.WebGLCubeRenderTarget(128, {
       generateMipmaps: true,
       minFilter: THREE.LinearMipmapLinearFilter,
     });
