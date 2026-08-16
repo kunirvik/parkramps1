@@ -15,9 +15,6 @@ const DEFAULT_CONFIG = {
     { label: "Cart", href: "#" },
   ],
   heroImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785509327/volt_park_visual9_lsorlm.jpg",
-  // НОВОЕ: видео, которое будет отражаться в модели (как на palace.com).
-  // Если не задано — используется heroImage (старое поведение, статичное отражение).
-  heroVideoUrl: "https://res.cloudinary.com/dbx6muxub/video/upload/v1785325905/volt_park_visual2kwide_sjelea.mp4", // например: "https://res.cloudinary.com/.../hero-reflection.mp4"
   heroModelUrl: "https://res.cloudinary.com/dbx6muxub/image/upload/v1786869663/logo_alatkf.glb",
   heroMirrorRestRotationY: 0,
   headerModelUrl: null,
@@ -85,6 +82,8 @@ function loadMeshWithMaterial({ url, fallbackGeo, material, onReady, label = "mo
       group.traverse((child) => {
         if (child.isMesh) {
           if (Array.isArray(child.material)) {
+            // растягиваем один и тот же материал на все группы,
+            // чтобы не было рассинхрона material.length vs geometry.groups.length
             child.material = child.material.map(() => material);
           } else {
             child.material = material;
@@ -216,38 +215,8 @@ function HeaderOrb({ modelUrl, modelUrlAlt }) {
   return <div className="header-orb" ref={mountRef}></div>;
 }
 
-/* =========================================================================
-   HeroModel — что изменено и почему:
-
-   1. ОТРАЖЕНИЕ ВИДЕО, А НЕ ФОТО.
-      Если передан heroVideoUrl — создаётся скрытый <video> и
-      THREE.VideoTexture, которой обклеиваются стены "комнаты" вокруг
-      модели. CubeCamera снимает эту комнату каждый кадр, и хромированная
-      модель отражает живое видео, как на palace.com. Если heroVideoUrl
-      не задан — используется heroImage (старое поведение).
-
-   2. МОДЕЛЬ БОЛЬШЕ НЕ "ПРОПАДАЕТ" НА СТАРТЕ.
-      Раньше модель добавлялась в сцену сразу, а материал с roughness: 0
-      (идеальное зеркало) в первые кадры отражал ПУСТУЮ reflectionScene
-      (заливку цветом 0x77736b), потому что текстура/видео к этому
-      моменту ещё не успевали загрузиться. Этот плоский цвет случайно
-      был близок к тону фонового фото — модель визуально "растворялась".
-      Это выглядело как баг анимации появления, а на деле было гонкой
-      загрузок. Теперь модель создаётся с visible=false и показывается
-      только после того, как: GLB загружен, видео/фото-текстура готова,
-      и cubeCamera хотя бы дважды обновила отражение.
-
-   3. МАТЕРИАЛ ЧИТАЕТСЯ НА ЛЮБОМ ФОНЕ.
-      Два цветных rim-света под углом к камере — контровые блики,
-      которые держат контур видимым, даже когда отражение по тону
-      совпадает с реальным фоном страницы. Сама модель при этом —
-      максимально чистое зеркало (roughness почти 0, без clearcoat-дымки,
-      без mip-блюра на куб-карте) — см. блок CubeCamera/chromeMaterial
-      ниже.
-   ========================================================================= */
-function HeroModel({ modelUrl, heroImage, heroVideoUrl, restRotationY = 0 }) {
+function HeroModel({ modelUrl, heroImage, restRotationY = 0 }) {
   const mountRef = useRef(null);
-  const wrapRef = useRef(null);
 
   useEffect(() => {
     const mount = mountRef.current;
@@ -256,18 +225,18 @@ function HeroModel({ modelUrl, heroImage, heroVideoUrl, restRotationY = 0 }) {
     const CONFIG = {
       modelSize: 2.8,
       cameraZ: 6,
-      reflectionSize: 2048, // выше разрешение куб-карты — резче видно детали отражения
+      reflectionSize: 1024,
       dragSensitivity: 0.008,
       inertiaDamping: 0.94,
       minVelocity: 0.00015,
       settleDelay: 500,
       settleSpeed: 0.045,
-      envUpdateEveryFrame: 1, // видео отражаем каждый кадр, иначе будет заметный лаг
+      envUpdateEveryFrame: 2,
       roomDistance: 12,
       roomHeight: 16,
-      revealFramesNeeded: 2,
     };
 
+    /* ---------- основная сцена ---------- */
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
     camera.position.set(0, 0, CONFIG.cameraZ);
@@ -292,25 +261,14 @@ function HeroModel({ modelUrl, heroImage, heroVideoUrl, restRotationY = 0 }) {
     fillLight.position.set(-5, 2, 4);
     scene.add(fillLight);
 
-    // Контровые цветные света — держат силуэт видимым, даже когда
-    // отражение сливается по тону с реальным фоном страницы.
-    const rimLightWarm = new THREE.DirectionalLight(0xfff2df, 1.1);
-    rimLightWarm.position.set(-6, 3, -4);
-    scene.add(rimLightWarm);
-    const rimLightCool = new THREE.DirectionalLight(0xdcefff, 0.85);
-    rimLightCool.position.set(6, -2, -5);
-    scene.add(rimLightCool);
-
     /* ---------- reflection-scene: НИКОГДА не рендерится на экран напрямую ---------- */
     const reflectionScene = new THREE.Scene();
     reflectionScene.background = new THREE.Color(0x77736b);
 
-    let reflectionTexture = null; // VideoTexture либо Texture (фото)
-    let videoEl = null;
+    let photoTexture = null;
     const reflectionObjects = [];
-    let reflectionReady = false;
-    let readyFrames = 0;
 
+   
     const buildReflectionRoom = (texture) => {
       reflectionObjects.forEach((obj) => {
         reflectionScene.remove(obj);
@@ -352,6 +310,7 @@ function HeroModel({ modelUrl, heroImage, heroVideoUrl, restRotationY = 0 }) {
       reflectionScene.add(right);
       reflectionObjects.push(right);
 
+      
       const floor = new THREE.Mesh(
         new THREE.PlaneGeometry(30, 30),
         new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
@@ -369,82 +328,47 @@ function HeroModel({ modelUrl, heroImage, heroVideoUrl, restRotationY = 0 }) {
       ceiling.rotation.x = Math.PI / 2;
       reflectionScene.add(ceiling);
       reflectionObjects.push(ceiling);
-
-      reflectionReady = true;
     };
 
-    if (heroVideoUrl) {
-      // ---- Видео-отражение (как на palace.com) ----
-      videoEl = document.createElement("video");
-      videoEl.src = heroVideoUrl;
-      videoEl.crossOrigin = "anonymous";
-      videoEl.loop = true;
-      videoEl.muted = true;
-      videoEl.playsInline = true;
-      videoEl.autoplay = true;
-      videoEl.style.display = "none";
-
-      const startWhenReady = () => {
-        reflectionTexture = new THREE.VideoTexture(videoEl);
-        buildReflectionRoom(reflectionTexture);
-      };
-      videoEl.addEventListener("loadeddata", startWhenReady, { once: true });
-      videoEl.addEventListener("error", (e) => {
-        console.error("[BrandSite] Не удалось загрузить heroVideoUrl:", heroVideoUrl, e);
-      });
-
-      document.body.appendChild(videoEl);
-      videoEl.play().catch((err) => {
-        console.warn("[BrandSite] Автовоспроизведение видео заблокировано браузером:", err);
-      });
-    } else if (heroImage) {
-      // ---- Фолбэк: отражение статичного фото (старое поведение) ----
+    if (heroImage) {
       const textureLoader = new THREE.TextureLoader();
       textureLoader.setCrossOrigin("anonymous");
       textureLoader.load(
         heroImage,
         (texture) => {
-          reflectionTexture = texture;
+          photoTexture = texture;
           buildReflectionRoom(texture);
         },
         undefined,
         (error) => console.error("[BrandSite] Reflection image FAILED (проверь CORS на Cloudinary):", error)
       );
     } else {
-      console.warn("[BrandSite] Не задан ни heroVideoUrl, ни heroImage — отражать нечего.");
+      console.warn("[BrandSite] heroImage отсутствует.");
     }
 
-    /* ---------- CubeCamera ----------
-       generateMipmaps + LinearMipmapLinearFilter заставляли three.js
-       выбирать смазанный mip-уровень куб-карты в зависимости от
-       roughness материала (стандартный roughness-workflow для PBR).
-       Для настоящего зеркального вида это лишнее — отключаем mip-цепочку
-       и берём чистый Linear-семпл без блюра. */
+    /* ---------- CubeCamera ---------- */
     const cubeRT = new THREE.WebGLCubeRenderTarget(CONFIG.reflectionSize, {
-      generateMipmaps: false,
-      minFilter: THREE.LinearFilter,
+      generateMipmaps: true,
+      minFilter: THREE.LinearMipmapLinearFilter,
       magFilter: THREE.LinearFilter,
     });
     const cubeCamera = new THREE.CubeCamera(0.1, 100, cubeRT);
     scene.add(cubeCamera);
 
-    // Чистое зеркало: MeshStandardMaterial (без clearcoat-слоя, который
-    // добавлял поверх дополнительный размытый блик и визуально "давал дымку").
-    // roughness держим на минимальном ненулевом значении (не строго 0) —
-    // это стандартная практика, чтобы избежать шейдерных артефактов на
-    // идеально гладких металлах (деление на ноль в GGX-специкуляре).
+   
     const chromeMaterial = new THREE.MeshStandardMaterial({
       color: 0xffffff,
       metalness: 1,
-      roughness: 0.015,
+      roughness: 0,
       envMap: cubeRT.texture,
-      envMapIntensity: 1.9,
+      envMapIntensity: 2,
+      transparent: false,
+      // opacity: 1,
       side: THREE.DoubleSide,
     });
 
     /* ---------- загрузка GLB ---------- */
     let current = null;
-    let modelLoaded = false;
     const disposeModel = loadMeshWithMaterial({
       url: modelUrl,
       fallbackGeo: new THREE.IcosahedronGeometry(1, 2),
@@ -453,28 +377,14 @@ function HeroModel({ modelUrl, heroImage, heroVideoUrl, restRotationY = 0 }) {
       onReady: (object) => {
         fitAndCenter(object, CONFIG.modelSize);
         current = object;
-        current.visible = false; // покажем только когда отражение готово — см. reveal()
         scene.add(current);
 
         const box = new THREE.Box3().setFromObject(current);
         const center = new THREE.Vector3();
         box.getCenter(center);
         cubeCamera.position.copy(center);
-
-        modelLoaded = true;
       },
     });
-
-    let revealed = false;
-    const reveal = () => {
-      if (revealed || !current) return;
-      revealed = true;
-      current.visible = true;
-      if (wrapRef.current) {
-        wrapRef.current.style.transition = "opacity 700ms ease";
-        wrapRef.current.style.opacity = "1";
-      }
-    };
 
     /* ---------- drag / inertia / settle ---------- */
     const canvas = renderer.domElement;
@@ -553,15 +463,9 @@ function HeroModel({ modelUrl, heroImage, heroVideoUrl, restRotationY = 0 }) {
       }
 
       state.envFrame++;
-      if (reflectionReady && state.envFrame >= CONFIG.envUpdateEveryFrame) {
+      if (state.envFrame >= CONFIG.envUpdateEveryFrame) {
         state.envFrame = 0;
         cubeCamera.update(renderer, reflectionScene);
-        if (!revealed) {
-          readyFrames++;
-          if (modelLoaded && readyFrames >= CONFIG.revealFramesNeeded) {
-            reveal();
-          }
-        }
       }
 
       renderer.render(scene, camera);
@@ -598,21 +502,15 @@ function HeroModel({ modelUrl, heroImage, heroVideoUrl, restRotationY = 0 }) {
         if (obj.material) obj.material.dispose();
       });
 
-      if (reflectionTexture) reflectionTexture.dispose();
-      if (videoEl) {
-        videoEl.pause();
-        videoEl.removeAttribute("src");
-        videoEl.load();
-        if (videoEl.parentNode) videoEl.parentNode.removeChild(videoEl);
-      }
+      if (photoTexture) photoTexture.dispose();
       cubeRT.dispose();
       renderer.dispose();
       if (renderer.domElement.parentNode === mount) mount.removeChild(renderer.domElement);
     };
-  }, [modelUrl, heroImage, heroVideoUrl, restRotationY]);
+  }, [modelUrl, heroImage, restRotationY]);
 
   return (
-    <div className="hero-model-wrap" ref={wrapRef} style={{ opacity: 0 }}>
+    <div className="hero-model-wrap">
       <div ref={mountRef} style={{ width: "70vmin", height: "70vmin", maxWidth: 560, maxHeight: 560 }} />
     </div>
   );
@@ -670,12 +568,7 @@ function Hero({ cfg }) {
         )}
       </div>
 
-      <HeroModel
-        modelUrl={cfg.heroModelUrl}
-        heroImage={cfg.heroImage}
-        heroVideoUrl={cfg.heroVideoUrl}
-        restRotationY={cfg.heroMirrorRestRotationY}
-      />
+      <HeroModel modelUrl={cfg.heroModelUrl} heroImage={cfg.heroImage} restRotationY={cfg.heroMirrorRestRotationY} />
 
       <div className="hero-lines">
         {cfg.heroLines.map((l, i) => (
