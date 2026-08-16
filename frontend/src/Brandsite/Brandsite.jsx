@@ -215,19 +215,6 @@ function HeaderOrb({ modelUrl, modelUrlAlt }) {
   return <div className="header-orb" ref={mountRef}></div>;
 }
 
-/* ============================================================
-   Большая hero-модель.
-
-   1. heroImage кладётся как ПОЛНОЦЕННАЯ КОМНАТА в отдельную
-      reflectionScene (front/back/left/right стены — все несут фото,
-      пол/потолок — плоский тон), которую основная камера не рендерит.
-   2. CubeCamera стоит в центре модели и "фотографирует" эту комнату
-      в cubeRT.texture — так как фото на ВСЕХ 4 боковых стенах,
-      отражение фото появляется на любой грани модели, а не только
-      на той паре граней, что смотрит на конкретную стену.
-   3. Материал модели — хром с envMap = cubeRT.texture.
-   4. Drag-to-rotate с инерцией и доворотом до restRotationY.
-============================================================= */
 function HeroModel({ modelUrl, heroImage, restRotationY = 0 }) {
   const mountRef = useRef(null);
 
@@ -281,12 +268,7 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }) {
     let photoTexture = null;
     const reflectionObjects = [];
 
-    /* ФИКС: раньше фото стояло только на одной стене (front), а back/left/right
-       были плоским серым цветом — поэтому лишь пара граней модели, которая
-       "смотрела" на left/right, показывала хоть что-то похожее на отражение,
-       а front/back грани отражали плоский серый back-material.
-       Теперь фото — на ВСЕХ четырёх боковых стенах, так что отражение фото
-       видно на любой грани модели, независимо от её ориентации. */
+   
     const buildReflectionRoom = (texture) => {
       reflectionObjects.forEach((obj) => {
         reflectionScene.remove(obj);
@@ -328,12 +310,7 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }) {
       reflectionScene.add(right);
       reflectionObjects.push(right);
 
-      // ФИКС: модель — гранёный "кристалл" с фасетами, смотрящими во все
-      // стороны, не только вбок. Если пол/потолок — плоский цвет, все
-      // фасеты, направленные вверх/вниз, отражают этот плоский цвет и
-      // модель выглядит почти однотонной. Кладём то же фото на пол и
-      // потолок — так отражение фото ловится независимо от того, куда
-      // смотрит конкретная грань.
+      
       const floor = new THREE.Mesh(
         new THREE.PlaneGeometry(30, 30),
         new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
@@ -378,25 +355,36 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }) {
     const cubeCamera = new THREE.CubeCamera(0.1, 100, cubeRT);
     scene.add(cubeCamera);
 
-    /* ---------- хром-материал модели ----------
-       ФИКС: MeshPhongMaterial + combine:MixOperation блэндит envMap с
-       diffuse-освещением — в местах, куда не попадает directional light
-       (самозатенённые грани фасеточной геометрии), diffuse уходит в
-       чёрный, и mix даёт чёрные пятна вместо отражения; там, где свет
-       есть, Phong-специалар спорит с отражением и даёт плоский серый вид.
-       MeshStandardMaterial с metalness:1 не имеет diffuse-члена вообще —
-       цвет поверхности целиком берётся из envMap, поэтому освещение
-       больше не может "затемнить" отражение до чёрного. */
-    const chromeMaterial = new THREE.MeshStandardMaterial({
-      color: 0xffffff,
-      metalness: 1,
-      roughness: 0.1,
-      envMap: cubeRT.texture,
-      envMapIntensity: 1.2,
-      transparent: false,
-      opacity: 1,
-      side: THREE.DoubleSide,
-    });
+   
+    // const chromeMaterial = new THREE.MeshStandardMaterial({
+    //   color: 0xffffff,
+    //   metalness: 1,
+    //   roughness: 0,
+    //   envMap: cubeRT.texture,
+    //   envMapIntensity: 1.2,
+    //   transparent: false,
+    //   opacity: 1,
+    //   side: THREE.DoubleSide,
+    // });
+
+    const glassMaterial = new THREE.MeshPhysicalMaterial({
+  color: 0xffffff,
+  metalness: 0.1,             // Небольшая металлизированность для блеска граней
+  roughness: 0.05,            // Почти идеальная гладкость
+  transparent: true,
+  opacity: 1.0,
+  
+  // Ключевые свойства физического стекла:
+  transmission: 1.0,          // Полное пропускание света сквозь объект
+  ior: 1.5,                   // Индекс преломления (1.5 — стандартное стекло)
+  thickness: 2.0,             // Симулирует толщину геометрии (дает искажение заднего фона)
+  roughnessMap: null,         // Если нужно, сюда можно передать карту царапин
+  
+  // Источник отражений и преломлений
+  envMap: cubeRT.texture,
+  envMapIntensity: 1.5,
+  side: THREE.DoubleSide
+});
 
     /* ---------- загрузка GLB ---------- */
     let current = null;
