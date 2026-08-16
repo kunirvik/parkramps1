@@ -257,280 +257,1210 @@ function HeaderOrb({ modelUrl, modelUrlAlt }){
       останавливается — не тает, не становится прозрачной, просто
       фиксируется в этом развороте.
 ============================================================= */
-function HeroModel({ modelUrl, heroImage, restRotationY = 0 }){
+// function HeroModel({ modelUrl, heroImage, restRotationY = 0 }){
+//   const mountRef = useRef(null);
+
+//   useEffect(() => {
+//     const mount = mountRef.current;
+//     if (!mount) return;
+
+//     const CONFIG = {
+//       modelSize: 2.8,        // целевой диаметр модели в мировых единицах — меняй, если модель кажется мелкой/крупной
+//       cameraZ: 6,
+//       dragSensitivity: 0.008,
+//       inertiaDamping: 0.94,
+//       minVelocity: 0.00015,
+//       settleDelay: 500,      // мс паузы после отпускания мыши, прежде чем начать доворот
+//       settleSpeed: 0.045,
+//       envUpdateEveryFrame: 5, // обновлять отражение раз в N кадров (дешевле для GPU)
+//     };
+
+//     const getSize = () => Math.min(mount.clientWidth, mount.clientHeight, 560);
+//     let size = getSize();
+
+//     /* ---------- основная сцена: модель + свет ---------- */
+//     const scene = new THREE.Scene();
+//     const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+//     camera.position.set(0, 0, CONFIG.cameraZ);
+
+//     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+//     renderer.setSize(size, size);
+//     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+//     if ("outputColorSpace" in renderer) renderer.outputColorSpace = THREE.SRGBColorSpace;
+//     else renderer.outputEncoding = THREE.sRGBEncoding;
+//     renderer.toneMapping = THREE.ACESFilmicToneMapping;
+//     renderer.toneMappingExposure = 1.1;
+//     mount.appendChild(renderer.domElement);
+
+//     scene.add(new THREE.HemisphereLight(0xffffff, 0x333333, 1.1));
+//     const key = new THREE.DirectionalLight(0xffffff, 1.6);
+//     key.position.set(4, 6, 8);
+//     scene.add(key);
+
+//     /* ---------- reflection-scene: фото спереди и сзади модели ----------
+//        Именно это отражает зеркало — сюда НЕ добавляется сама модель,
+//        поэтому не нужно её прятать/показывать на каждый кадр захвата. */
+//     const reflectionScene = new THREE.Scene();
+//     reflectionScene.background = new THREE.Color(0x9a9488); // нейтральный фон "пустоты" на случай, если фото ещё не загрузилось — тон подобран близко к paper-фону, чтобы модель не выглядела сломанной/чёрной
+
+//     let photoTexture = null;
+//     // const buildReflectionPlanes = (tex) => {
+//     //   const mat = new THREE.MeshBasicMaterial({ map: tex });
+//     //   const front = new THREE.Mesh(new THREE.PlaneGeometry(26, 15), mat);
+//     //   front.position.set(0, 0, 16);
+//     //   front.rotation.y = Math.PI; // развёрнута лицом к центру (к модели)
+//     //   reflectionScene.add(front);
+
+//     //   const back = new THREE.Mesh(new THREE.PlaneGeometry(26, 15), mat);
+//     //   back.position.set(0, 0, -16);
+//     //   reflectionScene.add(back);
+
+//     //   console.log("[BrandSite] Отражение: heroImage успешно подключён к зеркалу.");
+//     // };
+//     const buildReflectionPlanes = (tex) => {
+//   const mat = new THREE.MeshBasicMaterial({
+//     map: tex,
+//     side: THREE.DoubleSide, // чтобы не зависеть от направления нормали каждой плоскости
+//   });
+
+//   // фото — на всех 4 боковых стенах "комнаты", чтобы модель отражала
+//   // окружение при повороте в любую сторону, а не только спереди
+//   const front = new THREE.Mesh(new THREE.PlaneGeometry(26, 15), mat);
+//   front.position.set(0, 0, 16);
+//   reflectionScene.add(front);
+
+//   const back = new THREE.Mesh(new THREE.PlaneGeometry(26, 15), mat);
+//   back.position.set(0, 0, -16);
+//   reflectionScene.add(back);
+
+//   const left = new THREE.Mesh(new THREE.PlaneGeometry(32, 15), mat);
+//   left.position.set(-16, 0, 0);
+//   left.rotation.y = Math.PI / 2;
+//   reflectionScene.add(left);
+
+//   const right = new THREE.Mesh(new THREE.PlaneGeometry(32, 15), mat);
+//   right.position.set(16, 0, 0);
+//   right.rotation.y = Math.PI / 2;
+//   reflectionScene.add(right);
+
+//   // потолок/пол — тем же фото (или сплошным тоном), чтобы не было
+//   // "чёрных дыр" при взгляде сверху/снизу
+//   const ceilMat = new THREE.MeshBasicMaterial({ color: 0xb9b3a6, side: THREE.DoubleSide });
+//   const floorMat = new THREE.MeshBasicMaterial({ color: 0x6b665c, side: THREE.DoubleSide });
+
+//   const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(32, 32), ceilMat);
+//   ceiling.position.set(0, 8, 0);
+//   ceiling.rotation.x = Math.PI / 2;
+//   reflectionScene.add(ceiling);
+
+//   const floor = new THREE.Mesh(new THREE.PlaneGeometry(32, 32), floorMat);
+//   floor.position.set(0, -8, 0);
+//   floor.rotation.x = Math.PI / 2;
+//   reflectionScene.add(floor);
+
+//   console.log("[BrandSite] Отражение: heroImage успешно подключён к зеркалу.");
+// };
+
+//     if (heroImage) {
+//       console.log("[BrandSite] Загружаю heroImage для отражения:", heroImage);
+//       const texLoader = new THREE.TextureLoader();
+//       texLoader.setCrossOrigin("anonymous"); // без этого текстура с другого домена (CDN/Cloudinary) не встанет в WebGL-текстуру
+//       texLoader.load(
+//         heroImage,
+//         (tex) => {
+//           tex.colorSpace = THREE.SRGBColorSpace;
+//           photoTexture = tex;
+//           buildReflectionPlanes(tex);
+//         },
+//         undefined,
+//         (err) => console.error("[BrandSite] heroImage НЕ загрузился для отражения (см. Network-таб на CORS/404):", err)
+//       );
+//     } else {
+//       console.warn("[BrandSite] heroImage не передан — зеркало отражает только нейтральный серый фон.");
+//     }
+
+//     /* ---------- CubeCamera: строит envMap из reflectionScene ---------- */
+//     const cubeRT = new THREE.WebGLCubeRenderTarget(128, {
+//       generateMipmaps: true,
+//       minFilter: THREE.LinearMipmapLinearFilter,
+//     });
+//     // ВАЖНО: НЕ ставим тут colorSpace = SRGBColorSpace — это промежуточный
+//     // рендер-таргет (уже в линейном пространстве после захвата), а не готовый
+//     // sRGB-файл с диска. Если пометить его как sRGB, движок применит
+//     // цветокоррекцию ВТОРОЙ раз при сэмплировании — картинка "выцветает"
+//     // в плоский блёклый тон именно так, как было на скриншоте.
+//     const cubeCamera = new THREE.CubeCamera(0.1, 100, cubeRT);
+//     scene.add(cubeCamera);
+
+//     /* ---------- материал: настоящий хром, никогда не прозрачный ---------- */
+//     const material = makeMirrorMaterial({ envMap: cubeRT.texture });
+
+//     let current = null;
+//     const dispose = loadMeshWithMaterial({
+//       url: modelUrl,
+//       fallbackGeo: new THREE.CylinderGeometry(1, 1, 0.12, 72), // тонкий диск — на ребре он почти исчезает и "сливается" с фоном
+//       material,
+//       label: "heroModelUrl",
+//       onReady: (obj) => {
+//         fitAndCenter(obj, CONFIG.modelSize);
+//         current = obj;
+//         scene.add(current);
+//       },
+//     });
+
+//     /* ---------- drag-to-rotate + инерция + доворот до "слитой" позы ---------- */
+//     const canvas = renderer.domElement;
+//     canvas.style.cursor = "grab";
+//     canvas.style.touchAction = "none";
+
+//     const state = {
+//       dragging: false,
+//       lastX: 0,
+//       velocity: 0,
+//       releasedAt: 0,
+//       settling: false,
+//       hasInteracted: false,
+//       envFrame: 0,
+//     };
+
+//     const shortestAngle = (from, to) => Math.atan2(Math.sin(to - from), Math.cos(to - from));
+
+//     const onPointerDown = (e) => {
+//       if (!current) return;
+//       state.dragging = true;
+//       state.settling = false;
+//       state.velocity = 0;
+//       state.hasInteracted = true;
+//       state.lastX = e.clientX;
+//       canvas.setPointerCapture(e.pointerId);
+//       canvas.style.cursor = "grabbing";
+//     };
+//     const onPointerMove = (e) => {
+//       if (!state.dragging || !current) return;
+//       const dx = e.clientX - state.lastX;
+//       state.lastX = e.clientX;
+//       const delta = dx * CONFIG.dragSensitivity;
+//       current.rotation.y += delta;
+//       state.velocity = delta;
+//     };
+//     const onPointerUp = (e) => {
+//       if (!state.dragging) return;
+//       state.dragging = false;
+//       state.releasedAt = performance.now();
+//       canvas.style.cursor = "grab";
+//       try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
+//     };
+//     canvas.addEventListener("pointerdown", onPointerDown);
+//     canvas.addEventListener("pointermove", onPointerMove);
+//     canvas.addEventListener("pointerup", onPointerUp);
+//     canvas.addEventListener("pointercancel", onPointerUp);
+
+//     let raf;
+//     const animate = () => {
+//       if (current) {
+//         if (state.dragging) {
+//           // вращение полностью управляется курсором — см. onPointerMove
+//         } else if (!state.hasInteracted) {
+//           // до первого клика — тихое авто-вращение, чтобы сцена не была статичной
+//           current.rotation.y += 0.006;
+//         } else if (!state.settling) {
+//           if (Math.abs(state.velocity) > CONFIG.minVelocity) {
+//             // инерция после отпускания
+//             current.rotation.y += state.velocity;
+//             state.velocity *= CONFIG.inertiaDamping;
+//           } else if (performance.now() - state.releasedAt > CONFIG.settleDelay) {
+//             state.settling = true;
+//           }
+//         } else {
+//           // доворот до целевого угла — "слияние" с фоном
+//           const diff = shortestAngle(current.rotation.y, restRotationY);
+//           if (Math.abs(diff) > 0.002) {
+//             current.rotation.y += diff * CONFIG.settleSpeed;
+//           } else {
+//             current.rotation.y = restRotationY;
+//             state.settling = false; // доворот завершён — модель фиксируется в этой позе
+//           }
+//         }
+//       }
+
+//       // обновляем отражение не каждый кадр — дешевле для GPU
+//       state.envFrame++;
+//       if (state.envFrame >= CONFIG.envUpdateEveryFrame) {
+//         state.envFrame = 0;
+//         // На время захвата отключаем тонмаппинг: иначе он "запекается" в саму
+//         // текстуру отражения, а затем ПОВТОРНО применяется при финальном
+//         // рендере модели — двойная цветокоррекция и даёт тот блёклый плоский вид.
+//         const prevToneMapping = renderer.toneMapping;
+//         renderer.toneMapping = THREE.NoToneMapping;
+//         cubeCamera.update(renderer, reflectionScene);
+//         renderer.toneMapping = prevToneMapping;
+//       }
+
+//       renderer.render(scene, camera);
+//       raf = requestAnimationFrame(animate);
+//     };
+//     animate();
+
+//     const onResize = () => {
+//       size = getSize();
+//       camera.aspect = 1;
+//       camera.updateProjectionMatrix();
+//       renderer.setSize(size, size);
+//     };
+//     window.addEventListener("resize", onResize);
+
+//     return () => {
+//       cancelAnimationFrame(raf);
+//       canvas.removeEventListener("pointerdown", onPointerDown);
+//       canvas.removeEventListener("pointermove", onPointerMove);
+//       canvas.removeEventListener("pointerup", onPointerUp);
+//       canvas.removeEventListener("pointercancel", onPointerUp);
+//       window.removeEventListener("resize", onResize);
+//       dispose();
+//       if (photoTexture) photoTexture.dispose();
+//       cubeRT.dispose();
+//       mount.removeChild(renderer.domElement);
+//       renderer.dispose();
+//     };
+//   }, [modelUrl, heroImage, restRotationY]);
+
+//   return (
+//     <div className="hero-model-wrap">
+//       <div ref={mountRef} style={{ width: "70vmin", height: "70vmin", maxWidth: 560, maxHeight: 560 }}></div>
+//     </div>
+//   );
+// }
+function HeroModel({
+  modelUrl,
+  heroImage,
+  restRotationY = 0,
+}) {
   const mountRef = useRef(null);
 
   useEffect(() => {
     const mount = mountRef.current;
     if (!mount) return;
 
+    /* =========================================================
+       CONFIG
+    ========================================================= */
+
     const CONFIG = {
-      modelSize: 2.8,        // целевой диаметр модели в мировых единицах — меняй, если модель кажется мелкой/крупной
+      // Размер 3D-модели
+      modelSize: 2.8,
+
+      // Камера страницы
       cameraZ: 6,
+
+      // Размер CubeMap
+      reflectionSize: 256,
+
+      // Насколько сильно фото видно в хроме
+      reflectionStrength: 1.8,
+
+      // 0.0 = идеальное зеркало
+      // 0.03–0.06 = красивый chrome
+      roughness: 0.035,
+
+      // drag
       dragSensitivity: 0.008,
+
+      // inertia
       inertiaDamping: 0.94,
       minVelocity: 0.00015,
-      settleDelay: 500,      // мс паузы после отпускания мыши, прежде чем начать доворот
+
+      // задержка перед возвратом
+      settleDelay: 500,
+
+      // скорость возврата
       settleSpeed: 0.045,
-      envUpdateEveryFrame: 5, // обновлять отражение раз в N кадров (дешевле для GPU)
+
+      // обновляем отражение каждый N кадров
+      envUpdateEveryFrame: 2,
+
+      // расстояние отражающей "комнаты"
+      roomDistance: 12,
+
+      // высота комнаты
+      roomHeight: 16,
     };
 
-    const getSize = () => Math.min(mount.clientWidth, mount.clientHeight, 560);
+    /* =========================================================
+       MAIN SCENE
+    ========================================================= */
+
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(
+      42,
+      1,
+      0.1,
+      100
+    );
+
+    camera.position.set(
+      0,
+      0,
+      CONFIG.cameraZ
+    );
+
+    const renderer = new THREE.WebGLRenderer({
+      alpha: true,
+      antialias: true,
+      powerPreference: "high-performance",
+    });
+
+    const getSize = () =>
+      Math.min(
+        mount.clientWidth || 560,
+        mount.clientHeight || 560,
+        560
+      );
+
     let size = getSize();
 
-    /* ---------- основная сцена: модель + свет ---------- */
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
-    camera.position.set(0, 0, CONFIG.cameraZ);
-
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setSize(size, size);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    if ("outputColorSpace" in renderer) renderer.outputColorSpace = THREE.SRGBColorSpace;
-    else renderer.outputEncoding = THREE.sRGBEncoding;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.1;
-    mount.appendChild(renderer.domElement);
 
-    scene.add(new THREE.HemisphereLight(0xffffff, 0x333333, 1.1));
-    const key = new THREE.DirectionalLight(0xffffff, 1.6);
-    key.position.set(4, 6, 8);
-    scene.add(key);
+    renderer.setPixelRatio(
+      Math.min(window.devicePixelRatio || 1, 2)
+    );
 
-    /* ---------- reflection-scene: фото спереди и сзади модели ----------
-       Именно это отражает зеркало — сюда НЕ добавляется сама модель,
-       поэтому не нужно её прятать/показывать на каждый кадр захвата. */
-    const reflectionScene = new THREE.Scene();
-    reflectionScene.background = new THREE.Color(0x9a9488); // нейтральный фон "пустоты" на случай, если фото ещё не загрузилось — тон подобран близко к paper-фону, чтобы модель не выглядела сломанной/чёрной
-
-    let photoTexture = null;
-    // const buildReflectionPlanes = (tex) => {
-    //   const mat = new THREE.MeshBasicMaterial({ map: tex });
-    //   const front = new THREE.Mesh(new THREE.PlaneGeometry(26, 15), mat);
-    //   front.position.set(0, 0, 16);
-    //   front.rotation.y = Math.PI; // развёрнута лицом к центру (к модели)
-    //   reflectionScene.add(front);
-
-    //   const back = new THREE.Mesh(new THREE.PlaneGeometry(26, 15), mat);
-    //   back.position.set(0, 0, -16);
-    //   reflectionScene.add(back);
-
-    //   console.log("[BrandSite] Отражение: heroImage успешно подключён к зеркалу.");
-    // };
-    const buildReflectionPlanes = (tex) => {
-  const mat = new THREE.MeshBasicMaterial({
-    map: tex,
-    side: THREE.DoubleSide, // чтобы не зависеть от направления нормали каждой плоскости
-  });
-
-  // фото — на всех 4 боковых стенах "комнаты", чтобы модель отражала
-  // окружение при повороте в любую сторону, а не только спереди
-  const front = new THREE.Mesh(new THREE.PlaneGeometry(26, 15), mat);
-  front.position.set(0, 0, 16);
-  reflectionScene.add(front);
-
-  const back = new THREE.Mesh(new THREE.PlaneGeometry(26, 15), mat);
-  back.position.set(0, 0, -16);
-  reflectionScene.add(back);
-
-  const left = new THREE.Mesh(new THREE.PlaneGeometry(32, 15), mat);
-  left.position.set(-16, 0, 0);
-  left.rotation.y = Math.PI / 2;
-  reflectionScene.add(left);
-
-  const right = new THREE.Mesh(new THREE.PlaneGeometry(32, 15), mat);
-  right.position.set(16, 0, 0);
-  right.rotation.y = Math.PI / 2;
-  reflectionScene.add(right);
-
-  // потолок/пол — тем же фото (или сплошным тоном), чтобы не было
-  // "чёрных дыр" при взгляде сверху/снизу
-  const ceilMat = new THREE.MeshBasicMaterial({ color: 0xb9b3a6, side: THREE.DoubleSide });
-  const floorMat = new THREE.MeshBasicMaterial({ color: 0x6b665c, side: THREE.DoubleSide });
-
-  const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(32, 32), ceilMat);
-  ceiling.position.set(0, 8, 0);
-  ceiling.rotation.x = Math.PI / 2;
-  reflectionScene.add(ceiling);
-
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(32, 32), floorMat);
-  floor.position.set(0, -8, 0);
-  floor.rotation.x = Math.PI / 2;
-  reflectionScene.add(floor);
-
-  console.log("[BrandSite] Отражение: heroImage успешно подключён к зеркалу.");
-};
-
-    if (heroImage) {
-      console.log("[BrandSite] Загружаю heroImage для отражения:", heroImage);
-      const texLoader = new THREE.TextureLoader();
-      texLoader.setCrossOrigin("anonymous"); // без этого текстура с другого домена (CDN/Cloudinary) не встанет в WebGL-текстуру
-      texLoader.load(
-        heroImage,
-        (tex) => {
-          tex.colorSpace = THREE.SRGBColorSpace;
-          photoTexture = tex;
-          buildReflectionPlanes(tex);
-        },
-        undefined,
-        (err) => console.error("[BrandSite] heroImage НЕ загрузился для отражения (см. Network-таб на CORS/404):", err)
-      );
+    if ("outputColorSpace" in renderer) {
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
     } else {
-      console.warn("[BrandSite] heroImage не передан — зеркало отражает только нейтральный серый фон.");
+      renderer.outputEncoding = THREE.sRGBEncoding;
     }
 
-    /* ---------- CubeCamera: строит envMap из reflectionScene ---------- */
-    const cubeRT = new THREE.WebGLCubeRenderTarget(128, {
-      generateMipmaps: true,
-      minFilter: THREE.LinearMipmapLinearFilter,
-    });
-    // ВАЖНО: НЕ ставим тут colorSpace = SRGBColorSpace — это промежуточный
-    // рендер-таргет (уже в линейном пространстве после захвата), а не готовый
-    // sRGB-файл с диска. Если пометить его как sRGB, движок применит
-    // цветокоррекцию ВТОРОЙ раз при сэмплировании — картинка "выцветает"
-    // в плоский блёклый тон именно так, как было на скриншоте.
-    const cubeCamera = new THREE.CubeCamera(0.1, 100, cubeRT);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.15;
+
+    mount.appendChild(renderer.domElement);
+
+    /* =========================================================
+       LIGHTING
+
+       Важно:
+       отражение идёт через envMap,
+       а свет нужен для красивого выделения геометрии.
+    ========================================================= */
+
+    const hemi = new THREE.HemisphereLight(
+      0xffffff,
+      0x333333,
+      1.4
+    );
+
+    scene.add(hemi);
+
+    const keyLight = new THREE.DirectionalLight(
+      0xffffff,
+      2.5
+    );
+
+    keyLight.position.set(
+      4,
+      6,
+      8
+    );
+
+    scene.add(keyLight);
+
+    const fillLight = new THREE.DirectionalLight(
+      0xffffff,
+      1.0
+    );
+
+    fillLight.position.set(
+      -5,
+      2,
+      4
+    );
+
+    scene.add(fillLight);
+
+    /* =========================================================
+       REFLECTION SCENE
+
+       ЭТА СЦЕНА НИКОГДА НЕ ПОКАЗЫВАЕТСЯ ПОЛЬЗОВАТЕЛЮ.
+
+       CubeCamera смотрит сюда и создаёт environment map.
+    ========================================================= */
+
+    const reflectionScene = new THREE.Scene();
+
+    reflectionScene.background = new THREE.Color(
+      0x77736b
+    );
+
+    let photoTexture = null;
+
+    const reflectionObjects = [];
+
+    /* =========================================================
+       CREATE REFLECTION ROOM
+    ========================================================= */
+
+    const buildReflectionRoom = (texture) => {
+      // удалить старую комнату
+      reflectionObjects.forEach((obj) => {
+        reflectionScene.remove(obj);
+
+        if (obj.geometry) {
+          obj.geometry.dispose();
+        }
+
+        if (obj.material) {
+          obj.material.dispose();
+        }
+      });
+
+      reflectionObjects.length = 0;
+
+      texture.colorSpace = THREE.SRGBColorSpace;
+
+      texture.wrapS = THREE.ClampToEdgeWrapping;
+      texture.wrapT = THREE.ClampToEdgeWrapping;
+
+      texture.minFilter = THREE.LinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+
+      texture.anisotropy =
+        renderer.capabilities.getMaxAnisotropy();
+
+      /*
+       * =======================================================
+       * FRONT
+       *
+       * Это главное отражение.
+       *
+       * Именно эта плоскость должна давать в chrome
+       * интерьер из heroImage.
+       * =======================================================
+       */
+
+      const frontMaterial =
+        new THREE.MeshBasicMaterial({
+          map: texture,
+          side: THREE.DoubleSide,
+        });
+
+      const front = new THREE.Mesh(
+        new THREE.PlaneGeometry(
+          24,
+          13.5
+        ),
+        frontMaterial
+      );
+
+      front.position.set(
+        0,
+        0,
+        -CONFIG.roomDistance
+      );
+
+      // смотрит внутрь комнаты
+      front.rotation.y = Math.PI;
+
+      reflectionScene.add(front);
+      reflectionObjects.push(front);
+
+      /*
+       * =======================================================
+       * BACK
+       * =======================================================
+       */
+
+      const backMaterial =
+        new THREE.MeshBasicMaterial({
+          map: texture,
+          side: THREE.DoubleSide,
+        });
+
+      const back = new THREE.Mesh(
+        new THREE.PlaneGeometry(
+          24,
+          13.5
+        ),
+        backMaterial
+      );
+
+      back.position.set(
+        0,
+        0,
+        CONFIG.roomDistance
+      );
+
+      reflectionScene.add(back);
+      reflectionObjects.push(back);
+
+      /*
+       * =======================================================
+       * LEFT
+       *
+       * Здесь намеренно используется та же фотография.
+       * Она даёт цветные блики при повороте объекта.
+       * =======================================================
+       */
+
+      const leftMaterial =
+        new THREE.MeshBasicMaterial({
+          map: texture,
+          side: THREE.DoubleSide,
+        });
+
+      const left = new THREE.Mesh(
+        new THREE.PlaneGeometry(
+          24,
+          13.5
+        ),
+        leftMaterial
+      );
+
+      left.position.set(
+        -CONFIG.roomDistance,
+        0,
+        0
+      );
+
+      left.rotation.y = Math.PI / 2;
+
+      reflectionScene.add(left);
+      reflectionObjects.push(left);
+
+      /*
+       * =======================================================
+       * RIGHT
+       * =======================================================
+       */
+
+      const rightMaterial =
+        new THREE.MeshBasicMaterial({
+          map: texture,
+          side: THREE.DoubleSide,
+        });
+
+      const right = new THREE.Mesh(
+        new THREE.PlaneGeometry(
+          24,
+          13.5
+        ),
+        rightMaterial
+      );
+
+      right.position.set(
+        CONFIG.roomDistance,
+        0,
+        0
+      );
+
+      right.rotation.y = -Math.PI / 2;
+
+      reflectionScene.add(right);
+      reflectionObjects.push(right);
+
+      /*
+       * =======================================================
+       * FLOOR
+       *
+       * Не используем фотографию снизу.
+       * Иначе отражение пола становится грязным.
+       * =======================================================
+       */
+
+      const floorMaterial =
+        new THREE.MeshBasicMaterial({
+          color: 0x5c5953,
+          side: THREE.DoubleSide,
+        });
+
+      const floor = new THREE.Mesh(
+        new THREE.PlaneGeometry(
+          28,
+          28
+        ),
+        floorMaterial
+      );
+
+      floor.position.y = -CONFIG.roomHeight / 2;
+      floor.rotation.x = Math.PI / 2;
+
+      reflectionScene.add(floor);
+      reflectionObjects.push(floor);
+
+      /*
+       * =======================================================
+       * CEILING
+       * =======================================================
+       */
+
+      const ceilingMaterial =
+        new THREE.MeshBasicMaterial({
+          color: 0xaaa69e,
+          side: THREE.DoubleSide,
+        });
+
+      const ceiling = new THREE.Mesh(
+        new THREE.PlaneGeometry(
+          28,
+          28
+        ),
+        ceilingMaterial
+      );
+
+      ceiling.position.y =
+        CONFIG.roomHeight / 2;
+
+      ceiling.rotation.x = Math.PI / 2;
+
+      reflectionScene.add(ceiling);
+      reflectionObjects.push(ceiling);
+
+      console.log(
+        "[BrandSite] Reflection room created"
+      );
+    };
+
+    /* =========================================================
+       LOAD HERO IMAGE
+    ========================================================= */
+
+    if (heroImage) {
+      const textureLoader =
+        new THREE.TextureLoader();
+
+      textureLoader.setCrossOrigin("anonymous");
+
+      console.log(
+        "[BrandSite] Loading reflection image:",
+        heroImage
+      );
+
+      textureLoader.load(
+        heroImage,
+
+        (texture) => {
+          console.log(
+            "[BrandSite] Reflection image loaded:",
+            texture.image
+          );
+
+          photoTexture = texture;
+
+          buildReflectionRoom(
+            texture
+          );
+        },
+
+        undefined,
+
+        (error) => {
+          console.error(
+            "[BrandSite] Reflection image FAILED:",
+            error
+          );
+
+          console.error(
+            "[BrandSite] Проверь CORS Cloudinary."
+          );
+        }
+      );
+    } else {
+      console.warn(
+        "[BrandSite] heroImage отсутствует."
+      );
+    }
+
+    /* =========================================================
+       CUBE CAMERA
+    ========================================================= */
+
+    const cubeRT =
+      new THREE.WebGLCubeRenderTarget(
+        CONFIG.reflectionSize,
+        {
+          generateMipmaps: true,
+          minFilter:
+            THREE.LinearMipmapLinearFilter,
+          magFilter:
+            THREE.LinearFilter,
+        }
+      );
+
+    const cubeCamera =
+      new THREE.CubeCamera(
+        0.1,
+        100,
+        cubeRT
+      );
+
     scene.add(cubeCamera);
 
-    /* ---------- материал: настоящий хром, никогда не прозрачный ---------- */
-    const material = makeMirrorMaterial({ envMap: cubeRT.texture });
+    /* =========================================================
+       CHROME MATERIAL
+       
+       Здесь намеренно MeshPhongMaterial.
+       Он хорошо работает с динамическим CubeCamera envMap.
+    ========================================================= */
+
+    const chromeMaterial =
+      new THREE.MeshPhongMaterial({
+        color: 0xffffff,
+
+        // главное свойство зеркала
+        envMap: cubeRT.texture,
+
+        // насколько ярко отражается фото
+        reflectivity:
+          CONFIG.reflectionStrength,
+
+        // чем меньше — тем зеркало
+        shininess: 220,
+
+        // лёгкий холодный металлический оттенок
+        specular: 0xffffff,
+
+        transparent: false,
+        opacity: 1,
+
+        side: THREE.FrontSide,
+      });
+
+    /* =========================================================
+       LOAD GLB
+    ========================================================= */
 
     let current = null;
-    const dispose = loadMeshWithMaterial({
-      url: modelUrl,
-      fallbackGeo: new THREE.CylinderGeometry(1, 1, 0.12, 72), // тонкий диск — на ребре он почти исчезает и "сливается" с фоном
-      material,
-      label: "heroModelUrl",
-      onReady: (obj) => {
-        fitAndCenter(obj, CONFIG.modelSize);
-        current = obj;
-        scene.add(current);
-      },
-    });
 
-    /* ---------- drag-to-rotate + инерция + доворот до "слитой" позы ---------- */
-    const canvas = renderer.domElement;
+    const disposeModel =
+      loadMeshWithMaterial({
+        url: modelUrl,
+
+        fallbackGeo:
+          new THREE.IcosahedronGeometry(
+            1,
+            2
+          ),
+
+        material: chromeMaterial,
+
+        label: "heroModelUrl",
+
+        onReady: (object) => {
+          /*
+           * нормализуем размер
+           */
+          fitAndCenter(
+            object,
+            CONFIG.modelSize
+          );
+
+          current = object;
+
+          scene.add(current);
+
+          /*
+           * CubeCamera должен находиться
+           * именно в центре модели.
+           */
+          const box =
+            new THREE.Box3()
+              .setFromObject(current);
+
+          const center =
+            new THREE.Vector3();
+
+          box.getCenter(center);
+
+          cubeCamera.position.copy(
+            center
+          );
+
+          console.log(
+            "[BrandSite] Hero model ready"
+          );
+
+          console.log(
+            "[BrandSite] CubeCamera position:",
+            cubeCamera.position
+          );
+        },
+      });
+
+    /* =========================================================
+       DRAG / INERTIA / SETTLE
+    ========================================================= */
+
+    const canvas =
+      renderer.domElement;
+
     canvas.style.cursor = "grab";
     canvas.style.touchAction = "none";
 
     const state = {
       dragging: false,
+
       lastX: 0,
+
       velocity: 0,
+
       releasedAt: 0,
+
       settling: false,
+
       hasInteracted: false,
+
       envFrame: 0,
     };
 
-    const shortestAngle = (from, to) => Math.atan2(Math.sin(to - from), Math.cos(to - from));
+    const shortestAngle = (
+      from,
+      to
+    ) => {
+      return Math.atan2(
+        Math.sin(to - from),
+        Math.cos(to - from)
+      );
+    };
 
-    const onPointerDown = (e) => {
+    const onPointerDown = (event) => {
       if (!current) return;
+
       state.dragging = true;
       state.settling = false;
       state.velocity = 0;
       state.hasInteracted = true;
-      state.lastX = e.clientX;
-      canvas.setPointerCapture(e.pointerId);
-      canvas.style.cursor = "grabbing";
+
+      state.lastX =
+        event.clientX;
+
+      canvas.setPointerCapture(
+        event.pointerId
+      );
+
+      canvas.style.cursor =
+        "grabbing";
     };
-    const onPointerMove = (e) => {
-      if (!state.dragging || !current) return;
-      const dx = e.clientX - state.lastX;
-      state.lastX = e.clientX;
-      const delta = dx * CONFIG.dragSensitivity;
-      current.rotation.y += delta;
-      state.velocity = delta;
+
+    const onPointerMove = (event) => {
+      if (
+        !state.dragging ||
+        !current
+      ) {
+        return;
+      }
+
+      const dx =
+        event.clientX -
+        state.lastX;
+
+      state.lastX =
+        event.clientX;
+
+      const rotationDelta =
+        dx *
+        CONFIG.dragSensitivity;
+
+      current.rotation.y +=
+        rotationDelta;
+
+      state.velocity =
+        rotationDelta;
     };
-    const onPointerUp = (e) => {
-      if (!state.dragging) return;
+
+    const onPointerUp = (event) => {
+      if (!state.dragging) {
+        return;
+      }
+
       state.dragging = false;
-      state.releasedAt = performance.now();
-      canvas.style.cursor = "grab";
-      try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
+
+      state.releasedAt =
+        performance.now();
+
+      canvas.style.cursor =
+        "grab";
+
+      try {
+        canvas.releasePointerCapture(
+          event.pointerId
+        );
+      } catch (_) {}
     };
-    canvas.addEventListener("pointerdown", onPointerDown);
-    canvas.addEventListener("pointermove", onPointerMove);
-    canvas.addEventListener("pointerup", onPointerUp);
-    canvas.addEventListener("pointercancel", onPointerUp);
+
+    canvas.addEventListener(
+      "pointerdown",
+      onPointerDown
+    );
+
+    canvas.addEventListener(
+      "pointermove",
+      onPointerMove
+    );
+
+    canvas.addEventListener(
+      "pointerup",
+      onPointerUp
+    );
+
+    canvas.addEventListener(
+      "pointercancel",
+      onPointerUp
+    );
+
+    /* =========================================================
+       ANIMATION
+    ========================================================= */
 
     let raf;
+
     const animate = () => {
+      /*
+       * ---------------------------------------
+       * MODEL ROTATION
+       * ---------------------------------------
+       */
+
       if (current) {
         if (state.dragging) {
-          // вращение полностью управляется курсором — см. onPointerMove
+          /*
+           * Управление происходит
+           * непосредственно в pointermove.
+           */
         } else if (!state.hasInteracted) {
-          // до первого клика — тихое авто-вращение, чтобы сцена не была статичной
-          current.rotation.y += 0.006;
+          /*
+           * До первого взаимодействия
+           * очень медленное вращение.
+           */
+          current.rotation.y +=
+            0.003;
         } else if (!state.settling) {
-          if (Math.abs(state.velocity) > CONFIG.minVelocity) {
-            // инерция после отпускания
-            current.rotation.y += state.velocity;
-            state.velocity *= CONFIG.inertiaDamping;
-          } else if (performance.now() - state.releasedAt > CONFIG.settleDelay) {
+          /*
+           * inertia
+           */
+          if (
+            Math.abs(
+              state.velocity
+            ) >
+            CONFIG.minVelocity
+          ) {
+            current.rotation.y +=
+              state.velocity;
+
+            state.velocity *=
+              CONFIG.inertiaDamping;
+          } else if (
+            performance.now() -
+              state.releasedAt >
+            CONFIG.settleDelay
+          ) {
             state.settling = true;
           }
         } else {
-          // доворот до целевого угла — "слияние" с фоном
-          const diff = shortestAngle(current.rotation.y, restRotationY);
-          if (Math.abs(diff) > 0.002) {
-            current.rotation.y += diff * CONFIG.settleSpeed;
+          /*
+           * плавный возврат
+           * к restRotationY
+           */
+
+          const diff =
+            shortestAngle(
+              current.rotation.y,
+              restRotationY
+            );
+
+          if (
+            Math.abs(diff) >
+            0.002
+          ) {
+            current.rotation.y +=
+              diff *
+              CONFIG.settleSpeed;
           } else {
-            current.rotation.y = restRotationY;
-            state.settling = false; // доворот завершён — модель фиксируется в этой позе
+            current.rotation.y =
+              restRotationY;
+
+            state.settling = false;
+
+            state.velocity = 0;
           }
         }
       }
 
-      // обновляем отражение не каждый кадр — дешевле для GPU
+      /* =======================================================
+         UPDATE REFLECTION
+      ======================================================= */
+
       state.envFrame++;
-      if (state.envFrame >= CONFIG.envUpdateEveryFrame) {
+
+      if (
+        state.envFrame >=
+        CONFIG.envUpdateEveryFrame
+      ) {
         state.envFrame = 0;
-        // На время захвата отключаем тонмаппинг: иначе он "запекается" в саму
-        // текстуру отражения, а затем ПОВТОРНО применяется при финальном
-        // рендере модели — двойная цветокоррекция и даёт тот блёклый плоский вид.
-        const prevToneMapping = renderer.toneMapping;
-        renderer.toneMapping = THREE.NoToneMapping;
-        cubeCamera.update(renderer, reflectionScene);
-        renderer.toneMapping = prevToneMapping;
+
+        /*
+         * CubeCamera снимает только reflectionScene.
+         *
+         * Поэтому сама GLB-модель не может попасть
+         * в своё же отражение.
+         */
+
+        cubeCamera.update(
+          renderer,
+          reflectionScene
+        );
       }
 
-      renderer.render(scene, camera);
-      raf = requestAnimationFrame(animate);
+      /* =======================================================
+         FINAL RENDER
+      ======================================================= */
+
+      renderer.render(
+        scene,
+        camera
+      );
+
+      raf =
+        requestAnimationFrame(
+          animate
+        );
     };
+
     animate();
+
+    /* =========================================================
+       RESIZE
+    ========================================================= */
 
     const onResize = () => {
       size = getSize();
+
       camera.aspect = 1;
+
       camera.updateProjectionMatrix();
-      renderer.setSize(size, size);
+
+      renderer.setSize(
+        size,
+        size
+      );
     };
-    window.addEventListener("resize", onResize);
+
+    window.addEventListener(
+      "resize",
+      onResize
+    );
+
+    /* =========================================================
+       CLEANUP
+    ========================================================= */
 
     return () => {
       cancelAnimationFrame(raf);
-      canvas.removeEventListener("pointerdown", onPointerDown);
-      canvas.removeEventListener("pointermove", onPointerMove);
-      canvas.removeEventListener("pointerup", onPointerUp);
-      canvas.removeEventListener("pointercancel", onPointerUp);
-      window.removeEventListener("resize", onResize);
-      dispose();
-      if (photoTexture) photoTexture.dispose();
+
+      window.removeEventListener(
+        "resize",
+        onResize
+      );
+
+      canvas.removeEventListener(
+        "pointerdown",
+        onPointerDown
+      );
+
+      canvas.removeEventListener(
+        "pointermove",
+        onPointerMove
+      );
+
+      canvas.removeEventListener(
+        "pointerup",
+        onPointerUp
+      );
+
+      canvas.removeEventListener(
+        "pointercancel",
+        onPointerUp
+      );
+
+      disposeModel();
+
+      /*
+       * Dispose model geometry/materials
+       */
+      if (current) {
+        current.traverse(
+          (child) => {
+            if (child.isMesh) {
+              if (
+                child.geometry
+              ) {
+                child.geometry.dispose();
+              }
+            }
+          }
+        );
+      }
+
+      /*
+       * Reflection materials/geometries
+       */
+      reflectionObjects.forEach(
+        (obj) => {
+          if (obj.geometry) {
+            obj.geometry.dispose();
+          }
+
+          if (obj.material) {
+            obj.material.dispose();
+          }
+        }
+      );
+
+      /*
+       * Texture
+       */
+      if (photoTexture) {
+        photoTexture.dispose();
+      }
+
+      /*
+       * Render target
+       */
       cubeRT.dispose();
-      mount.removeChild(renderer.domElement);
+
+      /*
+       * Renderer
+       */
       renderer.dispose();
+
+      if (
+        renderer.domElement.parentNode ===
+        mount
+      ) {
+        mount.removeChild(
+          renderer.domElement
+        );
+      }
     };
-  }, [modelUrl, heroImage, restRotationY]);
+  }, [
+    modelUrl,
+    heroImage,
+    restRotationY,
+  ]);
 
   return (
     <div className="hero-model-wrap">
-      <div ref={mountRef} style={{ width: "70vmin", height: "70vmin", maxWidth: 560, maxHeight: 560 }}></div>
+      <div
+        ref={mountRef}
+        style={{
+          width: "70vmin",
+          height: "70vmin",
+          maxWidth: 560,
+          maxHeight: 560,
+        }}
+      />
     </div>
   );
 }
-
 function Header({ cfg, onBurger }){
   return (
     <header className="site-header">
