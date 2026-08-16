@@ -142,7 +142,9 @@ function makeBgSampleMaterial(videoTexture) {
       // devicePixelRatio, т.к. gl_FragCoord в физических пикселях канваса
       uDPR: { value: window.devicePixelRatio || 1 },
       uDistortion: { value: 0.05 },
+      uBrightness: { value: 0.82 },
       uFresnelStrength: { value: 0.18 },
+      uContrast: { value: 0.96 },
     },
     vertexShader: `
       varying vec3 vNormal;
@@ -166,6 +168,8 @@ function makeBgSampleMaterial(videoTexture) {
       uniform float uFresnelStrength;
       varying vec3 vNormal;
       varying vec3 vViewDir;
+      uniform float uBrightness;
+uniform float uContrast;
 
       // повторяет CSS object-fit: cover для видео внутри контейнера
       vec2 coverUV(vec2 screenUV) {
