@@ -238,7 +238,7 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }) {
     const CONFIG = {
       modelSize: 2.8,
       cameraZ: 6,
-      reflectionSize: 256,
+      reflectionSize: 512,
       dragSensitivity: 0.008,
       inertiaDamping: 0.94,
       minVelocity: 0.00015,
@@ -373,14 +373,21 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }) {
     const cubeCamera = new THREE.CubeCamera(0.1, 100, cubeRT);
     scene.add(cubeCamera);
 
-    /* ---------- хром-материал модели ---------- */
-    const chromeMaterial = new THREE.MeshPhongMaterial({
+    /* ---------- хром-материал модели ----------
+       ФИКС: MeshPhongMaterial + combine:MixOperation блэндит envMap с
+       diffuse-освещением — в местах, куда не попадает directional light
+       (самозатенённые грани фасеточной геометрии), diffuse уходит в
+       чёрный, и mix даёт чёрные пятна вместо отражения; там, где свет
+       есть, Phong-специалар спорит с отражением и даёт плоский серый вид.
+       MeshStandardMaterial с metalness:1 не имеет diffuse-члена вообще —
+       цвет поверхности целиком берётся из envMap, поэтому освещение
+       больше не может "затемнить" отражение до чёрного. */
+    const chromeMaterial = new THREE.MeshStandardMaterial({
       color: 0xffffff,
+      metalness: 1,
+      roughness: 0.1,
       envMap: cubeRT.texture,
-      reflectivity: 1,
-      shininess: 300,
-      specular: 0xffffff,
-      combine: THREE.MixOperation,
+      envMapIntensity: 1.2,
       transparent: false,
       opacity: 1,
       side: THREE.DoubleSide,
