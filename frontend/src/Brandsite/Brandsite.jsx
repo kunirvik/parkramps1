@@ -255,6 +255,19 @@ function HeroModel({ modelUrl, heroVideoUrl, restRotationY = 0 }) {
     renderer.toneMappingExposure = 1.15;
     mount.appendChild(renderer.domElement);
 
+    // Канвас скрыт, пока не готовы (а) геометрия модели и (б) первый кадр видео.
+    // Без этого модель успевает отрендериться с чёрным envMap (видео ещё не отдало
+    // ни одного кадра) — вот откуда "сначала чёрная, потом появляются текстуры".
+    // Прячем сам рендер, а не отдельные текстуры, поэтому появление сразу цельное.
+    renderer.domElement.style.opacity = "0";
+    renderer.domElement.style.transition = "opacity 0.6s ease";
+    const readiness = { model: false, video: !heroVideoUrl };
+    const revealIfReady = () => {
+      if (readiness.model && readiness.video) {
+        renderer.domElement.style.opacity = "1";
+      }
+    };
+
     scene.add(new THREE.HemisphereLight(0xffffff, 0x333333, 1.4));
     const keyLight = new THREE.DirectionalLight(0xffffff, 2.5);
     keyLight.position.set(4, 6, 8);
@@ -346,6 +359,17 @@ function HeroModel({ modelUrl, heroVideoUrl, restRotationY = 0 }) {
       videoTexture = new THREE.VideoTexture(videoEl);
       buildReflectionRoom(videoTexture);
 
+      // "loadeddata" стреляет, когда у видео уже есть хотя бы один декодированный
+      // кадр — до этого момента текстура физически черна, показывать её рано.
+      videoEl.addEventListener(
+        "loadeddata",
+        () => {
+          readiness.video = true;
+          revealIfReady();
+        },
+        { once: true }
+      );
+
       videoEl.play().catch((err) => {
         console.warn("[BrandSite] Автовоспроизведение видео заблокировано браузером:", err);
       });
@@ -427,6 +451,9 @@ function HeroModel({ modelUrl, heroVideoUrl, restRotationY = 0 }) {
         const center = new THREE.Vector3();
         box.getCenter(center);
         cubeCamera.position.copy(center);
+
+        readiness.model = true;
+        revealIfReady();
       },
     });
 
@@ -508,10 +535,14 @@ function HeroModel({ modelUrl, heroVideoUrl, restRotationY = 0 }) {
 
       // VideoTexture сам помечает needsUpdate каждый кадр, пока видео играет —
       // руками ничего дергать не нужно, просто регулярно обновляем env-карту.
-      state.envFrame++;
-      if (state.envFrame >= CONFIG.envUpdateEveryFrame) {
-        state.envFrame = 0;
-        cubeCamera.update(renderer, reflectionScene);
+      // Пока readiness.video === false, кадр видео ещё чёрный — не тратим на него
+      // апдейты cubeCamera и не "запекаем" чёрный кадр в mip-цепочку.
+      if (readiness.video) {
+        state.envFrame++;
+        if (state.envFrame >= CONFIG.envUpdateEveryFrame) {
+          state.envFrame = 0;
+          cubeCamera.update(renderer, reflectionScene);
+        }
       }
 
       renderer.render(scene, camera);
@@ -608,8 +639,10 @@ function MenuOverlay({ cfg, open, onClose }) {
 
 function Hero({ cfg }) {
   const bgVideoRef = useRef(null);
+  const [bgVideoReady, setBgVideoReady] = useState(false);
 
   useEffect(() => {
+    setBgVideoReady(false);
     const v = bgVideoRef.current;
     if (v) {
       v.play().catch((err) => console.warn("[BrandSite] Автовоспроизведение фонового видео заблокировано:", err));
@@ -622,12 +655,15 @@ function Hero({ cfg }) {
         {cfg.heroVideoUrl ? (
           <video
             ref={bgVideoRef}
-            className="hero-bg-video"
+            // Держим прозрачным, пока не пришёл первый декодированный кадр —
+            // иначе перед стартом видна чёрная заливка вместо контента.
+            className={"hero-bg-video" + (bgVideoReady ? " is-ready" : "")}
             src={cfg.heroVideoUrl}
             autoPlay
             muted
             loop
             playsInline
+            onLoadedData={() => setBgVideoReady(true)}
           />
         ) : (
           <div className="hero-bg-label">
