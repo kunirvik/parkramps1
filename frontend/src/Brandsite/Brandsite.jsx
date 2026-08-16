@@ -302,19 +302,62 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }){
     reflectionScene.background = new THREE.Color(0x9a9488); // нейтральный фон "пустоты" на случай, если фото ещё не загрузилось — тон подобран близко к paper-фону, чтобы модель не выглядела сломанной/чёрной
 
     let photoTexture = null;
+    // const buildReflectionPlanes = (tex) => {
+    //   const mat = new THREE.MeshBasicMaterial({ map: tex });
+    //   const front = new THREE.Mesh(new THREE.PlaneGeometry(26, 15), mat);
+    //   front.position.set(0, 0, 16);
+    //   front.rotation.y = Math.PI; // развёрнута лицом к центру (к модели)
+    //   reflectionScene.add(front);
+
+    //   const back = new THREE.Mesh(new THREE.PlaneGeometry(26, 15), mat);
+    //   back.position.set(0, 0, -16);
+    //   reflectionScene.add(back);
+
+    //   console.log("[BrandSite] Отражение: heroImage успешно подключён к зеркалу.");
+    // };
     const buildReflectionPlanes = (tex) => {
-      const mat = new THREE.MeshBasicMaterial({ map: tex });
-      const front = new THREE.Mesh(new THREE.PlaneGeometry(26, 15), mat);
-      front.position.set(0, 0, 16);
-      front.rotation.y = Math.PI; // развёрнута лицом к центру (к модели)
-      reflectionScene.add(front);
+  const mat = new THREE.MeshBasicMaterial({
+    map: tex,
+    side: THREE.DoubleSide, // чтобы не зависеть от направления нормали каждой плоскости
+  });
 
-      const back = new THREE.Mesh(new THREE.PlaneGeometry(26, 15), mat);
-      back.position.set(0, 0, -16);
-      reflectionScene.add(back);
+  // фото — на всех 4 боковых стенах "комнаты", чтобы модель отражала
+  // окружение при повороте в любую сторону, а не только спереди
+  const front = new THREE.Mesh(new THREE.PlaneGeometry(26, 15), mat);
+  front.position.set(0, 0, 16);
+  reflectionScene.add(front);
 
-      console.log("[BrandSite] Отражение: heroImage успешно подключён к зеркалу.");
-    };
+  const back = new THREE.Mesh(new THREE.PlaneGeometry(26, 15), mat);
+  back.position.set(0, 0, -16);
+  reflectionScene.add(back);
+
+  const left = new THREE.Mesh(new THREE.PlaneGeometry(32, 15), mat);
+  left.position.set(-16, 0, 0);
+  left.rotation.y = Math.PI / 2;
+  reflectionScene.add(left);
+
+  const right = new THREE.Mesh(new THREE.PlaneGeometry(32, 15), mat);
+  right.position.set(16, 0, 0);
+  right.rotation.y = Math.PI / 2;
+  reflectionScene.add(right);
+
+  // потолок/пол — тем же фото (или сплошным тоном), чтобы не было
+  // "чёрных дыр" при взгляде сверху/снизу
+  const ceilMat = new THREE.MeshBasicMaterial({ color: 0xb9b3a6, side: THREE.DoubleSide });
+  const floorMat = new THREE.MeshBasicMaterial({ color: 0x6b665c, side: THREE.DoubleSide });
+
+  const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(32, 32), ceilMat);
+  ceiling.position.set(0, 8, 0);
+  ceiling.rotation.x = Math.PI / 2;
+  reflectionScene.add(ceiling);
+
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(32, 32), floorMat);
+  floor.position.set(0, -8, 0);
+  floor.rotation.x = Math.PI / 2;
+  reflectionScene.add(floor);
+
+  console.log("[BrandSite] Отражение: heroImage успешно подключён к зеркалу.");
+};
 
     if (heroImage) {
       console.log("[BrandSite] Загружаю heroImage для отражения:", heroImage);
