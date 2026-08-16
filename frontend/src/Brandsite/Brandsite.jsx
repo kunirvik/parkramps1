@@ -14,7 +14,8 @@ const DEFAULT_CONFIG = {
     { label: "Advice", href: "#" },
     { label: "Cart", href: "#" },
   ],
-  heroImage: "https://res.cloudinary.com/dbx6muxub/image/upload/v1785509327/volt_park_visual9_lsorlm.jpg",
+  // Видео, которое одновременно (а) крутится фоном хиро-секции и (б) отражается в 3D-модели.
+  heroVideoUrl: "https://res.cloudinary.com/dbx6muxub/video/upload/v1785325905/volt_park_visual2kwide_sjelea.mp4",
   heroModelUrl: "https://res.cloudinary.com/dbx6muxub/image/upload/v1786869663/logo_alatkf.glb",
   heroMirrorRestRotationY: 0,
   headerModelUrl: null,
@@ -215,7 +216,7 @@ function HeaderOrb({ modelUrl, modelUrlAlt }) {
   return <div className="header-orb" ref={mountRef}></div>;
 }
 
-function HeroModel({ modelUrl, heroImage, restRotationY = 0 }) {
+function HeroModel({ modelUrl, heroVideoUrl, restRotationY = 0 }) {
   const mountRef = useRef(null);
 
   useEffect(() => {
@@ -265,10 +266,10 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }) {
     const reflectionScene = new THREE.Scene();
     reflectionScene.background = new THREE.Color(0x77736b);
 
-    let photoTexture = null;
+    let videoEl = null;
+    let videoTexture = null;
     const reflectionObjects = [];
 
-   
     const buildReflectionRoom = (texture) => {
       reflectionObjects.forEach((obj) => {
         reflectionScene.remove(obj);
@@ -282,6 +283,7 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }) {
       texture.wrapT = THREE.ClampToEdgeWrapping;
       texture.minFilter = THREE.LinearFilter;
       texture.magFilter = THREE.LinearFilter;
+      texture.generateMipmaps = false; // видео-текстуры не поддерживают mipmaps
       texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
       const wallGeoWide = new THREE.PlaneGeometry(30, 16.875);
@@ -310,7 +312,6 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }) {
       reflectionScene.add(right);
       reflectionObjects.push(right);
 
-      
       const floor = new THREE.Mesh(
         new THREE.PlaneGeometry(30, 30),
         new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
@@ -330,20 +331,25 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }) {
       reflectionObjects.push(ceiling);
     };
 
-    if (heroImage) {
-      const textureLoader = new THREE.TextureLoader();
-      textureLoader.setCrossOrigin("anonymous");
-      textureLoader.load(
-        heroImage,
-        (texture) => {
-          photoTexture = texture;
-          buildReflectionRoom(texture);
-        },
-        undefined,
-        (error) => console.error("[BrandSite] Reflection image FAILED (проверь CORS на Cloudinary):", error)
-      );
+    if (heroVideoUrl) {
+      videoEl = document.createElement("video");
+      videoEl.src = heroVideoUrl;
+      videoEl.crossOrigin = "anonymous"; // обязательно, иначе WebGL не сможет читать пиксели видео
+      videoEl.loop = true;
+      videoEl.muted = true;
+      videoEl.playsInline = true;
+      videoEl.autoplay = true;
+      videoEl.setAttribute("playsinline", ""); // для старых iOS Safari
+      videoEl.preload = "auto";
+
+      videoTexture = new THREE.VideoTexture(videoEl);
+      buildReflectionRoom(videoTexture);
+
+      videoEl.play().catch((err) => {
+        console.warn("[BrandSite] Автовоспроизведение видео заблокировано браузером:", err);
+      });
     } else {
-      console.warn("[BrandSite] heroImage отсутствует.");
+      console.warn("[BrandSite] heroVideoUrl отсутствует.");
     }
 
     /* ---------- CubeCamera ---------- */
@@ -355,7 +361,6 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }) {
     const cubeCamera = new THREE.CubeCamera(0.1, 100, cubeRT);
     scene.add(cubeCamera);
 
-   
     const chromeMaterial = new THREE.MeshStandardMaterial({
       color: 0xffffff,
       metalness: 1,
@@ -363,7 +368,6 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }) {
       envMap: cubeRT.texture,
       envMapIntensity: 2,
       transparent: false,
-      // opacity: 1,
       side: THREE.DoubleSide,
     });
 
@@ -462,6 +466,8 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }) {
         }
       }
 
+      // VideoTexture сам помечает needsUpdate каждый кадр, пока видео играет —
+      // руками ничего дергать не нужно, просто регулярно обновляем env-карту.
       state.envFrame++;
       if (state.envFrame >= CONFIG.envUpdateEveryFrame) {
         state.envFrame = 0;
@@ -502,12 +508,18 @@ function HeroModel({ modelUrl, heroImage, restRotationY = 0 }) {
         if (obj.material) obj.material.dispose();
       });
 
-      if (photoTexture) photoTexture.dispose();
+      if (videoTexture) videoTexture.dispose();
+      if (videoEl) {
+        videoEl.pause();
+        videoEl.removeAttribute("src");
+        videoEl.load();
+      }
+
       cubeRT.dispose();
       renderer.dispose();
       if (renderer.domElement.parentNode === mount) mount.removeChild(renderer.domElement);
     };
-  }, [modelUrl, heroImage, restRotationY]);
+  }, [modelUrl, heroVideoUrl, restRotationY]);
 
   return (
     <div className="hero-model-wrap">
@@ -555,20 +567,36 @@ function MenuOverlay({ cfg, open, onClose }) {
 }
 
 function Hero({ cfg }) {
+  const bgVideoRef = useRef(null);
+
+  useEffect(() => {
+    const v = bgVideoRef.current;
+    if (v) {
+      v.play().catch((err) => console.warn("[BrandSite] Автовоспроизведение фонового видео заблокировано:", err));
+    }
+  }, [cfg.heroVideoUrl]);
+
   return (
     <section className="hero">
-      <div
-        className={"hero-bg" + (cfg.heroImage ? "" : " no-photo")}
-        style={cfg.heroImage ? { backgroundImage: `url(${cfg.heroImage})` } : undefined}
-      >
-        {!cfg.heroImage && (
+      <div className={"hero-bg" + (cfg.heroVideoUrl ? "" : " no-photo")}>
+        {cfg.heroVideoUrl ? (
+          <video
+            ref={bgVideoRef}
+            className="hero-bg-video"
+            src={cfg.heroVideoUrl}
+            autoPlay
+            muted
+            loop
+            playsInline
+          />
+        ) : (
           <div className="hero-bg-label">
-            heroImage — замени на своё фото<br />(широкоформатное, ≥ 2000px по ширине)
+            heroVideoUrl — замени на своё видео<br />(широкоформатное, ≥ 1920px по ширине)
           </div>
         )}
       </div>
 
-      <HeroModel modelUrl={cfg.heroModelUrl} heroImage={cfg.heroImage} restRotationY={cfg.heroMirrorRestRotationY} />
+      <HeroModel modelUrl={cfg.heroModelUrl} heroVideoUrl={cfg.heroVideoUrl} restRotationY={cfg.heroMirrorRestRotationY} />
 
       <div className="hero-lines">
         {cfg.heroLines.map((l, i) => (
