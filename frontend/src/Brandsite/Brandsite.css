@@ -136,6 +136,17 @@
   font-size:12px;text-align:center;line-height:1.6;pointer-events:none;
 }
 
+/* Зернистость поверх фонового видео (SVG-шум, без файла-картинки) —
+   даёт грубоватую "плёночную" текстуру, как на референсе Palace.
+   z-index:2, чтобы лежать НАД видео (z-index:0/1), но ПОД моделью (z-index:5). */
+.brand-site .hero-bg::before{
+  content:"";
+  position:absolute;inset:0;z-index:2;pointer-events:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  opacity:0.06;
+  mix-blend-mode:overlay;
+}
+
 .brand-site .hero-model-wrap{
   position:absolute;inset:0;
   display:flex;align-items:center;justify-content:center;
@@ -365,6 +376,9 @@
   object-fit:cover;
   object-position:center;
   display:block;
+  /* лёгкий "плёночный" цвет: выше контраст, чуть меньше насыщенность и
+     яркость — как на референсе Palace. Подстраивай под своё видео. */
+  filter:contrast(1.18) saturate(0.85) brightness(0.97);
 }
 
 /* Адаптивные размеры модели: заменяет прежний инлайн-style в HeroModel.

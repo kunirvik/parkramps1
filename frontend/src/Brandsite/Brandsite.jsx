@@ -141,20 +141,23 @@ function makeBgSampleMaterial(videoTexture) {
       uVideoNative: { value: new THREE.Vector2(16, 9) },
       // devicePixelRatio, т.к. gl_FragCoord в физических пикселях канваса
       uDPR: { value: window.devicePixelRatio || 1 },
-      // 0 = никакого "стеклянного" преломления: пиксель на поверхности модели
-      // точно совпадает с реальным пикселем фона позади неё (максимально
-      // чёткое слияние с фоном, без отклонений на изогнутых участках).
-      uDistortion: { value: 0.0 },
-      // 0 = без доп. блика по краю — модель не становится ярче фона,
-      // цвет поверхности равен цвету фона один в один.
-      uFresnelStrength: { value: 0.0 },
+      // сила смещения сэмпла по нормали каждой грани — это и даёт "осколочный"
+      // эффект: соседние плоские грани модели смещают картинку по-разному.
+      // Крути 0.02–0.08 под свою модель.
+      uDistortion: { value: 0.05 },
+      // яркость блика по краю грани — читается как "стеклянная" кромка,
+      // как на референсе Palace
+      uFresnelStrength: { value: 0.25 },
+      // хроматическая аберрация: R и B каналы сэмплируются со сдвигом
+      // относительно G — даёт лёгкий радужный край на гранях
+      uChromaShift: { value: 0.01 },
     },
     vertexShader: `
-      varying vec3 vNormal;
+      varying vec3 vViewPos;
       varying vec3 vViewDir;
       void main() {
-        vNormal = normalize(normalMatrix * normal);
         vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        vViewPos = mv.xyz;
         vViewDir = normalize(-mv.xyz);
         gl_Position = projectionMatrix * mv;
       }
@@ -169,7 +172,8 @@ function makeBgSampleMaterial(videoTexture) {
       uniform float uDPR;
       uniform float uDistortion;
       uniform float uFresnelStrength;
-      varying vec3 vNormal;
+      uniform float uChromaShift;
+      varying vec3 vViewPos;
       varying vec3 vViewDir;
 
       // повторяет CSS object-fit: cover для видео внутри контейнера
@@ -189,7 +193,26 @@ function makeBgSampleMaterial(videoTexture) {
         return uv;
       }
 
+      // сэмплирует один канал фона со сдвигом local по нормали грани —
+      // используется трижды (R/G/B) с разным сдвигом для хроматической аберрации
+      vec3 sampleBg(vec2 local, vec3 flatNormal) {
+        vec2 distorted = local + flatNormal.xy * uDistortion;
+        vec2 videoUV = coverUV(clamp(distorted, 0.0, 1.0));
+        // THREE.VideoTexture по умолчанию flipY=true: v=0 у него соответствует
+        // НИЗУ видео, а наш videoUV.y посчитан в CSS-логике (0=верх) — инвертируем
+        vec2 sampleUV = vec2(videoUV.x, 1.0 - videoUV.y);
+        return texture2D(uVideoTex, sampleUV).rgb;
+      }
+
       void main() {
+        // ГРАНЁНАЯ нормаль: считаем через производные позиции во view-space —
+        // она константна для каждого треугольника (в отличие от интерполированной
+        // вершинной нормали), поэтому соседние грани дают РАЗНЫЙ сдвиг картинки —
+        // именно это создаёт "осколочный" эффект вместо гладкого зеркала.
+        vec3 fdx = dFdx(vViewPos);
+        vec3 fdy = dFdy(vViewPos);
+        vec3 flatNormal = normalize(cross(fdx, fdy));
+
         // gl_FragCoord — пиксель ВНУТРИ canvas модели (физические px, y снизу вверх)
         vec2 localCanvasPx = gl_FragCoord.xy / uDPR; // -> CSS px, всё ещё локально для canvas
         localCanvasPx.y = uCanvasSize.y - localCanvasPx.y; // разворачиваем в top-down, как в CSS
@@ -200,18 +223,14 @@ function makeBgSampleMaterial(videoTexture) {
         // переводим в координаты относительно контейнера (.hero), 0..1
         vec2 local = (windowPx - uContainerOffset) / uContainerSize;
 
-        // лёгкое "стеклянное" искажение по нормали поверхности (при uDistortion=0 — не влияет)
-        vec2 distorted = local + vNormal.xy * uDistortion;
+        float r = sampleBg(local, flatNormal + vec3(uChromaShift, 0.0, 0.0)).r;
+        float g = sampleBg(local, flatNormal).g;
+        float b = sampleBg(local, flatNormal - vec3(uChromaShift, 0.0, 0.0)).b;
+        vec3 bg = vec3(r, g, b);
 
-        vec2 videoUV = coverUV(clamp(distorted, 0.0, 1.0));
-        // THREE.VideoTexture по умолчанию flipY=true: v=0 у него соответствует
-        // НИЗУ видео, а наш videoUV.y посчитан в CSS-логике (0=верх) — инвертируем
-        vec2 sampleUV = vec2(videoUV.x, 1.0 - videoUV.y);
-        vec4 bg = texture2D(uVideoTex, sampleUV);
-
-        // тонкий fresnel-блик по краям (при uFresnelStrength=0 — цвет равен фону 1:1)
-        float fresnel = pow(1.0 - max(dot(normalize(vViewDir), normalize(vNormal)), 0.0), 2.5);
-        vec3 color = bg.rgb + fresnel * uFresnelStrength;
+        // яркая грань по краю фасета — читается как "стеклянный" блик на референсе
+        float fresnel = pow(1.0 - max(dot(normalize(vViewDir), flatNormal), 0.0), 1.6);
+        vec3 color = bg + fresnel * uFresnelStrength;
 
         gl_FragColor = vec4(color, 1.0);
       }
