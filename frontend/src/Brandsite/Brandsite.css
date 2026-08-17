@@ -189,8 +189,17 @@
 }
 
 @media (max-width:760px){
-  .brand-site .hero-lines{left:20px;right:20px;}
+  /* Убираем все текстовые строки над героем на мобилке
+     (Manor Place / Your Brand South2 West8 / Autumn 2026 Range / Lookbook и т.п.) */
+  .brand-site .hero-lines{
+    display:none;
+  }
   .brand-site .hero-view-btn{right:20px;left:20px;top:auto;bottom:70px;transform:none;text-align:center;}
+
+  /* Увеличенное лого в хедере на мобилке */
+  .brand-site .site-header .logo{
+    font-size:26px;
+  }
 }
 
 /* ---------- Marquee ---------- */

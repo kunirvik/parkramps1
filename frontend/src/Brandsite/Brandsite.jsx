@@ -118,10 +118,10 @@ function fitAndCenter(object, targetSize) {
 /* =========================================================================
    ШЕЙДЕР "СЛИЯНИЯ С ФОНОМ" (screen-space background sampling)
    Модель буквально показывает тот же пиксель видео, что находится позади
-   неё на экране — с лёгким искажением по нормалям (эффект стекла/призмы),
-   как на palaceskateboards.com. Это НЕ физическое отражение (не cubemap),
-   поэтому оно точно совпадает с фоном при любом освещении и в любой позе,
-   если верно посчитаны uResolution/uOffset/uVideoNative.
+   неё на экране. uDistortion и uFresnelStrength занулены — это убирает
+   стеклянное преломление и дополнительный блик по краям, за счёт чего
+   модель максимально точно и без лишней яркости сливается с фоновым видео
+   (эффект "невидимого" объекта, как на palaceskateboards.com).
    ========================================================================= */
 
 function makeBgSampleMaterial(videoTexture) {
@@ -141,15 +141,13 @@ function makeBgSampleMaterial(videoTexture) {
       uVideoNative: { value: new THREE.Vector2(16, 9) },
       // devicePixelRatio, т.к. gl_FragCoord в физических пикселях канваса
       uDPR: { value: window.devicePixelRatio || 1 },
-      // Чем меньше uDistortion, тем точнее пиксель на поверхности модели
-      // совпадает с реальным пикселем фона позади неё — при 0 это почти
-      // идеальный "вырез" (как маскировка хищника), при значениях выше
-      // появляется лёгкое стеклянное преломление, но уже с отклонением от
-      // фона (тем заметнее, чем более выпуклая/изогнутая поверхность модели).
-      uDistortion: { value: 0.012 },
-      // Небольшой блик по краю нужен только чтобы читался объём — если
-      // хотите максимально "невидимую" модель, слитую с фоном, поставьте 0.
-      uFresnelStrength: { value: 0.06 },
+      // 0 = никакого "стеклянного" преломления: пиксель на поверхности модели
+      // точно совпадает с реальным пикселем фона позади неё (максимально
+      // чёткое слияние с фоном, без отклонений на изогнутых участках).
+      uDistortion: { value: 0.0 },
+      // 0 = без доп. блика по краю — модель не становится ярче фона,
+      // цвет поверхности равен цвету фона один в один.
+      uFresnelStrength: { value: 0.0 },
     },
     vertexShader: `
       varying vec3 vNormal;
@@ -202,7 +200,7 @@ function makeBgSampleMaterial(videoTexture) {
         // переводим в координаты относительно контейнера (.hero), 0..1
         vec2 local = (windowPx - uContainerOffset) / uContainerSize;
 
-        // лёгкое "стеклянное" искажение по нормали поверхности
+        // лёгкое "стеклянное" искажение по нормали поверхности (при uDistortion=0 — не влияет)
         vec2 distorted = local + vNormal.xy * uDistortion;
 
         vec2 videoUV = coverUV(clamp(distorted, 0.0, 1.0));
@@ -211,7 +209,7 @@ function makeBgSampleMaterial(videoTexture) {
         vec2 sampleUV = vec2(videoUV.x, 1.0 - videoUV.y);
         vec4 bg = texture2D(uVideoTex, sampleUV);
 
-        // тонкий fresnel-блик по краям, чтобы читался объём модели
+        // тонкий fresnel-блик по краям (при uFresnelStrength=0 — цвет равен фону 1:1)
         float fresnel = pow(1.0 - max(dot(normalize(vViewDir), normalize(vNormal)), 0.0), 2.5);
         vec3 color = bg.rgb + fresnel * uFresnelStrength;
 
@@ -321,7 +319,7 @@ function HeaderOrb({ modelUrl, modelUrlAlt }) {
 }
 
 /* =========================================================================
-   HeroModel — теперь "сливается" с фоновым видео через screen-space шейдер
+   HeroModel — "сливается" с фоновым видео через screen-space шейдер
    ========================================================================= */
 
 function HeroModel({ modelUrl, heroVideoUrl, restRotationY = 0 }) {
@@ -704,6 +702,9 @@ function Hero({ cfg }) {
 
       <HeroModel modelUrl={cfg.heroModelUrl} heroVideoUrl={cfg.heroVideoUrl} restRotationY={cfg.heroMirrorRestRotationY} />
 
+      {/* Строки текста над героем (Manor Place / Autumn 2026 Range и т.п.)
+          на мобилке скрыты через .hero-lines{display:none} в Brandsite.css —
+          на десктопе отображаются как прежде. */}
       <div className="hero-lines">
         {cfg.heroLines.map((l, i) => (
           <div className={"line " + l.tone} key={i}>{l.text}</div>
