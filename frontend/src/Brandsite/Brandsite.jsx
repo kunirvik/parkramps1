@@ -141,10 +141,15 @@ function makeBgSampleMaterial(videoTexture) {
       uVideoNative: { value: new THREE.Vector2(16, 9) },
       // devicePixelRatio, т.к. gl_FragCoord в физических пикселях канваса
       uDPR: { value: window.devicePixelRatio || 1 },
-      uDistortion: { value: 0.05 },
-      uBrightness: { value: 0.82 },
-      uFresnelStrength: { value: 0.18 },
-      uContrast: { value: 0.96 },
+      // Чем меньше uDistortion, тем точнее пиксель на поверхности модели
+      // совпадает с реальным пикселем фона позади неё — при 0 это почти
+      // идеальный "вырез" (как маскировка хищника), при значениях выше
+      // появляется лёгкое стеклянное преломление, но уже с отклонением от
+      // фона (тем заметнее, чем более выпуклая/изогнутая поверхность модели).
+      uDistortion: { value: 0.012 },
+      // Небольшой блик по краю нужен только чтобы читался объём — если
+      // хотите максимально "невидимую" модель, слитую с фоном, поставьте 0.
+      uFresnelStrength: { value: 0.06 },
     },
     vertexShader: `
       varying vec3 vNormal;
@@ -168,8 +173,6 @@ function makeBgSampleMaterial(videoTexture) {
       uniform float uFresnelStrength;
       varying vec3 vNormal;
       varying vec3 vViewDir;
-      uniform float uBrightness;
-uniform float uContrast;
 
       // повторяет CSS object-fit: cover для видео внутри контейнера
       vec2 coverUV(vec2 screenUV) {
@@ -206,27 +209,13 @@ uniform float uContrast;
         // THREE.VideoTexture по умолчанию flipY=true: v=0 у него соответствует
         // НИЗУ видео, а наш videoUV.y посчитан в CSS-логике (0=верх) — инвертируем
         vec2 sampleUV = vec2(videoUV.x, 1.0 - videoUV.y);
-vec4 bg = texture2D(uVideoTex, sampleUV);
+        vec4 bg = texture2D(uVideoTex, sampleUV);
 
-// Тот же фон, но немного темнее,
-// чтобы модель не выглядела ярче оригинального видео.
-vec3 color = bg.rgb * uBrightness;
+        // тонкий fresnel-блик по краям, чтобы читался объём модели
+        float fresnel = pow(1.0 - max(dot(normalize(vViewDir), normalize(vNormal)), 0.0), 2.5);
+        vec3 color = bg.rgb + fresnel * uFresnelStrength;
 
-// слегка уменьшаем контраст
-color = (color - 0.5) * uContrast + 0.5;
-
-// очень слабый Fresnel только для объёма
-float fresnel = pow(
-  1.0 - max(
-    dot(normalize(vViewDir), normalize(vNormal)),
-    0.0
-  ),
-  2.5
-);
-
-color += fresnel * uFresnelStrength;
-
-gl_FragColor = vec4(color, 1.0);
+        gl_FragColor = vec4(color, 1.0);
       }
     `,
   });
@@ -365,15 +354,29 @@ function HeroModel({ modelUrl, heroVideoUrl, restRotationY = 0 }) {
     camera.position.set(0, 0, CONFIG.cameraZ);
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: "high-performance" });
-    const getSize = () => Math.min(mount.clientWidth || 560, mount.clientHeight || 560, 560);
+    // раньше здесь был жёсткий потолок 560px — теперь ориентируемся на
+    // реальный CSS-размер .hero-model-canvas-mount (задаётся в Brandsite.css,
+    // с отдельными значениями для моб/десктоп), с разумным верхним лимитом
+    // по производительности
+    const MAX_CANVAS_PX = 900;
+    const getSize = () => Math.min(mount.clientWidth || 560, mount.clientHeight || 560, MAX_CANVAS_PX);
     let size = getSize();
     renderer.setSize(size, size);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 3));
+    // ВАЖНО: наш шейдер сэмплирует видео-текстуру напрямую и выдаёт уже
+    // готовый к показу sRGB-цвет (те же байты, что видит <video> в DOM).
+    // Дефолтный renderer.outputColorSpace = SRGBColorSpace заново кодирует
+    // этот уже закодированный цвет — двойная гамма визуально светлее
+    // фонового видео. Отключаем этот шаг для данного canvas.
+    renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
     mount.appendChild(renderer.domElement);
 
     /* ---------- видео-текстура (та же, что играет фоном в Hero) ---------- */
     let videoEl = null;
     let videoTexture = null;
+    // GLB обычно грузится быстрее, чем декодируется первый кадр видео —
+    // без этого флага модель кратко показывается чёрной (текстура ещё пустая)
+    const videoReady = { value: !heroVideoUrl }; // если видео нет — считаем сразу "готово"
 
     if (heroVideoUrl) {
       videoEl = document.createElement("video");
@@ -387,6 +390,10 @@ function HeroModel({ modelUrl, heroVideoUrl, restRotationY = 0 }) {
       videoEl.preload = "auto";
 
       videoTexture = new THREE.VideoTexture(videoEl);
+      // Тег colorSpace здесь ни на что не влияет: в кастомном ShaderMaterial
+      // мы сэмплируем текстуру через texture2D() напрямую, без автогенерируемых
+      // three.js цепочек декодирования (они работают только для встроенных
+      // материалов вроде MeshStandardMaterial). Оставлено для ясности.
       videoTexture.colorSpace = THREE.SRGBColorSpace;
       videoTexture.generateMipmaps = false;
       videoTexture.minFilter = THREE.LinearFilter;
@@ -395,6 +402,14 @@ function HeroModel({ modelUrl, heroVideoUrl, restRotationY = 0 }) {
       videoEl.play().catch((err) => {
         console.warn("[BrandSite] Автовоспроизведение видео заблокировано браузером:", err);
       });
+
+      // readyState >= 2 (HAVE_CURRENT_DATA) означает, что в буфере уже есть
+      // хотя бы один декодированный кадр — раньше этого текстура пустая/чёрная
+      if (videoEl.readyState >= 2) {
+        videoReady.value = true;
+      } else {
+        videoEl.addEventListener("loadeddata", () => { videoReady.value = true; }, { once: true });
+      }
     } else {
       console.warn("[BrandSite] heroVideoUrl отсутствует.");
     }
@@ -445,6 +460,9 @@ function HeroModel({ modelUrl, heroVideoUrl, restRotationY = 0 }) {
       onReady: (object) => {
         fitAndCenter(object, CONFIG.modelSize);
         current = object;
+        // не показываем модель, пока не готов первый кадр видео — иначе виден
+        // чёрный силуэт до того, как текстура успевает наполниться данными
+        current.visible = videoReady.value;
         scene.add(current);
       },
     });
@@ -466,12 +484,18 @@ function HeroModel({ modelUrl, heroVideoUrl, restRotationY = 0 }) {
       releasedAt: 0,
       settling: false,
       hasInteracted: false,
+      activePointerId: null,
     };
 
     const shortestAngle = (from, to) => Math.atan2(Math.sin(to - from), Math.cos(to - from));
 
     const onPointerDown = (event) => {
       if (!current) return;
+      // игнорируем второй/третий палец (например, случайный pinch-жест) —
+      // управляет только тот палец/курсор, что коснулся первым
+      if (!event.isPrimary) return;
+
+      state.activePointerId = event.pointerId;
       state.dragging = true;
       state.settling = false;
       state.velocity = 0;
@@ -479,10 +503,15 @@ function HeroModel({ modelUrl, heroVideoUrl, restRotationY = 0 }) {
       state.lastX = event.clientX;
       canvas.setPointerCapture(event.pointerId);
       canvas.style.cursor = "grabbing";
+
+      // на время активного драга полностью забираем жест у браузера, чтобы
+      // страница не пыталась одновременно скроллиться, пока управляем моделью —
+      // именно это давало ощущение "анимация продолжает жить своей жизнью"
+      canvas.style.touchAction = "none";
     };
 
     const onPointerMove = (event) => {
-      if (!state.dragging || !current) return;
+      if (!state.dragging || !current || event.pointerId !== state.activePointerId) return;
       const dx = event.clientX - state.lastX;
       state.lastX = event.clientX;
       // на тач-экране палец покрывает больше пикселей за тот же жест, чем
@@ -496,10 +525,14 @@ function HeroModel({ modelUrl, heroVideoUrl, restRotationY = 0 }) {
     };
 
     const onPointerUp = (event) => {
-      if (!state.dragging) return;
+      if (!state.dragging || event.pointerId !== state.activePointerId) return;
       state.dragging = false;
+      state.activePointerId = null;
       state.releasedAt = performance.now();
       canvas.style.cursor = "grab";
+      // возвращаем pan-y — вертикальный скролл страницы снова работает
+      // нативно, когда пользователь просто касается модели, не вращая её
+      canvas.style.touchAction = "pan-y";
       try { canvas.releasePointerCapture(event.pointerId); } catch (_) {}
     };
 
@@ -511,6 +544,9 @@ function HeroModel({ modelUrl, heroVideoUrl, restRotationY = 0 }) {
     let raf;
     const animate = () => {
       if (current) {
+        if (!current.visible && videoReady.value) {
+          current.visible = true;
+        }
         if (state.dragging) {
           // управление в onPointerMove
         } else if (!state.hasInteracted) {
@@ -589,7 +625,7 @@ function HeroModel({ modelUrl, heroVideoUrl, restRotationY = 0 }) {
 
   return (
     <div className="hero-model-wrap">
-      <div ref={mountRef} style={{ width: "70vmin", height: "70vmin", maxWidth: 560, maxHeight: 560 }} />
+      <div className="hero-model-canvas-mount" ref={mountRef} />
     </div>
   );
 }

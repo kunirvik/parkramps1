@@ -343,6 +343,7 @@
   font-family:'Space Mono',monospace;font-size:12px;font-weight:700;
   background:#fff;color:var(--ink);padding:10px 18px;border-radius:6px;
 }
+
 /* ДОБАВИТЬ в Brandsite.css — этого блока не было, поэтому <video className="hero-bg-video">
    рендерился без стилей и не растягивался на весь .hero через object-fit: cover.
    Без этого правила screen-space шейдер в HeroModel не может совпасть с фоном,
@@ -355,4 +356,26 @@
   object-fit:cover;
   object-position:center;
   display:block;
+}
+
+/* Адаптивные размеры модели: заменяет прежний инлайн-style в HeroModel.
+   Крупнее на десктопе, почти во весь экран на мобилке. */
+.brand-site .hero-model-canvas-mount{
+  width:62vmin;
+  height:62vmin;
+  max-width:760px;
+  max-height:760px;
+}
+.brand-site .hero-model-canvas-mount canvas{
+  display:block;
+}
+
+@media (max-width:760px){
+  .brand-site .hero-model-canvas-mount{
+    /* почти во весь экран на мобилке, с небольшим запасом под hero-lines/кнопку */
+    width:92vmin;
+    height:92vmin;
+    max-width:94vw;
+    max-height:70svh;
+  }
 }
