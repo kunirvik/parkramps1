@@ -14,7 +14,7 @@ const DEFAULT_CONFIG = {
     { label: "Cart", href: "#" },
   ],
   heroVideoUrl: "https://res.cloudinary.com/dbx6muxub/video/upload/v1785325905/volt_park_visual2kwide_sjelea.mp4",
-  heroModelUrl: "https://res.cloudinary.com/dbx6muxub/image/upload/v1786869663/logo_alatkf.glb",
+  heroModelUrl: "https://res.cloudinary.com/dbx6muxub/image/upload/v1786811336/model_eteyx8.glb",
   heroMirrorRestRotationY: 0,
   headerModelUrl: null,
   headerModelUrlAlt: null,
