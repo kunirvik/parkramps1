@@ -16,8 +16,8 @@ const DEFAULT_CONFIG = {
   heroVideoUrl: "https://res.cloudinary.com/dbx6muxub/video/upload/v1785325905/volt_park_visual2kwide_sjelea.mp4",
   heroModelUrl: "https://res.cloudinary.com/dbx6muxub/image/upload/v1786811336/model_eteyx8.glb",
   heroMirrorRestRotationY: 0,
-  headerModelUrl: null,
-  headerModelUrlAlt: null,
+  headerModelUrl: "https://res.cloudinary.com/dbx6muxub/video/upload/v1785325905/volt_park_visual2kwide_sjelea.mp4",
+  headerModelUrlAlt: "https://res.cloudinary.com/dbx6muxub/image/upload/v1786869663/logo_alatkf.glb",
   heroLines: [
     { text: "Manor Place", tone: "dim2" },
     { text: "Your Brand South2 West8", tone: "dim" },
