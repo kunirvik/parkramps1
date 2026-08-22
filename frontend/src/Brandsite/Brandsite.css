@@ -1,4 +1,4 @@
-/* ==========================================================
+/* /* ==========================================================
    Стили компонента BrandSite.
    Подключаются только внутри .brand-site — не затронут
    остальной проект.
@@ -118,6 +118,18 @@
   overflow:hidden;
   background:#c9c4ba;
 }
+
+/* Обёртка над фоном+моделью: при смене слайда (activeLine) коротко
+   гаснет и снова проявляется — сглаживает жёсткий скачок из-за полной
+   пересборки Three.js сцены в HeroModel при смене videoUrl/modelUrl. */
+.brand-site .hero-visual{
+  transition:opacity .35s ease;
+  opacity:1;
+}
+.brand-site .hero-visual:not(.visible){
+  opacity:0;
+}
+
 .brand-site .hero-bg{
   position:absolute;inset:0;
   background-size:cover;background-position:center;
@@ -165,11 +177,24 @@
   font-size:clamp(18px,2.4vw,30px);
   line-height:1.15;
   color:rgba(255,255,255,0.28);
-  transition:color 0.3s ease;
+  transition:color 0.35s ease, opacity 0.35s ease, transform 0.35s ease;
+  cursor:pointer;
+  transform-origin:left center;
 }
 .brand-site .hero-lines .line.dim2{color:rgba(255,255,255,0.16);}
 .brand-site .hero-lines .line.accent{color:var(--accent);}
 .brand-site .hero-lines .line.normal{color:#fff;}
+
+/* Рулетка: активная строка — крупнее и полностью непрозрачна,
+   остальные притушены независимо от исходного tone. */
+.brand-site .hero-lines .line.active{
+  opacity:1;
+  transform:scale(1.06);
+}
+.brand-site .hero-lines .line:not(.active){
+  opacity:0.32;
+  transform:scale(0.94);
+}
 
 .brand-site .hero-view-btn{
   position:absolute;right:32px;top:50%;transform:translateY(-50%);
@@ -178,6 +203,7 @@
   font-family:'Space Mono',monospace;font-weight:700;font-size:12px;
   padding:14px 22px;border-radius:6px;
   box-shadow:0 8px 24px rgba(31,59,255,0.4);
+  transition:opacity .25s ease;
 }
 
 .brand-site .hero-scroll-hint{
@@ -364,10 +390,8 @@
   background:#fff;color:var(--ink);padding:10px 18px;border-radius:6px;
 }
 
-/* ДОБАВИТЬ в Brandsite.css — этого блока не было, поэтому <video className="hero-bg-video">
-   рендерился без стилей и не растягивался на весь .hero через object-fit: cover.
-   Без этого правила screen-space шейдер в HeroModel не может совпасть с фоном,
-   потому что coverUV() в шейдере предполагает именно такое поведение видео. */
+/* видео фона hero растянуто через object-fit:cover — обязательно для
+   coverUV() в screen-space шейдере HeroModel */
 .brand-site .hero-bg-video{
   position:absolute;
   inset:0;
@@ -376,13 +400,9 @@
   object-fit:cover;
   object-position:center;
   display:block;
-  /* лёгкий "плёночный" цвет: выше контраст, чуть меньше насыщенность и
-     яркость — как на референсе Palace. Подстраивай под своё видео. */
-  
 }
 
-/* Адаптивные размеры модели: заменяет прежний инлайн-style в HeroModel.
-   Крупнее на десктопе, почти во весь экран на мобилке. */
+/* Адаптивные размеры модели */
 .brand-site .hero-model-canvas-mount{
   width:62vmin;
   height:62vmin;
@@ -395,7 +415,6 @@
 
 @media (max-width:760px){
   .brand-site .hero-model-canvas-mount{
-    /* почти во весь экран на мобилке, с небольшим запасом под hero-lines/кнопку */
     width:92vmin;
     height:92vmin;
     max-width:94vw;
