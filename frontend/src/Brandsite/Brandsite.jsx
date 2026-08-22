@@ -893,19 +893,14 @@ const DEFAULT_CONFIG = {
   viewHref: "#",
 
   // ---------- строки рулетки hero + опциональное per-slide содержимое ----------
-  // Каждый объект — это "слайд". Поля videoUrl / modelUrl / restRotationY /
-  // viewLabel / viewHref НЕОБЯЗАТЕЛЬНЫ: если не заданы — берутся дефолты
-  // сверху (heroVideoUrl / heroModelUrl / heroMirrorRestRotationY / viewLabel /
-  // viewHref). Задай их явно на нужных строках — и при переключении рулетки
-  // (скролл/свайп/по окончании видео) hero-секция реально подменит фон,
-  // 3D-модель и кнопку, а не только текст сбоку.
+  // Поля videoUrl / modelUrl / restRotationY / viewLabel / viewHref
+  // НЕОБЯЗАТЕЛЬНЫ: если не заданы — берутся дефолты сверху.
   heroLines: [
     { text: "Manor Place", tone: "dim2" },
     { text: "Your Brand South2 West8", tone: "dim" },
     {
       text: "Autumn 2026 Range",
       tone: "accent",
-      // пример полноценной подмены контента под конкретную строку:
       // videoUrl: "https://.../another-clip.mp4",
       // modelUrl: "https://.../another-model.glb",
       // viewLabel: "View Autumn",
@@ -1195,12 +1190,12 @@ function HeaderOrb({ modelUrl, modelUrlAlt }) {
    videoRef указывает на ТОТ ЖЕ <video>, что рендерит Hero (общий источник
    кадров — отражение физически не может разойтись с фоном).
 
-   modelUrl/heroVideoUrl/restRotationY теперь приходят из активного слайда
-   рулетки (см. Hero → BrandSite). При их смене эффект полностью
-   пересоздаёт renderer/scene — это осознанный компромисс ради настоящей
-   смены контента по каждой строке; если слайдов много и это будет
-   ощущаться тяжело, можно оптимизировать до "не пересоздавать renderer,
-   а только подменять GLB и материал" — скажи, распишу отдельно.
+   ВАЖНО (fix черной модели): элемент <video> ОБЯЗАН иметь атрибут
+   crossOrigin="anonymous", выставленный ДО начала загрузки src. Видео
+   грузится с другого домена (Cloudinary) — без CORS-режима браузер метит
+   canvas/текстуру как "tainted", и WebGL получает право читать из неё
+   пиксели, только рендеря чёрный кадр (без ошибки в консоли). Атрибут
+   теперь стоит прямо в JSX <video> внутри Hero — см. ниже.
    ========================================================================= */
 
 function HeroModel({ modelUrl, videoRef, heroVideoUrl, restRotationY = 0 }) {
@@ -1495,24 +1490,6 @@ function MenuOverlay({ cfg, open, onClose }) {
 
 /* =========================================================================
    Hero — рулетка heroLines + полноценная смена контента по слайду.
-
-   activeLine и slide (вычисленный эффективный конфиг: videoUrl/modelUrl/
-   restRotationY/viewLabel/viewHref) приходят СВЕРХУ, из BrandSite —
-   именно поэтому смена строки реально меняет фон/модель/CTA, а не только
-   подсветку текста: Hero больше не хранит "что показывать", это решает
-   родитель, Hero лишь дирижирует пользовательским вводом (скролл/свайп/
-   клик/конец видео) и дёргает onActiveLineChange.
-
-   Три источника смены activeLine, все точки входа — onManualStep / клик /
-   onEnded:
-   1) РУЧНОЙ скролл/свайп внутри .hero — листает по одной строке, на
-      первой/последней отпускает жест странице (едет дальше по лендингу
-      или назад к хедеру).
-   2) КЛИК по строке — мгновенный переход.
-   3) АВТОМАТИЧЕСКИ по окончании видео ("ended", loop сознательно снят) —
-      переход на следующий слайд по кругу, видео перематывается на 0 и
-      запускается заново (для текущего src; если слайд сам меняет src,
-      см. эффект ниже, который переключает <video> на новый файл).
    ========================================================================= */
 
 function Hero({ cfg, activeLine, onActiveLineChange, slide }) {
@@ -1544,8 +1521,8 @@ function Hero({ cfg, activeLine, onActiveLineChange, slide }) {
     goToLine(activeLineRef.current + dir);
   }, [goToLine]);
 
-  /* ---------- контент "мигает" коротким фейдом при смене слайда,
-     чтобы пересборка Three.js сцены в HeroModel не била по глазам ---------- */
+  /* ---------- короткий фейд при смене слайда, чтобы пересборка
+     Three.js сцены в HeroModel не била по глазам ---------- */
   const [contentVisible, setContentVisible] = useState(true);
   useEffect(() => {
     setContentVisible(false);
@@ -1554,11 +1531,15 @@ function Hero({ cfg, activeLine, onActiveLineChange, slide }) {
   }, [slide.videoUrl, slide.modelUrl]);
 
   /* ---------- источник фонового видео: переключаем вручную при смене
-     слайда, т.к. одного React-атрибута src недостаточно, чтобы уже
-     смонтированный <video> подхватил новый файл во всех браузерах ---------- */
+     слайда. crossOrigin выставлен и в JSX (для первой загрузки), и тут —
+     на случай динамической смены src на уже смонтированном элементе. ---------- */
   useEffect(() => {
     const v = bgVideoRef.current;
     if (!v || !hasVideo) return;
+
+    if (v.crossOrigin !== "anonymous") {
+      v.crossOrigin = "anonymous";
+    }
 
     if (v.getAttribute("src") !== slide.videoUrl) {
       v.pause();
@@ -1587,9 +1568,6 @@ function Hero({ cfg, activeLine, onActiveLineChange, slide }) {
         const next = (activeLineRef.current + 1) % linesCount;
         onActiveLineChange(next);
       }
-      // перематываем и перезапускаем — тот же src продолжает крутиться
-      // визуально бесшовно, "ended" остаётся триггером каждого витка;
-      // если следующий слайд меняет videoUrl, эффект выше подменит src
       v.currentTime = 0;
       v.play().catch(() => {});
     };
@@ -1608,7 +1586,7 @@ function Hero({ cfg, activeLine, onActiveLineChange, slide }) {
       const atEnd = activeLineRef.current === lastIndex && dir > 0;
       const atStart = activeLineRef.current === 0 && dir < 0;
 
-      if (atEnd || atStart) return; // отпускаем нативный скролл страницы
+      if (atEnd || atStart) return;
 
       e.preventDefault();
       wheelAccumRef.current += e.deltaY;
@@ -1629,7 +1607,7 @@ function Hero({ cfg, activeLine, onActiveLineChange, slide }) {
       const atEnd = activeLineRef.current === lastIndex && dir > 0;
       const atStart = activeLineRef.current === 0 && dir < 0;
 
-      if (atEnd || atStart) return; // отпускаем нативный скролл страницы
+      if (atEnd || atStart) return;
 
       if (Math.abs(dy) > TOUCH_THRESHOLD) {
         onManualStep(dir);
@@ -1666,11 +1644,15 @@ function Hero({ cfg, activeLine, onActiveLineChange, slide }) {
             <video
               ref={bgVideoRef}
               className="hero-bg-video"
+              crossOrigin="anonymous"
               autoPlay
               muted
               playsInline
-              /* src управляется вручную в useEffect выше; loop сознательно
-                 не задан — "ended" используется как триггер рулетки */
+              /* crossOrigin обязателен: без него видео с другого домена
+                 (Cloudinary) помечается как tainted, и WebGL-текстура в
+                 HeroModel рендерит чёрный кадр вместо реального отражения.
+                 src управляется вручную в useEffect выше; loop сознательно
+                 не задан — "ended" используется как триггер рулетки. */
             />
           ) : (
             <div className="hero-bg-label">
@@ -1824,15 +1806,8 @@ export default function BrandSite({ config }) {
   const cfg = { ...DEFAULT_CONFIG, ...config };
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // ---------- какая строка heroLines активна прямо сейчас ----------
-  // Поднято сюда, а не в Hero: activeLine определяет, ЧТО показывать
-  // (видео/модель/CTA) — это часть "конфига" hero, а не только локальный
-  // UI-стейт самого Hero.
   const [activeLine, setActiveLine] = useState(0);
 
-  // ---------- эффективный конфиг hero под активную строку ----------
-  // Берём поля из cfg.heroLines[activeLine], а если их там нет —
-  // фолбэк на дефолты верхнего уровня cfg.
   const activeHeroSlide = useMemo(() => {
     const line = cfg.heroLines[activeLine] || {};
     return {
