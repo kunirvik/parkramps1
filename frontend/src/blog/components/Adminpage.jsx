@@ -2093,8 +2093,15 @@ export default function AdminPage() {
       alert("Delete failed")
     }
   }
+const getToken = () => localStorage.getItem("token")
 
-  const getToken = () => localStorage.getItem("token")
+function authHeaders(extra = {}) {
+  const token = getToken()
+  return {
+    ...extra,
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  }
+}
 
   useEffect(() => {
     const token = getToken()
