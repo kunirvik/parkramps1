@@ -46,6 +46,73 @@
 // }
 
 
+// import { useCallback } from "react";
+// import { useNavigate, useLocation } from "react-router-dom";
+// import productCatalogSets       from "../data/productCatalogSets";
+// import productCatalogRamps      from "../data/productCatalogRamps";
+// import productCatalogSkateparks from "../data/productCatalogSkateparks";
+
+// const ALL_CATALOGS = [
+//   ...productCatalogSets,
+//   ...productCatalogRamps,
+//   ...productCatalogSkateparks,
+// ];
+
+// const CATALOGS = {
+//   sets:       productCatalogSets,
+//   ramps:      productCatalogRamps,
+//   skateparks: productCatalogSkateparks,
+// };
+
+
+// const TYPED_CATALOGS = [
+//   ...productCatalogSets.map((p)       => ({ ...p, _type: "sets" })),
+//   ...productCatalogRamps.map((p)      => ({ ...p, _type: "ramps" })),
+//   ...productCatalogSkateparks.map((p) => ({ ...p, _type: "skateparks" })),
+// ]; 
+
+// export function useOpenGallery() {
+//   const navigate = useNavigate();
+//   const location = useLocation();
+
+//   const openGallery = useCallback((type, activeProductIndex) => {
+//     const catalog = CATALOGS[type];
+//     if (!catalog) return;
+
+//     const currentProduct = catalog[activeProductIndex];
+//     if (!currentProduct) return;
+
+//     // const globalIndex = ALL_CATALOGS.findIndex(
+//     //   (p) => p.id === currentProduct.id
+//     // );
+//     const globalIndex = TYPED_CATALOGS.findIndex(
+//   (p) => p.id === currentProduct.id && p._type === type  // ← добавить && p._type === type
+// );
+//     if (globalIndex === -1) return;
+
+//     // const startIndex = ALL_CATALOGS
+//     //   .slice(0, globalIndex)
+//     //   .reduce((acc, p) => acc + (p.sample?.length || 0), 0);
+
+//     const startIndex = TYPED_CATALOGS
+//   .slice(0, globalIndex)
+//   .reduce((acc, p) => acc + (p.sample?.length || 0), 0);
+
+//     navigate(`/gallery/${type}/${currentProduct.id}`, {
+//       state: {
+//         startIndex,
+//          productId: currentProduct.id,
+//         // откуда пришли — чтобы вернуться при закрытии
+//         originPath:  location.pathname,
+//         // имя продукта — чтобы автоматически выставить активную категорию
+//         // productName: currentProduct.name,
+//           categoryKey: type, 
+//       },
+//     });
+//   }, [navigate, location.pathname]);
+
+//   return openGallery;
+// }
 import { useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import productCatalogSets       from "../data/productCatalogSets";
@@ -75,7 +142,9 @@ export function useOpenGallery() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const openGallery = useCallback((type, activeProductIndex) => {
+  // localIndex — индекс конкретного фото ВНУТРИ sample этого продукта.
+  // По умолчанию 0 — открываем с первого фото продукта, как раньше.
+  const openGallery = useCallback((type, activeProductIndex, localIndex = 0) => {
     const catalog = CATALOGS[type];
     if (!catalog) return;
 
@@ -94,13 +163,18 @@ export function useOpenGallery() {
     //   .slice(0, globalIndex)
     //   .reduce((acc, p) => acc + (p.sample?.length || 0), 0);
 
-    const startIndex = TYPED_CATALOGS
+    const baseIndex = TYPED_CATALOGS
   .slice(0, globalIndex)
   .reduce((acc, p) => acc + (p.sample?.length || 0), 0);
 
+    const sampleLen = currentProduct.sample?.length || 0;
+    const safeLocalIndex = sampleLen > 0
+      ? Math.min(Math.max(localIndex, 0), sampleLen - 1)
+      : 0;
+
     navigate(`/gallery/${type}/${currentProduct.id}`, {
       state: {
-        startIndex,
+        startIndex: baseIndex + safeLocalIndex,
          productId: currentProduct.id,
         // откуда пришли — чтобы вернуться при закрытии
         originPath:  location.pathname,
@@ -112,8 +186,7 @@ export function useOpenGallery() {
   }, [navigate, location.pathname]);
 
   return openGallery;
-}
-
+} 
 // import { useMemo }          from "react";
 // import { useNavigate, useLocation, useParams } from "react-router-dom";
 // import FilmGallery          from "../FilmGallery.jsx";
