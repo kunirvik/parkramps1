@@ -25,7 +25,7 @@ const mediaByWord = [
   {
     // Ramps
     video:
-      "",
+      "https://res.cloudinary.com/dbx6muxub/video/upload/v1754506398/20220206_214037_qbp9jd.mp4",
     imageDesktop: "https://res.cloudinary.com/dbx6muxub/image/upload/v1784205745/DSC02873_w91eia.webp",
     imageMobile: "https://res.cloudinary.com/dbx6muxub/image/upload/v1784205745/DSC02873_w91eia.webp",
   },
