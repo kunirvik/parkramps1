@@ -51,11 +51,10 @@
 
 
 .hero3d-model-canvas {
-  width: 62vmin;
-  height: 62vmin;
-
-  max-width: 760px;
-  max-height: 760px;
+   width: 90vw;
+  height: 90vh;
+  max-width: 1600px;
+  max-height: 1600px;
 
   pointer-events: auto;
 }
