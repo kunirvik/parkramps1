@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import Hero3D from "../Hero3D";
 import LoadingScreen from "../LoadingScreen/LodingScreen";
+import "./MenuPage.css";
 const words = ["Skateparks",  "Ramps", "Events", "Parkramps"];
 
 export default function MenuPage() {
