@@ -1691,105 +1691,8 @@ function Hero({ cfg, activeLine, onActiveLineChange, slide }) {
   );
 }
 
-function Marquee({ cfg }) {
-  return (
-    <div className="marquee">
-      <div className="marquee-track">
-        <span>{cfg.marqueeText.repeat(4)}</span>
-        <span>{cfg.marqueeText.repeat(4)}</span>
-      </div>
-    </div>
-  );
-}
 
-function EditorialGrid({ cfg }) {
-  return (
-    <section className="section">
-      <div className="section-head">
-        <h2 className="display">Свежий дроп</h2>
-        <p>Замени плейсхолдеры в gridImages на свои фото — квадраты подстроятся сами.</p>
-      </div>
-      <div className="grid">
-        {cfg.gridImages.map((img, i) => (
-          <div className="cell" key={i}>
-            <div className="frame">
-              {img.src
-                ? <img src={img.src} alt={img.cap} />
-                : <div className="ph-label">{img.alt}</div>}
-            </div>
-            <div className="cap mono">{img.cap}</div>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
 
-function Newsletter() {
-  const [email, setEmail] = useState("");
-  const [sent, setSent] = useState(false);
-
-  const submit = (e) => {
-    e.preventDefault();
-    if (email.includes("@")) setSent(true);
-  };
-
-  return (
-    <div className="newsletter">
-      <div className="newsletter-inner">
-        <h3 className="display">Будь в курсе дропов первым</h3>
-        <form className="newsletter-form" onSubmit={submit}>
-          <div className="row">
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            <button className="submit mono" type="submit">Подписаться</button>
-          </div>
-          <label className="agree mono">
-            <input type="checkbox" required /> Согласен с политикой конфиденциальности
-          </label>
-          {sent && <div className="newsletter-msg">Готово — вы в списке.</div>}
-        </form>
-      </div>
-    </div>
-  );
-}
-
-function Footer({ cfg }) {
-  return (
-    <footer>
-      <div className="footer-inner">
-        <div className="footer-cols">
-          <div className="footer-col">
-            <h4>Соцсети</h4>
-            {cfg.social.map((s) => <a key={s.label} href={s.href}>{s.label}</a>)}
-          </div>
-          <div className="footer-col">
-            <h4>Информация</h4>
-            {cfg.infoLinks.map((s) => <a key={s.label} href={s.href}>{s.label}</a>)}
-          </div>
-          <div className="footer-col">
-            <h4>Магазины</h4>
-            {cfg.shops.map((s) => <span key={s}>{s}</span>)}
-          </div>
-          <div className="footer-col">
-            <h4>Рассылка</h4>
-            <span>Форма подписки — выше на странице.</span>
-          </div>
-        </div>
-        <div className="footer-wordmark display">{cfg.logoText}</div>
-        <div className="footer-bottom">
-          <span>© {cfg.logoText} {new Date().getFullYear()}</span>
-          <span>React + Three.js</span>
-        </div>
-      </div>
-    </footer>
-  );
-}
 
 function CookieBar() {
   const [visible, setVisible] = useState(true);
@@ -1829,10 +1732,7 @@ export default function BrandSite({ config }) {
         onActiveLineChange={setActiveLine}
         slide={activeHeroSlide}
       />
-      <Marquee cfg={cfg} />
-      <EditorialGrid cfg={cfg} />
-      <Newsletter />
-      <Footer cfg={cfg} />
+      
       <CookieBar />
     </div>
   );
