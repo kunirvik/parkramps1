@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import Hero3D from "../Hero3D";
-
+import LoadingScreen from "../LoadingScreen/LodingScreen";
 export default function MenuPage() {
   const [index, setIndex] = useState(0);
 
