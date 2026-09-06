@@ -21,11 +21,11 @@ const mediaByWord = [
   {
     type: "video",
     url:
-      "https://res.cloudinary.com/dbx6muxub/video/upload/v1785325905/volt_park_visual2kwide_sjelea.mp4",
+      "https://res.cloudinary.com/dbx6muxub/video/upload/v1785513025/video_2026-07-31_18-49-25_ehskzk.mp4",
   },
   {
     type: "image",
-    url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1784205745/DSC02873_w91eia.webp",
+    url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1784562318/DSC02879_e4exjb.webp",
   },
   {
     type: "video",
@@ -34,7 +34,7 @@ const mediaByWord = [
   },
   {
     type: "image",
-    url: "/parkramps.png",
+    url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1780427037/project_nkkaef.png",
   },
 ];
 
