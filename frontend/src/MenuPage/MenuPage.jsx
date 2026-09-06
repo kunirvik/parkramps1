@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import Hero3D from "../Hero3D";
-import CategoryRoulette from "../CategoryRoulette";
+import CategoryRoulette from "../Categoryroulette";
 import LoadingScreen from "../LoadingScreen/LodingScreen";
 import "./MenuPage.css";
 
