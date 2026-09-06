@@ -272,13 +272,13 @@ export default function MenuPage() {
         {/* ===================================================
             РУЛЕТКА КАТЕГОРИЙ (слева)
             =================================================== */}
-
+{/* 
         <CategoryRoulette
           words={words}
           activeIndex={index}
           onSelect={handleSelectCategory}
           onStep={handleStepCategory}
-        />
+        /> */}
 
         {/* ===================================================
             КОНТЕНТ
