@@ -10,7 +10,7 @@ import "./MenuPage.css";
 
 const words = ["Skateparks", "Ramps", "Events", "Parkramps"];
 
-const IMAGE_DURATION_MS = 30000;
+const IMAGE_DURATION_MS = 5000;
 
 // ИЗМЕНЕНО: длительность кроссфейда между медиа. Пока новое медиа
 // не загрузилось — старое остаётся видимым на 100%, поэтому
@@ -18,20 +18,7 @@ const IMAGE_DURATION_MS = 30000;
 const CROSSFADE_DURATION = 0.7;
 
 const mediaByWord = [
-  {
-    type: "video",
-    url:
-      "https://res.cloudinary.com/dbx6muxub/video/upload/v1785513025/video_2026-07-31_18-49-25_ehskzk.mp4",
-  },
-  {
-    type: "image",
-    url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1784562318/DSC02879_e4exjb.webp",
-  },
-  {
-    type: "video",
-    url:
-      "https://res.cloudinary.com/dbx6muxub/video/upload/v1754506398/20220206_214037_qbp9jd.mp4",
-  },
+  
   {
     type: "image",
     url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1780427037/project_nkkaef.png",
