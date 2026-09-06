@@ -120,11 +120,7 @@ function fitAndCenter(object, targetSize) {
 
 // ============================================================
 // EXACT BACKGROUND SAMPLING SHADER
-// ИЗМЕНЕНО: раньше материал был жёстко заточен под видео
-// (uVideoTex / uVideoNative). Теперь uniform-ы называются
-// обобщённо (uMediaTex / uMediaNative) и одинаково работают
-// как для VideoTexture, так и для обычной image-текстуры —
-// GLSL-у всё равно, откуда взялись пиксели в sampler2D.
+// (uMediaTex/uMediaNative — единый источник, видео или фото)
 // ============================================================
 
 function makeBgSampleMaterial(mediaTexture) {
@@ -442,17 +438,6 @@ function makeBgSampleMaterial(mediaTexture) {
 // ============================================================
 // HERO 3D
 // ============================================================
-//
-// ИЗМЕНЕНО: вместо videoUrl/videoRef компонент принимает
-// единый проп media = { type: 'video' | 'image', url }.
-//   - type === 'video'  → берём тот же DOM <video> через videoRef
-//                          (нужен для autoplay/контроля из родителя)
-//   - type === 'image'  → грузим обычную THREE.Texture по url,
-//                          videoRef в этом случае не используется
-//
-// В обоих случаях в шейдер уходит один и тот же uMediaTex,
-// поэтому модель одинаково отражает и видео, и фото.
-// ============================================================
 
 export default function Hero3D({
   modelUrl,
@@ -497,6 +482,14 @@ export default function Hero3D({
       settleSpeed: 0.045,
 
       scrollPauseMs: 700,
+
+      // ИЗМЕНЕНО: канвас теперь считается от размера ЭКРАНА,
+      // а не от clientWidth/clientHeight контейнера — так модель
+      // всегда занимает предсказуемую долю вьюпорта и центрируется
+      // независимо от внешней вёрстки/CSS.
+      viewportFraction: 0.82, // модель занимает ~82% меньшей стороны экрана
+      minCanvasPx: 320,
+      maxCanvasPx: 1500,
     };
 
 
@@ -543,15 +536,33 @@ export default function Hero3D({
       });
 
 
-    const MAX_CANVAS_PX = 1600;
+    // ИЗМЕНЕНО: размер канваса считается от window.innerWidth/Height,
+    // а не от размеров mount-контейнера (это и было причиной того,
+    // что модель "плавала" не по центру и не подстраивалась под экран —
+    // размер зависел от непредсказуемой внешней вёрстки).
 
+    const getSize = () => {
 
-    const getSize = () =>
-      Math.min(
-        mount.clientWidth || 560,
-        mount.clientHeight || 560,
-        MAX_CANVAS_PX
+      const vw =
+        window.innerWidth;
+
+      const vh =
+        window.innerHeight;
+
+      const base =
+        Math.min(vw, vh) *
+        CONFIG.viewportFraction;
+
+      return Math.round(
+        Math.max(
+          CONFIG.minCanvasPx,
+          Math.min(
+            base,
+            CONFIG.maxCanvasPx
+          )
+        )
       );
+    };
 
 
     let size =
@@ -607,16 +618,11 @@ export default function Hero3D({
     };
 
 
-    // --- listeners we may need to clean up later ---
     let onLoadedData = null;
     let onLoadedMetadata = null;
 
 
     if (mediaType === "video" && videoEl) {
-
-      // ------------------------------------------------
-      // VIDEO SOURCE
-      // ------------------------------------------------
 
       mediaTexture =
         new THREE.VideoTexture(
@@ -640,14 +646,6 @@ export default function Hero3D({
         THREE.LinearFilter;
 
 
-      if (videoEl.videoWidth && videoEl.videoHeight) {
-
-        // размер уже известен (например, видео из кэша)
-        // выставим сразу, ниже ещё раз обновим на всякий случай
-
-      }
-
-
       if (videoEl.readyState >= 2) {
 
         mediaReady.value = true;
@@ -667,10 +665,6 @@ export default function Hero3D({
 
     } else if (mediaType === "image" && mediaUrl) {
 
-      // ------------------------------------------------
-      // IMAGE SOURCE
-      // ------------------------------------------------
-
       const textureLoader =
         new THREE.TextureLoader();
 
@@ -678,7 +672,6 @@ export default function Hero3D({
         textureLoader.load(
           mediaUrl,
 
-          // onLoad
           (tex) => {
 
             mediaReady.value = true;
@@ -696,7 +689,6 @@ export default function Hero3D({
 
           undefined,
 
-          // onError
           (err) => {
 
             console.error(
@@ -704,7 +696,6 @@ export default function Hero3D({
               err
             );
 
-            // всё равно "открываем" модель, чтобы не залипала невидимой
             mediaReady.value = true;
           }
         );
@@ -743,9 +734,6 @@ export default function Hero3D({
         new THREE.Texture()
       );
 
-
-    // если текстура появилась уже после создания материала
-    // (для видео — она есть сразу, но переприсвоим на всякий случай)
 
     bgMaterial.uniforms.uMediaTex.value =
       mediaTexture ||
@@ -817,10 +805,6 @@ export default function Hero3D({
           );
 
 
-        // нативный размер видео может стать известен только
-        // после loadedmetadata — для фото размер уже выставлен
-        // в колбэке TextureLoader выше
-
         if (
           mediaType === "video" &&
           videoEl &&
@@ -869,7 +853,7 @@ export default function Hero3D({
 
 
     // ========================================================
-    // SCROLL PAUSE
+    // SCROLL PAUSE (для автовращения модели)
     // ========================================================
 
     const scrollState = {
@@ -1164,7 +1148,6 @@ export default function Hero3D({
 
         if (current) {
 
-          // Media loaded after model was created
           if (
             !current.visible &&
             mediaReady.value
@@ -1185,7 +1168,8 @@ export default function Hero3D({
 
 
           // ----------------------------------------------
-          // AUTO ROTATION
+          // AUTO ROTATION (idle, никто не трогал модель —
+          // либо она уже "остыла" после клика, см. ниже)
           // ----------------------------------------------
 
           } else if (
@@ -1273,6 +1257,16 @@ export default function Hero3D({
 
               state.velocity =
                 0;
+
+
+              // ИЗМЕНЕНО: раньше после "успокоения" модель
+              // навсегда замирала (hasInteracted оставался true).
+              // Теперь автовращение возобновляется само —
+              // ровно то, что просили: "анимация прокрутки
+              // начинается снова после клика мышью по модели".
+
+              state.hasInteracted =
+                false;
             }
           }
         }
@@ -1437,11 +1431,6 @@ export default function Hero3D({
       }
 
 
-      // ВАЖНО:
-      // videoEl (если это видео) НЕ уничтожаем.
-      // Им владеет родительский компонент.
-
-
       renderer.dispose();
 
 
@@ -1465,14 +1454,37 @@ export default function Hero3D({
   ]);
 
 
-  return (
-    <div className="hero3d-model-wrap">
+  // ==========================================================
+  // ИЗМЕНЕНО: обёртка теперь абсолютно позиционирована на всю
+  // hero-секцию и центрирует канвас через flex — это гарантирует
+  // центр экрана независимо от внешнего CSS. pointerEvents:"none"
+  // на обёртке, чтобы она не перехватывала клики по фону/кнопкам
+  // за пределами самого канваса; сам канвас — pointerEvents:"auto".
+  // ==========================================================
 
+  return (
+    <div
+      className="hero3d-model-wrap"
+      style={{
+        position: "absolute",
+        inset: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        pointerEvents: "none",
+        zIndex: 5,
+      }}
+    >
       <div
         className="hero3d-model-canvas"
         ref={mountRef}
+        style={{
+          pointerEvents: "auto",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
       />
-
     </div>
   );
 }

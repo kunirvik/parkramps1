@@ -1,7 +1,10 @@
+
+
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import Hero3D from "../Hero3D";
+import CategoryRoulette from "../CategoryRoulette";
 import LoadingScreen from "../LoadingScreen/LodingScreen";
 import "./MenuPage.css";
 
@@ -9,22 +12,11 @@ const words = ["Skateparks", "Ramps", "Events", "Parkramps"];
 
 // =============================================================
 // МЕДИА ПОД КАЖДУЮ КАТЕГОРИЮ
-//
-// ИЗМЕНЕНО: у каждой категории один источник (type + url),
-// который одновременно:
-//   1) показывается фоном страницы,
-//   2) отражается в 3D-модели (через Hero3D → media prop).
-//
-// type: 'video' — переключение на следующую категорию произойдёт
-//                 по событию 'ended' (видео доиграло до конца).
-// type: 'image' — переключение произойдёт через IMAGE_DURATION_MS.
-//
-// Замени урлы/пути на реальные ассеты.
+// type: 'video' — переключение по событию 'ended'
+// type: 'image' — переключение через IMAGE_DURATION_MS
 // =============================================================
 
-const IMAGE_DURATION_MS = 30000; // 30 секунд на фото-категорию
-
-
+const IMAGE_DURATION_MS = 30000;
 const mediaByWord = [
   {
     type: "video",
@@ -45,6 +37,8 @@ const mediaByWord = [
     url: "/parkramps.png",
   },
 ];
+
+
 export default function MenuPage() {
   const [index, setIndex] = useState(0);
 
@@ -62,30 +56,41 @@ export default function MenuPage() {
 
   const [isFadingOut, setIsFadingOut] = useState(false);
 
-  // =========================================================
-  // VIDEO REF
-  // ВАЖНО: этот же video используется внутри Hero3D
-  // (используется только когда currentMedia.type === 'video')
-  // =========================================================
-
   const videoRef = useRef(null);
 
   const currentMedia = mediaByWord[index];
 
   // =========================================================
-  // СМЕНА КАТЕГОРИИ
+  // ПЕРЕКЛЮЧЕНИЕ КАТЕГОРИИ ВРУЧНУЮ (рулетка)
   //
-  // ИЗМЕНЕНО: раньше был setInterval на 2000мс — отсюда
-  // "слишком быстро". Теперь:
-  //   - для видео ждём событие 'ended' на самом видео,
-  //   - для фото просто ставим таймер на IMAGE_DURATION_MS.
-  // Эффект пересоздаётся при каждой смене index/типа медиа.
+  // ДОБАВЛЕНО: клик по слову — сразу на него; скролл — на 1
+  // категорию вперёд/назад. Оба пути идут через setIndex,
+  // поэтому автоматически переиспользуют защиту от
+  // отрицательных/переполненных индексов и сбрасывают таймер
+  // автосмены ниже (он зависит от index).
+  // =========================================================
+
+  const handleSelectCategory = (i) => {
+    setIndex(i);
+  };
+
+  const handleStepCategory = (direction) => {
+    setIndex((prev) => {
+      const next = (prev + direction) % words.length;
+      return next < 0 ? next + words.length : next;
+    });
+  };
+
+  // =========================================================
+  // АВТОМАТИЧЕСКАЯ СМЕНА КАТЕГОРИИ
+  // видео — по 'ended', фото — через IMAGE_DURATION_MS.
+  // Пересоздаётся при каждой смене index (в т.ч. ручной, через
+  // рулетку) — то есть ручное переключение всегда "обнуляет"
+  // отсчёт для новой категории.
   // =========================================================
 
   useEffect(() => {
-    const goNext = () => {
-      setIndex((prev) => (prev + 1) % words.length);
-    };
+    const goNext = () => handleStepCategory(1);
 
     if (currentMedia.type === "video") {
       const videoEl = videoRef.current;
@@ -99,10 +104,10 @@ export default function MenuPage() {
       };
     }
 
-    // type === "image"
     const timer = setTimeout(goNext, IMAGE_DURATION_MS);
 
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, currentMedia.type]);
 
   // =========================================================
@@ -155,17 +160,9 @@ export default function MenuPage() {
 
   return (
     <>
-      {/* =====================================================
-          LOADING
-          ===================================================== */}
-
       {isLoading && (
         <LoadingScreen isFadingOut={isFadingOut} />
       )}
-
-      {/* =====================================================
-          MAIN
-          ===================================================== */}
 
       <div
         className="
@@ -181,17 +178,6 @@ export default function MenuPage() {
       >
         {/* ===================================================
             ФОН КАТЕГОРИИ: ВИДЕО ИЛИ ФОТО
-            ===================================================
-
-            ИЗМЕНЕНО: раньше это были два отдельных, независимых
-            слоя (статичная картинка + видео поверх неё). Теперь
-            это один слой — ровно то, что задано в mediaByWord —
-            и он же передаётся в Hero3D для отражения в модели.
-
-            key={currentMedia.url} гарантирует, что React
-            полностью пересоздаст DOM-узел при смене категории
-            (важно для <video>, чтобы заново сработали события
-            loadeddata/loadedmetadata/ended).
             =================================================== */}
 
         {currentMedia.type === "video" ? (
@@ -212,8 +198,6 @@ export default function MenuPage() {
             autoPlay
             muted
             playsInline
-            // ВАЖНО: loop убран специально — без него сработает
-            // событие "ended", по которому переключаем категорию
           />
         ) : (
           <motion.img
@@ -236,12 +220,8 @@ export default function MenuPage() {
         )}
 
         {/* ===================================================
-            3D MODEL
-            ===================================================
-
-            media передаётся целиком (type + url). videoRef нужен
-            Hero3D только когда type === 'video' — для картинки
-            он просто игнорируется внутри компонента.
+            3D MODEL (центр экрана, адаптивный размер —
+            см. Hero3D.jsx)
             =================================================== */}
 
         <Hero3D
@@ -249,6 +229,18 @@ export default function MenuPage() {
           media={currentMedia}
           videoRef={videoRef}
           restRotationY={Math.PI / 4}
+        />
+
+        {/* ===================================================
+            РУЛЕТКА КАТЕГОРИЙ
+            ДОБАВЛЕНО: подсветка активной, клик и скролл
+            =================================================== */}
+
+        <CategoryRoulette
+          words={words}
+          activeIndex={index}
+          onSelect={handleSelectCategory}
+          onStep={handleStepCategory}
         />
 
         {/* ===================================================
@@ -265,10 +257,6 @@ export default function MenuPage() {
             overflow-visible
           "
         >
-          {/* =================================================
-              НАДПИСЬ (меняется вместе с категорией)
-              ================================================= */}
-
           <motion.h1
             key={index}
             initial={{
@@ -312,10 +300,6 @@ export default function MenuPage() {
           >
             {words[index]}
           </motion.h1>
-
-          {/* =================================================
-              КНОПКА
-              ================================================= */}
 
           <motion.button
             whileHover={{
