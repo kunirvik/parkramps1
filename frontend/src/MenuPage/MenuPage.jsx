@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import Hero3D from "../Hero3D";
-import CategoryRoulette from "../Categoryroulette";
+// import CategoryRoulette from "../Categoryroulette";
 import LoadingScreen from "../LoadingScreen/LodingScreen";
 import "./MenuPage.css";
 
@@ -36,6 +36,20 @@ const mediaByWord = [
     type: "image",
     url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1780427037/project_nkkaef.png",
   },
+
+    {
+    type: "image",
+    url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1780427037/project_nkkaef.png",
+  },
+    {
+    type: "image",
+    url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1780427037/project_nkkaef.png",
+  },
+    {
+    type: "image",
+    url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1780427037/project_nkkaef.png",
+  },
+  
 ];
 
 
