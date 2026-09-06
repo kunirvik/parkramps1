@@ -24,34 +24,25 @@ const words = ["Skateparks", "Ramps", "Events", "Parkramps"];
 
 const IMAGE_DURATION_MS = 30000; // 30 секунд на фото-категорию
 
+
 const mediaByWord = [
   {
-    // Skateparks
-    video:
+    type: "video",
+    url:
       "https://res.cloudinary.com/dbx6muxub/video/upload/v1785325905/volt_park_visual2kwide_sjelea.mp4",
-    imageDesktop: "/project.png",
-    imageMobile: "/project2.png",
   },
   {
-    // Ramps
-    video:
+    type: "image",
+    url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1784205745/DSC02873_w91eia.webp",
+  },
+  {
+    type: "video",
+    url:
       "https://res.cloudinary.com/dbx6muxub/video/upload/v1754506398/20220206_214037_qbp9jd.mp4",
-    imageDesktop: "https://res.cloudinary.com/dbx6muxub/image/upload/v1784205745/DSC02873_w91eia.webp",
-    imageMobile: "https://res.cloudinary.com/dbx6muxub/image/upload/v1784205745/DSC02873_w91eia.webp",
   },
   {
-    // Events
-    video:
-      " https://res.cloudinary.com/dbx6muxub/video/upload/v1785325905/volt_park_visual2kwide_sjelea.mp4",
-    imageDesktop: "https://res.cloudinary.com/dbx6muxub/image/upload/v1783061430/jumpboxhatob_tyvaum.webp",
-    imageMobile: "https://res.cloudinary.com/dbx6muxub/image/upload/v1783061430/jumpboxhatob_tyvaum.webp",
-  },
-  {
-    // Parkramps
-    video:
-      " https://res.cloudinary.com/dbx6muxub/video/upload/v1785325905/volt_park_visual2kwide_sjelea.mp4",
-    imageDesktop: "/parkramps.png",
-    imageMobile: "/parkramps2.png",
+    type: "image",
+    url: "/parkramps.png",
   },
 ];
 export default function MenuPage() {
