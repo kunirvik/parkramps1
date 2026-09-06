@@ -42,14 +42,14 @@ const mediaByWord = [
   {
     // Events
     video:
-      "",
+      " https://res.cloudinary.com/dbx6muxub/video/upload/v1785325905/volt_park_visual2kwide_sjelea.mp4",
     imageDesktop: "https://res.cloudinary.com/dbx6muxub/image/upload/v1783061430/jumpboxhatob_tyvaum.webp",
     imageMobile: "https://res.cloudinary.com/dbx6muxub/image/upload/v1783061430/jumpboxhatob_tyvaum.webp",
   },
   {
     // Parkramps
     video:
-      "",
+      " https://res.cloudinary.com/dbx6muxub/video/upload/v1785325905/volt_park_visual2kwide_sjelea.mp4",
     imageDesktop: "/parkramps.png",
     imageMobile: "/parkramps2.png",
   },
