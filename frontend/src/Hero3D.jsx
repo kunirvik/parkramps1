@@ -587,7 +587,7 @@ export default function Hero3D({
 
     const CONFIG = {
 
-      modelSize: 5.5,
+      modelSize: 4.5,
 
       cameraZ: 6,
 
