@@ -1,7 +1,8 @@
 
 
+
 import React, { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import Hero3D from "../Hero3D";
 import CategoryRoulette from "../Categoryroulette";
@@ -10,13 +11,12 @@ import "./MenuPage.css";
 
 const words = ["Skateparks", "Ramps", "Events", "Parkramps"];
 
-// =============================================================
-// МЕДИА ПОД КАЖДУЮ КАТЕГОРИЮ
-// type: 'video' — переключение по событию 'ended'
-// type: 'image' — переключение через IMAGE_DURATION_MS
-// =============================================================
-
 const IMAGE_DURATION_MS = 30000;
+
+// ИЗМЕНЕНО: длительность кроссфейда между медиа. Пока новое медиа
+// не загрузилось — старое остаётся видимым на 100%, поэтому
+// "рывка"/пустого кадра не будет, даже если фото грузится долго.
+const CROSSFADE_DURATION = 0.7;
 const mediaByWord = [
   {
     type: "video",
@@ -42,6 +42,10 @@ const mediaByWord = [
 export default function MenuPage() {
   const [index, setIndex] = useState(0);
 
+  // ИЗМЕНЕНО: флаг "текущее медиа реально загружено". Пока false —
+  // новый слой держим на opacity 0, старый слой остаётся видимым.
+  const [mediaLoaded, setMediaLoaded] = useState(false);
+
   const [tooltip, setTooltip] = useState({
     visible: false,
     x: 0,
@@ -53,7 +57,6 @@ export default function MenuPage() {
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(true);
-
   const [isFadingOut, setIsFadingOut] = useState(false);
 
   const videoRef = useRef(null);
@@ -61,13 +64,43 @@ export default function MenuPage() {
   const currentMedia = mediaByWord[index];
 
   // =========================================================
-  // ПЕРЕКЛЮЧЕНИЕ КАТЕГОРИИ ВРУЧНУЮ (рулетка)
+  // СБРОС ФЛАГА ЗАГРУЗКИ ПРИ СМЕНЕ КАТЕГОРИИ
+  // =========================================================
+
+  useEffect(() => {
+    setMediaLoaded(false);
+  }, [index]);
+
+  // =========================================================
+  // ПРЕЛОАД СЛЕДУЮЩЕЙ КАТЕГОРИИ ЗАРАНЕЕ
   //
-  // ДОБАВЛЕНО: клик по слову — сразу на него; скролл — на 1
-  // категорию вперёд/назад. Оба пути идут через setIndex,
-  // поэтому автоматически переиспользуют защиту от
-  // отрицательных/переполненных индексов и сбрасывают таймер
-  // автосмены ниже (он зависит от index).
+  // ДОБАВЛЕНО: пока показывается текущая категория, в фоне
+  // начинаем грузить фото/видео следующей — к моменту реального
+  // переключения оно, скорее всего, уже будет в кэше браузера,
+  // и кроссфейд пройдёт без задержки.
+  // =========================================================
+
+  useEffect(() => {
+    const nextIndex = (index + 1) % words.length;
+    const nextMedia = mediaByWord[nextIndex];
+
+    if (!nextMedia) return;
+
+    if (nextMedia.type === "image") {
+      const preloadImg = new Image();
+      preloadImg.src = nextMedia.url;
+    } else if (nextMedia.type === "video") {
+      const preloadVideo = document.createElement("video");
+      preloadVideo.preload = "auto";
+      preloadVideo.muted = true;
+      preloadVideo.src = nextMedia.url;
+      // просто инициируем загрузку, в DOM не вставляем и не играем
+      preloadVideo.load();
+    }
+  }, [index]);
+
+  // =========================================================
+  // ПЕРЕКЛЮЧЕНИЕ КАТЕГОРИИ ВРУЧНУЮ (рулетка)
   // =========================================================
 
   const handleSelectCategory = (i) => {
@@ -83,10 +116,7 @@ export default function MenuPage() {
 
   // =========================================================
   // АВТОМАТИЧЕСКАЯ СМЕНА КАТЕГОРИИ
-  // видео — по 'ended', фото — через IMAGE_DURATION_MS.
-  // Пересоздаётся при каждой смене index (в т.ч. ручной, через
-  // рулетку) — то есть ручное переключение всегда "обнуляет"
-  // отсчёт для новой категории.
+  // видео — по 'ended', фото — через IMAGE_DURATION_MS
   // =========================================================
 
   useEffect(() => {
@@ -135,10 +165,7 @@ export default function MenuPage() {
   // =========================================================
 
   useEffect(() => {
-    const timer = setTimeout(
-      () => setIsFadingOut(true),
-      1500
-    );
+    const timer = setTimeout(() => setIsFadingOut(true), 1500);
 
     const removeLoadingScreen = setTimeout(
       () => setIsLoading(false),
@@ -160,9 +187,7 @@ export default function MenuPage() {
 
   return (
     <>
-      {isLoading && (
-        <LoadingScreen isFadingOut={isFadingOut} />
-      )}
+      {isLoading && <LoadingScreen isFadingOut={isFadingOut} />}
 
       <div
         className="
@@ -177,51 +202,77 @@ export default function MenuPage() {
         "
       >
         {/* ===================================================
-            ФОН КАТЕГОРИИ: ВИДЕО ИЛИ ФОТО
+            ФОН КАТЕГОРИИ: ВИДЕО ИЛИ ФОТО, С КРОССФЕЙДОМ
+            ===================================================
+
+            ИЗМЕНЕНО: раньше при смене key старый слой мгновенно
+            размонтировался, а новый сразу показывался (даже если
+            фото ещё не успело загрузиться — был "рывок"/пустой
+            кадр). Теперь:
+              - AnimatePresence держит старый слой видимым, пока
+                играет его exit-анимация (плавно гаснет);
+              - новый слой стартует с opacity 0 и получает
+                opacity 1 только после onLoad/onLoadedData —
+                то есть кроссфейд начинается ровно в момент,
+                когда медиа реально готово показываться.
             =================================================== */}
 
-        {currentMedia.type === "video" ? (
-          <video
-            key={currentMedia.url}
-            ref={videoRef}
-            className="
-              absolute
-              top-0
-              left-0
-              w-full
-              h-full
-              object-cover
-              z-[2]
-            "
-            crossOrigin="anonymous"
-            src={currentMedia.url}
-            autoPlay
-            muted
-            playsInline
-          />
-        ) : (
-          <motion.img
-            key={currentMedia.url}
-            src={currentMedia.url}
-            alt="Background"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.4 }}
-            className="
-              absolute
-              top-0
-              left-0
-              w-full
-              h-full
-              object-cover
-              z-[2]
-            "
-          />
-        )}
+        <AnimatePresence initial={false}>
+          {currentMedia.type === "video" ? (
+            <motion.video
+              key={currentMedia.url}
+              ref={videoRef}
+              className="
+                absolute
+                top-0
+                left-0
+                w-full
+                h-full
+                object-cover
+                z-[2]
+              "
+              crossOrigin="anonymous"
+              src={currentMedia.url}
+              autoPlay
+              muted
+              playsInline
+              onLoadedData={() => setMediaLoaded(true)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: mediaLoaded ? 1 : 0 }}
+              exit={{ opacity: 0 }}
+              transition={{
+                duration: CROSSFADE_DURATION,
+                ease: "easeInOut",
+              }}
+            />
+          ) : (
+            <motion.img
+              key={currentMedia.url}
+              src={currentMedia.url}
+              alt="Background"
+              onLoad={() => setMediaLoaded(true)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: mediaLoaded ? 1 : 0 }}
+              exit={{ opacity: 0 }}
+              transition={{
+                duration: CROSSFADE_DURATION,
+                ease: "easeInOut",
+              }}
+              className="
+                absolute
+                top-0
+                left-0
+                w-full
+                h-full
+                object-cover
+                z-[2]
+              "
+            />
+          )}
+        </AnimatePresence>
 
         {/* ===================================================
-            3D MODEL (центр экрана, адаптивный размер —
-            см. Hero3D.jsx)
+            3D MODEL
             =================================================== */}
 
         <Hero3D
@@ -232,8 +283,7 @@ export default function MenuPage() {
         />
 
         {/* ===================================================
-            РУЛЕТКА КАТЕГОРИЙ
-            ДОБАВЛЕНО: подсветка активной, клик и скролл
+            РУЛЕТКА КАТЕГОРИЙ (слева)
             =================================================== */}
 
         <CategoryRoulette
@@ -259,21 +309,10 @@ export default function MenuPage() {
         >
           <motion.h1
             key={index}
-            initial={{
-              opacity: 0,
-              y: -20,
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-            exit={{
-              opacity: 0,
-              y: 20,
-            }}
-            transition={{
-              duration: 0.5,
-            }}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.5 }}
             className={`
               text-center
               break-words
@@ -302,12 +341,8 @@ export default function MenuPage() {
           </motion.h1>
 
           <motion.button
-            whileHover={{
-              scale: 1.1,
-            }}
-            whileTap={{
-              scale: 0.9,
-            }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
             className="
               px-6
               py-3
