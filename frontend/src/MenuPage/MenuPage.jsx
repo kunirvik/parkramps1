@@ -1,6 +1,5 @@
 
 
-
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -17,6 +16,7 @@ const IMAGE_DURATION_MS = 30000;
 // не загрузилось — старое остаётся видимым на 100%, поэтому
 // "рывка"/пустого кадра не будет, даже если фото грузится долго.
 const CROSSFADE_DURATION = 0.7;
+
 const mediaByWord = [
   {
     type: "video",

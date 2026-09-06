@@ -119,8 +119,16 @@ function fitAndCenter(object, targetSize) {
 
 
 // ============================================================
-// EXACT BACKGROUND SAMPLING SHADER
-// (uMediaTex/uMediaNative — единый источник, видео или фото)
+// EXACT BACKGROUND SAMPLING SHADER + ПРОЦЕДУРНЫЙ РЕЛЬЕФ
+//
+// ДОБАВЛЕНО: раньше нормаль поверхности бралась идеально плоской
+// на каждую грань (dFdx/dFdy), из-за чего модель выглядела
+// гладкой и "гранёной". Теперь эта плоская нормаль слегка
+// возмущается процедурным шумом (по object-space координатам,
+// поэтому рисунок неподвижен относительно модели, а не "плывёт"
+// при вращении) — получается лёгкий рельеф/шероховатость.
+// uReliefStrength / uReliefScale — сила и частота рельефа,
+// подбираются под конкретную модель.
 // ============================================================
 
 function makeBgSampleMaterial(mediaTexture) {
@@ -167,6 +175,15 @@ function makeBgSampleMaterial(mediaTexture) {
       uChromaShift: {
         value: 0.01,
       },
+
+      // ИЗМЕНЕНО: новые uniform-ы рельефа
+      uReliefStrength: {
+        value: 0.1, // "небольшой" рельеф — держим слабым
+      },
+
+      uReliefScale: {
+        value: 6.0, // частота "рябь" по поверхности модели
+      },
     },
 
 
@@ -178,8 +195,11 @@ function makeBgSampleMaterial(mediaTexture) {
 
       varying vec3 vViewPos;
       varying vec3 vViewDir;
+      varying vec3 vObjectPos;
 
       void main() {
+
+        vObjectPos = position;
 
         vec4 mv =
           modelViewMatrix *
@@ -218,9 +238,80 @@ function makeBgSampleMaterial(mediaTexture) {
       uniform float uFresnelStrength;
       uniform float uChromaShift;
 
+      uniform float uReliefStrength;
+      uniform float uReliefScale;
+
 
       varying vec3 vViewPos;
       varying vec3 vViewDir;
+      varying vec3 vObjectPos;
+
+
+      // ------------------------------------------------------
+      // ПРОЦЕДУРНЫЙ ШУМ (value noise) ДЛЯ РЕЛЬЕФА
+      // ------------------------------------------------------
+
+      float hash3(vec3 p) {
+
+        p = fract(p * 0.3183099 + 0.1);
+
+        p *= 17.0;
+
+        return fract(
+          p.x * p.y * p.z *
+          (p.x + p.y + p.z)
+        );
+      }
+
+      float valueNoise(vec3 p) {
+
+        vec3 i = floor(p);
+        vec3 f = fract(p);
+
+        f = f * f * (3.0 - 2.0 * f);
+
+        float n000 = hash3(i + vec3(0.0, 0.0, 0.0));
+        float n100 = hash3(i + vec3(1.0, 0.0, 0.0));
+        float n010 = hash3(i + vec3(0.0, 1.0, 0.0));
+        float n110 = hash3(i + vec3(1.0, 1.0, 0.0));
+        float n001 = hash3(i + vec3(0.0, 0.0, 1.0));
+        float n101 = hash3(i + vec3(1.0, 0.0, 1.0));
+        float n011 = hash3(i + vec3(0.0, 1.0, 1.0));
+        float n111 = hash3(i + vec3(1.0, 1.0, 1.0));
+
+        float nx00 = mix(n000, n100, f.x);
+        float nx10 = mix(n010, n110, f.x);
+        float nx01 = mix(n001, n101, f.x);
+        float nx11 = mix(n011, n111, f.x);
+
+        float nxy0 = mix(nx00, nx10, f.y);
+        float nxy1 = mix(nx01, nx11, f.y);
+
+        return mix(nxy0, nxy1, f.z);
+      }
+
+
+      // Возмущаем плоскую нормаль небольшим "рельефом",
+      // считая градиент шума конечными разностями.
+      vec3 applyRelief(vec3 flatNormal) {
+
+        vec3 p = vObjectPos * uReliefScale;
+
+        float eps = 0.05;
+
+        float n  = valueNoise(p);
+        float nx = valueNoise(p + vec3(eps, 0.0, 0.0));
+        float ny = valueNoise(p + vec3(0.0, eps, 0.0));
+
+        vec2 grad =
+          vec2(nx - n, ny - n) / eps;
+
+        vec3 bumped =
+          flatNormal +
+          vec3(grad * uReliefStrength, 0.0);
+
+        return normalize(bumped);
+      }
 
 
       // ------------------------------------------------------
@@ -315,12 +406,10 @@ function makeBgSampleMaterial(mediaTexture) {
 
       void main() {
 
-        // Screen-space derivatives
         vec3 fdx = dFdx(vViewPos);
         vec3 fdy = dFdy(vViewPos);
 
 
-        // Flat normal
         vec3 flatNormal =
           normalize(
             cross(
@@ -330,7 +419,11 @@ function makeBgSampleMaterial(mediaTexture) {
           );
 
 
-        // Canvas pixel coordinates
+        // ДОБАВЛЕНО: накладываем рельеф на плоскую нормаль
+        vec3 reliefNormal =
+          applyRelief(flatNormal);
+
+
         vec2 localCanvasPx =
           gl_FragCoord.xy /
           uDPR;
@@ -341,13 +434,11 @@ function makeBgSampleMaterial(mediaTexture) {
           localCanvasPx.y;
 
 
-        // Window coordinates
         vec2 windowPx =
           uCanvasOffset +
           localCanvasPx;
 
 
-        // Coordinates relative to HERO
         vec2 local =
           (
             windowPx -
@@ -357,13 +448,13 @@ function makeBgSampleMaterial(mediaTexture) {
 
 
         // ----------------------------------------------------
-        // CHROMATIC SHIFT
+        // CHROMATIC SHIFT (теперь использует reliefNormal)
         // ----------------------------------------------------
 
         float r =
           sampleBg(
             local,
-            flatNormal +
+            reliefNormal +
             vec3(
               uChromaShift,
               0.0,
@@ -375,14 +466,14 @@ function makeBgSampleMaterial(mediaTexture) {
         float g =
           sampleBg(
             local,
-            flatNormal
+            reliefNormal
           ).g;
 
 
         float b =
           sampleBg(
             local,
-            flatNormal -
+            reliefNormal -
             vec3(
               uChromaShift,
               0.0,
@@ -400,7 +491,7 @@ function makeBgSampleMaterial(mediaTexture) {
 
 
         // ----------------------------------------------------
-        // FRESNEL
+        // FRESNEL (тоже на reliefNormal — рельеф виден и в бликах)
         // ----------------------------------------------------
 
         float fresnel =
@@ -409,7 +500,7 @@ function makeBgSampleMaterial(mediaTexture) {
             max(
               dot(
                 normalize(vViewDir),
-                flatNormal
+                reliefNormal
               ),
               0.0
             ),
@@ -453,6 +544,39 @@ export default function Hero3D({
     useRef(null);
 
 
+  // ==========================================================
+  // ПОСТОЯННОЕ ХРАНИЛИЩЕ THREE.JS-ОБЪЕКТОВ
+  //
+  // ИЗМЕНЕНО: раньше сцена/рендерер/модель пересоздавались
+  // ПОЛНОСТЬЮ при каждой смене media (видео/фото), потому что
+  // useEffect был завязан в том числе на media.type/media.url.
+  // Это означало повторную загрузку .glb-модели по сети на
+  // КАЖДОЕ переключение категории — отсюда и лаги.
+  //
+  // Теперь сцена/камера/рендерер/модель создаются ОДИН РАЗ
+  // (эффект №1, зависит только от modelUrl), а смена медиа
+  // (эффект №2) лишь подменяет текстуру уже существующего
+  // материала — без пересоздания рендерера и без повторной
+  // загрузки модели.
+  // ==========================================================
+
+  const threeRef = useRef({
+    scene: null,
+    camera: null,
+    renderer: null,
+    bgMaterial: null,
+    current: null,       // загруженный Object3D модели
+    mediaTexture: null,  // текущая текстура (видео или фото)
+    mediaReady: false,   // готово ли текущее медиа к показу
+    modelRevealedAt: null, // когда модель впервые стала видимой
+    tryReveal: () => {},
+  });
+
+
+  // ==========================================================
+  // ЭФФЕКТ №1 — СЦЕНА, РЕНДЕРЕР, МОДЕЛЬ (один раз)
+  // ==========================================================
+
   useEffect(() => {
 
     const mount =
@@ -460,10 +584,6 @@ export default function Hero3D({
 
     if (!mount) return;
 
-
-    // ========================================================
-    // CONFIG
-    // ========================================================
 
     const CONFIG = {
 
@@ -483,19 +603,14 @@ export default function Hero3D({
 
       scrollPauseMs: 700,
 
-      // ИЗМЕНЕНО: канвас теперь считается от размера ЭКРАНА,
-      // а не от clientWidth/clientHeight контейнера — так модель
-      // всегда занимает предсказуемую долю вьюпорта и центрируется
-      // независимо от внешней вёрстки/CSS.
-      viewportFraction: 0.82, // модель занимает ~82% меньшей стороны экрана
+      viewportFraction: 0.82,
       minCanvasPx: 320,
       maxCanvasPx: 1500,
+
+      // ДОБАВЛЕНО: модель не двигается первые N мс после появления
+      autoRotateDelayMs: 10000,
     };
 
-
-    // ========================================================
-    // HERO CONTAINER
-    // ========================================================
 
     const heroEl =
       mount.closest(".hero3d");
@@ -503,10 +618,6 @@ export default function Hero3D({
     heroSectionRef.current =
       heroEl;
 
-
-    // ========================================================
-    // THREE
-    // ========================================================
 
     const scene =
       new THREE.Scene();
@@ -535,11 +646,6 @@ export default function Hero3D({
           "high-performance",
       });
 
-
-    // ИЗМЕНЕНО: размер канваса считается от window.innerWidth/Height,
-    // а не от размеров mount-контейнера (это и было причиной того,
-    // что модель "плавала" не по центру и не подстраивалась под экран —
-    // размер зависел от непредсказуемой внешней вёрстки).
 
     const getSize = () => {
 
@@ -593,151 +699,52 @@ export default function Hero3D({
 
 
     // ========================================================
-    // MEDIA SOURCE: VIDEO OR IMAGE
-    // ========================================================
-
-    const mediaType =
-      media && media.type;
-
-    const mediaUrl =
-      media && media.url;
-
-
-    const videoEl =
-      mediaType === "video"
-        ? (videoRef && videoRef.current)
-        : null;
-
-
-    let mediaTexture =
-      null;
-
-
-    const mediaReady = {
-      value: false,
-    };
-
-
-    let onLoadedData = null;
-    let onLoadedMetadata = null;
-
-
-    if (mediaType === "video" && videoEl) {
-
-      mediaTexture =
-        new THREE.VideoTexture(
-          videoEl
-        );
-
-
-      mediaTexture.colorSpace =
-        THREE.SRGBColorSpace;
-
-
-      mediaTexture.generateMipmaps =
-        false;
-
-
-      mediaTexture.minFilter =
-        THREE.LinearFilter;
-
-
-      mediaTexture.magFilter =
-        THREE.LinearFilter;
-
-
-      if (videoEl.readyState >= 2) {
-
-        mediaReady.value = true;
-
-      } else {
-
-        onLoadedData = () => {
-          mediaReady.value = true;
-        };
-
-        videoEl.addEventListener(
-          "loadeddata",
-          onLoadedData,
-          { once: true }
-        );
-      }
-
-    } else if (mediaType === "image" && mediaUrl) {
-
-      const textureLoader =
-        new THREE.TextureLoader();
-
-      mediaTexture =
-        textureLoader.load(
-          mediaUrl,
-
-          (tex) => {
-
-            mediaReady.value = true;
-
-            if (tex.image) {
-
-              bgMaterial.uniforms
-                .uMediaNative.value
-                .set(
-                  tex.image.width,
-                  tex.image.height
-                );
-            }
-          },
-
-          undefined,
-
-          (err) => {
-
-            console.error(
-              `[Hero3D] Не удалось загрузить фото (${mediaUrl}):`,
-              err
-            );
-
-            mediaReady.value = true;
-          }
-        );
-
-
-      mediaTexture.colorSpace =
-        THREE.SRGBColorSpace;
-
-
-      mediaTexture.generateMipmaps =
-        false;
-
-
-      mediaTexture.minFilter =
-        THREE.LinearFilter;
-
-
-      mediaTexture.magFilter =
-        THREE.LinearFilter;
-
-    } else {
-
-      console.warn(
-        "[Hero3D] media не задан или некорректен — модель без фонового отражения."
-      );
-    }
-
-
-    // ========================================================
-    // THE EFFECT MATERIAL
+    // МАТЕРИАЛ — создаём один раз, с временной заглушкой-текстурой.
+    // Реальная текстура (видео/фото) придёт из эффекта №2.
     // ========================================================
 
     const bgMaterial =
       makeBgSampleMaterial(
-        mediaTexture ||
         new THREE.Texture()
       );
 
 
-    bgMaterial.uniforms.uMediaTex.value =
-      mediaTexture ||
-      bgMaterial.uniforms.uMediaTex.value;
+    threeRef.current.scene = scene;
+    threeRef.current.camera = camera;
+    threeRef.current.renderer = renderer;
+    threeRef.current.bgMaterial = bgMaterial;
+    threeRef.current.current = null;
+    threeRef.current.mediaTexture = null;
+    threeRef.current.mediaReady = false;
+    threeRef.current.modelRevealedAt = null;
+
+
+    // ========================================================
+    // ПОКАЗАТЬ МОДЕЛЬ, КОГДА ГОТОВЫ И МОДЕЛЬ, И МЕДИА
+    // ========================================================
+
+    const tryReveal = () => {
+
+      const t = threeRef.current;
+
+      if (
+        t.current &&
+        t.mediaReady &&
+        !t.current.visible
+      ) {
+
+        t.current.visible = true;
+
+        if (t.modelRevealedAt === null) {
+
+          t.modelRevealedAt =
+            performance.now();
+        }
+      }
+    };
+
+    threeRef.current.tryReveal =
+      tryReveal;
 
 
     // ========================================================
@@ -803,38 +810,10 @@ export default function Hero3D({
             canvasRect.width,
             canvasRect.height
           );
-
-
-        if (
-          mediaType === "video" &&
-          videoEl &&
-          videoEl.videoWidth &&
-          videoEl.videoHeight
-        ) {
-
-          bgMaterial.uniforms
-            .uMediaNative.value
-            .set(
-              videoEl.videoWidth,
-              videoEl.videoHeight
-            );
-        }
       };
 
 
     updateScreenUniforms();
-
-
-    if (mediaType === "video" && videoEl) {
-
-      onLoadedMetadata =
-        updateScreenUniforms;
-
-      videoEl.addEventListener(
-        "loadedmetadata",
-        onLoadedMetadata
-      );
-    }
 
 
     window.addEventListener(
@@ -846,46 +825,32 @@ export default function Hero3D({
     window.addEventListener(
       "scroll",
       updateScreenUniforms,
-      {
-        passive: true,
-      }
+      { passive: true }
     );
 
 
-    // ========================================================
-    // SCROLL PAUSE (для автовращения модели)
-    // ========================================================
-
     const scrollState = {
-      lastScrollAt:
-        -Infinity,
+      lastScrollAt: -Infinity,
     };
 
 
-    const onPageScroll =
-      () => {
+    const onPageScroll = () => {
 
-        scrollState.lastScrollAt =
-          performance.now();
-      };
+      scrollState.lastScrollAt =
+        performance.now();
+    };
 
 
     window.addEventListener(
       "scroll",
       onPageScroll,
-      {
-        passive: true,
-      }
+      { passive: true }
     );
 
 
     // ========================================================
-    // LOAD MODEL
+    // LOAD MODEL (один раз)
     // ========================================================
-
-    let current =
-      null;
-
 
     const disposeModel =
       loadMeshWithMaterial({
@@ -893,41 +858,31 @@ export default function Hero3D({
         url: modelUrl,
 
         fallbackGeo:
-          new THREE.IcosahedronGeometry(
-            1,
-            2
-          ),
+          new THREE.IcosahedronGeometry(1, 2),
 
-        material:
-          bgMaterial,
+        material: bgMaterial,
 
-        label:
-          "modelUrl",
+        label: "modelUrl",
 
-        onReady:
-          (object) => {
+        onReady: (object) => {
 
-            fitAndCenter(
-              object,
-              CONFIG.modelSize
-            );
+          fitAndCenter(
+            object,
+            CONFIG.modelSize
+          );
 
-            object.rotation.y =
-              restRotationY;
+          object.rotation.y =
+            restRotationY;
 
+          object.visible = false;
 
-            current =
-              object;
+          threeRef.current.current =
+            object;
 
+          scene.add(object);
 
-            current.visible =
-              mediaReady.value;
-
-
-            scene.add(
-              current
-            );
-          },
+          threeRef.current.tryReveal();
+        },
       });
 
 
@@ -939,28 +894,17 @@ export default function Hero3D({
       renderer.domElement;
 
 
-    canvas.style.cursor =
-      "grab";
-
-
-    canvas.style.touchAction =
-      "pan-y";
+    canvas.style.cursor = "grab";
+    canvas.style.touchAction = "pan-y";
 
 
     const state = {
-
       dragging: false,
-
       lastX: 0,
-
       velocity: 0,
-
       releasedAt: 0,
-
       settling: false,
-
       hasInteracted: false,
-
       activePointerId: null,
     };
 
@@ -973,167 +917,77 @@ export default function Hero3D({
         );
 
 
-    // --------------------------------------------------------
-    // POINTER DOWN
-    // --------------------------------------------------------
+    const onPointerDown = (event) => {
 
-    const onPointerDown =
-      (event) => {
+      if (!threeRef.current.current) return;
+      if (!event.isPrimary) return;
 
-        if (!current) return;
+      state.activePointerId = event.pointerId;
+      state.dragging = true;
+      state.settling = false;
+      state.velocity = 0;
+      state.hasInteracted = true;
+      state.lastX = event.clientX;
 
-        if (!event.isPrimary)
-          return;
-
-
-        state.activePointerId =
-          event.pointerId;
-
-
-        state.dragging =
-          true;
+      canvas.setPointerCapture(event.pointerId);
+      canvas.style.cursor = "grabbing";
+      canvas.style.touchAction = "none";
+    };
 
 
-        state.settling =
-          false;
+    const onPointerMove = (event) => {
+
+      const current = threeRef.current.current;
+
+      if (
+        !state.dragging ||
+        !current ||
+        event.pointerId !== state.activePointerId
+      ) {
+        return;
+      }
+
+      const dx = event.clientX - state.lastX;
+      state.lastX = event.clientX;
+
+      const sensitivity =
+        event.pointerType === "touch"
+          ? CONFIG.dragSensitivity * 0.6
+          : CONFIG.dragSensitivity;
+
+      const rotationDelta = dx * sensitivity;
+
+      current.rotation.y += rotationDelta;
+      state.velocity = rotationDelta;
+    };
 
 
-        state.velocity =
-          0;
+    const onPointerUp = (event) => {
+
+      if (
+        !state.dragging ||
+        event.pointerId !== state.activePointerId
+      ) {
+        return;
+      }
+
+      state.dragging = false;
+      state.activePointerId = null;
+      state.releasedAt = performance.now();
+
+      canvas.style.cursor = "grab";
+      canvas.style.touchAction = "pan-y";
+
+      try {
+        canvas.releasePointerCapture(event.pointerId);
+      } catch (_) {}
+    };
 
 
-        state.hasInteracted =
-          true;
-
-
-        state.lastX =
-          event.clientX;
-
-
-        canvas.setPointerCapture(
-          event.pointerId
-        );
-
-
-        canvas.style.cursor =
-          "grabbing";
-
-
-        canvas.style.touchAction =
-          "none";
-      };
-
-
-    // --------------------------------------------------------
-    // POINTER MOVE
-    // --------------------------------------------------------
-
-    const onPointerMove =
-      (event) => {
-
-        if (
-          !state.dragging ||
-          !current ||
-          event.pointerId !==
-            state.activePointerId
-        ) {
-          return;
-        }
-
-
-        const dx =
-          event.clientX -
-          state.lastX;
-
-
-        state.lastX =
-          event.clientX;
-
-
-        const sensitivity =
-          event.pointerType === "touch"
-            ? CONFIG.dragSensitivity * 0.6
-            : CONFIG.dragSensitivity;
-
-
-        const rotationDelta =
-          dx * sensitivity;
-
-
-        current.rotation.y +=
-          rotationDelta;
-
-
-        state.velocity =
-          rotationDelta;
-      };
-
-
-    // --------------------------------------------------------
-    // POINTER UP
-    // --------------------------------------------------------
-
-    const onPointerUp =
-      (event) => {
-
-        if (
-          !state.dragging ||
-          event.pointerId !==
-            state.activePointerId
-        ) {
-          return;
-        }
-
-
-        state.dragging =
-          false;
-
-
-        state.activePointerId =
-          null;
-
-
-        state.releasedAt =
-          performance.now();
-
-
-        canvas.style.cursor =
-          "grab";
-
-
-        canvas.style.touchAction =
-          "pan-y";
-
-
-        try {
-
-          canvas.releasePointerCapture(
-            event.pointerId
-          );
-
-        } catch (_) {}
-      };
-
-
-    canvas.addEventListener(
-      "pointerdown",
-      onPointerDown
-    );
-
-    canvas.addEventListener(
-      "pointermove",
-      onPointerMove
-    );
-
-    canvas.addEventListener(
-      "pointerup",
-      onPointerUp
-    );
-
-    canvas.addEventListener(
-      "pointercancel",
-      onPointerUp
-    );
+    canvas.addEventListener("pointerdown", onPointerDown);
+    canvas.addEventListener("pointermove", onPointerMove);
+    canvas.addEventListener("pointerup", onPointerUp);
+    canvas.addEventListener("pointercancel", onPointerUp);
 
 
     // ========================================================
@@ -1142,148 +996,85 @@ export default function Hero3D({
 
     let raf;
 
+    const animate = () => {
 
-    const animate =
-      () => {
+      const current = threeRef.current.current;
 
-        if (current) {
+      if (current) {
 
-          if (
-            !current.visible &&
-            mediaReady.value
-          ) {
+        if (state.dragging) {
 
-            current.visible =
-              true;
-          }
+          // rotation handled in pointermove
 
+        } else if (!state.hasInteracted) {
 
-          // ----------------------------------------------
-          // USER IS DRAGGING
-          // ----------------------------------------------
+          // ------------------------------------------------
+          // ДОБАВЛЕНО: пауза N мс после появления модели —
+          // до этого момента она вообще не крутится сама.
+          // ------------------------------------------------
 
-          if (state.dragging) {
+          const revealedAt =
+            threeRef.current.modelRevealedAt;
 
-            // rotation handled in pointermove
+          const withinInitialPause =
+            revealedAt === null ||
+            performance.now() - revealedAt <
+              CONFIG.autoRotateDelayMs;
 
-
-          // ----------------------------------------------
-          // AUTO ROTATION (idle, никто не трогал модель —
-          // либо она уже "остыла" после клика, см. ниже)
-          // ----------------------------------------------
-
-          } else if (
-            !state.hasInteracted
-          ) {
+          if (!withinInitialPause) {
 
             const scrolledRecently =
               performance.now() -
-              scrollState.lastScrollAt <
+                scrollState.lastScrollAt <
               CONFIG.scrollPauseMs;
 
-
             if (!scrolledRecently) {
-
-              current.rotation.y +=
-                0.003;
+              current.rotation.y += 0.003;
             }
+          }
 
+        } else if (!state.settling) {
 
-          // ----------------------------------------------
-          // INERTIA
-          // ----------------------------------------------
+          if (Math.abs(state.velocity) > CONFIG.minVelocity) {
+
+            current.rotation.y += state.velocity;
+            state.velocity *= CONFIG.inertiaDamping;
 
           } else if (
-            !state.settling
+            performance.now() - state.releasedAt >
+            CONFIG.settleDelay
           ) {
 
-            if (
-              Math.abs(
-                state.velocity
-              ) >
-              CONFIG.minVelocity
-            ) {
+            state.settling = true;
+          }
 
-              current.rotation.y +=
-                state.velocity;
+        } else {
 
+          const diff = shortestAngle(
+            current.rotation.y,
+            restRotationY
+          );
 
-              state.velocity *=
-                CONFIG.inertiaDamping;
+          if (Math.abs(diff) > 0.002) {
 
-
-            } else if (
-              performance.now() -
-                state.releasedAt >
-              CONFIG.settleDelay
-            ) {
-
-              state.settling =
-                true;
-            }
-
-
-          // ----------------------------------------------
-          // RETURN TO REST
-          // ----------------------------------------------
+            current.rotation.y += diff * CONFIG.settleSpeed;
 
           } else {
 
-            const diff =
-              shortestAngle(
-                current.rotation.y,
-                restRotationY
-              );
+            current.rotation.y = restRotationY;
+            state.settling = false;
+            state.velocity = 0;
 
-
-            if (
-              Math.abs(diff) >
-              0.002
-            ) {
-
-              current.rotation.y +=
-                diff *
-                CONFIG.settleSpeed;
-
-            } else {
-
-              current.rotation.y =
-                restRotationY;
-
-
-              state.settling =
-                false;
-
-
-              state.velocity =
-                0;
-
-
-              // ИЗМЕНЕНО: раньше после "успокоения" модель
-              // навсегда замирала (hasInteracted оставался true).
-              // Теперь автовращение возобновляется само —
-              // ровно то, что просили: "анимация прокрутки
-              // начинается снова после клика мышью по модели".
-
-              state.hasInteracted =
-                false;
-            }
+            // после "успокоения" автовращение возобновляется
+            state.hasInteracted = false;
           }
         }
+      }
 
+      renderer.render(scene, camera);
 
-        renderer.render(
-          scene,
-          camera
-        );
-
-
-        raf =
-          requestAnimationFrame(
-            animate
-          );
-      };
-
+      raf = requestAnimationFrame(animate);
+    };
 
     animate();
 
@@ -1292,175 +1083,249 @@ export default function Hero3D({
     // RESIZE
     // ========================================================
 
-    const onResize =
-      () => {
+    const onResize = () => {
 
-        size =
-          getSize();
+      size = getSize();
 
+      camera.aspect = 1;
+      camera.updateProjectionMatrix();
 
-        camera.aspect =
-          1;
+      renderer.setSize(size, size);
 
-
-        camera.updateProjectionMatrix();
-
-
-        renderer.setSize(
-          size,
-          size
-        );
+      updateScreenUniforms();
+    };
 
 
-        updateScreenUniforms();
-      };
-
-
-    window.addEventListener(
-      "resize",
-      onResize
-    );
+    window.addEventListener("resize", onResize);
 
 
     // ========================================================
-    // CLEANUP
+    // CLEANUP (полный — вызывается только при размонтировании
+    // компонента или смене modelUrl, НЕ при смене media)
     // ========================================================
 
     return () => {
 
-      cancelAnimationFrame(
-        raf
+      cancelAnimationFrame(raf);
+
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("resize", updateScreenUniforms);
+      window.removeEventListener("scroll", updateScreenUniforms);
+      window.removeEventListener("scroll", onPageScroll);
+
+      canvas.removeEventListener("pointerdown", onPointerDown);
+      canvas.removeEventListener("pointermove", onPointerMove);
+      canvas.removeEventListener("pointerup", onPointerUp);
+      canvas.removeEventListener("pointercancel", onPointerUp);
+
+      disposeModel();
+
+      const current = threeRef.current.current;
+
+      if (current) {
+        current.traverse((child) => {
+          if (child.isMesh && child.geometry) {
+            child.geometry.dispose();
+          }
+        });
+      }
+
+      bgMaterial.dispose();
+
+      if (threeRef.current.mediaTexture) {
+        threeRef.current.mediaTexture.dispose();
+      }
+
+      renderer.dispose();
+
+      if (renderer.domElement.parentNode === mount) {
+        mount.removeChild(renderer.domElement);
+      }
+
+      threeRef.current.scene = null;
+      threeRef.current.camera = null;
+      threeRef.current.renderer = null;
+      threeRef.current.bgMaterial = null;
+      threeRef.current.current = null;
+      threeRef.current.mediaTexture = null;
+    };
+
+  }, [modelUrl, restRotationY]);
+
+
+  // ==========================================================
+  // ЭФФЕКТ №2 — СМЕНА МЕДИА (видео/фото)
+  //
+  // Срабатывает при смене категории. НЕ трогает рендерер,
+  // камеру или геометрию модели — только подменяет текстуру
+  // в уже существующем bgMaterial. Именно это убирает лаги.
+  // ==========================================================
+
+  useEffect(() => {
+
+    const t = threeRef.current;
+
+    // сцена ещё не готова (эффект №1 не успел отработать) —
+    // такого не должно случаться благодаря порядку эффектов,
+    // но на всякий случай выходим тихо
+    if (!t.bgMaterial) return;
+
+    const mediaType = media && media.type;
+    const mediaUrl = media && media.url;
+
+    const videoEl =
+      mediaType === "video"
+        ? (videoRef && videoRef.current)
+        : null;
+
+    let cancelled = false;
+    let newTexture = null;
+    let onLoadedData = null;
+    let onLoadedMetadata = null;
+
+    t.mediaReady = false;
+
+    const applyTexture = (tex, nativeW, nativeH) => {
+
+      if (cancelled || !t.bgMaterial) return;
+
+      const old = t.mediaTexture;
+
+      t.mediaTexture = tex;
+      t.bgMaterial.uniforms.uMediaTex.value = tex;
+
+      if (nativeW && nativeH) {
+        t.bgMaterial.uniforms.uMediaNative.value.set(
+          nativeW,
+          nativeH
+        );
+      }
+
+      if (old && old !== tex) {
+        old.dispose();
+      }
+
+      t.mediaReady = true;
+      t.tryReveal();
+    };
+
+
+    if (mediaType === "video" && videoEl) {
+
+      newTexture = new THREE.VideoTexture(videoEl);
+      newTexture.colorSpace = THREE.SRGBColorSpace;
+      newTexture.generateMipmaps = false;
+      newTexture.minFilter = THREE.LinearFilter;
+      newTexture.magFilter = THREE.LinearFilter;
+
+      if (videoEl.readyState >= 2) {
+
+        applyTexture(
+          newTexture,
+          videoEl.videoWidth,
+          videoEl.videoHeight
+        );
+
+      } else {
+
+        onLoadedData = () => {
+          applyTexture(
+            newTexture,
+            videoEl.videoWidth,
+            videoEl.videoHeight
+          );
+        };
+
+        videoEl.addEventListener(
+          "loadeddata",
+          onLoadedData,
+          { once: true }
+        );
+      }
+
+      onLoadedMetadata = () => {
+
+        if (t.bgMaterial) {
+          t.bgMaterial.uniforms.uMediaNative.value.set(
+            videoEl.videoWidth,
+            videoEl.videoHeight
+          );
+        }
+      };
+
+      videoEl.addEventListener(
+        "loadedmetadata",
+        onLoadedMetadata
       );
 
+    } else if (mediaType === "image" && mediaUrl) {
 
-      window.removeEventListener(
-        "resize",
-        onResize
+      const textureLoader = new THREE.TextureLoader();
+
+      newTexture = textureLoader.load(
+        mediaUrl,
+
+        (tex) => {
+          applyTexture(
+            tex,
+            tex.image ? tex.image.width : undefined,
+            tex.image ? tex.image.height : undefined
+          );
+        },
+
+        undefined,
+
+        (err) => {
+          console.error(
+            `[Hero3D] Не удалось загрузить фото (${mediaUrl}):`,
+            err
+          );
+          // всё равно открываем модель, чтобы не залипала невидимой
+          applyTexture(newTexture);
+        }
       );
 
+      newTexture.colorSpace = THREE.SRGBColorSpace;
+      newTexture.generateMipmaps = false;
+      newTexture.minFilter = THREE.LinearFilter;
+      newTexture.magFilter = THREE.LinearFilter;
 
-      window.removeEventListener(
-        "resize",
-        updateScreenUniforms
+    } else {
+
+      console.warn(
+        "[Hero3D] media не задан или некорректен — текстура не обновлена."
       );
+    }
 
 
-      window.removeEventListener(
-        "scroll",
-        updateScreenUniforms
-      );
+    return () => {
 
-
-      window.removeEventListener(
-        "scroll",
-        onPageScroll
-      );
-
+      cancelled = true;
 
       if (mediaType === "video" && videoEl) {
 
-        if (onLoadedMetadata) {
+        if (onLoadedData) {
+          videoEl.removeEventListener("loadeddata", onLoadedData);
+        }
 
+        if (onLoadedMetadata) {
           videoEl.removeEventListener(
             "loadedmetadata",
             onLoadedMetadata
           );
         }
-
-
-        if (onLoadedData) {
-
-          videoEl.removeEventListener(
-            "loadeddata",
-            onLoadedData
-          );
-        }
       }
 
-
-      canvas.removeEventListener(
-        "pointerdown",
-        onPointerDown
-      );
-
-
-      canvas.removeEventListener(
-        "pointermove",
-        onPointerMove
-      );
-
-
-      canvas.removeEventListener(
-        "pointerup",
-        onPointerUp
-      );
-
-
-      canvas.removeEventListener(
-        "pointercancel",
-        onPointerUp
-      );
-
-
-      disposeModel();
-
-
-      if (current) {
-
-        current.traverse(
-          (child) => {
-
-            if (
-              child.isMesh &&
-              child.geometry
-            ) {
-
-              child.geometry.dispose();
-            }
-          }
-        );
-      }
-
-
-      bgMaterial.dispose();
-
-
-      if (mediaTexture) {
-
-        mediaTexture.dispose();
-      }
-
-
-      renderer.dispose();
-
-
-      if (
-        renderer.domElement
-          .parentNode === mount
-      ) {
-
-        mount.removeChild(
-          renderer.domElement
-        );
+      // если новая текстура так и не была применена (эффект
+      // отменён раньше, чем медиа успело загрузиться) — не
+      // оставляем висящую текстуру в памяти
+      if (newTexture && t.mediaTexture !== newTexture) {
+        newTexture.dispose();
       }
     };
 
-  }, [
-    modelUrl,
-    media && media.type,
-    media && media.url,
-    videoRef,
-    restRotationY,
-  ]);
+  }, [media && media.type, media && media.url, videoRef]);
 
-
-  // ==========================================================
-  // ИЗМЕНЕНО: обёртка теперь абсолютно позиционирована на всю
-  // hero-секцию и центрирует канвас через flex — это гарантирует
-  // центр экрана независимо от внешнего CSS. pointerEvents:"none"
-  // на обёртке, чтобы она не перехватывала клики по фону/кнопкам
-  // за пределами самого канваса; сам канвас — pointerEvents:"auto".
-  // ==========================================================
 
   return (
     <div
