@@ -18,11 +18,11 @@ const IMAGE_DURATION_MS = 1000;
 const CROSSFADE_DURATION = 0.7;
 
 const mediaByWord = [
-  {
-    type: "video",
-    url:
-      "https://res.cloudinary.com/dbx6muxub/video/upload/v1785513025/video_2026-07-31_18-49-25_ehskzk.mp4",
-  },
+  // {
+  //   type: "video",
+  //   url:
+  //     "https://res.cloudinary.com/dbx6muxub/video/upload/v1785513025/video_2026-07-31_18-49-25_ehskzk.mp4",
+  // },
   // {
   //   type: "image",
   //   url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1784562318/DSC02879_e4exjb.webp",
@@ -32,10 +32,10 @@ const mediaByWord = [
   //   url:
   //     "https://res.cloudinary.com/dbx6muxub/video/upload/v1754506398/20220206_214037_qbp9jd.mp4",
   // },
-  // {
-  //   type: "image",
-  //   url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1780427037/project_nkkaef.png",
-  // },
+  {
+    type: "image",
+    url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1780427037/project_nkkaef.png",
+  },
 ];
 
 
@@ -103,16 +103,16 @@ export default function MenuPage() {
   // ПЕРЕКЛЮЧЕНИЕ КАТЕГОРИИ ВРУЧНУЮ (рулетка)
   // =========================================================
 
-  const handleSelectCategory = (i) => {
-    setIndex(i);
-  };
+  // const handleSelectCategory = (i) => {
+  //   setIndex(i);
+  // };
 
-  const handleStepCategory = (direction) => {
-    setIndex((prev) => {
-      const next = (prev + direction) % words.length;
-      return next < 0 ? next + words.length : next;
-    });
-  };
+  // const handleStepCategory = (direction) => {
+  //   setIndex((prev) => {
+  //     const next = (prev + direction) % words.length;
+  //     return next < 0 ? next + words.length : next;
+  //   });
+  // };
 
   // =========================================================
   // АВТОМАТИЧЕСКАЯ СМЕНА КАТЕГОРИИ
@@ -285,13 +285,13 @@ export default function MenuPage() {
         {/* ===================================================
             РУЛЕТКА КАТЕГОРИЙ (слева)
             =================================================== */}
-
+{/* 
         <CategoryRoulette
           words={words}
           activeIndex={index}
           onSelect={handleSelectCategory}
           onStep={handleStepCategory}
-        />
+        /> */}
 
         {/* ===================================================
             КОНТЕНТ
