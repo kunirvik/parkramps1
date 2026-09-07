@@ -32,10 +32,10 @@ const CROSSFADE_DURATION = 0.7;
   //   url:
   //     "https://res.cloudinary.com/dbx6muxub/video/upload/v1754506398/20220206_214037_qbp9jd.mp4",
   // },
-  {
-    type: "image",
-    url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1780427037/project_nkkaef.png",
-  },
+  // {
+  //   type: "image",
+  //   url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1780427037/project_nkkaef.png",
+  // },
 
   //   {
   //   type: "image",
