@@ -17,7 +17,7 @@ const IMAGE_DURATION_MS = 1000;
 // "рывка"/пустого кадра не будет, даже если фото грузится долго.
 const CROSSFADE_DURATION = 0.7;
 
-const mediaByWord = [
+// const mediaByWord = [
   // {
   //   type: "video",
   //   url:
@@ -50,8 +50,16 @@ const mediaByWord = [
   //   url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1780427037/project_nkkaef.png",
   // },
   
+// ];
+const categories = [
+  {
+    title: "Skateparks",
+    media: {
+      type: "image",
+      url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1780427037/project_nkkaef.png",
+    },
+  },
 ];
-
 
 export default function MenuPage() {
   const [index, setIndex] = useState(0);
@@ -75,8 +83,16 @@ export default function MenuPage() {
 
   const videoRef = useRef(null);
 
-  const currentMedia = mediaByWord[index];
+  // const currentMedia = mediaByWord[index];
+  const currentCategory = categories[index];
+const currentMedia = currentCategory.media;
 
+const handleStepCategory = (direction) => {
+  setIndex((prev) => {
+    const next = (prev + direction) % categories.length;
+    return next < 0 ? next + categories.length : next;
+  });
+};
   // =========================================================
   // СБРОС ФЛАГА ЗАГРУЗКИ ПРИ СМЕНЕ КАТЕГОРИИ
   // =========================================================
@@ -121,12 +137,12 @@ export default function MenuPage() {
   //   setIndex(i);
   // };
 
-  const handleStepCategory = (direction) => {
-    setIndex((prev) => {
-      const next = (prev + direction) % words.length;
-      return next < 0 ? next + words.length : next;
-    });
-  };
+  // const handleStepCategory = (direction) => {
+  //   setIndex((prev) => {
+  //     const next = (prev + direction) % words.length;
+  //     return next < 0 ? next + words.length : next;
+  //   });
+  // };
 
   // =========================================================
   // АВТОМАТИЧЕСКАЯ СМЕНА КАТЕГОРИИ
