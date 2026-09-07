@@ -37,18 +37,18 @@ const mediaByWord = [
     url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1780427037/project_nkkaef.png",
   },
 
-    {
-    type: "image",
-    url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1780427037/project_nkkaef.png",
-  },
-    {
-    type: "image",
-    url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1780427037/project_nkkaef.png",
-  },
-    {
-    type: "image",
-    url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1780427037/project_nkkaef.png",
-  },
+  //   {
+  //   type: "image",
+  //   url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1780427037/project_nkkaef.png",
+  // },
+  //   {
+  //   type: "image",
+  //   url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1780427037/project_nkkaef.png",
+  // },
+  //   {
+  //   type: "image",
+  //   url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1780427037/project_nkkaef.png",
+  // },
   
 ];
 
@@ -121,12 +121,12 @@ export default function MenuPage() {
   //   setIndex(i);
   // };
 
-  // const handleStepCategory = (direction) => {
-  //   setIndex((prev) => {
-  //     const next = (prev + direction) % words.length;
-  //     return next < 0 ? next + words.length : next;
-  //   });
-  // };
+  const handleStepCategory = (direction) => {
+    setIndex((prev) => {
+      const next = (prev + direction) % words.length;
+      return next < 0 ? next + words.length : next;
+    });
+  };
 
   // =========================================================
   // АВТОМАТИЧЕСКАЯ СМЕНА КАТЕГОРИИ
