@@ -212,7 +212,7 @@ import Hero3D from "../Hero3D";
 import LoadingScreen from "../LoadingScreen/LodingScreen";
 import "./MenuPage.css";
 
-const TEXT_DURATION_MS = 1000;
+const TEXT_DURATION_MS = 3000;
 
 // Только категории — они меняются быстро
 const categories = [
