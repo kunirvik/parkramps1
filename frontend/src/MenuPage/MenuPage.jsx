@@ -299,8 +299,8 @@ export default function MenuPage() {
         <Hero3D
           modelUrl={modelUrl}
           media={background}
-          restRotationY={Math.PI / 4}
-          // restRotationY={(40 * Math.PI) / 180}
+          // restRotationY={Math.PI / 4}
+          restRotationY={(60 * Math.PI) / 180}
         />
 
         {/* CATEGORY */}
