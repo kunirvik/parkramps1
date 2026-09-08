@@ -1606,7 +1606,13 @@ export default function Hero3D({
 }) {
   const mountRef = useRef(null);
   const heroSectionRef = useRef(null);
-
+// НОВОЕ: живые значения пропсов — animate() всегда видит актуальные
+  const propsRef = useRef({ restRotationY, modelSize, transitionDuration });
+  useEffect(() => {
+    propsRef.current.restRotationY = restRotationY;
+    propsRef.current.modelSize = modelSize;
+    propsRef.current.transitionDuration = transitionDuration;
+  }, [restRotationY, modelSize, transitionDuration]);
   // ==========================================================
   // ПОСТОЯННОЕ ХРАНИЛИЩЕ. Теперь ДВА слота модели (A и B) —
   // держатся в сцене одновременно, переключение между ними
@@ -1868,8 +1874,8 @@ export default function Hero3D({
             state.settling = true;
           }
         } else {
-          const diff = shortestAngle(obj.rotation.y, restRotationY);
-
+        //  const diff = shortestAngle(obj.rotation.y, restRotationY);
+const diff = shortestAngle(obj.rotation.y, propsRef.current.restRotationY);
           if (Math.abs(diff) > 0.002) {
             obj.rotation.y += diff * CONFIG.settleSpeed;
           } else {
