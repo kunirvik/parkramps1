@@ -300,7 +300,7 @@ export default function MenuPage() {
           modelUrl={modelUrl}
           media={background}
           // restRotationY={Math.PI / 4}
-          restRotationY={(60 * Math.PI) / 180}
+          restRotationY={(70 * Math.PI) / 180}
         />
 
         {/* CATEGORY */}
