@@ -226,6 +226,35 @@ const categories = [
       url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1780427037/project_nkkaef.png",
     },
   },
+    {
+    title: "Ramps",
+    media: {
+      type: "image",
+      url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1780427037/project_nkkaef.png",
+    },
+  },
+   {
+    title: "Events",
+    media: {
+      type: "image",
+      url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1780427037/project_nkkaef.png",
+    },
+  },
+   {
+    title: "Ramps",
+    media: {
+      type: "image",
+      url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1780427037/project_nkkaef.png",
+    },
+  },
+   {
+    title: "Parkramps",
+    media: {
+      type: "image",
+      url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1780427037/project_nkkaef.png",
+    },
+  },
+
   // {
   //   title: "Ramps",
   //   media: { type: "video", url: "..." },
