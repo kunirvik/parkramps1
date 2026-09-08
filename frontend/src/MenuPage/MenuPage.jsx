@@ -283,7 +283,7 @@ export default function MenuPage() {
         <Hero3D
           modelUrl={activeModelUrl}
           media={background}
-          restRotationY={isExploring ? 0 : (60 * Math.PI) / 180}
+          restRotationY={isExploring ? 0 : (68 * Math.PI) / 180}
         />
 
         <AnimatePresence>
