@@ -608,7 +608,7 @@ export default function Hero3D({
       maxCanvasPx: 1500,
 
       // ДОБАВЛЕНО: модель не двигается первые N мс после появления
-      autoRotateDelayMs: 10000,
+      autoRotateDelayMs: 1000,
     };
 
 
