@@ -1,6 +1,6 @@
-
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useGLTF } from "@react-three/drei";
+import { useGLTF, Center } from "@react-three/drei";
+
 import { useRef, useState, useEffect} from "react";
 import * as THREE from "three";
 
@@ -61,33 +61,98 @@ import * as THREE from "three";
 //   );
 // }
 
+// function Model({ hovered }) {
+//   const group = useRef();
+//   const { scene } = useGLTF(
+//     "https://res.cloudinary.com/dbx6muxub/image/upload/v1786869663/logo_alatkf.glb"
+//   );
+
+//   useEffect(() => {
+//     const box = new THREE.Box3().setFromObject(scene);
+//     const center = box.getCenter(new THREE.Vector3());
+//     const size = box.getSize(new THREE.Vector3());
+
+//     console.log("MODEL SIZE:", size);
+//     console.log("MODEL CENTER:", center);
+//     console.log("MODEL BOX:", box);
+
+//     scene.position.sub(center);
+
+//     const maxSize = Math.max(
+//       size.x,
+//       size.y,
+//       size.z
+//     );
+
+//     const scale = 2 / maxSize;
+
+//     scene.scale.setScalar(scale);
+//   }, [scene]);
+
+//   useFrame((state) => {
+//     if (!group.current) return;
+
+//     const time = state.clock.getElapsedTime();
+
+//     const targetRotationY = hovered
+//       ? Math.sin(time * 2.2) * 0.18
+//       : 0;
+
+//     const targetRotationX = hovered
+//       ? Math.cos(time * 1.8) * 0.08
+//       : 0;
+
+//     group.current.rotation.y = THREE.MathUtils.lerp(
+//       group.current.rotation.y,
+//       targetRotationY,
+//       0.08
+//     );
+
+//     group.current.rotation.x = THREE.MathUtils.lerp(
+//       group.current.rotation.x,
+//       targetRotationX,
+//       0.08
+//     );
+
+//     const targetScale = hovered
+//       ? 1.08 + Math.sin(time * 3) * 0.015
+//       : 1;
+
+//     group.current.scale.lerp(
+//       new THREE.Vector3(
+//         targetScale,
+//         targetScale,
+//         targetScale
+//       ),
+//       0.08
+//     );
+//   });
+
+//   return (
+//     <group ref={group}>
+//       <primitive object={scene} />
+//     </group>
+//   );
+// } 
+// function LogoScene() {
+//   const [hovered, setHovered] = useState(false);
+
+//   return (
+//     <group
+//       onPointerEnter={() => setHovered(true)}
+//       onPointerLeave={() => setHovered(false)}
+//     >
+//       <Model hovered={hovered} />
+//     </group>
+//   );
+// }
+
 function Model({ hovered }) {
   const group = useRef();
+
   const { scene } = useGLTF(
     "https://res.cloudinary.com/dbx6muxub/image/upload/v1786869663/logo_alatkf.glb"
   );
-
-  useEffect(() => {
-    const box = new THREE.Box3().setFromObject(scene);
-    const center = box.getCenter(new THREE.Vector3());
-    const size = box.getSize(new THREE.Vector3());
-
-    console.log("MODEL SIZE:", size);
-    console.log("MODEL CENTER:", center);
-    console.log("MODEL BOX:", box);
-
-    scene.position.sub(center);
-
-    const maxSize = Math.max(
-      size.x,
-      size.y,
-      size.z
-    );
-
-    const scale = 2 / maxSize;
-
-    scene.scale.setScalar(scale);
-  }, [scene]);
 
   useFrame((state) => {
     if (!group.current) return;
@@ -113,36 +178,16 @@ function Model({ hovered }) {
       targetRotationX,
       0.08
     );
-
-    const targetScale = hovered
-      ? 1.08 + Math.sin(time * 3) * 0.015
-      : 1;
-
-    group.current.scale.lerp(
-      new THREE.Vector3(
-        targetScale,
-        targetScale,
-        targetScale
-      ),
-      0.08
-    );
   });
 
   return (
     <group ref={group}>
-      <primitive object={scene} />
-    </group>
-  );
-} 
-function LogoScene() {
-  const [hovered, setHovered] = useState(false);
-
-  return (
-    <group
-      onPointerEnter={() => setHovered(true)}
-      onPointerLeave={() => setHovered(false)}
-    >
-      <Model hovered={hovered} />
+      <Center>
+        <primitive
+          object={scene}
+          scale={0.01}
+        />
+      </Center>
     </group>
   );
 }
