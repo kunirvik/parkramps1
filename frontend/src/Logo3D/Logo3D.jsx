@@ -149,10 +149,45 @@ import * as THREE from "three";
 
 function Model({ hovered }) {
   const group = useRef();
+  const modelRef = useRef();
 
   const { scene } = useGLTF(
     "https://res.cloudinary.com/dbx6muxub/image/upload/v1786869663/logo_alatkf.glb"
   );
+
+  useEffect(() => {
+    if (!scene || !modelRef.current) return;
+
+    // Копируем сцену, чтобы не изменять закэшированный GLTF
+    const clonedScene = scene.clone(true);
+
+    // Сначала ставим исходную модель
+    clonedScene.position.set(0, 0, 0);
+    clonedScene.rotation.set(0, 0, 0);
+    clonedScene.scale.set(1, 1, 1);
+
+    // Размер модели
+    const box = new THREE.Box3().setFromObject(clonedScene);
+    const center = box.getCenter(new THREE.Vector3());
+    const size = box.getSize(new THREE.Vector3());
+
+    console.log("MODEL SIZE:", size);
+    console.log("MODEL CENTER:", center);
+
+    // Центрируем модель
+    clonedScene.position.sub(center);
+
+    // Масштабируем до размера 2
+    const maxSize = Math.max(size.x, size.y, size.z);
+    const scale = 2 / maxSize;
+
+    clonedScene.scale.setScalar(scale);
+
+    // Добавляем в отдельную группу
+    modelRef.current.clear();
+    modelRef.current.add(clonedScene);
+
+  }, [scene]);
 
   useFrame((state) => {
     if (!group.current) return;
@@ -178,10 +213,26 @@ function Model({ hovered }) {
       targetRotationX,
       0.08
     );
+
+    const targetScale = hovered
+      ? 1.08 + Math.sin(time * 3) * 0.015
+      : 1;
+
+    group.current.scale.lerp(
+      new THREE.Vector3(
+        targetScale,
+        targetScale,
+        targetScale
+      ),
+      0.08
+    );
   });
 
   return (
-    <group ref={group}>
+    // <group ref={group}>
+    //   <group ref={modelRef} />
+    // </group>
+        <group ref={group}>
       <Center>
         <primitive
           object={scene}
@@ -191,7 +242,6 @@ function Model({ hovered }) {
     </group>
   );
 }
-
 // export default function Logo3D() {
 //   return (
 //     <div
