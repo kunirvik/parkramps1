@@ -77,7 +77,7 @@ function LogoScene() {
 export default function Logo3D() {
   return (
     <div
-      className="w-16 h-12 cursor-pointer"
+      
       title="Logo"
     >
       <Canvas
