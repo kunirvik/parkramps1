@@ -1,7 +1,7 @@
 
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect} from "react";
 import * as THREE from "three";
 
 // function Model({ hovered }) {
