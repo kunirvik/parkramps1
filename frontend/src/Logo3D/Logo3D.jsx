@@ -134,18 +134,18 @@ import * as THREE from "three";
 //     </group>
 //   );
 // } 
-// function LogoScene() {
-//   const [hovered, setHovered] = useState(false);
+function LogoScene() {
+  const [hovered, setHovered] = useState(false);
 
-//   return (
-//     <group
-//       onPointerEnter={() => setHovered(true)}
-//       onPointerLeave={() => setHovered(false)}
-//     >
-//       <Model hovered={hovered} />
-//     </group>
-//   );
-// }
+  return (
+    <group
+      onPointerEnter={() => setHovered(true)}
+      onPointerLeave={() => setHovered(false)}
+    >
+      <Model hovered={hovered} />
+    </group>
+  );
+}
 
 function Model({ hovered }) {
   const group = useRef();
