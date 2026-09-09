@@ -290,7 +290,8 @@ useEffect(() => {
   }, []); 
 
 return (
-  <>  {isLoading && <LoadingScreen isFadingOut={isFadingOut} />}
+  <> 
+   {/* {isLoading && <LoadingScreen isFadingOut={isFadingOut} />} */}
   {/* <div className="absolute inset-0 bg-[rgba(0, 0, 0, 0.55)] bg-[url('https://res.cloudinary.com/dbx6muxub/image/upload/v1780427037/project_nkkaef.png')]"></div> */}
   
    <style>{`
