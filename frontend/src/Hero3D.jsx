@@ -1456,6 +1456,9 @@ function makeBgSampleMaterial(mediaTexture) {
       uReliefScale: { value: 6.0 },
       // прозрачность для кроссфейда
       uOpacity: { value: 1.0 },
+      // 0 = обычные цвета, 1 = полностью обесцвечено (серый) —
+      // используется, чтобы модель "стала серой" при переходе в лоадер
+      uGrayAmount: { value: 0.0 },
     },
 
     vertexShader: `
@@ -1486,6 +1489,7 @@ function makeBgSampleMaterial(mediaTexture) {
       uniform float uReliefStrength;
       uniform float uReliefScale;
       uniform float uOpacity;
+      uniform float uGrayAmount;
 
       varying vec3 vViewPos;
       varying vec3 vViewDir;
@@ -1583,6 +1587,11 @@ function makeBgSampleMaterial(mediaTexture) {
 
         vec3 color = bg + fresnel * uFresnelStrength;
 
+        // плавно обесцвечиваем модель (для состояния "лоадер")
+        float luma = dot(color, vec3(0.299, 0.587, 0.114));
+        vec3 grayColor = vec3(luma);
+        color = mix(color, grayColor, uGrayAmount);
+
         gl_FragColor = vec4(color, uOpacity);
       }
     `,
@@ -1602,6 +1611,9 @@ export default function Hero3D({
   restRotationY = Math.PI / 4,
   modelSize = 4.5,
   transitionDuration = 0.9,
+  // true = модель должна быть (стать) серой — используется, например,
+  // когда геройская модель сжимается в лоадер
+  grayscale = false,
 }) {
   const mountRef = useRef(null);
   const heroSectionRef = useRef(null);
@@ -1845,11 +1857,6 @@ export default function Hero3D({
       const t = threeRef.current;
       const obj = t.slots[t.activeKey].object;
 
-      // ВАЖНО: во время перехода (t.isTransitioning) модель
-      // больше НЕ вращается — раньше здесь было
-      // obj.rotation.y += 0.004, что размывало кроссфейд.
-      // Теперь во время перехода вращение активного объекта
-      // просто замораживается, чтобы смена моделей была чёткой.
       if (obj && !t.isTransitioning) {
         if (state.dragging) {
           // rotation handled in pointermove
@@ -1889,6 +1896,17 @@ export default function Hero3D({
             state.hasInteracted = false;
           }
         }
+      } else if (obj && t.isTransitioning) {
+        // Во время кроссфейда обе модели (уходящая и новая) вращаются
+        // СИНХРОННО с одинаковой скоростью — так переход выглядит как
+        // непрерывное, "бесшовное" превращение одной модели в другую,
+        // а не как заморозка кадра.
+        const inactiveKey = t.activeKey === "A" ? "B" : "A";
+        const incoming = t.slots[inactiveKey].object;
+        const transitionSpin = 0.015;
+
+        obj.rotation.y += transitionSpin;
+        if (incoming) incoming.rotation.y += transitionSpin;
       }
 
       renderer.render(scene, camera);
@@ -2121,6 +2139,7 @@ export default function Hero3D({
         // первая загрузка — просто показываем без кроссфейда
         object.visible = false; // покажется в tryRevealActive, когда медиа готово
         inactiveSlot.material.uniforms.uOpacity.value = 1;
+        inactiveSlot.material.uniforms.uGrayAmount.value = grayscale ? 1 : 0;
         t.activeKey = inactiveKey;
         t.tryRevealActive();
         return;
@@ -2210,6 +2229,18 @@ export default function Hero3D({
         },
         outDuration
       );
+
+      // модель становится серой (или возвращает цвет) ровно за то же
+      // время, что и появление — эффект "стала маленькой = стала серой"
+      tl.to(
+        newMatUniforms.uGrayAmount,
+        {
+          value: grayscale ? 1 : 0,
+          duration: inDuration,
+          ease: "power2.out",
+        },
+        outDuration
+      );
     };
 
     run();
@@ -2217,7 +2248,29 @@ export default function Hero3D({
     return () => {
       cancelled = true;
     };
-  }, [modelUrl, restRotationY, modelSize, transitionDuration]);
+  }, [modelUrl, restRotationY, modelSize, transitionDuration, grayscale]);
+
+  // ==========================================================
+  // ЭФФЕКТ №4 — точечное изменение grayscale БЕЗ смены модели
+  // (например, если нужно перекрасить уже отображаемый лоадер).
+  // Пока идёт кроссфейд (эффект №3), эту анимацию не запускаем —
+  // там uGrayAmount уже анимируется в связке со scale/opacity.
+  // ==========================================================
+
+  useEffect(() => {
+    const t = threeRef.current;
+    if (t.isTransitioning) return;
+
+    const activeMat = t.slots[t.activeKey]?.material;
+    if (!activeMat) return;
+
+    gsap.to(activeMat.uniforms.uGrayAmount, {
+      value: grayscale ? 1 : 0,
+      duration: 0.5,
+      ease: "power2.out",
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [grayscale]);
 
   return (
     <div

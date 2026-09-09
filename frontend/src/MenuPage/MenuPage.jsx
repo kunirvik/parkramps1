@@ -303,6 +303,7 @@ export default function MenuPage() {
           media={background}
           modelSize={activeModelSize}
           restRotationY={isExploring ? 0 : (72 * Math.PI) / 180}
+          grayscale={isExploring}
         />
 
         <AnimatePresence>
@@ -320,7 +321,11 @@ export default function MenuPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 20 }}
                   transition={{ duration: 0.4, ease: "easeInOut" }}
-                  className="text-center break-words whitespace-normal font-futura tracking-[-5px] mb-6 cursor-pointer overflow-hidden bg-clip-text font-medium text-transparent bg-white/50"
+                  className={`text-center break-words whitespace-normal font-futura tracking-[-5px] mb-6 cursor-pointer overflow-hidden bg-clip-text text-transparent ${
+                    currentCategory === "Parkramps"
+                      ? "font-bold bg-pink-400"
+                      : "font-medium bg-white/50"
+                  }`}
                   style={{ fontSize: "clamp(60px, 10vw, 150px)", padding: "0 20px" }}
                 >
                   {currentCategory}
