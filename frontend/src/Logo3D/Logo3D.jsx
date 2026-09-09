@@ -236,7 +236,7 @@ function Model({ hovered }) {
       <Center>
         <primitive
           object={scene}
-          scale={0.1}
+          scale={0.05}
         />
       </Center>
     </group>
