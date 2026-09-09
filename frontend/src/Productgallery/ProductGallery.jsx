@@ -834,6 +834,482 @@
 //   );
 // }
 
+// import { useRef, useState, useCallback, useEffect } from "react";
+// import { Swiper, SwiperSlide } from "swiper/react";
+// import { Pagination, Mousewheel, Thumbs } from "swiper/modules";
+// import "swiper/css";
+// import "swiper/css/pagination";
+// import ProductDrawing from "../ProductDrawing";
+// import ProductThumbs from "../ProductThumbs/ProductThumbs";
+// const SCRUB_THRESHOLD = 10;
+
+// // Filmstrip-лента без миниатюр продуктов
+// function Filmstrip({ product, currentFrameIndex, onFrameSelect }) {
+//   const allImages = product ? [product.image, ...(product.altImages || [])] : [];
+//   const trackRef = useRef(null);
+//   const isDragging = useRef(false);
+//   const dragStartX = useRef(0);
+//   const dragScrollLeft = useRef(0);
+
+//   if (allImages.length <= 1) return null;
+
+//   return (
+//     <div className="w-full mt-3 select-none">
+//       <div className="w-full h-[2px] bg-gray-500 rounded mb-1.5 overflow-hidden">
+//         <div
+//           className="h-full bg-black rounded transition-all duration-200"
+//           style={{ width: `${Math.round(((currentFrameIndex + 1) / allImages.length) * 100)}%` }}
+//         />
+//       </div>
+//       <div
+//         ref={trackRef}
+//         className="flex overflow-x-hidden cursor-grab"
+//         style={{ scrollbarWidth: "none" }}
+//         onMouseDown={(e) => {
+//           isDragging.current = true;
+//           dragStartX.current = e.clientX;
+//           dragScrollLeft.current = trackRef.current.scrollLeft;
+//           trackRef.current.style.cursor = "grabbing";
+//         }}
+//         onMouseMove={(e) => {
+//           if (!isDragging.current) return;
+//           trackRef.current.scrollLeft = dragScrollLeft.current - (e.clientX - dragStartX.current);
+//         }}
+//         onMouseUp={() => { isDragging.current = false; trackRef.current.style.cursor = "grab"; }}
+//         onMouseLeave={() => { isDragging.current = false; }}
+//       >
+
+//       </div>
+
+//     </div>
+//   );
+// }
+
+// export default function ProductGallery({
+//   products,
+//   isDesktop,
+//   state,
+//   swiperInstances,
+//   setSwiperInstances,
+//   refs,
+//   imageData,
+//   animationState,
+//   onSwiperInit,
+//   onSlideChange,
+//   onThumbnailClick,
+//   onMouseEnter,
+//   onMouseLeave,
+//   onTouchStart,
+//   onTouchEnd,
+//   stopHoverAnimation,
+
+//   startPlayAnimation,
+
+//   swiperConfig,
+//    isTouchDevice
+// }) {
+//   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+//   const [isPlaying, setIsPlaying] = useState(false);
+//   const [isHovering, setIsHovering] = useState(false);
+//   const [hintOpen, setHintOpen] = useState(false);
+//   // Показывать ли авто-подсказку (один раз при открытии продукта)
+//   const [autoHintVisible, setAutoHintVisible] = useState(false);
+//   const autoHintTimerRef = useRef(null);
+//   const hintSeenRef = useRef(false);
+//   const stageRef = useRef(null);
+// const liveIndexRef = useRef(state.activeProductIndex);
+// const isInteractionBlocked =  animationState.inProgress || animationState.slideChanging; 
+// const hintCloseTimerRef = useRef(null); 
+
+
+//   const currentProduct = products[state.activeProductIndex];
+//   const allImages = currentProduct
+//     ? [currentProduct.image, ...(currentProduct.altImages || [])]
+//     : [];
+//   const currentFrameIndex = state.selectedImageIndices[state.activeProductIndex] ?? 0;
+
+
+
+//   useEffect(() => {
+//   liveIndexRef.current = state.activeProductIndex;
+
+// }, [state.activeProductIndex]); 
+
+
+// useEffect(() => {
+//   return () => {
+//     clearTimeout(autoHintTimerRef.current);
+//     clearTimeout(hintCloseTimerRef.current);
+//   };
+// }, []);
+
+
+
+// useEffect(() => {
+//   stopHoverAnimation();
+//   setIsPlaying(false);
+// }, [state.activeProductIndex]); 
+
+// const closeHint = useCallback(() => {
+//   clearTimeout(autoHintTimerRef.current);
+//   clearTimeout(hintCloseTimerRef.current);
+//   setAutoHintVisible(false);
+//   setHintOpen(false);
+// }, []);
+// useEffect(() => {
+//   return () => stopHoverAnimation();
+// }, [stopHoverAnimation]); 
+
+// const toggleHint = useCallback((e) => {
+//   e.stopPropagation();
+//   clearTimeout(autoHintTimerRef.current);
+//   clearTimeout(hintCloseTimerRef.current);
+//   setAutoHintVisible(false);
+
+//   setHintOpen((prev) => {
+//     const next = !prev;
+//     if (next && isTouchDevice) {
+//       hintCloseTimerRef.current = setTimeout(() => setHintOpen(false), 2800);
+//     }
+//     return next;
+//   });
+// }, [isTouchDevice]); 
+
+
+
+
+
+// useEffect(() => {
+//     if (!hintSeenRef.current) {
+//         hintSeenRef.current = true;
+
+//         setAutoHintVisible(true);
+
+//         clearTimeout(autoHintTimerRef.current);
+
+//         autoHintTimerRef.current = setTimeout(() => {
+//             setAutoHintVisible(false);
+//         }, 2800);
+//     }
+
+//     // setIsPlaying(false);
+//     // stopHoverAnimation();
+// }, [state.activeProductIndex, stopHoverAnimation]);
+  
+
+// const HINT_TEXT_DESKTOP = "Нажмите на фото — запустится анимация. Ещё раз — пауза";
+// const HINT_TEXT_MOBILE = "Натисніть — запуститься анімація"; // или "" чтобы вообще скрыть текст
+
+// const hintText = isTouchDevice ? HINT_TEXT_MOBILE : HINT_TEXT_DESKTOP;
+  
+
+
+//   const handleStageMouseMove = useCallback(
+//     (e) => {
+//       if (!stageRef.current) return;
+//       const rect = stageRef.current.getBoundingClientRect();
+//       setCursorPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+
+//       // if (effectiveMode === "scrub" && allImages.length > 1) {
+//       if (allImages.length <= 1) {
+//         const frac = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+//         // scrubToFrame(state.activeProductIndex, Math.floor(frac * allImages.length), allImages.length);
+//       }
+//     },
+//     [allImages.length,  state.activeProductIndex]
+//   );
+
+  
+
+// const handleStageClick = useCallback(() => {
+//   if (animationState.inProgress || animationState.slideChanging) return;
+
+//   const liveIndex = liveIndexRef.current;
+//   const liveProduct = products[liveIndex];
+//   if (!liveProduct) return;
+//   const total = 1 + (liveProduct.altImages?.length || 0);
+//   if (total <= 1) return;
+
+//   setIsPlaying((wasPlaying) => {
+//     if (wasPlaying) {
+//       stopHoverAnimation();
+//       return false;
+//     }
+//     const startFrame = state.selectedImageIndices[liveIndex] ?? 0;
+//     startPlayAnimation(liveIndex, liveProduct, startFrame);
+//     return true;
+//   });
+// }, [stopHoverAnimation, startPlayAnimation, products, state.selectedImageIndices]);
+
+//   const handleFrameSelect = useCallback(
+//     (i) => {
+//       stopHoverAnimation();
+//       setIsPlaying(false);
+//     },
+//     [ animationState.inProgress,
+//   animationState.slideChanging, stopHoverAnimation,  state.activeProductIndex, allImages.length]
+//   );
+
+  
+
+//   const cursorIconClass = isPlaying
+//     ? "ti ti-player-pause"
+//     : "ti ti-player-play"; 
+
+    
+//   const showHint = hintOpen || autoHintVisible;
+
+//   return (
+    
+//     <div
+//       ref={(el) => (refs.swiperContainer = el)}
+//       // className="w-full lg:w-[75%] lg:h-[100%] mt-10 lg:mt-0 lg:content-center"
+//       className="w-full lg:w-[75%] lg:h-[100%] mt-0 lg:mt-0 lg:content-center order-1 lg:order-2"
+//       style={{
+//         visibility: !imageData || animationState.complete ? "visible" : "hidden",
+//         opacity: !imageData || animationState.complete ? 1 : 0,
+//       }}
+//     >
+//       <div className="w-full flex flex-col">
+//         <div className="order-3 lg:order-1">
+//        <ProductDrawing product={currentProduct} />  
+//        </div> 
+
+//         {/* Главная область */}
+//         <div
+//           ref={stageRef}
+//           className="relative w-full"
+//           // style={{ cursor: allImages.length > 1  && !isTouchDevice ? "none" : "default" }}
+//             style={{
+//     cursor: isInteractionBlocked
+//       ? "default"
+//       : allImages.length > 1 && !isTouchDevice
+//       ? "none"
+//       : "default",
+//     pointerEvents: isInteractionBlocked ? "none" : "auto",
+//   }}
+//          onMouseMove={(e) => {
+//     if (!stageRef.current) return;
+
+//     const rect = stageRef.current.getBoundingClientRect();
+
+//     setCursorPos({
+//         x: e.clientX - rect.left,
+//         y: e.clientY - rect.top,
+//     });
+// }}
+//           // onMouseMove={handleStageMouseMove}
+//            onMouseEnter={() => { if (!isTouchDevice) { setIsHovering(true); onMouseEnter(state.activeProductIndex, currentProduct); }}}
+//           onMouseLeave={() => { if (!isTouchDevice)   {
+//             setIsHovering(false);
+//             onMouseLeave(state.activeProductIndex);
+//             // if (effectiveMode === "play") { 
+//               stopHoverAnimation();
+//                setIsPlaying(false);
+//             //  }
+            
+//           }}}
+//           // onClick={handleStageClick}
+//             // onClick={!isTouchDevice ? handleStageClick : undefined}
+//             onClick={(e) => {
+//   if (isTouchDevice) {
+//     if (hintOpen || autoHintVisible) {
+//       closeHint();
+//     }
+//     return;
+//   }
+//   handleStageClick();
+// }} 
+//         ><div className="order-2 lg:order-2">
+//           <Swiper
+//           // className="custom-swiper h-[clamp(250px,calc(100px+19.5vw),600px)]"
+//           className="custom-swiper h-[min(62vh,600px)] lg:h-[clamp(250px,calc(100px+19.5vw),600px)]"
+//             // className="custom-swiper h-[250px] sm:h-[300px] md:h-[350px]"
+//             modules={[Pagination, Mousewheel, Thumbs]}
+//             pagination={{ clickable: true, el: ".custom-swiper-pagination" }}
+//             mousewheel={true}
+//             direction="horizontal"
+//             centeredSlides={true}
+//             thumbs={{ swiper: swiperInstances.thumbs }}
+//             spaceBetween={20}
+//             initialSlide={state.activeProductIndex}
+//             speed={swiperConfig.SPEED}
+//             threshold={swiperConfig.THRESHOLD}
+//             resistance={true}
+//             resistanceRatio={swiperConfig.RESISTANCE_RATIO}
+//             onInit={onSwiperInit}
+//             onSlideChange={onSlideChange}
+  
+//             preventClicks={false}
+//             preventClicksPropagation={false}
+//             touchStartPreventDefault={false}
+//             onSlideChangeTransitionStart={(swiper) => {
+//               liveIndexRef.current = swiper.activeIndex; 
+//               // stopHoverAnimation();
+//               // setIsPlaying(false);
+//             }}
+//           >
+//             {products.map((product, index) => (
+//               <SwiperSlide
+//                 key={product.id}
+//                 style={{ height: "100%", transform: `scale(${product.scale || 1})` }}
+//               >
+//                 <div className="w-full h-full flex items-center z-555555555 mt-0 lg:mt-10 justify-center">
+//                   <img
+//                     src={
+//                       state.selectedImageIndices[index] === 0
+//                         ? product.image
+//                         : product.altImages[state.selectedImageIndices[index] - 1]
+//                     }
+//                     alt={product.name}
+//                     // className="max-h-full py-10 w-auto object-contain"
+//                     className="max-h-full lg:py-10 w-auto object-contain"
+//                     draggable="false"
+//                     // onTouchStart={() => onTouchStart(index, product)}
+//                     // onTouchEnd={() => onTouchEnd(index)}
+//                   />
+//                 </div>
+//               </SwiperSlide>
+//             ))}
+//           </Swiper>
+// </div>
+//           {/* Счётчик кадров */}
+//           {allImages.length > 1 && (
+//             <div className="absolute top-2.5 right-3 z-10 pointer-events-none">
+//               <span
+//                 className="text-[11px] text-white px-2.5 py-1 rounded-full"
+//                 style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(6px)" }}
+//               >
+//                 {currentFrameIndex + 1} / {allImages.length}
+//               </span>
+//             </div>
+//           )}
+
+  
+
+//           {allImages.length > 1 && !isTouchDevice && (
+//   <button
+//     type="button"
+//     className="absolute top-2.5 left-3 z-20 w-7 h-7 rounded-full flex items-center justify-center"
+//     style={{
+//       background: "rgba(120,120,120,0.28)",
+//       backdropFilter: "blur(8px)",
+//       border: "0.5px solid rgba(255,255,255,0.22)",
+//     }}
+//     onClick={toggleHint}
+//     aria-label="Подсказка по управлению"
+//   >
+//     <i className="ti ti-info-circle" style={{ fontSize: 15, color: "rgba(255,255,255,0.88)" }} aria-hidden="true" />
+//   </button>
+// )}
+
+   
+
+//           <div
+//   className="absolute z-30 pointer-events-none"
+//   style={{
+//     ...(isTouchDevice
+//       ? { bottom: 50, right: 12 }
+//       : { top: 44, left: 10 }),
+//     minWidth: 190,
+//     maxWidth: 230,
+//     background: "rgba(25,25,25,0.6)",
+//     backdropFilter: "blur(10px)",
+//     border: "0.5px solid rgba(255,255,255,0.16)",
+//     borderRadius: 12,
+//     padding: "10px 14px",
+//     opacity: showHint ? 1 : 0,
+//     transform: showHint
+//       ? "translateY(0)"
+//       : isTouchDevice
+//       ? "translateY(6px)"
+//       : "translateY(-4px)",
+//     transition: "opacity 0.22s, transform 0.22s",
+//   }}
+// >
+//   {hintText && (
+//     <p style={{ fontSize: 12, color: "rgba(255,255,255,0.88)", lineHeight: 1.5 }}>
+//       {hintText}
+//     </p>
+//   )}
+// </div>
+
+//           {/* Кастомный курсор */}
+//           {allImages.length > 1 && isHovering && !isTouchDevice && !isInteractionBlocked && (
+//             <div
+//               className="absolute pointer-events-none z-20"
+//               style={{
+//                 left: cursorPos.x,
+//                 top: cursorPos.y,
+//                 transform: "translate(-50%, -50%)",
+//                 width: 36,
+//                 height: 36,
+//                 borderRadius: "50%",
+//                 background: "rgba(0,0,0,0.38)",
+//                 display: "flex",
+//                 alignItems: "center",
+//                 justifyContent: "center",
+//               }}
+//             >
+//               <i className={cursorIconClass} style={{ fontSize: 15, color: "#fff" }} aria-hidden="true" />
+//             </div>
+//           )}
+    
+// {/* Мобильная кнопка плей/пауза */}
+// {allImages.length > 1 && isTouchDevice && (
+//   <button
+//     className="absolute bottom-3 right-3 z-20 w-9 h-9 rounded-full flex items-center justify-center"
+//     style={{
+//       background: "rgba(0,0,0,0.38)",
+//       backdropFilter: "blur(6px)",
+//       border: "0.5px solid rgba(255,255,255,0.22)",
+//     }}
+//     // onClick={(e) => { e.stopPropagation(); handleStageClick(); }}
+//         onClick={(e) => {
+//       e.stopPropagation();
+//       if (hintOpen || autoHintVisible) {
+//         closeHint();
+//         return;
+//       }
+//       handleStageClick();
+//     }}
+//     aria-label={isPlaying ? "Пауза" : "Запустить анимацию"}
+//   >
+//     <i
+//       className={isPlaying ? "ti ti-player-pause" : "ti ti-player-play"}
+//       style={{ fontSize: 16, color: "#fff" }}
+//       aria-hidden="true"
+//     />
+//   </button>
+// )}  </div>
+     
+// <div className="order-1 lg:order-3">
+//         {/* Filmstrip */}
+//         <Filmstrip
+//           product={currentProduct}
+//           currentFrameIndex={currentFrameIndex}
+//           onFrameSelect={handleFrameSelect}
+//         />
+// </div>
+  
+
+//       </div>{isDesktop && (
+//   <div className="mt-8">
+//     <ProductThumbs
+//       products={products}
+//       state={state}
+//       setSwiperInstances={setSwiperInstances}
+//       onThumbnailClick={onThumbnailClick}
+//       swiperConfig={swiperConfig}
+//       thumbsRef={(el) => (refs.thumbs = el)}
+//       visible={state.thumbsShown}
+//     />
+//   </div>
+// )}
+//     </div>
+//   );
+// }
+
 import { useRef, useState, useCallback, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Mousewheel, Thumbs } from "swiper/modules";
@@ -841,11 +1317,206 @@ import "swiper/css";
 import "swiper/css/pagination";
 import ProductDrawing from "../ProductDrawing";
 import ProductThumbs from "../ProductThumbs/ProductThumbs";
+
 const SCRUB_THRESHOLD = 10;
 
-// Filmstrip-лента без миниатюр продуктов
-function Filmstrip({ product, currentFrameIndex, onFrameSelect }) {
-  const allImages = product ? [product.image, ...(product.altImages || [])] : [];
+// ============================================================
+// Размеры товара
+// ============================================================
+// Твои товары хранят размеры в:
+//
+// specs: [
+//   { label: "Висота", value: "80 см" },
+//   { label: "Ширина", value: "125 см" },
+//   { label: "Довжина", value: "125 см" },
+// ]
+//
+// SizeOverlay ожидает:
+//
+// {
+//   width: "125 см",
+//   height: "80 см",
+//   length: "125 см"
+// }
+//
+// Поэтому преобразуем specs -> dimensions здесь.
+// ============================================================
+
+function getProductDimensions(product) {
+  if (!product?.specs?.length) return null;
+
+  const dimensions = {};
+
+  product.specs.forEach((spec) => {
+    if (!spec?.label || !spec?.value) return;
+
+    switch (spec.label.trim().toLowerCase()) {
+      case "ширина":
+        dimensions.width = spec.value;
+        break;
+
+      case "висота":
+        dimensions.height = spec.value;
+        break;
+
+      case "довжина":
+        dimensions.length = spec.value;
+        break;
+
+      default:
+        break;
+    }
+  });
+
+  // Если вообще ни одного размера нет — ничего не показываем
+  if (
+    !dimensions.width &&
+    !dimensions.height &&
+    !dimensions.length
+  ) {
+    return null;
+  }
+
+  return dimensions;
+}
+
+
+// ============================================================
+// Стрелки с размерами, накладываемые поверх основного фото
+// ============================================================
+
+function SizeOverlay({ dimensions }) {
+  if (!dimensions) return null;
+
+  const { width, height, length } = dimensions;
+
+  return (
+    <svg
+      className="absolute inset-0 w-full h-full pointer-events-none z-10"
+      viewBox="0 0 100 100"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      <defs>
+        <marker
+          id="sizeArrow"
+          markerWidth="6"
+          markerHeight="6"
+          refX="3"
+          refY="3"
+          orient="auto"
+        >
+          <path
+            d="M0,0 L6,3 L0,6 Z"
+            fill="rgba(255,255,255,0.75)"
+          />
+        </marker>
+      </defs>
+
+      {/* =====================================================
+          Высота — стрелка слева
+      ====================================================== */}
+      {height && (
+        <g>
+          <line
+            x1="6"
+            y1="12"
+            x2="6"
+            y2="88"
+            stroke="rgba(255,255,255,0.75)"
+            strokeWidth="0.4"
+            markerStart="url(#sizeArrow)"
+            markerEnd="url(#sizeArrow)"
+          />
+
+          <text
+            x="3"
+            y="50"
+            fill="#fff"
+            fontSize="3.4"
+            textAnchor="middle"
+            transform="rotate(-90 3 50)"
+          >
+            {height}
+          </text>
+        </g>
+      )}
+
+      {/* =====================================================
+          Ширина — стрелка снизу
+      ====================================================== */}
+      {width && (
+        <g>
+          <line
+            x1="10"
+            y1="94"
+            x2="90"
+            y2="94"
+            stroke="rgba(255,255,255,0.75)"
+            strokeWidth="0.4"
+            markerStart="url(#sizeArrow)"
+            markerEnd="url(#sizeArrow)"
+          />
+
+          <text
+            x="50"
+            y="98.5"
+            fill="#fff"
+            fontSize="3.4"
+            textAnchor="middle"
+          >
+            {width}
+          </text>
+        </g>
+      )}
+
+      {/* =====================================================
+          Длина — стрелка справа
+          Показывается только если у товара есть length
+      ====================================================== */}
+      {length && (
+        <g>
+          <line
+            x1="94"
+            y1="12"
+            x2="94"
+            y2="88"
+            stroke="rgba(255,255,255,0.75)"
+            strokeWidth="0.4"
+            markerStart="url(#sizeArrow)"
+            markerEnd="url(#sizeArrow)"
+          />
+
+          <text
+            x="97"
+            y="50"
+            fill="#fff"
+            fontSize="3.4"
+            textAnchor="middle"
+            transform="rotate(90 97 50)"
+          >
+            {length}
+          </text>
+        </g>
+      )}
+    </svg>
+  );
+}
+
+
+// ============================================================
+// Filmstrip
+// ============================================================
+
+function Filmstrip({
+  product,
+  currentFrameIndex,
+  onFrameSelect,
+}) {
+  const allImages = product
+    ? [product.image, ...(product.altImages || [])]
+    : [];
+
   const trackRef = useRef(null);
   const isDragging = useRef(false);
   const dragStartX = useRef(0);
@@ -858,9 +1529,14 @@ function Filmstrip({ product, currentFrameIndex, onFrameSelect }) {
       <div className="w-full h-[2px] bg-gray-500 rounded mb-1.5 overflow-hidden">
         <div
           className="h-full bg-black rounded transition-all duration-200"
-          style={{ width: `${Math.round(((currentFrameIndex + 1) / allImages.length) * 100)}%` }}
+          style={{
+            width: `${Math.round(
+              ((currentFrameIndex + 1) / allImages.length) * 100
+            )}%`,
+          }}
         />
       </div>
+
       <div
         ref={trackRef}
         className="flex overflow-x-hidden cursor-grab"
@@ -873,17 +1549,30 @@ function Filmstrip({ product, currentFrameIndex, onFrameSelect }) {
         }}
         onMouseMove={(e) => {
           if (!isDragging.current) return;
-          trackRef.current.scrollLeft = dragScrollLeft.current - (e.clientX - dragStartX.current);
+
+          trackRef.current.scrollLeft =
+            dragScrollLeft.current -
+            (e.clientX - dragStartX.current);
         }}
-        onMouseUp={() => { isDragging.current = false; trackRef.current.style.cursor = "grab"; }}
-        onMouseLeave={() => { isDragging.current = false; }}
-      >
+        onMouseUp={() => {
+          isDragging.current = false;
 
-      </div>
-
+          if (trackRef.current) {
+            trackRef.current.style.cursor = "grab";
+          }
+        }}
+        onMouseLeave={() => {
+          isDragging.current = false;
+        }}
+      />
     </div>
   );
 }
+
+
+// ============================================================
+// ProductGallery
+// ============================================================
 
 export default function ProductGallery({
   products,
@@ -902,410 +1591,1388 @@ export default function ProductGallery({
   onTouchStart,
   onTouchEnd,
   stopHoverAnimation,
-
   startPlayAnimation,
-
   swiperConfig,
-   isTouchDevice
+  isTouchDevice,
 }) {
-  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  const [cursorPos, setCursorPos] = useState({
+    x: 0,
+    y: 0,
+  });
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const [hintOpen, setHintOpen] = useState(false);
-  // Показывать ли авто-подсказку (один раз при открытии продукта)
-  const [autoHintVisible, setAutoHintVisible] = useState(false);
+
+  // Показывать ли авто-подсказку
+  const [autoHintVisible, setAutoHintVisible] =
+    useState(false);
+
   const autoHintTimerRef = useRef(null);
   const hintSeenRef = useRef(false);
   const stageRef = useRef(null);
-const liveIndexRef = useRef(state.activeProductIndex);
-const isInteractionBlocked =  animationState.inProgress || animationState.slideChanging; 
-const hintCloseTimerRef = useRef(null); 
 
+  const liveIndexRef = useRef(
+    state.activeProductIndex
+  );
 
-  const currentProduct = products[state.activeProductIndex];
+  const isInteractionBlocked =
+    animationState.inProgress ||
+    animationState.slideChanging;
+
+  const hintCloseTimerRef = useRef(null);
+
+  const currentProduct =
+    products[state.activeProductIndex];
+
   const allImages = currentProduct
-    ? [currentProduct.image, ...(currentProduct.altImages || [])]
+    ? [
+        currentProduct.image,
+        ...(currentProduct.altImages || []),
+      ]
     : [];
-  const currentFrameIndex = state.selectedImageIndices[state.activeProductIndex] ?? 0;
+
+  const currentFrameIndex =
+    state.selectedImageIndices[
+      state.activeProductIndex
+    ] ?? 0;
 
 
+  // ==========================================================
+  // НОВОЕ:
+  // Получаем dimensions из specs
+  // ==========================================================
+
+  const currentDimensions =
+    getProductDimensions(currentProduct);
+
+
+  // Размеры показываем только на основном фото
+  const showSizeOverlay =
+    currentFrameIndex === 0 &&
+    !!currentDimensions;
+
+
+  // ==========================================================
+  // Синхронизация активного продукта
+  // ==========================================================
 
   useEffect(() => {
-  liveIndexRef.current = state.activeProductIndex;
+    liveIndexRef.current =
+      state.activeProductIndex;
+  }, [state.activeProductIndex]);
 
-}, [state.activeProductIndex]); 
+
+  // ==========================================================
+  // Cleanup timers
+  // ==========================================================
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(autoHintTimerRef.current);
+      clearTimeout(hintCloseTimerRef.current);
+    };
+  }, []);
 
 
-useEffect(() => {
-  return () => {
+  // ==========================================================
+  // Остановка анимации при смене товара
+  // ==========================================================
+
+  useEffect(() => {
+    stopHoverAnimation();
+    setIsPlaying(false);
+  }, [
+    state.activeProductIndex,
+    stopHoverAnimation,
+  ]);
+
+
+  // ==========================================================
+  // Cleanup animation
+  // ==========================================================
+
+  useEffect(() => {
+    return () => stopHoverAnimation();
+  }, [stopHoverAnimation]);
+
+
+  // ==========================================================
+  // Подсказка
+  // ==========================================================
+
+  const closeHint = useCallback(() => {
     clearTimeout(autoHintTimerRef.current);
     clearTimeout(hintCloseTimerRef.current);
-  };
-}, []);
+
+    setAutoHintVisible(false);
+    setHintOpen(false);
+  }, []);
 
 
+  const toggleHint = useCallback(
+    (e) => {
+      e.stopPropagation();
 
-useEffect(() => {
-  stopHoverAnimation();
-  setIsPlaying(false);
-}, [state.activeProductIndex]); 
+      clearTimeout(autoHintTimerRef.current);
+      clearTimeout(hintCloseTimerRef.current);
 
-const closeHint = useCallback(() => {
-  clearTimeout(autoHintTimerRef.current);
-  clearTimeout(hintCloseTimerRef.current);
-  setAutoHintVisible(false);
-  setHintOpen(false);
-}, []);
-useEffect(() => {
-  return () => stopHoverAnimation();
-}, [stopHoverAnimation]); 
+      setAutoHintVisible(false);
 
-const toggleHint = useCallback((e) => {
-  e.stopPropagation();
-  clearTimeout(autoHintTimerRef.current);
-  clearTimeout(hintCloseTimerRef.current);
-  setAutoHintVisible(false);
+      setHintOpen((prev) => {
+        const next = !prev;
 
-  setHintOpen((prev) => {
-    const next = !prev;
-    if (next && isTouchDevice) {
-      hintCloseTimerRef.current = setTimeout(() => setHintOpen(false), 2800);
-    }
-    return next;
-  });
-}, [isTouchDevice]); 
+        if (next && isTouchDevice) {
+          hintCloseTimerRef.current =
+            setTimeout(() => {
+              setHintOpen(false);
+            }, 2800);
+        }
+
+        return next;
+      });
+    },
+    [isTouchDevice]
+  );
 
 
+  // ==========================================================
+  // Автоподсказка
+  // ==========================================================
 
-
-
-useEffect(() => {
+  useEffect(() => {
     if (!hintSeenRef.current) {
-        hintSeenRef.current = true;
+      hintSeenRef.current = true;
 
-        setAutoHintVisible(true);
+      setAutoHintVisible(true);
 
-        clearTimeout(autoHintTimerRef.current);
+      clearTimeout(autoHintTimerRef.current);
 
-        autoHintTimerRef.current = setTimeout(() => {
-            setAutoHintVisible(false);
+      autoHintTimerRef.current =
+        setTimeout(() => {
+          setAutoHintVisible(false);
         }, 2800);
     }
+  }, [
+    state.activeProductIndex,
+    stopHoverAnimation,
+  ]);
 
-    // setIsPlaying(false);
-    // stopHoverAnimation();
-}, [state.activeProductIndex, stopHoverAnimation]);
-  
 
-const HINT_TEXT_DESKTOP = "Нажмите на фото — запустится анимация. Ещё раз — пауза";
-const HINT_TEXT_MOBILE = "Натисніть — запуститься анімація"; // или "" чтобы вообще скрыть текст
+  const HINT_TEXT_DESKTOP =
+    "Нажмите на фото — запустится анимация. Ещё раз — пауза";
 
-const hintText = isTouchDevice ? HINT_TEXT_MOBILE : HINT_TEXT_DESKTOP;
-  
+  const HINT_TEXT_MOBILE =
+    "Натисніть — запуститься анімація";
 
+  const hintText = isTouchDevice
+    ? HINT_TEXT_MOBILE
+    : HINT_TEXT_DESKTOP;
+
+
+  // ==========================================================
+  // Mouse move
+  // ==========================================================
 
   const handleStageMouseMove = useCallback(
     (e) => {
       if (!stageRef.current) return;
-      const rect = stageRef.current.getBoundingClientRect();
-      setCursorPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
 
-      // if (effectiveMode === "scrub" && allImages.length > 1) {
+      const rect =
+        stageRef.current.getBoundingClientRect();
+
+      setCursorPos({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      });
+
       if (allImages.length <= 1) {
-        const frac = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-        // scrubToFrame(state.activeProductIndex, Math.floor(frac * allImages.length), allImages.length);
+        const frac = Math.max(
+          0,
+          Math.min(
+            1,
+            (e.clientX - rect.left) /
+              rect.width
+          )
+        );
+
+        // scrubToFrame(...)
       }
     },
-    [allImages.length,  state.activeProductIndex]
+    [allImages.length, state.activeProductIndex]
   );
 
-  
 
-const handleStageClick = useCallback(() => {
-  if (animationState.inProgress || animationState.slideChanging) return;
+  // ==========================================================
+  // Play / pause animation
+  // ==========================================================
 
-  const liveIndex = liveIndexRef.current;
-  const liveProduct = products[liveIndex];
-  if (!liveProduct) return;
-  const total = 1 + (liveProduct.altImages?.length || 0);
-  if (total <= 1) return;
-
-  setIsPlaying((wasPlaying) => {
-    if (wasPlaying) {
-      stopHoverAnimation();
-      return false;
+  const handleStageClick = useCallback(() => {
+    if (
+      animationState.inProgress ||
+      animationState.slideChanging
+    ) {
+      return;
     }
-    const startFrame = state.selectedImageIndices[liveIndex] ?? 0;
-    startPlayAnimation(liveIndex, liveProduct, startFrame);
-    return true;
-  });
-}, [stopHoverAnimation, startPlayAnimation, products, state.selectedImageIndices]);
+
+    const liveIndex =
+      liveIndexRef.current;
+
+    const liveProduct =
+      products[liveIndex];
+
+    if (!liveProduct) return;
+
+    const total =
+      1 + (liveProduct.altImages?.length || 0);
+
+    if (total <= 1) return;
+
+    setIsPlaying((wasPlaying) => {
+      if (wasPlaying) {
+        stopHoverAnimation();
+        return false;
+      }
+
+      const startFrame =
+        state.selectedImageIndices[
+          liveIndex
+        ] ?? 0;
+
+      startPlayAnimation(
+        liveIndex,
+        liveProduct,
+        startFrame
+      );
+
+      return true;
+    });
+  }, [
+    stopHoverAnimation,
+    startPlayAnimation,
+    products,
+    state.selectedImageIndices,
+    animationState.inProgress,
+    animationState.slideChanging,
+  ]);
+
+
+  // ==========================================================
+  // Выбор кадра
+  // ==========================================================
 
   const handleFrameSelect = useCallback(
     (i) => {
       stopHoverAnimation();
       setIsPlaying(false);
     },
-    [ animationState.inProgress,
-  animationState.slideChanging, stopHoverAnimation,  state.activeProductIndex, allImages.length]
+    [
+      animationState.inProgress,
+      animationState.slideChanging,
+      stopHoverAnimation,
+      state.activeProductIndex,
+      allImages.length,
+    ]
   );
 
-  
 
   const cursorIconClass = isPlaying
     ? "ti ti-player-pause"
-    : "ti ti-player-play"; 
+    : "ti ti-player-play";
 
-    
-  const showHint = hintOpen || autoHintVisible;
+  const showHint =
+    hintOpen || autoHintVisible;
+
+
+  // ==========================================================
+  // Render
+  // ==========================================================
 
   return (
-    
     <div
-      ref={(el) => (refs.swiperContainer = el)}
-      // className="w-full lg:w-[75%] lg:h-[100%] mt-10 lg:mt-0 lg:content-center"
+      ref={(el) =>
+        (refs.swiperContainer = el)
+      }
       className="w-full lg:w-[75%] lg:h-[100%] mt-0 lg:mt-0 lg:content-center order-1 lg:order-2"
       style={{
-        visibility: !imageData || animationState.complete ? "visible" : "hidden",
-        opacity: !imageData || animationState.complete ? 1 : 0,
+        visibility:
+          !imageData ||
+          animationState.complete
+            ? "visible"
+            : "hidden",
+
+        opacity:
+          !imageData ||
+          animationState.complete
+            ? 1
+            : 0,
       }}
     >
       <div className="w-full flex flex-col">
-        <div className="order-3 lg:order-1">
-       <ProductDrawing product={currentProduct} />  
-       </div> 
 
-        {/* Главная область */}
+        {/* ==================================================
+            Product Drawing
+        =================================================== */}
+
+        <div className="order-3 lg:order-1">
+          <ProductDrawing
+            product={currentProduct}
+          />
+        </div>
+
+
+        {/* ==================================================
+            Главная область
+        =================================================== */}
+
         <div
           ref={stageRef}
           className="relative w-full"
-          // style={{ cursor: allImages.length > 1  && !isTouchDevice ? "none" : "default" }}
-            style={{
-    cursor: isInteractionBlocked
-      ? "default"
-      : allImages.length > 1 && !isTouchDevice
-      ? "none"
-      : "default",
-    pointerEvents: isInteractionBlocked ? "none" : "auto",
-  }}
-         onMouseMove={(e) => {
-    if (!stageRef.current) return;
+          style={{
+            cursor: isInteractionBlocked
+              ? "default"
+              : allImages.length > 1 &&
+                !isTouchDevice
+              ? "none"
+              : "default",
 
-    const rect = stageRef.current.getBoundingClientRect();
+            pointerEvents:
+              isInteractionBlocked
+                ? "none"
+                : "auto",
+          }}
 
-    setCursorPos({
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
-    });
-}}
-          // onMouseMove={handleStageMouseMove}
-           onMouseEnter={() => { if (!isTouchDevice) { setIsHovering(true); onMouseEnter(state.activeProductIndex, currentProduct); }}}
-          onMouseLeave={() => { if (!isTouchDevice)   {
-            setIsHovering(false);
-            onMouseLeave(state.activeProductIndex);
-            // if (effectiveMode === "play") { 
+          onMouseMove={(e) => {
+            if (!stageRef.current) return;
+
+            const rect =
+              stageRef.current.getBoundingClientRect();
+
+            setCursorPos({
+              x: e.clientX - rect.left,
+              y: e.clientY - rect.top,
+            });
+          }}
+
+          onMouseEnter={() => {
+            if (!isTouchDevice) {
+              setIsHovering(true);
+
+              onMouseEnter(
+                state.activeProductIndex,
+                currentProduct
+              );
+            }
+          }}
+
+          onMouseLeave={() => {
+            if (!isTouchDevice) {
+              setIsHovering(false);
+
+              onMouseLeave(
+                state.activeProductIndex
+              );
+
               stopHoverAnimation();
-               setIsPlaying(false);
-            //  }
-            
-          }}}
-          // onClick={handleStageClick}
-            // onClick={!isTouchDevice ? handleStageClick : undefined}
-            onClick={(e) => {
-  if (isTouchDevice) {
-    if (hintOpen || autoHintVisible) {
-      closeHint();
-    }
-    return;
-  }
-  handleStageClick();
-}} 
-        ><div className="order-2 lg:order-2">
-          <Swiper
-          // className="custom-swiper h-[clamp(250px,calc(100px+19.5vw),600px)]"
-          className="custom-swiper h-[min(62vh,600px)] lg:h-[clamp(250px,calc(100px+19.5vw),600px)]"
-            // className="custom-swiper h-[250px] sm:h-[300px] md:h-[350px]"
-            modules={[Pagination, Mousewheel, Thumbs]}
-            pagination={{ clickable: true, el: ".custom-swiper-pagination" }}
-            mousewheel={true}
-            direction="horizontal"
-            centeredSlides={true}
-            thumbs={{ swiper: swiperInstances.thumbs }}
-            spaceBetween={20}
-            initialSlide={state.activeProductIndex}
-            speed={swiperConfig.SPEED}
-            threshold={swiperConfig.THRESHOLD}
-            resistance={true}
-            resistanceRatio={swiperConfig.RESISTANCE_RATIO}
-            onInit={onSwiperInit}
-            onSlideChange={onSlideChange}
-  
-            preventClicks={false}
-            preventClicksPropagation={false}
-            touchStartPreventDefault={false}
-            onSlideChangeTransitionStart={(swiper) => {
-              liveIndexRef.current = swiper.activeIndex; 
-              // stopHoverAnimation();
-              // setIsPlaying(false);
-            }}
-          >
-            {products.map((product, index) => (
-              <SwiperSlide
-                key={product.id}
-                style={{ height: "100%", transform: `scale(${product.scale || 1})` }}
-              >
-                <div className="w-full h-full flex items-center z-555555555 mt-0 lg:mt-10 justify-center">
-                  <img
-                    src={
-                      state.selectedImageIndices[index] === 0
-                        ? product.image
-                        : product.altImages[state.selectedImageIndices[index] - 1]
-                    }
-                    alt={product.name}
-                    // className="max-h-full py-10 w-auto object-contain"
-                    className="max-h-full lg:py-10 w-auto object-contain"
-                    draggable="false"
-                    // onTouchStart={() => onTouchStart(index, product)}
-                    // onTouchEnd={() => onTouchEnd(index)}
-                  />
-                </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
-</div>
-          {/* Счётчик кадров */}
-          {allImages.length > 1 && (
-            <div className="absolute top-2.5 right-3 z-10 pointer-events-none">
-              <span
-                className="text-[11px] text-white px-2.5 py-1 rounded-full"
-                style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(6px)" }}
-              >
-                {currentFrameIndex + 1} / {allImages.length}
-              </span>
-            </div>
-          )}
+              setIsPlaying(false);
+            }
+          }}
 
-  
+          onClick={(e) => {
+            if (isTouchDevice) {
+              if (
+                hintOpen ||
+                autoHintVisible
+              ) {
+                closeHint();
+              }
 
-          {allImages.length > 1 && !isTouchDevice && (
-  <button
-    type="button"
-    className="absolute top-2.5 left-3 z-20 w-7 h-7 rounded-full flex items-center justify-center"
-    style={{
-      background: "rgba(120,120,120,0.28)",
-      backdropFilter: "blur(8px)",
-      border: "0.5px solid rgba(255,255,255,0.22)",
-    }}
-    onClick={toggleHint}
-    aria-label="Подсказка по управлению"
-  >
-    <i className="ti ti-info-circle" style={{ fontSize: 15, color: "rgba(255,255,255,0.88)" }} aria-hidden="true" />
-  </button>
-)}
+              return;
+            }
 
-   
+            handleStageClick();
+          }}
+        >
 
-          <div
-  className="absolute z-30 pointer-events-none"
-  style={{
-    ...(isTouchDevice
-      ? { bottom: 50, right: 12 }
-      : { top: 44, left: 10 }),
-    minWidth: 190,
-    maxWidth: 230,
-    background: "rgba(25,25,25,0.6)",
-    backdropFilter: "blur(10px)",
-    border: "0.5px solid rgba(255,255,255,0.16)",
-    borderRadius: 12,
-    padding: "10px 14px",
-    opacity: showHint ? 1 : 0,
-    transform: showHint
-      ? "translateY(0)"
-      : isTouchDevice
-      ? "translateY(6px)"
-      : "translateY(-4px)",
-    transition: "opacity 0.22s, transform 0.22s",
-  }}
->
-  {hintText && (
-    <p style={{ fontSize: 12, color: "rgba(255,255,255,0.88)", lineHeight: 1.5 }}>
-      {hintText}
-    </p>
-  )}
-</div>
+          {/* =================================================
+              Swiper
+          ================================================== */}
 
-          {/* Кастомный курсор */}
-          {allImages.length > 1 && isHovering && !isTouchDevice && !isInteractionBlocked && (
-            <div
-              className="absolute pointer-events-none z-20"
-              style={{
-                left: cursorPos.x,
-                top: cursorPos.y,
-                transform: "translate(-50%, -50%)",
-                width: 36,
-                height: 36,
-                borderRadius: "50%",
-                background: "rgba(0,0,0,0.38)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+          <div className="order-2 lg:order-2">
+
+            <Swiper
+              className="custom-swiper h-[min(62vh,600px)] lg:h-[clamp(250px,calc(100px+19.5vw),600px)]"
+
+              modules={[
+                Pagination,
+                Mousewheel,
+                Thumbs,
+              ]}
+
+              pagination={{
+                clickable: true,
+                el: ".custom-swiper-pagination",
+              }}
+
+              mousewheel={true}
+              direction="horizontal"
+              centeredSlides={true}
+              thumbs={{
+                swiper: swiperInstances.thumbs,
+              }}
+              spaceBetween={20}
+
+              initialSlide={
+                state.activeProductIndex
+              }
+
+              speed={swiperConfig.SPEED}
+              threshold={swiperConfig.THRESHOLD}
+
+              resistance={true}
+              resistanceRatio={
+                swiperConfig.RESISTANCE_RATIO
+              }
+
+              onInit={onSwiperInit}
+              onSlideChange={onSlideChange}
+
+              preventClicks={false}
+              preventClicksPropagation={false}
+              touchStartPreventDefault={false}
+
+              onSlideChangeTransitionStart={(
+                swiper
+              ) => {
+                liveIndexRef.current =
+                  swiper.activeIndex;
               }}
             >
-              <i className={cursorIconClass} style={{ fontSize: 15, color: "#fff" }} aria-hidden="true" />
+
+              {products.map(
+                (product, index) => (
+                  <SwiperSlide
+                    key={product.id}
+                    style={{
+                      height: "100%",
+                      transform: `scale(${
+                        product.scale || 1
+                      })`,
+                    }}
+                  >
+
+                    <div className="w-full h-full flex items-center z-555555555 mt-0 lg:mt-10 justify-center">
+
+                      <img
+                        src={
+                          state
+                            .selectedImageIndices[
+                              index
+                            ] === 0
+                            ? product.image
+                            : product.altImages[
+                                state
+                                  .selectedImageIndices[
+                                    index
+                                  ] - 1
+                              ]
+                        }
+
+                        alt={product.name}
+
+                        className="max-h-full lg:py-10 w-auto object-contain"
+
+                        draggable="false"
+                      />
+
+                    </div>
+
+                  </SwiperSlide>
+                )
+              )}
+
+            </Swiper>
+
+          </div>
+
+
+          {/* =================================================
+              НОВОЕ:
+              SizeOverlay получает размеры из specs
+          ================================================== */}
+
+          {showSizeOverlay && (
+            <SizeOverlay
+              dimensions={currentDimensions}
+            />
+          )}
+
+
+          {/* =================================================
+              Счётчик кадров
+          ================================================== */}
+
+          {allImages.length > 1 && (
+            <div className="absolute top-2.5 right-3 z-10 pointer-events-none">
+
+              <span
+                className="text-[11px] text-white px-2.5 py-1 rounded-full"
+                style={{
+                  background:
+                    "rgba(0,0,0,0.4)",
+                  backdropFilter:
+                    "blur(6px)",
+                }}
+              >
+                {currentFrameIndex + 1} /{" "}
+                {allImages.length}
+              </span>
+
             </div>
           )}
-    
-{/* Мобильная кнопка плей/пауза */}
-{allImages.length > 1 && isTouchDevice && (
-  <button
-    className="absolute bottom-3 right-3 z-20 w-9 h-9 rounded-full flex items-center justify-center"
-    style={{
-      background: "rgba(0,0,0,0.38)",
-      backdropFilter: "blur(6px)",
-      border: "0.5px solid rgba(255,255,255,0.22)",
-    }}
-    // onClick={(e) => { e.stopPropagation(); handleStageClick(); }}
-        onClick={(e) => {
-      e.stopPropagation();
-      if (hintOpen || autoHintVisible) {
-        closeHint();
-        return;
-      }
-      handleStageClick();
-    }}
-    aria-label={isPlaying ? "Пауза" : "Запустить анимацию"}
-  >
-    <i
-      className={isPlaying ? "ti ti-player-pause" : "ti ti-player-play"}
-      style={{ fontSize: 16, color: "#fff" }}
-      aria-hidden="true"
-    />
-  </button>
-)}  </div>
-     
-<div className="order-1 lg:order-3">
-        {/* Filmstrip */}
-        <Filmstrip
-          product={currentProduct}
-          currentFrameIndex={currentFrameIndex}
-          onFrameSelect={handleFrameSelect}
-        />
-</div>
-  
 
-      </div>{isDesktop && (
-  <div className="mt-8">
-    <ProductThumbs
-      products={products}
-      state={state}
-      setSwiperInstances={setSwiperInstances}
-      onThumbnailClick={onThumbnailClick}
-      swiperConfig={swiperConfig}
-      thumbsRef={(el) => (refs.thumbs = el)}
-      visible={state.thumbsShown}
-    />
-  </div>
-)}
+
+          {/* =================================================
+              Info button
+          ================================================== */}
+
+          {allImages.length > 1 &&
+            !isTouchDevice && (
+              <button
+                type="button"
+                className="absolute top-2.5 left-3 z-20 w-7 h-7 rounded-full flex items-center justify-center"
+
+                style={{
+                  background:
+                    "rgba(120,120,120,0.28)",
+                  backdropFilter:
+                    "blur(8px)",
+                  border:
+                    "0.5px solid rgba(255,255,255,0.22)",
+                }}
+
+                onClick={toggleHint}
+
+                aria-label="Подсказка по управлению"
+              >
+                <i
+                  className="ti ti-info-circle"
+                  style={{
+                    fontSize: 15,
+                    color:
+                      "rgba(255,255,255,0.88)",
+                  }}
+                  aria-hidden="true"
+                />
+              </button>
+            )}
+
+
+          {/* =================================================
+              Hint
+          ================================================== */}
+
+          <div
+            className="absolute z-30 pointer-events-none"
+
+            style={{
+              ...(isTouchDevice
+                ? {
+                    bottom: 50,
+                    right: 12,
+                  }
+                : {
+                    top: 44,
+                    left: 10,
+                  }),
+
+              minWidth: 190,
+              maxWidth: 230,
+
+              background:
+                "rgba(25,25,25,0.6)",
+
+              backdropFilter:
+                "blur(10px)",
+
+              border:
+                "0.5px solid rgba(255,255,255,0.16)",
+
+              borderRadius: 12,
+
+              padding: "10px 14px",
+
+              opacity: showHint ? 1 : 0,
+
+              transform: showHint
+                ? "translateY(0)"
+                : isTouchDevice
+                ? "translateY(6px)"
+                : "translateY(-4px)",
+
+              transition:
+                "opacity 0.22s, transform 0.22s",
+            }}
+          >
+
+            {hintText && (
+              <p
+                style={{
+                  fontSize: 12,
+                  color:
+                    "rgba(255,255,255,0.88)",
+                  lineHeight: 1.5,
+                }}
+              >
+                {hintText}
+              </p>
+            )}
+
+          </div>
+
+
+          {/* =================================================
+              Custom cursor
+          ================================================== */}
+
+          {allImages.length > 1 &&
+            isHovering &&
+            !isTouchDevice &&
+            !isInteractionBlocked && (
+
+              <div
+                className="absolute pointer-events-none z-20"
+
+                style={{
+                  left: cursorPos.x,
+                  top: cursorPos.y,
+
+                  transform:
+                    "translate(-50%, -50%)",
+
+                  width: 36,
+                  height: 36,
+
+                  borderRadius: "50%",
+
+                  background:
+                    "rgba(0,0,0,0.38)",
+
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+
+                <i
+                  className={cursorIconClass}
+                  style={{
+                    fontSize: 15,
+                    color: "#fff",
+                  }}
+                  aria-hidden="true"
+                />
+
+              </div>
+            )}
+
+
+          {/* =================================================
+              Mobile play/pause
+          ================================================== */}
+
+          {allImages.length > 1 &&
+            isTouchDevice && (
+
+              <button
+                className="absolute bottom-3 right-3 z-20 w-9 h-9 rounded-full flex items-center justify-center"
+
+                style={{
+                  background:
+                    "rgba(0,0,0,0.38)",
+                  backdropFilter:
+                    "blur(6px)",
+                  border:
+                    "0.5px solid rgba(255,255,255,0.22)",
+                }}
+
+                onClick={(e) => {
+                  e.stopPropagation();
+
+                  if (
+                    hintOpen ||
+                    autoHintVisible
+                  ) {
+                    closeHint();
+                    return;
+                  }
+
+                  handleStageClick();
+                }}
+
+                aria-label={
+                  isPlaying
+                    ? "Пауза"
+                    : "Запустить анимацию"
+                }
+              >
+
+                <i
+                  className={
+                    isPlaying
+                      ? "ti ti-player-pause"
+                      : "ti ti-player-play"
+                  }
+
+                  style={{
+                    fontSize: 16,
+                    color: "#fff",
+                  }}
+
+                  aria-hidden="true"
+                />
+
+              </button>
+            )}
+
+        </div>
+
+
+        {/* ====================================================
+            Filmstrip
+        ===================================================== */}
+
+        <div className="order-1 lg:order-3">
+
+          <Filmstrip
+            product={currentProduct}
+            currentFrameIndex={
+              currentFrameIndex
+            }
+            onFrameSelect={
+              handleFrameSelect
+            }
+          />
+
+        </div>
+
+      </div>
+
+
+      {/* ======================================================
+          Desktop thumbnails
+      ======================================================= */}
+
+      {isDesktop && (
+        <div className="mt-8">
+
+          <ProductThumbs
+            products={products}
+            state={state}
+            setSwiperInstances={
+              setSwiperInstances
+            }
+            onThumbnailClick={
+              onThumbnailClick
+            }
+            swiperConfig={swiperConfig}
+            thumbsRef={(el) =>
+              (refs.thumbs = el)
+            }
+            visible={state.thumbsShown}
+          />
+
+        </div>
+      )}
+
     </div>
   );
 }
+
+
+// import { useRef, useState, useCallback, useEffect } from "react";
+// import { Swiper, SwiperSlide } from "swiper/react";
+// import { Pagination, Mousewheel, Thumbs } from "swiper/modules";
+// import "swiper/css";
+// import "swiper/css/pagination";
+// import ProductDrawing from "../ProductDrawing";
+// import ProductThumbs from "../ProductThumbs/ProductThumbs";
+// const SCRUB_THRESHOLD = 10;
+
+// // Стрелки с размерами, накладываемые поверх основного фото товара
+// // (не поверх дополнительного чертежа). Ожидает product.dimensions
+// // вида { width, height, length } — строки для отображения ("40 см" и т.п.).
+// // Если размеров нет — ничего не рендерит.
+// function SizeOverlay({ dimensions }) {
+//   if (!dimensions) return null;
+//   const { width, height, length } = dimensions;
+
+//   return (
+//     <svg
+//       className="absolute inset-0 w-full h-full pointer-events-none z-10"
+//       viewBox="0 0 100 100"
+//       preserveAspectRatio="none"
+//       aria-hidden="true"
+//     >
+//       <defs>
+//         <marker
+//           id="sizeArrow"
+//           markerWidth="6"
+//           markerHeight="6"
+//           refX="3"
+//           refY="3"
+//           orient="auto"
+//         >
+//           <path d="M0,0 L6,3 L0,6 Z" fill="rgba(255,255,255,0.75)" />
+//         </marker>
+//       </defs>
+
+//       {/* высота — стрелка слева, подпись повёрнута вертикально */}
+//       {height && (
+//         <g>
+//           <line
+//             x1="6"
+//             y1="12"
+//             x2="6"
+//             y2="88"
+//             stroke="rgba(255,255,255,0.75)"
+//             strokeWidth="0.4"
+//             markerStart="url(#sizeArrow)"
+//             markerEnd="url(#sizeArrow)"
+//           />
+//           <text
+//             x="3"
+//             y="50"
+//             fill="#fff"
+//             fontSize="3.4"
+//             textAnchor="middle"
+//             transform="rotate(-90 3 50)"
+//           >
+//             {height}
+//           </text>
+//         </g>
+//       )}
+
+//       {/* ширина — стрелка снизу */}
+//       {width && (
+//         <g>
+//           <line
+//             x1="10"
+//             y1="94"
+//             x2="90"
+//             y2="94"
+//             stroke="rgba(255,255,255,0.75)"
+//             strokeWidth="0.4"
+//             markerStart="url(#sizeArrow)"
+//             markerEnd="url(#sizeArrow)"
+//           />
+//           <text x="50" y="98.5" fill="#fff" fontSize="3.4" textAnchor="middle">
+//             {width}
+//           </text>
+//         </g>
+//       )}
+
+//       {/* длина — стрелка справа (если применимо к товару) */}
+//       {length && (
+//         <g>
+//           <line
+//             x1="94"
+//             y1="12"
+//             x2="94"
+//             y2="88"
+//             stroke="rgba(255,255,255,0.75)"
+//             strokeWidth="0.4"
+//             markerStart="url(#sizeArrow)"
+//             markerEnd="url(#sizeArrow)"
+//           />
+//           <text
+//             x="97"
+//             y="50"
+//             fill="#fff"
+//             fontSize="3.4"
+//             textAnchor="middle"
+//             transform="rotate(90 97 50)"
+//           >
+//             {length}
+//           </text>
+//         </g>
+//       )}
+//     </svg>
+//   );
+// }
+
+// // Filmstrip-лента без миниатюр продуктов
+// function Filmstrip({ product, currentFrameIndex, onFrameSelect }) {
+//   const allImages = product ? [product.image, ...(product.altImages || [])] : [];
+//   const trackRef = useRef(null);
+//   const isDragging = useRef(false);
+//   const dragStartX = useRef(0);
+//   const dragScrollLeft = useRef(0);
+
+//   if (allImages.length <= 1) return null;
+
+//   return (
+//     <div className="w-full mt-3 select-none">
+//       <div className="w-full h-[2px] bg-gray-500 rounded mb-1.5 overflow-hidden">
+//         <div
+//           className="h-full bg-black rounded transition-all duration-200"
+//           style={{ width: `${Math.round(((currentFrameIndex + 1) / allImages.length) * 100)}%` }}
+//         />
+//       </div>
+//       <div
+//         ref={trackRef}
+//         className="flex overflow-x-hidden cursor-grab"
+//         style={{ scrollbarWidth: "none" }}
+//         onMouseDown={(e) => {
+//           isDragging.current = true;
+//           dragStartX.current = e.clientX;
+//           dragScrollLeft.current = trackRef.current.scrollLeft;
+//           trackRef.current.style.cursor = "grabbing";
+//         }}
+//         onMouseMove={(e) => {
+//           if (!isDragging.current) return;
+//           trackRef.current.scrollLeft = dragScrollLeft.current - (e.clientX - dragStartX.current);
+//         }}
+//         onMouseUp={() => { isDragging.current = false; trackRef.current.style.cursor = "grab"; }}
+//         onMouseLeave={() => { isDragging.current = false; }}
+//       >
+
+//       </div>
+
+//     </div>
+//   );
+// }
+
+// export default function ProductGallery({
+//   products,
+//   isDesktop,
+//   state,
+//   swiperInstances,
+//   setSwiperInstances,
+//   refs,
+//   imageData,
+//   animationState,
+//   onSwiperInit,
+//   onSlideChange,
+//   onThumbnailClick,
+//   onMouseEnter,
+//   onMouseLeave,
+//   onTouchStart,
+//   onTouchEnd,
+//   stopHoverAnimation,
+
+//   startPlayAnimation,
+
+//   swiperConfig,
+//    isTouchDevice
+// }) {
+//   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+//   const [isPlaying, setIsPlaying] = useState(false);
+//   const [isHovering, setIsHovering] = useState(false);
+//   const [hintOpen, setHintOpen] = useState(false);
+//   // Показывать ли авто-подсказку (один раз при открытии продукта)
+//   const [autoHintVisible, setAutoHintVisible] = useState(false);
+//   const autoHintTimerRef = useRef(null);
+//   const hintSeenRef = useRef(false);
+//   const stageRef = useRef(null);
+// const liveIndexRef = useRef(state.activeProductIndex);
+// const isInteractionBlocked =  animationState.inProgress || animationState.slideChanging; 
+// const hintCloseTimerRef = useRef(null); 
+
+
+//   const currentProduct = products[state.activeProductIndex];
+//   const allImages = currentProduct
+//     ? [currentProduct.image, ...(currentProduct.altImages || [])]
+//     : [];
+//   const currentFrameIndex = state.selectedImageIndices[state.activeProductIndex] ?? 0;
+//   // Стрелки с размерами показываем только на ОСНОВНОМ фото (индекс 0),
+//   // а не на альтернативных кадрах товара.
+//   const showSizeOverlay = currentFrameIndex === 0 && !!currentProduct?.dimensions;
+
+
+
+//   useEffect(() => {
+//   liveIndexRef.current = state.activeProductIndex;
+
+// }, [state.activeProductIndex]); 
+
+
+// useEffect(() => {
+//   return () => {
+//     clearTimeout(autoHintTimerRef.current);
+//     clearTimeout(hintCloseTimerRef.current);
+//   };
+// }, []);
+
+
+
+// useEffect(() => {
+//   stopHoverAnimation();
+//   setIsPlaying(false);
+// }, [state.activeProductIndex]); 
+
+// const closeHint = useCallback(() => {
+//   clearTimeout(autoHintTimerRef.current);
+//   clearTimeout(hintCloseTimerRef.current);
+//   setAutoHintVisible(false);
+//   setHintOpen(false);
+// }, []);
+// useEffect(() => {
+//   return () => stopHoverAnimation();
+// }, [stopHoverAnimation]); 
+
+// const toggleHint = useCallback((e) => {
+//   e.stopPropagation();
+//   clearTimeout(autoHintTimerRef.current);
+//   clearTimeout(hintCloseTimerRef.current);
+//   setAutoHintVisible(false);
+
+//   setHintOpen((prev) => {
+//     const next = !prev;
+//     if (next && isTouchDevice) {
+//       hintCloseTimerRef.current = setTimeout(() => setHintOpen(false), 2800);
+//     }
+//     return next;
+//   });
+// }, [isTouchDevice]); 
+
+
+
+
+
+// useEffect(() => {
+//     if (!hintSeenRef.current) {
+//         hintSeenRef.current = true;
+
+//         setAutoHintVisible(true);
+
+//         clearTimeout(autoHintTimerRef.current);
+
+//         autoHintTimerRef.current = setTimeout(() => {
+//             setAutoHintVisible(false);
+//         }, 2800);
+//     }
+
+//     // setIsPlaying(false);
+//     // stopHoverAnimation();
+// }, [state.activeProductIndex, stopHoverAnimation]);
+  
+
+// const HINT_TEXT_DESKTOP = "Нажмите на фото — запустится анимация. Ещё раз — пауза";
+// const HINT_TEXT_MOBILE = "Натисніть — запуститься анімація"; // или "" чтобы вообще скрыть текст
+
+// const hintText = isTouchDevice ? HINT_TEXT_MOBILE : HINT_TEXT_DESKTOP;
+  
+
+
+//   const handleStageMouseMove = useCallback(
+//     (e) => {
+//       if (!stageRef.current) return;
+//       const rect = stageRef.current.getBoundingClientRect();
+//       setCursorPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+
+//       // if (effectiveMode === "scrub" && allImages.length > 1) {
+//       if (allImages.length <= 1) {
+//         const frac = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+//         // scrubToFrame(state.activeProductIndex, Math.floor(frac * allImages.length), allImages.length);
+//       }
+//     },
+//     [allImages.length,  state.activeProductIndex]
+//   );
+
+  
+
+// const handleStageClick = useCallback(() => {
+//   if (animationState.inProgress || animationState.slideChanging) return;
+
+//   const liveIndex = liveIndexRef.current;
+//   const liveProduct = products[liveIndex];
+//   if (!liveProduct) return;
+//   const total = 1 + (liveProduct.altImages?.length || 0);
+//   if (total <= 1) return;
+
+//   setIsPlaying((wasPlaying) => {
+//     if (wasPlaying) {
+//       stopHoverAnimation();
+//       return false;
+//     }
+//     const startFrame = state.selectedImageIndices[liveIndex] ?? 0;
+//     startPlayAnimation(liveIndex, liveProduct, startFrame);
+//     return true;
+//   });
+// }, [stopHoverAnimation, startPlayAnimation, products, state.selectedImageIndices]);
+
+//   const handleFrameSelect = useCallback(
+//     (i) => {
+//       stopHoverAnimation();
+//       setIsPlaying(false);
+//     },
+//     [ animationState.inProgress,
+//   animationState.slideChanging, stopHoverAnimation,  state.activeProductIndex, allImages.length]
+//   );
+
+  
+
+//   const cursorIconClass = isPlaying
+//     ? "ti ti-player-pause"
+//     : "ti ti-player-play"; 
+
+    
+//   const showHint = hintOpen || autoHintVisible;
+
+//   return (
+    
+//     <div
+//       ref={(el) => (refs.swiperContainer = el)}
+//       // className="w-full lg:w-[75%] lg:h-[100%] mt-10 lg:mt-0 lg:content-center"
+//       className="w-full lg:w-[75%] lg:h-[100%] mt-0 lg:mt-0 lg:content-center order-1 lg:order-2"
+//       style={{
+//         visibility: !imageData || animationState.complete ? "visible" : "hidden",
+//         opacity: !imageData || animationState.complete ? 1 : 0,
+//       }}
+//     >
+//       <div className="w-full flex flex-col">
+//         <div className="order-3 lg:order-1">
+//        <ProductDrawing product={currentProduct} />  
+//        </div> 
+
+//         {/* Главная область */}
+//         <div
+//           ref={stageRef}
+//           className="relative w-full"
+//           // style={{ cursor: allImages.length > 1  && !isTouchDevice ? "none" : "default" }}
+//             style={{
+//     cursor: isInteractionBlocked
+//       ? "default"
+//       : allImages.length > 1 && !isTouchDevice
+//       ? "none"
+//       : "default",
+//     pointerEvents: isInteractionBlocked ? "none" : "auto",
+//   }}
+//          onMouseMove={(e) => {
+//     if (!stageRef.current) return;
+
+//     const rect = stageRef.current.getBoundingClientRect();
+
+//     setCursorPos({
+//         x: e.clientX - rect.left,
+//         y: e.clientY - rect.top,
+//     });
+// }}
+//           // onMouseMove={handleStageMouseMove}
+//            onMouseEnter={() => { if (!isTouchDevice) { setIsHovering(true); onMouseEnter(state.activeProductIndex, currentProduct); }}}
+//           onMouseLeave={() => { if (!isTouchDevice)   {
+//             setIsHovering(false);
+//             onMouseLeave(state.activeProductIndex);
+//             // if (effectiveMode === "play") { 
+//               stopHoverAnimation();
+//                setIsPlaying(false);
+//             //  }
+            
+//           }}}
+//           // onClick={handleStageClick}
+//             // onClick={!isTouchDevice ? handleStageClick : undefined}
+//             onClick={(e) => {
+//   if (isTouchDevice) {
+//     if (hintOpen || autoHintVisible) {
+//       closeHint();
+//     }
+//     return;
+//   }
+//   handleStageClick();
+// }} 
+//         ><div className="order-2 lg:order-2">
+//           <Swiper
+//           // className="custom-swiper h-[clamp(250px,calc(100px+19.5vw),600px)]"
+//           className="custom-swiper h-[min(62vh,600px)] lg:h-[clamp(250px,calc(100px+19.5vw),600px)]"
+//             // className="custom-swiper h-[250px] sm:h-[300px] md:h-[350px]"
+//             modules={[Pagination, Mousewheel, Thumbs]}
+//             pagination={{ clickable: true, el: ".custom-swiper-pagination" }}
+//             mousewheel={true}
+//             direction="horizontal"
+//             centeredSlides={true}
+//             thumbs={{ swiper: swiperInstances.thumbs }}
+//             spaceBetween={20}
+//             initialSlide={state.activeProductIndex}
+//             speed={swiperConfig.SPEED}
+//             threshold={swiperConfig.THRESHOLD}
+//             resistance={true}
+//             resistanceRatio={swiperConfig.RESISTANCE_RATIO}
+//             onInit={onSwiperInit}
+//             onSlideChange={onSlideChange}
+  
+//             preventClicks={false}
+//             preventClicksPropagation={false}
+//             touchStartPreventDefault={false}
+//             onSlideChangeTransitionStart={(swiper) => {
+//               liveIndexRef.current = swiper.activeIndex; 
+//               // stopHoverAnimation();
+//               // setIsPlaying(false);
+//             }}
+//           >
+//             {products.map((product, index) => (
+//               <SwiperSlide
+//                 key={product.id}
+//                 style={{ height: "100%", transform: `scale(${product.scale || 1})` }}
+//               >
+//                 <div className="w-full h-full flex items-center z-555555555 mt-0 lg:mt-10 justify-center">
+//                   <img
+//                     src={
+//                       state.selectedImageIndices[index] === 0
+//                         ? product.image
+//                         : product.altImages[state.selectedImageIndices[index] - 1]
+//                     }
+//                     alt={product.name}
+//                     // className="max-h-full py-10 w-auto object-contain"
+//                     className="max-h-full lg:py-10 w-auto object-contain"
+//                     draggable="false"
+//                     // onTouchStart={() => onTouchStart(index, product)}
+//                     // onTouchEnd={() => onTouchEnd(index)}
+//                   />
+//                 </div>
+//               </SwiperSlide>
+//             ))}
+//           </Swiper>
+// </div>
+
+//           {/* Стрелки с размерами — только на основном фото товара */}
+//           {showSizeOverlay && (
+//             <SizeOverlay dimensions={currentProduct.dimensions} />
+//           )}
+
+//           {/* Счётчик кадров */}
+//           {allImages.length > 1 && (
+//             <div className="absolute top-2.5 right-3 z-10 pointer-events-none">
+//               <span
+//                 className="text-[11px] text-white px-2.5 py-1 rounded-full"
+//                 style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(6px)" }}
+//               >
+//                 {currentFrameIndex + 1} / {allImages.length}
+//               </span>
+//             </div>
+//           )}
+
+  
+
+//           {allImages.length > 1 && !isTouchDevice && (
+//   <button
+//     type="button"
+//     className="absolute top-2.5 left-3 z-20 w-7 h-7 rounded-full flex items-center justify-center"
+//     style={{
+//       background: "rgba(120,120,120,0.28)",
+//       backdropFilter: "blur(8px)",
+//       border: "0.5px solid rgba(255,255,255,0.22)",
+//     }}
+//     onClick={toggleHint}
+//     aria-label="Подсказка по управлению"
+//   >
+//     <i className="ti ti-info-circle" style={{ fontSize: 15, color: "rgba(255,255,255,0.88)" }} aria-hidden="true" />
+//   </button>
+// )}
+
+   
+
+//           <div
+//   className="absolute z-30 pointer-events-none"
+//   style={{
+//     ...(isTouchDevice
+//       ? { bottom: 50, right: 12 }
+//       : { top: 44, left: 10 }),
+//     minWidth: 190,
+//     maxWidth: 230,
+//     background: "rgba(25,25,25,0.6)",
+//     backdropFilter: "blur(10px)",
+//     border: "0.5px solid rgba(255,255,255,0.16)",
+//     borderRadius: 12,
+//     padding: "10px 14px",
+//     opacity: showHint ? 1 : 0,
+//     transform: showHint
+//       ? "translateY(0)"
+//       : isTouchDevice
+//       ? "translateY(6px)"
+//       : "translateY(-4px)",
+//     transition: "opacity 0.22s, transform 0.22s",
+//   }}
+// >
+//   {hintText && (
+//     <p style={{ fontSize: 12, color: "rgba(255,255,255,0.88)", lineHeight: 1.5 }}>
+//       {hintText}
+//     </p>
+//   )}
+// </div>
+
+//           {/* Кастомный курсор */}
+//           {allImages.length > 1 && isHovering && !isTouchDevice && !isInteractionBlocked && (
+//             <div
+//               className="absolute pointer-events-none z-20"
+//               style={{
+//                 left: cursorPos.x,
+//                 top: cursorPos.y,
+//                 transform: "translate(-50%, -50%)",
+//                 width: 36,
+//                 height: 36,
+//                 borderRadius: "50%",
+//                 background: "rgba(0,0,0,0.38)",
+//                 display: "flex",
+//                 alignItems: "center",
+//                 justifyContent: "center",
+//               }}
+//             >
+//               <i className={cursorIconClass} style={{ fontSize: 15, color: "#fff" }} aria-hidden="true" />
+//             </div>
+//           )}
+    
+// {/* Мобильная кнопка плей/пауза */}
+// {allImages.length > 1 && isTouchDevice && (
+//   <button
+//     className="absolute bottom-3 right-3 z-20 w-9 h-9 rounded-full flex items-center justify-center"
+//     style={{
+//       background: "rgba(0,0,0,0.38)",
+//       backdropFilter: "blur(6px)",
+//       border: "0.5px solid rgba(255,255,255,0.22)",
+//     }}
+//     // onClick={(e) => { e.stopPropagation(); handleStageClick(); }}
+//         onClick={(e) => {
+//       e.stopPropagation();
+//       if (hintOpen || autoHintVisible) {
+//         closeHint();
+//         return;
+//       }
+//       handleStageClick();
+//     }}
+//     aria-label={isPlaying ? "Пауза" : "Запустить анимацию"}
+//   >
+//     <i
+//       className={isPlaying ? "ti ti-player-pause" : "ti ti-player-play"}
+//       style={{ fontSize: 16, color: "#fff" }}
+//       aria-hidden="true"
+//     />
+//   </button>
+// )}  </div>
+     
+// <div className="order-1 lg:order-3">
+//         {/* Filmstrip */}
+//         <Filmstrip
+//           product={currentProduct}
+//           currentFrameIndex={currentFrameIndex}
+//           onFrameSelect={handleFrameSelect}
+//         />
+// </div>
+  
+
+//       </div>{isDesktop && (
+//   <div className="mt-8">
+//     <ProductThumbs
+//       products={products}
+//       state={state}
+//       setSwiperInstances={setSwiperInstances}
+//       onThumbnailClick={onThumbnailClick}
+//       swiperConfig={swiperConfig}
+//       thumbsRef={(el) => (refs.thumbs = el)}
+//       visible={state.thumbsShown}
+//     />
+//   </div>
+// )}
+//     </div>
+//   );
+// }
