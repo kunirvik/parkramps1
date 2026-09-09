@@ -81,9 +81,8 @@ export default function Logo3D() {
       title="Logo"
     >
       <Canvas
-        camera={{
-          position: [0, 0, 4],
-          fov: 35,
+    camera={{ position: [0, 0, 0]
+       
         }}
         gl={{
           alpha: true,
