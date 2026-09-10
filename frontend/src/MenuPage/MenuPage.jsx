@@ -211,16 +211,28 @@ import Hero3D from "../Hero3D";
 import LoadingScreen from "../LoadingScreen/LodingScreen";
 import "./MenuPage.css";
 
+// utils/youtube.js
+ function getYouTubeId(url) {
+  const match = url.match(
+    /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([\w-]{11})/
+  );
+  return match ? match[1] : null;
+}
+
 const TEXT_DURATION_MS = 3000;
 const EXIT_ANIM_MS = 500; // длительность анимации исчезновения текста/кнопки
 
 const categories = ["Skateparks", "Ramps", "Events", "Parkramps"];
 
-const background = {
-  type: "image",
-  url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1780427037/project_nkkaef.png",
-};
+// const background = {
+//   type: "image",
+//   url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1780427037/project_nkkaef.png",
+// };
 
+const background = {
+  type: "youtube",
+  url: "https://www.youtube.com/watch?v=rIMW7uRKCEM&list=LL&index=3&t=1s", // ваша ссылка
+};
 const heroModelUrl =
   "https://res.cloudinary.com/dbx6muxub/image/upload/v1786811336/model_eteyx8.glb";
 
@@ -290,13 +302,35 @@ export default function MenuPage() {
       {isLoading && <LoadingScreen isFadingOut={isFadingOut} />}
 
       <div className="hero3d relative w-full h-screen flex items-center justify-center overflow-hidden">
-        {background.type === "image" && (
+        {/* {background.type === "image" && (
           <img
             src={background.url}
             alt="Background"
             className="absolute top-0 left-0 w-full h-full object-cover z-[2]"
           />
-        )}
+        )} */}
+
+        {background.type === "youtube" && (() => {
+  const videoId = getYouTubeId(background.url);
+  return (
+    <div className="yt-bg-wrap absolute top-0 left-0 w-full h-full z-[2] overflow-hidden pointer-events-none">
+      <iframe
+        className="yt-bg-iframe"
+        src={
+          
+          `https://www.youtube.com/embed/${videoId}` +
+          `?autoplay=1&mute=1&loop=1&playlist=${videoId}` +
+          `&controls=0&showinfo=0&modestbranding=1&rel=0&iv_load_policy=3&disablekb=1&playsinline=1`
+        }
+        title="background"
+        frameBorder="0"
+        allow="autoplay; encrypted-media"
+      />
+    </div>
+  );
+})()}
+
+
 
         <Hero3D
           modelUrl={activeModelUrl}

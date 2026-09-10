@@ -228,59 +228,68 @@
 //     playIntervalRef,
 //   };
 // }
+
 import { useCallback, useRef } from "react";
 
 export function useHoverAnimation(isTouchDevice, setState) {
   const playTimeoutRef = useRef(null);
   const playingProductRef = useRef(null);
   const playSessionRef = useRef(0);
-//   const currentFrameRef = useRef(0); // источник истины для текущего кадра
-// const frameRefs = useRef({});
+
   const getTotalImages = (product) => 1 + (product?.altImages?.length || 0);
 
+  // Чем больше фото — тем меньше интервал (быстрее анимация)
+  const computeSpeed = (totalImages) => {
+    const MAX_SPEED = 650; // мс между кадрами при малом кол-ве фото
+    const MIN_SPEED = 150; // нижняя граница, чтобы не было слишком быстро
+    const STEP = 60;       // на сколько мс ускоряемся за каждое доп. фото
+
+    // например: 2 фото -> 650, 5 фото -> 650 - 3*60 = 470, и т.д.
+    const speed = MAX_SPEED - (totalImages - 2) * STEP;
+    return Math.max(MIN_SPEED, speed);
+  };
+
   const stopHoverAnimation = useCallback(() => {
-    // playSessionRef.current += 1;
     clearTimeout(playTimeoutRef.current);
     playTimeoutRef.current = null;
     playingProductRef.current = null;
   }, []);
 
+  const startPlayAnimation = useCallback(
+    (productIndex, product, startFrame = 0, speedOverride = null) => {
+      stopHoverAnimation();
 
+      const totalImages = getTotalImages(product);
+      if (totalImages <= 1) return;
 
-const startPlayAnimation = useCallback(
-  (productIndex, product, startFrame = 0, speed = 650) => {
-    stopHoverAnimation();
+      const speed = speedOverride ?? computeSpeed(totalImages);
 
-    const totalImages = getTotalImages(product);
-    if (totalImages <= 1) return;
+      playingProductRef.current = productIndex;
+      const session = ++playSessionRef.current;
 
-    playingProductRef.current = productIndex;
-    const session = ++playSessionRef.current;
+      let frame = startFrame % totalImages;
 
-    let frame = startFrame % totalImages;
+      const scheduleNext = () => {
+        playTimeoutRef.current = setTimeout(() => {
+          if (playSessionRef.current !== session || playingProductRef.current !== productIndex) return;
 
-    const scheduleNext = () => {
-      playTimeoutRef.current = setTimeout(() => {
-        if (playSessionRef.current !== session || playingProductRef.current !== productIndex) return;
+          frame = (frame + 1) % totalImages;
 
-        frame = (frame + 1) % totalImages;
+          setState((prev) => {
+            if (playSessionRef.current !== session) return prev;
+            const indices = [...prev.selectedImageIndices];
+            indices[productIndex] = frame;
+            return { ...prev, selectedImageIndices: indices };
+          });
 
-        setState((prev) => {
-          if (playSessionRef.current !== session) return prev;
-          const indices = [...prev.selectedImageIndices];
-          indices[productIndex] = frame;
-          return { ...prev, selectedImageIndices: indices };
-        });
+          scheduleNext();
+        }, speed);
+      };
 
-        scheduleNext();
-      }, speed);
-    };
-
-    scheduleNext();
-  },
-  [stopHoverAnimation, setState]
-); 
-
+      scheduleNext();
+    },
+    [stopHoverAnimation, setState]
+  );
 
   const handleMouseEnter = useCallback(
     (index, product, canAnimate = true) => {
@@ -301,7 +310,81 @@ const startPlayAnimation = useCallback(
     startPlayAnimation,
     stopHoverAnimation,
   };
-} 
+}
+// import { useCallback, useRef } from "react";
+
+// export function useHoverAnimation(isTouchDevice, setState) {
+//   const playTimeoutRef = useRef(null);
+//   const playingProductRef = useRef(null);
+//   const playSessionRef = useRef(0);
+// //   const currentFrameRef = useRef(0); // источник истины для текущего кадра
+// // const frameRefs = useRef({});
+//   const getTotalImages = (product) => 1 + (product?.altImages?.length || 0);
+
+//   const stopHoverAnimation = useCallback(() => {
+//     // playSessionRef.current += 1;
+//     clearTimeout(playTimeoutRef.current);
+//     playTimeoutRef.current = null;
+//     playingProductRef.current = null;
+//   }, []);
+
+
+
+// const startPlayAnimation = useCallback(
+//   (productIndex, product, startFrame = 0, speed = 650) => {
+//     stopHoverAnimation();
+
+//     const totalImages = getTotalImages(product);
+//     if (totalImages <= 1) return;
+
+//     playingProductRef.current = productIndex;
+//     const session = ++playSessionRef.current;
+
+//     let frame = startFrame % totalImages;
+
+//     const scheduleNext = () => {
+//       playTimeoutRef.current = setTimeout(() => {
+//         if (playSessionRef.current !== session || playingProductRef.current !== productIndex) return;
+
+//         frame = (frame + 1) % totalImages;
+
+//         setState((prev) => {
+//           if (playSessionRef.current !== session) return prev;
+//           const indices = [...prev.selectedImageIndices];
+//           indices[productIndex] = frame;
+//           return { ...prev, selectedImageIndices: indices };
+//         });
+
+//         scheduleNext();
+//       }, speed);
+//     };
+
+//     scheduleNext();
+//   },
+//   [stopHoverAnimation, setState]
+// ); 
+
+
+//   const handleMouseEnter = useCallback(
+//     (index, product, canAnimate = true) => {
+//       if (isTouchDevice || !canAnimate) return;
+//       setState((prev) => ({ ...prev, hoveredIndex: index }));
+//     },
+//     [isTouchDevice, setState]
+//   );
+
+//   const handleMouseLeave = useCallback(() => {
+//     setState((prev) => ({ ...prev, hoveredIndex: null }));
+//     stopHoverAnimation();
+//   }, [setState, stopHoverAnimation]);
+
+//   return {
+//     handleMouseEnter,
+//     handleMouseLeave,
+//     startPlayAnimation,
+//     stopHoverAnimation,
+//   };
+// } 
 // import { useCallback, useRef, useState } from "react";
 
 // export function useHoverAnimation(isTouchDevice, setState) {

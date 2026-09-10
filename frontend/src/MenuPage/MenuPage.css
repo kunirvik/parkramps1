@@ -5,7 +5,22 @@
   overflow: hidden;
   background: #000;
 }
+.yt-bg-wrap {
+  pointer-events: none; /* клики проходят "сквозь" видео */
+}
 
+.yt-bg-iframe {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 177.77vh;   /* 16:9 cover-эффект */
+  height: 56.25vw;
+  min-width: 100%;
+  min-height: 100%;
+  transform: translate(-50%, -50%);
+
+  filter: grayscale(1); /* чёрно-белый фильтр */
+}
 
 /* ==========================================================
    VIDEO BACKGROUND
