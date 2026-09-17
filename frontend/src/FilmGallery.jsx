@@ -756,6 +756,871 @@
 //   );
 // } 
 
+// import { useState, useEffect, useRef, useCallback, useMemo, memo } from "react";
+// import { useNavigate, useLocation } from "react-router-dom";
+// import { ChevronRight } from "lucide-react";
+// import SocialButtons from "./SocialButtons/SocialButtons";
+
+// const THUMB_H = 68;
+
+// function getVideoThumbnail(videoUrl) {
+//   if (!videoUrl || !videoUrl.includes("/video/upload/")) return null;
+
+//   return videoUrl
+//     .replace("/video/upload/", "/video/upload/so_0/")
+//     .replace(/\.mp4$/, ".jpg");
+// }
+
+// const STYLE_ID = "film-gallery-styles";
+// if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
+//   const s = document.createElement("style");
+//   s.id = STYLE_ID;
+//   s.textContent = `
+//     @keyframes fg-spin { to { transform: rotate(360deg); } }
+//     @keyframes fg-slide-up {
+//       from { opacity: 0; transform: translateY(18px); }
+//       to   { opacity: 1; transform: translateY(0); }
+//     }
+//     @keyframes fg-slide-left {
+//       from { opacity: 0; transform: translateX(18px); }
+//       to   { opacity: 1; transform: translateX(0); }
+//     }
+//     @keyframes fg-slide-right {
+//       from { opacity: 0; transform: translateX(-18px); }
+//       to   { opacity: 1; transform: translateX(0); }
+//     }
+//     @keyframes fg-slide-down {
+//       from { opacity: 0; transform: translateY(-18px); }
+//       to   { opacity: 1; transform: translateY(0); }
+//     }
+//     .fg-slide-up    { animation: fg-slide-up   0.45s cubic-bezier(0.16,1,0.3,1) both; }
+//     .fg-slide-left  { animation: fg-slide-left  0.45s cubic-bezier(0.16,1,0.3,1) both; }
+//     .fg-slide-right { animation: fg-slide-right 0.45s cubic-bezier(0.16,1,0.3,1) both; }
+//     .fg-slide-down  { animation: fg-slide-down 0.45s cubic-bezier(0.16,1,0.3,1) both; }
+//     .fg-no-scroll::-webkit-scrollbar { display: none; }
+//     .fg-no-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+//   `;
+//   document.head.appendChild(s);
+// }
+
+// function optimizeImg(url, width = 1200) {
+//   if (!url || !url.includes("cloudinary.com")) return url;
+//   // уже оптимизирован — не трогаем
+//   if (url.includes("/upload/w_") || url.includes("/upload/q_")) return url;
+//   return url.replace("/upload/", `/upload/w_${width},q_auto,f_auto,dpr_auto/`);
+// }
+
+// // ─── Предзагрузка соседних слайдов ───────────────────────────────────────────
+// function usePreload(slides, activeIndex) {
+//   useEffect(() => {
+//     const indices = [activeIndex + 1, activeIndex + 2, activeIndex - 1]
+//       .map((i) => (i + slides.length) % slides.length);
+//     [...new Set(indices)].forEach((i) => {
+//       const s = slides[i];
+//       if (!s || s.type === "video") return;
+//       const img = new Image();
+//       img.src = optimizeImg(s.src, 1200);
+//     });
+//   }, [activeIndex, slides]);
+// }
+
+// // ─── Спиннер ─────────────────────────────────────────────────────────────────
+// function Spinner() {
+//   return (
+//     <div className="absolute inset-0 flex items-center justify-center bg-neutral-950 z-10 pointer-events-none">
+//       <div className="relative w-9 h-9">
+//         <div className="absolute inset-0 rounded-full border-2 border-white/10" />
+//         <div
+//           className="absolute inset-0 rounded-full border-2 border-transparent border-t-white/70"
+//           style={{ animation: "fg-spin 0.8s linear infinite" }}
+//         />
+//       </div>
+//     </div>
+//   );
+// }
+
+// function IconClose() {
+//   return (
+//     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+//       viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+//       <line x1="18" y1="6" x2="6"  y2="18"/>
+//       <line x1="6"  y1="6" x2="18" y2="18"/>
+//     </svg>
+//   );
+// }
+
+// function IconGrid() {
+//   return (
+//     <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+//       <rect x="0"    y="0"    width="4.5" height="4.5" rx="0.8"/>
+//       <rect x="5.75" y="0"    width="4.5" height="4.5" rx="0.8"/>
+//       <rect x="11.5" y="0"    width="4.5" height="4.5" rx="0.8"/>
+//       <rect x="0"    y="5.75" width="4.5" height="4.5" rx="0.8"/>
+//       <rect x="5.75" y="5.75" width="4.5" height="4.5" rx="0.8"/>
+//       <rect x="11.5" y="5.75" width="4.5" height="4.5" rx="0.8"/>
+//       <rect x="0"    y="11.5" width="4.5" height="4.5" rx="0.8"/>
+//       <rect x="5.75" y="11.5" width="4.5" height="4.5" rx="0.8"/>
+//       <rect x="11.5" y="11.5" width="4.5" height="4.5" rx="0.8"/>
+//     </svg>
+//   );
+// }
+
+// function IconOpenProduct() {
+//   return (
+//     <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15"
+//       viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+//       strokeLinecap="round" strokeLinejoin="round">
+//       <path d="M7 17L17 7"/>
+//       <path d="M7 7h10v10"/>
+//     </svg>
+//   );
+// }
+
+// // ─── Панель категорий (десктоп, слева) ───────────────────────────────────────
+// // function CategoryPanel({ categories, activeCategory, onSelect, slides }) {
+// //   return (
+// //     <div
+// //       className="fg-slide-right flex flex-col gap-0.5 py-3 px-2 bg-neutral-900
+// //                  border-r border-neutral-800 overflow-y-auto fg-no-scroll flex-shrink-0"
+// //       style={{ minWidth: 130, maxWidth: 150, animationDelay: "0.15s" }}
+// //     >
+
+    
+// //       {categories.map((cat) => {
+// //         const isActive = activeCategory === cat.key;
+// //         const thumb    = slides.find((s) => (s.productName || s._extraCat) === cat.key);
+// //         const thumbSrc = thumb?.productImage || thumb?.src;
+// //         return (
+// //           <button
+// //             key={cat.key}
+// //             onClick={() => onSelect(cat.key)}
+// //             className={`flex items-center gap-2 w-full text-left px-2 py-1.5 rounded-md
+// //               transition-colors font-futura text-xs tracking-wide
+// //               ${isActive
+// //                 ? "bg-yellow-400/20 text-yellow-300 border border-yellow-400/50"
+// //                 : "text-white/40 hover:text-white/80 hover:bg-white/5"
+// //               }`}
+// //           >
+// //             {thumbSrc && (
+// //               <div className="flex-shrink-0 w-8 h-8 rounded-sm overflow-hidden bg-neutral-800">
+// //                 <img
+// //                   src={optimizeImg(thumbSrc, 80)}
+// //                   className="w-full h-full object-cover"
+// //                   loading="lazy"
+// //                   alt=""
+// //                 />
+// //               </div>
+// //             )}
+// //             <span className="truncate">{cat.label}</span>
+// //           </button>
+// //         );
+// //       })}
+// //     </div>
+// //   );
+// // }
+
+// function CategoryPanel({ categories, activeCategory, onSelect }) {
+//   return (
+//     <div
+//       className="fg-slide-right flex flex-col mt-10 py-3 px-3 bg-neutral-900
+//                  border-r border-neutral-800 overflow-y-auto fg-no-scroll flex-shrink-0"
+//       style={{ minWidth: 160, maxWidth: 180 }}
+//     >
+//       {categories.map((cat) => {
+//         const isActive = activeCategory === cat.key;
+
+//         return (
+//           <button
+//             key={cat.key}
+//             onClick={() => onSelect(cat.key)}
+//             className="w-full cursor-pointer flex justify-between items-center
+//                        py-1 text-left transition-colors group"
+//           >
+//             <span
+//               className="font-futura font-bold transition-colors duration-200"
+//               style={{
+//                 fontSize: "clamp(22px, 2.5vw, 30px)",
+//                 color: isActive ? "#ffffff" : "#717171",
+//               }}
+//             >
+//               {cat.label}
+//             </span>
+
+//             {/* стрілка як у акордеоні */}
+//             <span
+//               className="transition-all duration-300 flex-shrink-0 ml-1"
+//               style={{
+//                 color: isActive ? "#ffffff" : "#717171",
+//                 opacity: isActive ? 1 : 0,
+//                 transform: isActive ? "translateX(0)" : "translateX(-4px)",
+//               }}
+//             >
+//               <ChevronRight size={16} />
+//             </span>
+//           </button>
+//         );
+//       })}
+//     </div>
+//   );
+// }
+
+// // ─── Панель категорий (мобилка, горизонтальная сверху) ───────────────────────
+// // function MobileCategoryBar({ categories, activeCategory, onSelect, slides }) {
+// //   return (
+// //     <div className="flex gap-1.5 px-2 py-1.5 overflow-x-auto fg-no-scroll
+// //                     bg-neutral-900/90 backdrop-blur-sm border-b border-neutral-800 flex-shrink-0">
+// //       <button
+// //         onClick={() => onSelect(null)}
+// //         className={`flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full
+// //           font-futura text-[10px] tracking-wide transition-colors
+// //           ${activeCategory === null
+// //             ? "bg-yellow-400/20 text-yellow-300 border border-yellow-400/50"
+// //             : "bg-neutral-800 text-white/50"
+// //           }`}
+// //       >
+// //         All
+// //       </button>
+// //       {categories.map((cat) => {
+// //         const isActive = activeCategory === cat.key;
+// //         // const thumb    = slides.find((s) => (s.productName || s._extraCat) === cat.key);
+// //        const thumb = slides.find(
+// //   (s) => (s._categoryKey ?? s._extraCat) === cat.key
+// // );
+// //         const thumbSrc = thumb?.productImage || thumb?.src;
+// //         return (
+// //           <button
+// //             key={cat.key}
+// //             onClick={() => onSelect(cat.key)}
+// //             className={`flex-shrink-0 flex items-center gap-1.5 px-2 py-1 rounded-full
+// //               font-futura text-[10px] tracking-wide transition-colors
+// //               ${isActive
+// //                 ? "bg-yellow-400/20 text-yellow-300 border border-yellow-400/50"
+// //                 : "bg-neutral-800 text-white/50"
+// //               }`}
+// //           >
+// //             {thumbSrc && (
+// //               <div className="w-5 h-5 rounded-full overflow-hidden bg-neutral-700 flex-shrink-0">
+// //                 <img src={optimizeImg(thumbSrc, 40)} className="w-full h-full object-cover" loading="lazy" alt="" />
+// //               </div>
+// //             )}
+// //             <span>{cat.label}</span>
+// //           </button>
+// //         );
+// //       })}
+// //     </div>
+// //   );
+// // }
+
+// function MobileCategoryBar({ categories, activeCategory, onSelect }) {
+//   // відстежуємо напрямок для sliding-анімації
+//   const prevIndexRef = useRef(
+//     categories.findIndex((c) => c.key === activeCategory)
+//   );
+//   const [direction, setDirection] = useState(1);
+
+//   const handleSelect = (key) => {
+//     const newIdx = categories.findIndex((c) => c.key === key);
+//     const oldIdx = categories.findIndex((c) => c.key === activeCategory);
+//     setDirection(newIdx > oldIdx ? 1 : -1);
+//     prevIndexRef.current = newIdx;
+//     onSelect(key);
+//   };
+
+//   return (
+//     <div className="flex-shrink-0 bg-neutral-900/90 backdrop-blur-sm
+//                     border-b border-neutral-800">
+
+//       {/* активна назва — sliding як в акордеоні */}
+//       <div className="relative h-8 overflow-hidden px-3 pt-1">
+//         {categories.map((cat) => {
+//           const isActive = activeCategory === cat.key;
+//           return (
+//             <span
+//               key={cat.key}
+//               className="absolute left-3 top-1 font-futura font-bold
+//                          transition-all duration-300 ease-out text-white"
+//               style={{
+//                 fontSize: "clamp(13px, 2vw, 15px)",
+//                 opacity: isActive ? 1 : 0,
+//                 transform: isActive
+//                   ? "translateX(0)"
+//                   : direction === 1
+//                     ? "translateX(-16px)"
+//                     : "translateX(16px)",
+//                 pointerEvents: "none",
+//               }}
+//             >
+//               {cat.label}
+//             </span>
+//           );
+//         })}
+//       </div>
+
+//       {/* таби — grid як в акордеоні */}
+//       <div
+//         className="grid border-b border-neutral-800 px-1"
+//         style={{ gridTemplateColumns: `repeat(${categories.length}, 1fr)` }}
+//       >
+//         {categories.map((cat) => {
+//           const isActive = activeCategory === cat.key;
+//           return (
+//             <button
+//               key={cat.key}
+//               onClick={() => handleSelect(cat.key)}
+//               className="relative cursor-pointer pb-2 px-1 pt-1
+//                          font-futura font-bold text-center
+//                          whitespace-nowrap overflow-hidden text-ellipsis
+//                          transition-colors duration-200"
+//               style={{
+//                 fontSize: "clamp(12px, 2.5vw, 15px)",
+//                 color: isActive ? "#f9a8d4" : "#717171", // pink-300 як в акордеоні
+//               }}
+//             >
+//               {cat.label}
+
+//               {/* підкреслення активного табу */}
+//               {isActive && (
+//                 <span
+//                   className="absolute left-0 bottom-0 w-full bg-neutral-500"
+//                   style={{ height: 2 }}
+//                 />
+//               )}
+//             </button>
+//           );
+//         })}
+//       </div>
+//     </div>
+//   );
+// } 
+
+// // ─── Вертикальная лента миниатюр (десктоп, справа) ───────────────────────────
+// function ThumbStripVertical({ slides, activeIndex, onSelect, highlightedIndices }) {
+//   const stripRef = useRef(null);
+//   const frameRef = useRef(null);
+
+
+
+//   useEffect(() => {
+//     if (!frameRef.current) return;
+//     const top = activeIndex * (THUMB_H + 4);
+//     frameRef.current.style.transform = `translateY(${top}px)`;
+//     if (stripRef.current) {
+//       const containerH = stripRef.current.clientHeight;
+//       stripRef.current.scrollTo({ top: top - containerH / 2 + THUMB_H / 2, behavior: "smooth" });
+//     }
+//   }, [activeIndex]);
+
+//   return (
+//     <div
+//       ref={stripRef}
+//       className="fg-no-scroll relative h-full overflow-y-auto bg-neutral-900 py-1 ml-2"
+//       style={{ width: 80 }}
+//     >
+//       <div
+//         ref={frameRef}
+//         className="absolute left-0.5 right-0.5 h-[68px] border-2 border-yellow-400/90
+//                    rounded-sm pointer-events-none z-50 transition-transform duration-300"
+//       />
+//       <div className="flex flex-col gap-1 px-0.5">
+//         {slides.map((slide, i) => {
+//           const isActive      = i === activeIndex;
+//           const isHighlighted = highlightedIndices === null || highlightedIndices.has(i);
+//           return (
+//             <div
+//               key={i}
+//               onClick={() => onSelect(i)}
+//               className="h-[68px] overflow-hidden cursor-pointer transition-opacity duration-300"
+//               style={{ opacity: isActive ? 1 : isHighlighted ? 0.55 : 0.12 }}
+//             >
+//              {slide.type === "video"
+//   ? <img
+//       src={getVideoThumbnail(slide.src)}
+//       className="w-full h-full object-cover"
+//       loading="lazy"
+//       alt=""
+//     />
+//   : <img
+//       src={slide.srcThumb || optimizeImg(slide.src, 160)}
+//       className="w-full h-full object-cover"
+//       loading="lazy"
+//       alt=""
+//     />
+// }
+//             </div>
+//           );
+//         })}
+//       </div>
+//     </div>
+//   );
+// }
+
+// // ─── Горизонтальная лента миниатюр (мобилка, снизу) ──────────────────────────
+// function MobileThumbStrip({ slides, activeIndex, onSelect, highlightedIndices }) {
+//   const stripRef = useRef(null);
+//   const frameRef = useRef(null);
+//   const THUMB_W  = 56;
+//   const gap      = 3;
+
+//   useEffect(() => {
+//     if (!frameRef.current || !stripRef.current) return;
+//     const left = activeIndex * (THUMB_W + gap);
+//     frameRef.current.style.transform = `translateX(${left}px)`;
+//     stripRef.current.scrollTo({
+//       left: left - stripRef.current.clientWidth / 2 + THUMB_W / 2,
+//       behavior: "smooth",
+//     });
+//   }, [activeIndex]);
+
+//   return (
+//     <div
+//       ref={stripRef}
+//       className="fg-no-scroll relative overflow-x-auto bg-neutral-900 border-t border-neutral-800 flex-shrink-0"
+//       style={{ height: 60, paddingLeft: 8, paddingRight: 8 }}
+//     >
+//       <div
+//         ref={frameRef}
+//         className="absolute top-1.5 bottom-1.5 border border-yellow-400/80 rounded-sm pointer-events-none z-50"
+//         style={{ width: THUMB_W, left: 8, transition: "transform 0.3s cubic-bezier(0.16,1,0.3,1)" }}
+//       />
+//       <div className="flex h-full" style={{ gap, minWidth: slides.length * (THUMB_W + gap) }}>
+//         {slides.map((slide, i) => {
+//           const isActive      = i === activeIndex;
+//           const isHighlighted = highlightedIndices === null || highlightedIndices.has(i);
+//           return (
+//             <div
+//               key={i}
+//               onClick={() => onSelect(i)}
+//               className="flex-shrink-0 overflow-hidden cursor-pointer rounded-sm transition-opacity duration-300"
+//               style={{ width: THUMB_W, height: "100%", opacity: isActive ? 1 : isHighlighted ? 0.55 : 0.12 }}
+//             >
+//             {slide.type === "video"
+//   ? <img
+//       src={getVideoThumbnail(slide.src)}
+//       className="w-full h-full object-cover"
+//       loading="lazy"
+//       alt=""
+//     />
+//   : <img
+//       src={slide.srcThumb || optimizeImg(slide.src, 160)}
+//       className="w-full h-full object-cover"
+//       loading="lazy"
+//       alt=""
+//     />
+// }
+//             </div>
+//           );
+//         })}
+//       </div>
+//     </div>
+//   );
+// }
+
+// const MainView = memo(function MainView({ slide, index, total }) {
+//   const videoRef             = useRef(null);
+//   const imgRef               = useRef(null);  // ← добавь это
+//   const [loading, setLoading] = useState(true);
+
+//   useEffect(() => { setLoading(true); }, [slide]);
+
+//   useEffect(() => {
+//     if (videoRef.current) videoRef.current.play().catch(() => {});
+//   }, [slide]);
+
+//   // если картинка уже в кеше — complete=true, onLoad не стреляет
+//   useEffect(() => {
+//     if (imgRef.current?.complete) {
+//       setLoading(false);
+//     }
+//   }, [slide]);
+
+//   if (!slide) return null;
+
+//   return (
+//     <div className="relative flex justify-center w-full h-full bg-neutral-950 overflow-hidden">
+//       {loading && <Spinner />}
+
+//       {slide.type === "video"
+//         ? <video
+//             ref={videoRef}
+//             src={slide.src}
+//             autoPlay muted loop playsInline
+//             preload="none"
+//             className="w-auto h-full object-contain"
+//             onCanPlay={() => setLoading(false)}
+//           />
+//         : <img
+//             ref={imgRef}
+//             src={optimizeImg(slide.src, 1200)}
+//             className="w-auto h-full object-contain"
+//             style={{ opacity: loading ? 0 : 1, transition: "opacity 0.25s ease" }}
+//             onLoad={() => setLoading(false)}
+//             onError={() => setLoading(false)}
+//             decoding="async"
+//             alt={slide.caption || ""}
+//           />
+//       }
+
+//       <div className="absolute inset-0 pointer-events-none
+//                       bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(0,0,0,0.55)_100%)]" />
+
+//       {slide.caption && (
+//         <div className="fg-slide-up absolute bottom-0 left-0 right-0 p-10
+//                         bg-gradient-to-t from-black/70 to-transparent">
+//           <p className="text-white/90 font-bold">{slide.caption}</p>
+//         </div>
+//       )}
+
+//       <div className="fg-slide-down absolute top-5 left-6 text-white/50 text-xs font-mono
+//                       bg-black/30 px-3 py-1 rounded-full">
+//         {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+//       </div>
+//     </div>
+//   );
+// });
+// // ─── Кнопка с тултипом (десктоп) ─────────────────────────────────────────────
+// function IconButton({ onClick, label, children, disabled = false }) {
+//   return (
+//     <div className="relative group">
+//       <button
+//         onClick={onClick}
+//         disabled={disabled}
+//         aria-label={label}
+//         className="flex items-center justify-center w-9 h-9 rounded-full
+//           bg-neutral-800/70 hover:bg-neutral-700 text-white/80 hover:text-white
+//           transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+//       >
+//         {children}
+//       </button>
+//       <div className="absolute right-11 top-1/2 -translate-y-1/2 pointer-events-none
+//         opacity-0 group-hover:opacity-100 transition-opacity duration-150
+//         bg-black/80 text-white/90 text-xs font-mono px-2 py-1 rounded whitespace-nowrap">
+//         {label}
+//       </div>
+//     </div>
+//   );
+// }
+
+// // ─── Основной компонент ───────────────────────────────────────────────────────
+// export default function FilmGallery({
+//   slides: slidesProp,
+//   startIndex      = 0,
+//   onClose:        onCloseProp,
+//   extraCategories = [],
+//   initialCategory = null,
+//   originPath      = "/",
+//     onCategoryChange,
+// }) {
+//   const navigate = useNavigate();
+//   const location = useLocation();
+//  const socialButtonsRef = useRef(null);
+//   const slides = useMemo(() => {
+//     const extraKeys = new Set(slidesProp.map((s) => s._extraCat).filter(Boolean));
+//     const extra = extraCategories
+//       .filter((ec) => !extraKeys.has(ec.key))
+//       .flatMap((ec) => ec.slides.map((s) => ({ ...s, _extraCat: ec.key })));
+//     return [...slidesProp, ...extra];
+//   }, [slidesProp, extraCategories]);
+
+//   // const categories = useMemo(() => {
+//   //   const seen = new Set();
+//   //   const fromProducts = [];
+//   //   slides.forEach((s) => {
+//   //     if (s.productName && !seen.has(s.productName)) {
+//   //       seen.add(s.productName);
+//   //       fromProducts.push({ key: s.productName, label: s.productName });
+//   //     }
+//   //   });
+//   //   const fromExtra = extraCategories.map((ec) => ({ key: ec.key, label: ec.label }));
+//   //   return [...fromProducts, ...fromExtra];
+//   // }, [slides, extraCategories]);
+
+//   // Замінити useMemo для categories:
+// const categories = useMemo(() => {
+//   const seen = new Map(); // key → label
+//   slides.forEach((s) => {
+//     const key   = s._categoryKey ?? null;
+//     const label = s._categoryLabel ?? s._categoryKey ?? null;
+//     if (key && !seen.has(key)) seen.set(key, label);
+//   });
+
+//   // extra categories додаються окремо (вони вже мають key + label)
+//   const fromExtra = extraCategories.map((ec) => ({ key: ec.key, label: ec.label }));
+
+//   // fromProducts — унікальні типи з каталогу
+//   const fromCatalog = [...seen.entries()].map(([key, label]) => ({ key, label }));
+
+//   return [...fromCatalog, ...fromExtra];
+// }, [slides, extraCategories]);
+
+
+
+//   const [activeIndex, setActiveIndex]       = useState(startIndex);
+//   const [activeCategory, setActiveCategory] = useState(initialCategory);
+//   const [mounted, setMounted]               = useState(false);
+//   const [isMobile, setIsMobile]             = useState(
+//     () => typeof window !== "undefined" && window.innerWidth < 768
+//   );
+
+//   const containerRef = useRef(null);
+//   const touchStartX  = useRef(null);
+//   const touchStartY  = useRef(null);
+
+// const activeCategoryLabel =
+//   categories.find(c => c.key === activeCategory)?.label || "";
+  
+//   useEffect(() => {
+//     const id = requestAnimationFrame(() => setMounted(true));
+//     return () => cancelAnimationFrame(id);
+//   }, []);
+
+//   useEffect(() => {
+//     const fn = () => setIsMobile(window.innerWidth < 768);
+//     window.addEventListener("resize", fn);
+//     return () => window.removeEventListener("resize", fn);
+//   }, []);
+
+//   // const highlightedIndices = useMemo(() => {
+//   //   if (activeCategory === null) return null;
+//   //   const set = new Set();
+//   //   slides.forEach((s, i) => {
+//   //     const cat = s.productName || s._extraCat || null;
+//   //     if (cat === activeCategory) set.add(i);
+//   //   });
+//   //   return set;
+//   // }, [activeCategory, slides]);
+//   // Замінити highlightedIndices:
+// const highlightedIndices = useMemo(() => {
+//   if (activeCategory === null) return null;
+//   const set = new Set();
+//   slides.forEach((s, i) => {
+//     const cat = s._categoryKey ?? s._extraCat ?? null;
+//     if (cat === activeCategory) set.add(i);
+//   });
+//   return set;
+// }, [activeCategory, slides]);
+
+//   // useEffect(() => {
+//   //   const slide = slides[activeIndex];
+//   //   if (!slide) return;
+//   //   const cat = slide.productName || slide._extraCat || null;
+//   //   setActiveCategory(cat);
+//   // }, [activeIndex, slides]);
+
+//   // Замінити useEffect що ставить activeCategory при зміні слайду:
+// // useEffect(() => {
+// //   const slide = slides[activeIndex];
+// //   if (!slide) return;
+// //   // тепер дивимось на _categoryKey, а не productName
+// //   const cat = slide._categoryKey ?? slide._extraCat ?? null;
+// //   setActiveCategory(cat);
+// // }, [activeIndex, slides]); 
+// useEffect(() => {
+//   const slide = slides[activeIndex];
+//   if (!slide) return;
+
+//   const key = slide._categoryKey ?? slide._extraCat ?? null;
+//   setActiveCategory(key);
+
+//   const label =
+//     slide._categoryLabel ??
+//     categories.find(c => c.key === key)?.label ??
+//     "";
+
+//   onCategoryChange?.(label);
+// }, [activeIndex, slides, categories, onCategoryChange]);
+
+//   // const handleSelectCategory = useCallback((catKey) => {
+//   //   setActiveCategory(catKey);
+//   //   if (catKey === null) return;
+//   //   const firstIdx = slides.findIndex((s) =>
+//   //     (s.productName || s._extraCat || null) === catKey
+//   //   );
+//   //   if (firstIdx !== -1) setActiveIndex(firstIdx);
+//   // }, [slides]);
+
+//   // Замінити handleSelectCategory:
+// const handleSelectCategory = useCallback((catKey) => {
+//   setActiveCategory(catKey);
+//   if (catKey === null) return;
+//   const firstIdx = slides.findIndex(
+//     (s) => (s._categoryKey ?? s._extraCat ?? null) === catKey
+//   );
+//   if (firstIdx !== -1) setActiveIndex(firstIdx);
+// }, [slides]);
+
+//   const currentSlide   = slides[activeIndex];
+//   usePreload(slides, activeIndex);
+//   const canOpenProduct = !!(currentSlide?.productType && currentSlide?.productId);
+
+//   const handleOpenProduct = useCallback(() => {
+//     if (!canOpenProduct) return;
+//     navigate(`/product/${currentSlide.productType}/${currentSlide.productId}`, {
+//       state: { originPath: location.pathname },
+//     });
+//   }, [canOpenProduct, currentSlide, navigate, location.pathname]);
+
+//   const handleClose = useCallback(
+//     () => (onCloseProp ? onCloseProp() : navigate(originPath)),
+//     [onCloseProp, navigate, originPath]
+//   );
+
+//   const handleOpenAllGallery = useCallback(() => navigate("/gallery/all"), [navigate]);
+
+//   const goTo = useCallback(
+//     (idx) => setActiveIndex((idx + slides.length) % slides.length),
+//     [slides.length]
+//   );
+
+//   useEffect(() => {
+//     const onKey = (e) => {
+//       if (e.key === "Escape")                              handleClose();
+//       if (e.key === "ArrowRight" || e.key === "ArrowDown") goTo(activeIndex + 1);
+//       if (e.key === "ArrowLeft"  || e.key === "ArrowUp")   goTo(activeIndex - 1);
+//     };
+//     window.addEventListener("keydown", onKey);
+//     return () => window.removeEventListener("keydown", onKey);
+//   }, [handleClose, activeIndex, goTo]);
+
+//   const handleWheel = useCallback(
+//     (e) => { e.preventDefault(); goTo(activeIndex + (e.deltaY > 0 ? 1 : -1)); },
+//     [activeIndex, goTo]
+//   );
+
+//   useEffect(() => {
+//     const el = containerRef.current;
+//     if (!el || isMobile) return;
+//     el.addEventListener("wheel", handleWheel, { passive: false });
+//     return () => el.removeEventListener("wheel", handleWheel);
+//   }, [handleWheel, isMobile]);
+
+//   const handleTouchStart = useCallback((e) => {
+//     touchStartX.current = e.touches[0].clientX;
+//     touchStartY.current = e.touches[0].clientY;
+//   }, []);
+
+//   const handleTouchEnd = useCallback((e) => {
+//     if (touchStartX.current === null) return;
+//     const dx = e.changedTouches[0].clientX - touchStartX.current;
+//     const dy = e.changedTouches[0].clientY - touchStartY.current;
+//     if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40)
+//       goTo(activeIndex + (dx < 0 ? 1 : -1));
+//     touchStartX.current = null;
+//     touchStartY.current = null;
+//   }, [activeIndex, goTo]);
+
+//   return (
+
+//     <div
+//       ref={containerRef}
+//       className="fixed inset-0 bg-neutral-950 overflow-hidden"
+//       style={{
+//         opacity:       mounted ? 1 : 0,
+//         transition:    "opacity 0.3s ease",
+//         display:       "flex",
+//         flexDirection: isMobile ? "column" : "row",
+//       }}
+//     >
+//     {/* SocialButtons вынесен из flex-потока — просто оверлей поверх */}
+//     <div className="fixed top-0 left-0 w-full z-[60] pointer-events-none">
+//       <div className="pointer-events-auto">
+//         <SocialButtons
+//           ref={socialButtonsRef}
+//            category={activeCategoryLabel}
+//           buttonLabel="shop"
+//           onButtonClick={() => navigate("/catalogue")}
+//           buttonAnimationProps={{ whileTap: { scale: 0.85, opacity: 0.6 } }}
+         
+//         />
+//       </div>
+//     </div>
+ 
+//       {/* ══ ДЕСКТОП ══════════════════════════════════════════════════════════ */}
+//       {!isMobile && (
+//         <>
+//           {/* <CategoryPanel
+//             categories={categories}
+//             activeCategory={activeCategory}
+//             onSelect={handleSelectCategory}
+//             // slides={slides}
+//           /> */}
+
+//           <div className="flex-1 relative">
+//             <MainView slide={currentSlide} index={activeIndex} total={slides.length} />
+//           </div>
+
+//           <div className="flex items-stretch">
+//             <ThumbStripVertical
+//               slides={slides}
+//               activeIndex={activeIndex}
+//               onSelect={goTo}
+//               highlightedIndices={highlightedIndices}
+//             />
+//             <div className="flex flex-col items-center justify-start gap-2 mt-10 px-2 py-3
+//                             bg-neutral-950 border-l border-neutral-800">
+//               <IconButton onClick={handleClose} label="Закрити"><IconClose /></IconButton>
+//               <IconButton onClick={handleOpenAllGallery} label="Всі фото"><IconGrid /></IconButton>
+//               <div className="h-px w-6 bg-neutral-700/60 my-0.5" />
+//               <IconButton onClick={handleOpenProduct} label="Відкрити виріб" disabled={!canOpenProduct}>
+//                 <IconOpenProduct />
+//               </IconButton>
+//             </div>
+//           </div>
+//         </>
+//       )}
+
+//       {/* ══ МОБИЛКА ══════════════════════════════════════════════════════════ */}
+//       {isMobile && (
+//         <>
+//           {/* Категории сверху */}
+//           <MobileCategoryBar
+//             categories={categories}
+//             activeCategory={activeCategory}
+//             onSelect={handleSelectCategory}
+//             // slides={slides}
+//           />
+
+//           {/* Фото — свайп только здесь */}
+//           <div
+//             className="flex-1 relative overflow-hidden"
+//             onTouchStart={handleTouchStart}
+//             onTouchEnd={handleTouchEnd}
+//           >
+//             <MainView slide={currentSlide} index={activeIndex} total={slides.length} />
+//           </div>
+
+//           {/* Миниатюры снизу */}
+//           <MobileThumbStrip
+//             slides={slides}
+//             activeIndex={activeIndex}
+//             onSelect={goTo}
+//             highlightedIndices={highlightedIndices}
+//           />
+
+//           {/* Кнопки */}
+//           <div className="absolute top-20 right-1 z-50 flex flex-col gap-2">
+//             <button onClick={handleClose}
+//               className="flex items-center justify-center w-8 h-8 rounded-full
+//                          bg-neutral-800/80 text-white/80 backdrop-blur-sm">
+//               <IconClose />
+//             </button>
+//             <button onClick={handleOpenAllGallery}
+//               className="flex items-center justify-center w-8 h-8 rounded-full
+//                          bg-neutral-800/80 text-white/80 backdrop-blur-sm">
+//               <IconGrid />
+//             </button>
+//             {canOpenProduct && (
+//               <button onClick={handleOpenProduct}
+//                 className="flex items-center justify-center w-8 h-8 rounded-full
+//                            bg-neutral-800/80 text-white/80 backdrop-blur-sm">
+//                 <IconOpenProduct />
+//               </button>
+//             )}
+//           </div>
+//         </>
+//       )}
+//     </div>
+//   );
+// }
 import { useState, useEffect, useRef, useCallback, useMemo, memo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
@@ -793,10 +1658,15 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
       from { opacity: 0; transform: translateY(-18px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+    @keyframes fg-pop-in {
+      from { opacity: 0; transform: scale(0.92); }
+      to   { opacity: 1; transform: scale(1); }
+    }
     .fg-slide-up    { animation: fg-slide-up   0.45s cubic-bezier(0.16,1,0.3,1) both; }
     .fg-slide-left  { animation: fg-slide-left  0.45s cubic-bezier(0.16,1,0.3,1) both; }
     .fg-slide-right { animation: fg-slide-right 0.45s cubic-bezier(0.16,1,0.3,1) both; }
     .fg-slide-down  { animation: fg-slide-down 0.45s cubic-bezier(0.16,1,0.3,1) both; }
+    .fg-pop-in      { animation: fg-pop-in 0.5s cubic-bezier(0.16,1,0.3,1) both; }
     .fg-no-scroll::-webkit-scrollbar { display: none; }
     .fg-no-scroll { -ms-overflow-style: none; scrollbar-width: none; }
   `;
@@ -827,7 +1697,7 @@ function usePreload(slides, activeIndex) {
 // ─── Спиннер ─────────────────────────────────────────────────────────────────
 function Spinner() {
   return (
-    <div className="absolute inset-0 flex items-center justify-center bg-neutral-950 z-10 pointer-events-none">
+    <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
       <div className="relative w-9 h-9">
         <div className="absolute inset-0 rounded-full border-2 border-white/10" />
         <div
@@ -877,48 +1747,6 @@ function IconOpenProduct() {
 }
 
 // ─── Панель категорий (десктоп, слева) ───────────────────────────────────────
-// function CategoryPanel({ categories, activeCategory, onSelect, slides }) {
-//   return (
-//     <div
-//       className="fg-slide-right flex flex-col gap-0.5 py-3 px-2 bg-neutral-900
-//                  border-r border-neutral-800 overflow-y-auto fg-no-scroll flex-shrink-0"
-//       style={{ minWidth: 130, maxWidth: 150, animationDelay: "0.15s" }}
-//     >
-
-    
-//       {categories.map((cat) => {
-//         const isActive = activeCategory === cat.key;
-//         const thumb    = slides.find((s) => (s.productName || s._extraCat) === cat.key);
-//         const thumbSrc = thumb?.productImage || thumb?.src;
-//         return (
-//           <button
-//             key={cat.key}
-//             onClick={() => onSelect(cat.key)}
-//             className={`flex items-center gap-2 w-full text-left px-2 py-1.5 rounded-md
-//               transition-colors font-futura text-xs tracking-wide
-//               ${isActive
-//                 ? "bg-yellow-400/20 text-yellow-300 border border-yellow-400/50"
-//                 : "text-white/40 hover:text-white/80 hover:bg-white/5"
-//               }`}
-//           >
-//             {thumbSrc && (
-//               <div className="flex-shrink-0 w-8 h-8 rounded-sm overflow-hidden bg-neutral-800">
-//                 <img
-//                   src={optimizeImg(thumbSrc, 80)}
-//                   className="w-full h-full object-cover"
-//                   loading="lazy"
-//                   alt=""
-//                 />
-//               </div>
-//             )}
-//             <span className="truncate">{cat.label}</span>
-//           </button>
-//         );
-//       })}
-//     </div>
-//   );
-// }
-
 function CategoryPanel({ categories, activeCategory, onSelect }) {
   return (
     <div
@@ -965,52 +1793,6 @@ function CategoryPanel({ categories, activeCategory, onSelect }) {
 }
 
 // ─── Панель категорий (мобилка, горизонтальная сверху) ───────────────────────
-// function MobileCategoryBar({ categories, activeCategory, onSelect, slides }) {
-//   return (
-//     <div className="flex gap-1.5 px-2 py-1.5 overflow-x-auto fg-no-scroll
-//                     bg-neutral-900/90 backdrop-blur-sm border-b border-neutral-800 flex-shrink-0">
-//       <button
-//         onClick={() => onSelect(null)}
-//         className={`flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full
-//           font-futura text-[10px] tracking-wide transition-colors
-//           ${activeCategory === null
-//             ? "bg-yellow-400/20 text-yellow-300 border border-yellow-400/50"
-//             : "bg-neutral-800 text-white/50"
-//           }`}
-//       >
-//         All
-//       </button>
-//       {categories.map((cat) => {
-//         const isActive = activeCategory === cat.key;
-//         // const thumb    = slides.find((s) => (s.productName || s._extraCat) === cat.key);
-//        const thumb = slides.find(
-//   (s) => (s._categoryKey ?? s._extraCat) === cat.key
-// );
-//         const thumbSrc = thumb?.productImage || thumb?.src;
-//         return (
-//           <button
-//             key={cat.key}
-//             onClick={() => onSelect(cat.key)}
-//             className={`flex-shrink-0 flex items-center gap-1.5 px-2 py-1 rounded-full
-//               font-futura text-[10px] tracking-wide transition-colors
-//               ${isActive
-//                 ? "bg-yellow-400/20 text-yellow-300 border border-yellow-400/50"
-//                 : "bg-neutral-800 text-white/50"
-//               }`}
-//           >
-//             {thumbSrc && (
-//               <div className="w-5 h-5 rounded-full overflow-hidden bg-neutral-700 flex-shrink-0">
-//                 <img src={optimizeImg(thumbSrc, 40)} className="w-full h-full object-cover" loading="lazy" alt="" />
-//               </div>
-//             )}
-//             <span>{cat.label}</span>
-//           </button>
-//         );
-//       })}
-//     </div>
-//   );
-// }
-
 function MobileCategoryBar({ categories, activeCategory, onSelect }) {
   // відстежуємо напрямок для sliding-анімації
   const prevIndexRef = useRef(
@@ -1215,9 +1997,10 @@ function MobileThumbStrip({ slides, activeIndex, onSelect, highlightedIndices })
   );
 }
 
+// ─── Основной просмотр слайда (теперь в "рамке", не на весь экран) ──────────
 const MainView = memo(function MainView({ slide, index, total }) {
   const videoRef             = useRef(null);
-  const imgRef               = useRef(null);  // ← добавь это
+  const imgRef               = useRef(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => { setLoading(true); }, [slide]);
@@ -1236,39 +2019,54 @@ const MainView = memo(function MainView({ slide, index, total }) {
   if (!slide) return null;
 
   return (
-    <div className="relative flex justify-center w-full h-full bg-neutral-950 overflow-hidden">
+    <div className="relative flex items-center justify-center w-full h-full bg-neutral-950 overflow-hidden">
       {loading && <Spinner />}
 
-      {slide.type === "video"
-        ? <video
-            ref={videoRef}
-            src={slide.src}
-            autoPlay muted loop playsInline
-            preload="none"
-            className="w-auto h-full object-contain"
-            onCanPlay={() => setLoading(false)}
-          />
-        : <img
-            ref={imgRef}
-            src={optimizeImg(slide.src, 1200)}
-            className="w-auto h-full object-contain"
-            style={{ opacity: loading ? 0 : 1, transition: "opacity 0.25s ease" }}
-            onLoad={() => setLoading(false)}
-            onError={() => setLoading(false)}
-            decoding="async"
-            alt={slide.caption || ""}
-          />
-      }
+      {/* "рамка" — медиа больше не растягивается на весь экран,
+          благодаря этому разнокачественные фото и горизонтальные видео
+          смотрятся аккуратно и единообразно */}
+      <div
+        key={slide.src}
+        className="fg-pop-in relative rounded-xl overflow-hidden
+                   bg-neutral-900 shadow-2xl shadow-black/60 ring-1 ring-white/10"
+      >
+        {slide.type === "video"
+          ? <video
+              ref={videoRef}
+              src={slide.src}
+              autoPlay muted loop playsInline
+              preload="none"
+              className="block object-contain rounded-xl"
+              style={{ maxWidth: "min(90vw, 1100px)", maxHeight: "70vh" }}
+              onCanPlay={() => setLoading(false)}
+            />
+          : <img
+              ref={imgRef}
+              src={optimizeImg(slide.src, 1200)}
+              className="block object-contain rounded-xl"
+              style={{
+                maxWidth: "min(90vw, 1100px)",
+                maxHeight: "70vh",
+                opacity: loading ? 0 : 1,
+                transition: "opacity 0.25s ease",
+              }}
+              onLoad={() => setLoading(false)}
+              onError={() => setLoading(false)}
+              decoding="async"
+              alt={slide.caption || ""}
+            />
+        }
 
-      <div className="absolute inset-0 pointer-events-none
-                      bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(0,0,0,0.55)_100%)]" />
+        <div className="absolute inset-0 pointer-events-none
+                        bg-[radial-gradient(ellipse_at_center,transparent_45%,rgba(0,0,0,0.45)_100%)]" />
 
-      {slide.caption && (
-        <div className="fg-slide-up absolute bottom-0 left-0 right-0 p-10
-                        bg-gradient-to-t from-black/70 to-transparent">
-          <p className="text-white/90 font-bold">{slide.caption}</p>
-        </div>
-      )}
+        {slide.caption && (
+          <div className="fg-slide-up absolute bottom-0 left-0 right-0 p-6 sm:p-10
+                          bg-gradient-to-t from-black/70 to-transparent">
+            <p className="text-white/90 font-bold">{slide.caption}</p>
+          </div>
+        )}
+      </div>
 
       <div className="fg-slide-down absolute top-5 left-6 text-white/50 text-xs font-mono
                       bg-black/30 px-3 py-1 rounded-full">
@@ -1321,36 +2119,22 @@ export default function FilmGallery({
     return [...slidesProp, ...extra];
   }, [slidesProp, extraCategories]);
 
-  // const categories = useMemo(() => {
-  //   const seen = new Set();
-  //   const fromProducts = [];
-  //   slides.forEach((s) => {
-  //     if (s.productName && !seen.has(s.productName)) {
-  //       seen.add(s.productName);
-  //       fromProducts.push({ key: s.productName, label: s.productName });
-  //     }
-  //   });
-  //   const fromExtra = extraCategories.map((ec) => ({ key: ec.key, label: ec.label }));
-  //   return [...fromProducts, ...fromExtra];
-  // }, [slides, extraCategories]);
+  const categories = useMemo(() => {
+    const seen = new Map(); // key → label
+    slides.forEach((s) => {
+      const key   = s._categoryKey ?? null;
+      const label = s._categoryLabel ?? s._categoryKey ?? null;
+      if (key && !seen.has(key)) seen.set(key, label);
+    });
 
-  // Замінити useMemo для categories:
-const categories = useMemo(() => {
-  const seen = new Map(); // key → label
-  slides.forEach((s) => {
-    const key   = s._categoryKey ?? null;
-    const label = s._categoryLabel ?? s._categoryKey ?? null;
-    if (key && !seen.has(key)) seen.set(key, label);
-  });
+    // extra categories додаються окремо (вони вже мають key + label)
+    const fromExtra = extraCategories.map((ec) => ({ key: ec.key, label: ec.label }));
 
-  // extra categories додаються окремо (вони вже мають key + label)
-  const fromExtra = extraCategories.map((ec) => ({ key: ec.key, label: ec.label }));
+    // fromProducts — унікальні типи з каталогу
+    const fromCatalog = [...seen.entries()].map(([key, label]) => ({ key, label }));
 
-  // fromProducts — унікальні типи з каталогу
-  const fromCatalog = [...seen.entries()].map(([key, label]) => ({ key, label }));
-
-  return [...fromCatalog, ...fromExtra];
-}, [slides, extraCategories]);
+    return [...fromCatalog, ...fromExtra];
+  }, [slides, extraCategories]);
 
 
 
@@ -1379,74 +2163,39 @@ const activeCategoryLabel =
     return () => window.removeEventListener("resize", fn);
   }, []);
 
-  // const highlightedIndices = useMemo(() => {
-  //   if (activeCategory === null) return null;
-  //   const set = new Set();
-  //   slides.forEach((s, i) => {
-  //     const cat = s.productName || s._extraCat || null;
-  //     if (cat === activeCategory) set.add(i);
-  //   });
-  //   return set;
-  // }, [activeCategory, slides]);
-  // Замінити highlightedIndices:
-const highlightedIndices = useMemo(() => {
-  if (activeCategory === null) return null;
-  const set = new Set();
-  slides.forEach((s, i) => {
-    const cat = s._categoryKey ?? s._extraCat ?? null;
-    if (cat === activeCategory) set.add(i);
-  });
-  return set;
-}, [activeCategory, slides]);
+  const highlightedIndices = useMemo(() => {
+    if (activeCategory === null) return null;
+    const set = new Set();
+    slides.forEach((s, i) => {
+      const cat = s._categoryKey ?? s._extraCat ?? null;
+      if (cat === activeCategory) set.add(i);
+    });
+    return set;
+  }, [activeCategory, slides]);
 
-  // useEffect(() => {
-  //   const slide = slides[activeIndex];
-  //   if (!slide) return;
-  //   const cat = slide.productName || slide._extraCat || null;
-  //   setActiveCategory(cat);
-  // }, [activeIndex, slides]);
+  useEffect(() => {
+    const slide = slides[activeIndex];
+    if (!slide) return;
 
-  // Замінити useEffect що ставить activeCategory при зміні слайду:
-// useEffect(() => {
-//   const slide = slides[activeIndex];
-//   if (!slide) return;
-//   // тепер дивимось на _categoryKey, а не productName
-//   const cat = slide._categoryKey ?? slide._extraCat ?? null;
-//   setActiveCategory(cat);
-// }, [activeIndex, slides]); 
-useEffect(() => {
-  const slide = slides[activeIndex];
-  if (!slide) return;
+    const key = slide._categoryKey ?? slide._extraCat ?? null;
+    setActiveCategory(key);
 
-  const key = slide._categoryKey ?? slide._extraCat ?? null;
-  setActiveCategory(key);
+    const label =
+      slide._categoryLabel ??
+      categories.find(c => c.key === key)?.label ??
+      "";
 
-  const label =
-    slide._categoryLabel ??
-    categories.find(c => c.key === key)?.label ??
-    "";
+    onCategoryChange?.(label);
+  }, [activeIndex, slides, categories, onCategoryChange]);
 
-  onCategoryChange?.(label);
-}, [activeIndex, slides, categories, onCategoryChange]);
-
-  // const handleSelectCategory = useCallback((catKey) => {
-  //   setActiveCategory(catKey);
-  //   if (catKey === null) return;
-  //   const firstIdx = slides.findIndex((s) =>
-  //     (s.productName || s._extraCat || null) === catKey
-  //   );
-  //   if (firstIdx !== -1) setActiveIndex(firstIdx);
-  // }, [slides]);
-
-  // Замінити handleSelectCategory:
-const handleSelectCategory = useCallback((catKey) => {
-  setActiveCategory(catKey);
-  if (catKey === null) return;
-  const firstIdx = slides.findIndex(
-    (s) => (s._categoryKey ?? s._extraCat ?? null) === catKey
-  );
-  if (firstIdx !== -1) setActiveIndex(firstIdx);
-}, [slides]);
+  const handleSelectCategory = useCallback((catKey) => {
+    setActiveCategory(catKey);
+    if (catKey === null) return;
+    const firstIdx = slides.findIndex(
+      (s) => (s._categoryKey ?? s._extraCat ?? null) === catKey
+    );
+    if (firstIdx !== -1) setActiveIndex(firstIdx);
+  }, [slides]);
 
   const currentSlide   = slides[activeIndex];
   usePreload(slides, activeIndex);
@@ -1515,7 +2264,9 @@ const handleSelectCategory = useCallback((catKey) => {
       className="fixed inset-0 bg-neutral-950 overflow-hidden"
       style={{
         opacity:       mounted ? 1 : 0,
-        transition:    "opacity 0.3s ease",
+        transform:     mounted ? "scale(1)" : "scale(0.96)",
+        filter:        mounted ? "blur(0px)" : "blur(6px)",
+        transition:    "opacity 0.5s cubic-bezier(0.16,1,0.3,1), transform 0.5s cubic-bezier(0.16,1,0.3,1), filter 0.5s cubic-bezier(0.16,1,0.3,1)",
         display:       "flex",
         flexDirection: isMobile ? "column" : "row",
       }}
@@ -1537,13 +2288,6 @@ const handleSelectCategory = useCallback((catKey) => {
       {/* ══ ДЕСКТОП ══════════════════════════════════════════════════════════ */}
       {!isMobile && (
         <>
-          {/* <CategoryPanel
-            categories={categories}
-            activeCategory={activeCategory}
-            onSelect={handleSelectCategory}
-            // slides={slides}
-          /> */}
-
           <div className="flex-1 relative">
             <MainView slide={currentSlide} index={activeIndex} total={slides.length} />
           </div>
@@ -1576,7 +2320,6 @@ const handleSelectCategory = useCallback((catKey) => {
             categories={categories}
             activeCategory={activeCategory}
             onSelect={handleSelectCategory}
-            // slides={slides}
           />
 
           {/* Фото — свайп только здесь */}
