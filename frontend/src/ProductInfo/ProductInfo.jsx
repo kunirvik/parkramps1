@@ -164,7 +164,7 @@ import Accordion from "../Accordion/Accordion";
 import ContactButton from "../ContactButtons/ContactButton";
 import ProductDrawing from "../ProductDrawing";
 import { useIsDesktop } from "../hooks/useIsDesktop";
-import {ProductDrawing} from "../ProductDrawing";
+
 
 // тот же трюк, что в FilmGallery — берём кадр на 0-й секунде видео с Cloudinary
 function getSampleVideoThumbnail(videoUrl) {
