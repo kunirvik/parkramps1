@@ -277,9 +277,9 @@ export default function ProductInfo({
               {
                 title: product.name,
                 // content: product.description2,
-                  content:   <>
+                  content:<>{product.description2}
       <ProductDrawing product={currentProduct} />
-      {product.description2}
+      
     </>
               }
             ]}
