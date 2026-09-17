@@ -1626,16 +1626,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 import SocialButtons from "./SocialButtons/SocialButtons";
 
-const THUMB_H = 68;
-
-function getVideoThumbnail(videoUrl) {
-  if (!videoUrl || !videoUrl.includes("/video/upload/")) return null;
-
-  return videoUrl
-    .replace("/video/upload/", "/video/upload/so_0/")
-    .replace(/\.mp4$/, ".jpg");
-}
-
 const STYLE_ID = "film-gallery-styles";
 if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
   const s = document.createElement("style");
@@ -1645,10 +1635,6 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
     @keyframes fg-slide-up {
       from { opacity: 0; transform: translateY(18px); }
       to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fg-slide-left {
-      from { opacity: 0; transform: translateX(18px); }
-      to   { opacity: 1; transform: translateX(0); }
     }
     @keyframes fg-slide-right {
       from { opacity: 0; transform: translateX(-18px); }
@@ -1663,7 +1649,6 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
       to   { opacity: 1; transform: scale(1); }
     }
     .fg-slide-up    { animation: fg-slide-up   0.45s cubic-bezier(0.16,1,0.3,1) both; }
-    .fg-slide-left  { animation: fg-slide-left  0.45s cubic-bezier(0.16,1,0.3,1) both; }
     .fg-slide-right { animation: fg-slide-right 0.45s cubic-bezier(0.16,1,0.3,1) both; }
     .fg-slide-down  { animation: fg-slide-down 0.45s cubic-bezier(0.16,1,0.3,1) both; }
     .fg-pop-in      { animation: fg-pop-in 0.5s cubic-bezier(0.16,1,0.3,1) both; }
@@ -1671,6 +1656,14 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
     .fg-no-scroll { -ms-overflow-style: none; scrollbar-width: none; }
   `;
   document.head.appendChild(s);
+}
+
+function getVideoThumbnail(videoUrl) {
+  if (!videoUrl || !videoUrl.includes("/video/upload/")) return null;
+
+  return videoUrl
+    .replace("/video/upload/", "/video/upload/so_0/")
+    .replace(/\.mp4$/, ".jpg");
 }
 
 function optimizeImg(url, width = 1200) {
@@ -1709,86 +1702,14 @@ function Spinner() {
   );
 }
 
-function IconClose() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-      viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-      <line x1="18" y1="6" x2="6"  y2="18"/>
-      <line x1="6"  y1="6" x2="18" y2="18"/>
-    </svg>
-  );
-}
-
-function IconGrid() {
-  return (
-    <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
-      <rect x="0"    y="0"    width="4.5" height="4.5" rx="0.8"/>
-      <rect x="5.75" y="0"    width="4.5" height="4.5" rx="0.8"/>
-      <rect x="11.5" y="0"    width="4.5" height="4.5" rx="0.8"/>
-      <rect x="0"    y="5.75" width="4.5" height="4.5" rx="0.8"/>
-      <rect x="5.75" y="5.75" width="4.5" height="4.5" rx="0.8"/>
-      <rect x="11.5" y="5.75" width="4.5" height="4.5" rx="0.8"/>
-      <rect x="0"    y="11.5" width="4.5" height="4.5" rx="0.8"/>
-      <rect x="5.75" y="11.5" width="4.5" height="4.5" rx="0.8"/>
-      <rect x="11.5" y="11.5" width="4.5" height="4.5" rx="0.8"/>
-    </svg>
-  );
-}
-
 function IconOpenProduct() {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15"
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
       viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
       strokeLinecap="round" strokeLinejoin="round">
       <path d="M7 17L17 7"/>
       <path d="M7 7h10v10"/>
     </svg>
-  );
-}
-
-// ─── Панель категорий (десктоп, слева) ───────────────────────────────────────
-function CategoryPanel({ categories, activeCategory, onSelect }) {
-  return (
-    <div
-      className="fg-slide-right flex flex-col mt-10 py-3 px-3 bg-neutral-900
-                 border-r border-neutral-800 overflow-y-auto fg-no-scroll flex-shrink-0"
-      style={{ minWidth: 160, maxWidth: 180 }}
-    >
-      {categories.map((cat) => {
-        const isActive = activeCategory === cat.key;
-
-        return (
-          <button
-            key={cat.key}
-            onClick={() => onSelect(cat.key)}
-            className="w-full cursor-pointer flex justify-between items-center
-                       py-1 text-left transition-colors group"
-          >
-            <span
-              className="font-futura font-bold transition-colors duration-200"
-              style={{
-                fontSize: "clamp(22px, 2.5vw, 30px)",
-                color: isActive ? "#ffffff" : "#717171",
-              }}
-            >
-              {cat.label}
-            </span>
-
-            {/* стрілка як у акордеоні */}
-            <span
-              className="transition-all duration-300 flex-shrink-0 ml-1"
-              style={{
-                color: isActive ? "#ffffff" : "#717171",
-                opacity: isActive ? 1 : 0,
-                transform: isActive ? "translateX(0)" : "translateX(-4px)",
-              }}
-            >
-              <ChevronRight size={16} />
-            </span>
-          </button>
-        );
-      })}
-    </div>
   );
 }
 
@@ -1875,96 +1796,35 @@ function MobileCategoryBar({ categories, activeCategory, onSelect }) {
   );
 } 
 
-// ─── Вертикальная лента миниатюр (десктоп, справа) ───────────────────────────
-function ThumbStripVertical({ slides, activeIndex, onSelect, highlightedIndices }) {
+// ─── Горизонтальная лента миниатюр (используется и на десктопе, и на мобилке,
+//     размер миниатюр регулируется пропсами) ─────────────────────────────────
+function ThumbStrip({ slides, activeIndex, onSelect, highlightedIndices, thumbWidth = 56, stripHeight = 60 }) {
   const stripRef = useRef(null);
   const frameRef = useRef(null);
-
-
-
-  useEffect(() => {
-    if (!frameRef.current) return;
-    const top = activeIndex * (THUMB_H + 4);
-    frameRef.current.style.transform = `translateY(${top}px)`;
-    if (stripRef.current) {
-      const containerH = stripRef.current.clientHeight;
-      stripRef.current.scrollTo({ top: top - containerH / 2 + THUMB_H / 2, behavior: "smooth" });
-    }
-  }, [activeIndex]);
-
-  return (
-    <div
-      ref={stripRef}
-      className="fg-no-scroll relative h-full overflow-y-auto bg-neutral-900 py-1 ml-2"
-      style={{ width: 80 }}
-    >
-      <div
-        ref={frameRef}
-        className="absolute left-0.5 right-0.5 h-[68px] border-2 border-yellow-400/90
-                   rounded-sm pointer-events-none z-50 transition-transform duration-300"
-      />
-      <div className="flex flex-col gap-1 px-0.5">
-        {slides.map((slide, i) => {
-          const isActive      = i === activeIndex;
-          const isHighlighted = highlightedIndices === null || highlightedIndices.has(i);
-          return (
-            <div
-              key={i}
-              onClick={() => onSelect(i)}
-              className="h-[68px] overflow-hidden cursor-pointer transition-opacity duration-300"
-              style={{ opacity: isActive ? 1 : isHighlighted ? 0.55 : 0.12 }}
-            >
-             {slide.type === "video"
-  ? <img
-      src={getVideoThumbnail(slide.src)}
-      className="w-full h-full object-cover"
-      loading="lazy"
-      alt=""
-    />
-  : <img
-      src={slide.srcThumb || optimizeImg(slide.src, 160)}
-      className="w-full h-full object-cover"
-      loading="lazy"
-      alt=""
-    />
-}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-// ─── Горизонтальная лента миниатюр (мобилка, снизу) ──────────────────────────
-function MobileThumbStrip({ slides, activeIndex, onSelect, highlightedIndices }) {
-  const stripRef = useRef(null);
-  const frameRef = useRef(null);
-  const THUMB_W  = 56;
-  const gap      = 3;
+  const gap = 4;
 
   useEffect(() => {
     if (!frameRef.current || !stripRef.current) return;
-    const left = activeIndex * (THUMB_W + gap);
+    const left = activeIndex * (thumbWidth + gap);
     frameRef.current.style.transform = `translateX(${left}px)`;
     stripRef.current.scrollTo({
-      left: left - stripRef.current.clientWidth / 2 + THUMB_W / 2,
+      left: left - stripRef.current.clientWidth / 2 + thumbWidth / 2,
       behavior: "smooth",
     });
-  }, [activeIndex]);
+  }, [activeIndex, thumbWidth]);
 
   return (
     <div
       ref={stripRef}
       className="fg-no-scroll relative overflow-x-auto bg-neutral-900 border-t border-neutral-800 flex-shrink-0"
-      style={{ height: 60, paddingLeft: 8, paddingRight: 8 }}
+      style={{ height: stripHeight, paddingLeft: 8, paddingRight: 8, paddingTop: 6, paddingBottom: 6 }}
     >
       <div
         ref={frameRef}
-        className="absolute top-1.5 bottom-1.5 border border-yellow-400/80 rounded-sm pointer-events-none z-50"
-        style={{ width: THUMB_W, left: 8, transition: "transform 0.3s cubic-bezier(0.16,1,0.3,1)" }}
+        className="absolute border border-yellow-400/80 pointer-events-none z-50"
+        style={{ width: thumbWidth, top: 6, bottom: 6, left: 8, transition: "transform 0.3s cubic-bezier(0.16,1,0.3,1)" }}
       />
-      <div className="flex h-full" style={{ gap, minWidth: slides.length * (THUMB_W + gap) }}>
+      <div className="flex h-full" style={{ gap, minWidth: slides.length * (thumbWidth + gap) }}>
         {slides.map((slide, i) => {
           const isActive      = i === activeIndex;
           const isHighlighted = highlightedIndices === null || highlightedIndices.has(i);
@@ -1972,23 +1832,23 @@ function MobileThumbStrip({ slides, activeIndex, onSelect, highlightedIndices })
             <div
               key={i}
               onClick={() => onSelect(i)}
-              className="flex-shrink-0 overflow-hidden cursor-pointer rounded-sm transition-opacity duration-300"
-              style={{ width: THUMB_W, height: "100%", opacity: isActive ? 1 : isHighlighted ? 0.55 : 0.12 }}
+              className="flex-shrink-0 overflow-hidden cursor-pointer transition-opacity duration-300"
+              style={{ width: thumbWidth, height: "100%", opacity: isActive ? 1 : isHighlighted ? 0.55 : 0.12 }}
             >
-            {slide.type === "video"
-  ? <img
-      src={getVideoThumbnail(slide.src)}
-      className="w-full h-full object-cover"
-      loading="lazy"
-      alt=""
-    />
-  : <img
-      src={slide.srcThumb || optimizeImg(slide.src, 160)}
-      className="w-full h-full object-cover"
-      loading="lazy"
-      alt=""
-    />
-}
+              {slide.type === "video"
+                ? <img
+                    src={getVideoThumbnail(slide.src)}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                    alt=""
+                  />
+                : <img
+                    src={slide.srcThumb || optimizeImg(slide.src, 160)}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                    alt=""
+                  />
+              }
             </div>
           );
         })}
@@ -1997,7 +1857,7 @@ function MobileThumbStrip({ slides, activeIndex, onSelect, highlightedIndices })
   );
 }
 
-// ─── Основной просмотр слайда (теперь в "рамке", не на весь экран) ──────────
+// ─── Основной просмотр слайда (в "рамке", без скруглений) ───────────────────
 const MainView = memo(function MainView({ slide, index, total }) {
   const videoRef             = useRef(null);
   const imgRef               = useRef(null);
@@ -2022,13 +1882,12 @@ const MainView = memo(function MainView({ slide, index, total }) {
     <div className="relative flex items-center justify-center w-full h-full bg-neutral-950 overflow-hidden">
       {loading && <Spinner />}
 
-      {/* "рамка" — медиа больше не растягивается на весь экран,
+      {/* "рамка" — медиа не растягивается на весь экран,
           благодаря этому разнокачественные фото и горизонтальные видео
           смотрятся аккуратно и единообразно */}
       <div
         key={slide.src}
-        className="fg-pop-in relative rounded-xl overflow-hidden
-                   bg-neutral-900 shadow-2xl shadow-black/60 ring-1 ring-white/10"
+        className="fg-pop-in relative overflow-hidden bg-neutral-900 shadow-2xl shadow-black/60 ring-1 ring-white/10"
       >
         {slide.type === "video"
           ? <video
@@ -2036,14 +1895,14 @@ const MainView = memo(function MainView({ slide, index, total }) {
               src={slide.src}
               autoPlay muted loop playsInline
               preload="none"
-              className="block object-contain rounded-xl"
+              className="block object-contain"
               style={{ maxWidth: "min(90vw, 1100px)", maxHeight: "70vh" }}
               onCanPlay={() => setLoading(false)}
             />
           : <img
               ref={imgRef}
               src={optimizeImg(slide.src, 1200)}
-              className="block object-contain rounded-xl"
+              className="block object-contain"
               style={{
                 maxWidth: "min(90vw, 1100px)",
                 maxHeight: "70vh",
@@ -2075,28 +1934,6 @@ const MainView = memo(function MainView({ slide, index, total }) {
     </div>
   );
 });
-// ─── Кнопка с тултипом (десктоп) ─────────────────────────────────────────────
-function IconButton({ onClick, label, children, disabled = false }) {
-  return (
-    <div className="relative group">
-      <button
-        onClick={onClick}
-        disabled={disabled}
-        aria-label={label}
-        className="flex items-center justify-center w-9 h-9 rounded-full
-          bg-neutral-800/70 hover:bg-neutral-700 text-white/80 hover:text-white
-          transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-      >
-        {children}
-      </button>
-      <div className="absolute right-11 top-1/2 -translate-y-1/2 pointer-events-none
-        opacity-0 group-hover:opacity-100 transition-opacity duration-150
-        bg-black/80 text-white/90 text-xs font-mono px-2 py-1 rounded whitespace-nowrap">
-        {label}
-      </div>
-    </div>
-  );
-}
 
 // ─── Основной компонент ───────────────────────────────────────────────────────
 export default function FilmGallery({
@@ -2130,7 +1967,7 @@ export default function FilmGallery({
     // extra categories додаються окремо (вони вже мають key + label)
     const fromExtra = extraCategories.map((ec) => ({ key: ec.key, label: ec.label }));
 
-    // fromProducts — унікальні типи з каталогу
+    // fromCatalog — унікальні типи з каталогу
     const fromCatalog = [...seen.entries()].map(([key, label]) => ({ key, label }));
 
     return [...fromCatalog, ...fromExtra];
@@ -2213,7 +2050,17 @@ const activeCategoryLabel =
     [onCloseProp, navigate, originPath]
   );
 
-  const handleOpenAllGallery = useCallback(() => navigate("/gallery/all"), [navigate]);
+  // Единственная кнопка действия: если у текущего слайда есть привязанный
+  // продукт — переходим на него; если нет — просто закрываем галерею
+  // (originPath уже указывает на последний выбранный продукт, с которого
+  // была открыта галерея).
+  const handlePrimaryAction = useCallback(() => {
+    if (canOpenProduct) {
+      handleOpenProduct();
+    } else {
+      handleClose();
+    }
+  }, [canOpenProduct, handleOpenProduct, handleClose]);
 
   const goTo = useCallback(
     (idx) => setActiveIndex((idx + slides.length) % slides.length),
@@ -2258,109 +2105,67 @@ const activeCategoryLabel =
   }, [activeIndex, goTo]);
 
   return (
-
     <div
       ref={containerRef}
-      className="fixed inset-0 bg-neutral-950 overflow-hidden"
+      className="fixed inset-0 bg-neutral-950 overflow-hidden flex flex-col"
       style={{
         opacity:       mounted ? 1 : 0,
         transform:     mounted ? "scale(1)" : "scale(0.96)",
         filter:        mounted ? "blur(0px)" : "blur(6px)",
         transition:    "opacity 0.5s cubic-bezier(0.16,1,0.3,1), transform 0.5s cubic-bezier(0.16,1,0.3,1), filter 0.5s cubic-bezier(0.16,1,0.3,1)",
-        display:       "flex",
-        flexDirection: isMobile ? "column" : "row",
       }}
     >
-    {/* SocialButtons вынесен из flex-потока — просто оверлей поверх */}
-    <div className="fixed top-0 left-0 w-full z-[60] pointer-events-none">
-      <div className="pointer-events-auto">
-        <SocialButtons
-          ref={socialButtonsRef}
-           category={activeCategoryLabel}
-          buttonLabel="shop"
-          onButtonClick={() => navigate("/catalogue")}
-          buttonAnimationProps={{ whileTap: { scale: 0.85, opacity: 0.6 } }}
-         
-        />
+      {/* SocialButtons вынесен из flex-потока — просто оверлей поверх */}
+      <div className="fixed top-0 left-0 w-full z-[60] pointer-events-none">
+        <div className="pointer-events-auto">
+          <SocialButtons
+            ref={socialButtonsRef}
+            category={activeCategoryLabel}
+            buttonLabel="shop"
+            onButtonClick={() => navigate("/catalogue")}
+            buttonAnimationProps={{ whileTap: { scale: 0.85, opacity: 0.6 } }}
+          />
+        </div>
       </div>
-    </div>
- 
-      {/* ══ ДЕСКТОП ══════════════════════════════════════════════════════════ */}
-      {!isMobile && (
-        <>
-          <div className="flex-1 relative">
-            <MainView slide={currentSlide} index={activeIndex} total={slides.length} />
-          </div>
 
-          <div className="flex items-stretch">
-            <ThumbStripVertical
-              slides={slides}
-              activeIndex={activeIndex}
-              onSelect={goTo}
-              highlightedIndices={highlightedIndices}
-            />
-            <div className="flex flex-col items-center justify-start gap-2 mt-10 px-2 py-3
-                            bg-neutral-950 border-l border-neutral-800">
-              <IconButton onClick={handleClose} label="Закрити"><IconClose /></IconButton>
-              <IconButton onClick={handleOpenAllGallery} label="Всі фото"><IconGrid /></IconButton>
-              <div className="h-px w-6 bg-neutral-700/60 my-0.5" />
-              <IconButton onClick={handleOpenProduct} label="Відкрити виріб" disabled={!canOpenProduct}>
-                <IconOpenProduct />
-              </IconButton>
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* ══ МОБИЛКА ══════════════════════════════════════════════════════════ */}
+      {/* Категории сверху — только на мобилке, как и раньше */}
       {isMobile && (
-        <>
-          {/* Категории сверху */}
-          <MobileCategoryBar
-            categories={categories}
-            activeCategory={activeCategory}
-            onSelect={handleSelectCategory}
-          />
-
-          {/* Фото — свайп только здесь */}
-          <div
-            className="flex-1 relative overflow-hidden"
-            onTouchStart={handleTouchStart}
-            onTouchEnd={handleTouchEnd}
-          >
-            <MainView slide={currentSlide} index={activeIndex} total={slides.length} />
-          </div>
-
-          {/* Миниатюры снизу */}
-          <MobileThumbStrip
-            slides={slides}
-            activeIndex={activeIndex}
-            onSelect={goTo}
-            highlightedIndices={highlightedIndices}
-          />
-
-          {/* Кнопки */}
-          <div className="absolute top-20 right-1 z-50 flex flex-col gap-2">
-            <button onClick={handleClose}
-              className="flex items-center justify-center w-8 h-8 rounded-full
-                         bg-neutral-800/80 text-white/80 backdrop-blur-sm">
-              <IconClose />
-            </button>
-            <button onClick={handleOpenAllGallery}
-              className="flex items-center justify-center w-8 h-8 rounded-full
-                         bg-neutral-800/80 text-white/80 backdrop-blur-sm">
-              <IconGrid />
-            </button>
-            {canOpenProduct && (
-              <button onClick={handleOpenProduct}
-                className="flex items-center justify-center w-8 h-8 rounded-full
-                           bg-neutral-800/80 text-white/80 backdrop-blur-sm">
-                <IconOpenProduct />
-              </button>
-            )}
-          </div>
-        </>
+        <MobileCategoryBar
+          categories={categories}
+          activeCategory={activeCategory}
+          onSelect={handleSelectCategory}
+        />
       )}
+
+      {/* Основное фото/видео */}
+      <div
+        className="flex-1 relative overflow-hidden"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        <MainView slide={currentSlide} index={activeIndex} total={slides.length} />
+      </div>
+
+      {/* Миниатюры — теперь всегда внизу, и на десктопе, и на мобилке */}
+      <ThumbStrip
+        slides={slides}
+        activeIndex={activeIndex}
+        onSelect={goTo}
+        highlightedIndices={highlightedIndices}
+        thumbWidth={isMobile ? 56 : 110}
+        stripHeight={isMobile ? 60 : 100}
+      />
+
+      {/* Единственная кнопка действия */}
+      <button
+        onClick={handlePrimaryAction}
+        aria-label={canOpenProduct ? "Перейти до виробу" : "Закрити галерею"}
+        className="fixed top-20 right-4 z-50 flex items-center justify-center w-10 h-10
+                   bg-neutral-800/80 hover:bg-neutral-700 text-white/90 backdrop-blur-sm
+                   transition-colors"
+      >
+        <IconOpenProduct />
+      </button>
     </div>
   );
 }
