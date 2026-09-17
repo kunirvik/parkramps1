@@ -12,15 +12,22 @@ export default function ProductDrawing({ product }) {
   const drawingImages = [product.image, ...(product.altImages || [])];
   if (!drawingImages.length && !product.specs?.length) return null;
 
-  return (
-<div className="w-full mb-4 flex  md:justify-end justify-center">
-  <div
-    style={{
-      width: "clamp(320px, 52vw, 600px)",
-    }}
-  >
+//   return (
+// <div className="w-full mb-4 flex  md:justify-end justify-center">
+//   <div
+//     style={{
+//       width: "clamp(320px, 52vw, 600px)",
+//     }}
+//   >
+//     <DrawingSpecs product={product} />
+//   </div>
+// </div>
+//   );
+return (
+<div className="w-full mb-4 flex justify-center md:justify-end">
+  <div className="w-full md:w-[clamp(320px,52vw,600px)]">
     <DrawingSpecs product={product} />
   </div>
 </div>
-  );
+);
 }

@@ -1071,7 +1071,7 @@ const handleStageClick = useCallback(() => {
       }}
     >
       <div className="w-full flex flex-col">
-        <div className="order-3 lg:order-1">
+        <div className="hidden lg:block lg:order-1">
        <ProductDrawing product={currentProduct} />  
        </div> 
 
