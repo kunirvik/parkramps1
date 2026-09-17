@@ -395,7 +395,7 @@ const categories = ["Skateparks", "Ramps", "Events", "Parkramps"];
 
 const background = {
   type: "image",
-  url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1780427037/project_nkkaef.png",
+  url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1789665160/photo_2026-09-17_20-12-09_fqn0r2.jpg",
 };
 
 const heroModelUrl =
