@@ -1353,12 +1353,7 @@
 //     </div>
 //   );
 // }
-import React, {
-  useEffect,
-  useRef,
-  forwardRef,
-  useImperativeHandle,
-} from "react";
+import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
@@ -1606,94 +1601,20 @@ function makeBgSampleMaterial(mediaTexture) {
 }
 
 // ============================================================
-// ЛЁД: шейдерный материал куба, который "тает" (dissolve) и
-// открывает модель внутри. Независим от фонового медиа — просто
-// полупрозрачный ледяной блок со свечением на границе таяния.
-// ============================================================
-
-const ICE_VERTEX_SHADER = `
-  varying vec3 vPos;
-  varying vec3 vNormal;
-  void main() {
-    vPos = position;
-    vNormal = normalize(normalMatrix * normal);
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  }
-`;
-
-const ICE_FRAGMENT_SHADER = `
-  uniform float uProgress; // 0 = целый лёд, ~1.25 = полностью растаял
-  uniform float uTime;
-  uniform vec3 uIceColor;
-  uniform vec3 uEdgeColor;
-  varying vec3 vPos;
-  varying vec3 vNormal;
-
-  float hash(vec3 p) {
-    p = fract(p * 0.3183099 + 0.1);
-    p *= 17.0;
-    return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
-  }
-
-  void main() {
-    // тает снизу вверх с неровным, "капающим" краём за счёт шума
-    float n = hash(floor(vPos * 6.0) + floor(uTime * 0.5));
-    float heightFactor = (vPos.y + 0.5) + n * 0.35;
-    float dissolve = heightFactor - uProgress * 1.6;
-
-    if (dissolve < 0.0) discard;
-
-    float edge = smoothstep(0.0, 0.18, dissolve);
-    vec3 color = mix(uEdgeColor, uIceColor, edge);
-
-    float fresnel = pow(1.0 - max(dot(vNormal, vec3(0.0, 0.0, 1.0)), 0.0), 2.5);
-    color += fresnel * 0.25;
-
-    float alpha = mix(0.35, 0.85, edge);
-    gl_FragColor = vec4(color, alpha);
-  }
-`;
-
-function createIceMaterial() {
-  return new THREE.ShaderMaterial({
-    vertexShader: ICE_VERTEX_SHADER,
-    fragmentShader: ICE_FRAGMENT_SHADER,
-    transparent: true,
-    side: THREE.DoubleSide,
-    depthWrite: false,
-    uniforms: {
-      uProgress: { value: 0 },
-      uTime: { value: 0 },
-      uIceColor: { value: new THREE.Color("#bfe9ff") },
-      uEdgeColor: { value: new THREE.Color("#eafcff") },
-    },
-  });
-}
-
-// ============================================================
 // HERO 3D
 // ============================================================
 
-const Hero3D = forwardRef(function Hero3D(
-  {
-    modelUrl,
-    media,
-    videoRef,
-    restRotationY = Math.PI / 4,
-    modelSize = 4.5,
-    transitionDuration = 0.9,
-    // true = модель должна быть (стать) серой — используется, например,
-    // когда геройская модель сжимается в лоадер
-    grayscale = false,
-    // показывать ли ледяной куб вокруг активной модели
-    showIce = true,
-    // множитель размера куба льда относительно modelSize
-    iceScale = 1.32,
-    // вызывается, когда лёд полностью растаял (после startMelt())
-    onMeltComplete,
-  },
-  ref
-) {
+export default function Hero3D({
+  modelUrl,
+  media,
+  videoRef,
+  restRotationY = Math.PI / 4,
+  modelSize = 4.5,
+  transitionDuration = 0.9,
+  // true = модель должна быть (стать) серой — используется, например,
+  // когда геройская модель сжимается в лоадер
+  grayscale = false,
+}) {
   const mountRef = useRef(null);
   const heroSectionRef = useRef(null);
 
@@ -1705,15 +1626,10 @@ const Hero3D = forwardRef(function Hero3D(
     propsRef.current.transitionDuration = transitionDuration;
   }, [restRotationY, modelSize, transitionDuration]);
 
-  const onMeltCompleteRef = useRef(onMeltComplete);
-  useEffect(() => {
-    onMeltCompleteRef.current = onMeltComplete;
-  }, [onMeltComplete]);
-
   // ==========================================================
   // ПОСТОЯННОЕ ХРАНИЛИЩЕ. ДВА слота модели (A и B) — держатся
   // в сцене одновременно, переключение делается кроссфейдом,
-  // без пересоздания сцены/рендерера. + отдельный слот "ice".
+  // без пересоздания сцены/рендерера.
   // ==========================================================
 
   const threeRef = useRef({
@@ -1727,8 +1643,6 @@ const Hero3D = forwardRef(function Hero3D(
     },
     activeKey: "A",
 
-    ice: null, // { mesh, material, geometry, progress, active, spinSpeed }
-
     mediaTexture: null,
     mediaReady: false,
 
@@ -1737,57 +1651,6 @@ const Hero3D = forwardRef(function Hero3D(
 
     tryRevealActive: () => {},
   });
-
-  // ==========================================================
-  // ИМПЕРАТИВНОЕ API: hero3DRef.current.startMelt(duration)
-  // ==========================================================
-
-  useImperativeHandle(
-    ref,
-    () => ({
-      startMelt: (durationSec = 3.2) => {
-        const t = threeRef.current;
-        const ice = t.ice;
-        if (!ice || !ice.mesh || ice.active) return;
-
-        ice.active = true;
-        ice.mesh.visible = true;
-
-        gsap.to(ice, {
-          progress: 1.25,
-          duration: durationSec,
-          ease: "power1.in",
-          onUpdate: () => {
-            ice.material.uniforms.uProgress.value = ice.progress;
-          },
-          onComplete: () => {
-            ice.mesh.visible = false;
-            ice.active = false;
-            if (onMeltCompleteRef.current) onMeltCompleteRef.current();
-          },
-        });
-
-        // скорость вращения модели плавно разгоняется по мере таяния
-        gsap.to(ice, {
-          spinSpeed: 0.06,
-          duration: durationSec * 0.9,
-          ease: "power2.out",
-        });
-      },
-      resetIce: () => {
-        const t = threeRef.current;
-        const ice = t.ice;
-        if (!ice) return;
-        gsap.killTweensOf(ice);
-        ice.active = false;
-        ice.progress = 0;
-        ice.spinSpeed = 0;
-        ice.material.uniforms.uProgress.value = 0;
-        if (ice.mesh) ice.mesh.visible = showIce;
-      },
-    }),
-    [showIce]
-  );
 
   // ==========================================================
   // ЭФФЕКТ №1 — СЦЕНА / КАМЕРА / РЕНДЕРЕР (только при монтировании)
@@ -1854,31 +1717,6 @@ const Hero3D = forwardRef(function Hero3D(
     threeRef.current.activeKey = "A";
     threeRef.current.mediaReady = false;
     threeRef.current.modelRevealedAt = null;
-
-    // ---------- ледяной куб вокруг модели ----------
-    const iceSizeValue = propsRef.current.modelSize * iceScale;
-    const iceGeo = new THREE.BoxGeometry(
-      iceSizeValue,
-      iceSizeValue,
-      iceSizeValue,
-      24,
-      24,
-      24
-    );
-    const iceMat = createIceMaterial();
-    const iceMesh = new THREE.Mesh(iceGeo, iceMat);
-    iceMesh.visible = showIce;
-    iceMesh.renderOrder = 10; // рисуем поверх модели, чтобы лёд не проваливался
-    scene.add(iceMesh);
-
-    threeRef.current.ice = {
-      mesh: iceMesh,
-      material: iceMat,
-      geometry: iceGeo,
-      progress: 0,
-      active: false,
-      spinSpeed: 0,
-    };
 
     // ========================================================
     // ЭКРАННЫЕ UNIFORM-Ы
@@ -1955,7 +1793,6 @@ const Hero3D = forwardRef(function Hero3D(
 
     const onPointerDown = (event) => {
       if (threeRef.current.isTransitioning) return;
-      if (threeRef.current.ice && threeRef.current.ice.active) return;
       const obj = getActiveObject();
       if (!obj || !event.isPrimary) return;
 
@@ -2019,17 +1856,8 @@ const Hero3D = forwardRef(function Hero3D(
     const animate = () => {
       const t = threeRef.current;
       const obj = t.slots[t.activeKey].object;
-      const ice = t.ice;
 
-      if (ice) {
-        ice.material.uniforms.uTime.value = performance.now() * 0.001;
-      }
-
-      if (ice && ice.active && obj) {
-        // пока лёд тает — модель крутится с разгоняющейся скоростью,
-        // независимо от drag/settle-состояний
-        obj.rotation.y += ice.spinSpeed;
-      } else if (obj && !t.isTransitioning) {
+      if (obj && !t.isTransitioning) {
         if (state.dragging) {
           // rotation handled in pointermove
         } else if (!state.hasInteracted) {
@@ -2129,11 +1957,6 @@ const Hero3D = forwardRef(function Hero3D(
         if (slot.material) slot.material.dispose();
       });
 
-      if (threeRef.current.ice) {
-        threeRef.current.ice.geometry.dispose();
-        threeRef.current.ice.material.dispose();
-      }
-
       if (threeRef.current.mediaTexture) {
         threeRef.current.mediaTexture.dispose();
       }
@@ -2147,25 +1970,12 @@ const Hero3D = forwardRef(function Hero3D(
       threeRef.current.scene = null;
       threeRef.current.camera = null;
       threeRef.current.renderer = null;
-      threeRef.current.ice = null;
       threeRef.current.slots.A = { object: null, material: null, url: null, targetScale: 1 };
       threeRef.current.slots.B = { object: null, material: null, url: null, targetScale: 1 };
     };
     // ВАЖНО: зависимостей нет — сцена/рендерер создаются один раз
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // ==========================================================
-  // ЭФФЕКТ — переключение видимости льда без пересоздания сцены,
-  // если showIce меняется извне (например, для другой страницы,
-  // где лёд не нужен).
-  // ==========================================================
-
-  useEffect(() => {
-    const ice = threeRef.current.ice;
-    if (!ice || ice.active) return;
-    ice.mesh.visible = showIce;
-  }, [showIce]);
 
   // ==========================================================
   // ЭФФЕКТ №2 — СМЕНА МЕДИА (видео/фото). Применяется к ОБОИМ
@@ -2487,9 +2297,7 @@ const Hero3D = forwardRef(function Hero3D(
       />
     </div>
   );
-});
-
-export default Hero3D;
+}
 // import React, { useEffect, useRef } from "react";
 // import * as THREE from "three";
 // import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
