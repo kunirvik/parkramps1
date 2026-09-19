@@ -381,126 +381,277 @@
 //     </>
 //   );
 // }
- import React, { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import Hero3D from "../Hero3D";
+import { motion } from "framer-motion";
 import LoadingScreen from "../LoadingScreen/LodingScreen";
-import "./MenuPage.css";
 
-const TEXT_DURATION_MS = 3000;
-const EXIT_ANIM_MS = 500; // длительность анимации исчезновения текста/кнопки
-
-const categories = ["Skateparks", "Ramps", "Events", "Parkramps"];
-
-const background = {
-  type: "image",
-  url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1789665160/photo_2026-09-17_20-12-09_fqn0r2.jpg",
-};
-
-const heroModelUrl =
-  "https://res.cloudinary.com/dbx6muxub/image/upload/v1786811336/model_eteyx8.glb";
-
-const logoModelUrl = "/model.glb"; // тот же файл, что в LoadingScreen/LogoModel
+const words = ["Skateparks",  "Ramps", "Events", "Parkramps"];
 
 export default function MenuPage() {
   const [index, setIndex] = useState(0);
+  const [tooltip, setTooltip] = useState({ visible: false, x:0 , y: 0 });
+  const tooltipRef = useRef(null);
   const navigate = useNavigate();
-
-  const [isLoading, setIsLoading] = useState(true);
-  const [isFadingOut, setIsFadingOut] = useState(false);
-
-  // НОВОЕ: состояние перехода на страницу каталога
-  const [isExploring, setIsExploring] = useState(false);
-  const [activeModelUrl, setActiveModelUrl] = useState(heroModelUrl);
-
-  const currentCategory = categories[index];
-
+  const [isLoading, setIsLoading] = useState(true); 
+    const [isFadingOut, setIsFadingOut] = useState(false);
   useEffect(() => {
-    if (isExploring) return; // не крутим категории во время перехода
-    const timer = setInterval(() => {
-      setIndex((prev) => (prev + 1) % categories.length);
-    }, TEXT_DURATION_MS);
-    return () => clearInterval(timer);
-  }, [isExploring]);
-
-  useEffect(() => {
-    const fadeTimer = setTimeout(() => setIsFadingOut(true), 1500);
-    const removeTimer = setTimeout(() => setIsLoading(false), 2300);
-    return () => {
-      clearTimeout(fadeTimer);
-      clearTimeout(removeTimer);
-    };
+    const interval = setInterval(() => {
+      setIndex((prevIndex) => (prevIndex + 1) % words.length);
+    }, 2000);
+    return () => clearInterval(interval);
   }, []);
 
-  const handleExplore = () => {
-    if (isExploring) return;
-
-    setIsExploring(true);           // скрывает текст и кнопку
-    setActiveModelUrl(logoModelUrl); // переключаем модель на логотип
-
-    // ждём, пока доиграет анимация исчезновения, и уходим на каталог
-    setTimeout(() => {
-      navigate("/catalogue");
-    }, EXIT_ANIM_MS + 400);
+  const handleMouseMove = (e) => {
+    setTooltip({ visible: true, x: e.clientX , y: e.clientY  });
   };
 
-  return (
-    <>
-      {isLoading && <LoadingScreen isFadingOut={isFadingOut} />}
+  const handleMouseLeave = () => {
+    setTooltip({ visible: false, x: 0, y: 0 });
+  };
 
-      <div className="hero3d relative w-full h-screen flex items-center justify-center overflow-hidden">
-        {background.type === "image" && (
-          <img
-            src={background.url}
-            alt="Background"
-            className="absolute top-0 left-0 w-full h-full object-cover z-[2]"
-          />
-        )}
+   useEffect(() => {
+    // Запускаем анимацию исчезновения перед снятием лоадинга
+    const timer = setTimeout(() => setIsFadingOut(true), 1500);
+    const removeLoadingScreen = setTimeout(() => setIsLoading(false), 2300);
+    
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(removeLoadingScreen);
+    };
+  }, []);  
 
-        <Hero3D
-          modelUrl={activeModelUrl}
-          media={background}
-          restRotationY={isExploring ? 0 : (72 * Math.PI) / 180}
-        />
+  return (<>
+   {isLoading && <LoadingScreen isFadingOut={isFadingOut} />}
+   
+    <div className="relative w-full  bg-white-200  h-screen flex items-center justify-center overflow-visible ">
+      {/* Фоновое видео */}
+      {/* <video
+        autoPlay
+        loop
+        muted
+        className="absolute top-0 left-0 w-full h-full object-cover grayscale"
+      >
+        <source src="/tlprshrt.mp4" type="video/mp4" />
+      </video> */}
 
-        <AnimatePresence>
-          {!isExploring && (
-            <motion.div
-              key="menu-content"
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: EXIT_ANIM_MS / 1000, ease: "easeInOut" }}
-              className="relative z-10 flex flex-col items-center overflow-visible"
-            >
-              <AnimatePresence mode="wait">
-                <motion.h1
-                  key={currentCategory}
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 20 }}
-                  transition={{ duration: 0.4, ease: "easeInOut" }}
-                  className="text-center break-words whitespace-normal font-futura tracking-[-5px] mb-6 cursor-pointer overflow-hidden bg-clip-text font-medium text-transparent bg-white/50"
-                  style={{ fontSize: "clamp(60px, 10vw, 150px)", padding: "0 20px" }}
-                >
-                  {currentCategory}
-                </motion.h1>
-              </AnimatePresence>
 
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                className="px-6 py-3 bg-white/20 backdrop-blur-md rounded-lg text-lg font-futura font-light shadow-lg hover:bg-pink-300 cursor-pointer"
-                onClick={handleExplore}
-              >
-                explore
-              </motion.button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+
+  {/* <div className="  absolute inset-0 w-full h-[100vh] overflow-hidden lg:w-full lg:h-full">
+  <img
+    src="/project2.png"
+    alt="Project"
+    className="w-full h-full object-contain lg:object-fill lg:rotate-90"
+  />
+</div>
+ */}
+
+<picture>
+  {/* для телефонов и планшетов */}
+  <source srcSet="/project2.png" media="(max-width: 1024px)" />
+  {/* для десктопа */}
+  <img
+    src="/project.png"
+    alt="Project"
+    className="absolute top-0 left-0 w-full h-full object-cover"
+  />
+</picture>
+
+
+
+      
+      {/* Анимированный текст */}
+      <div className="relative z-10 flex flex-col items-center overflow-visible">
+       <motion.h1
+  key={index}
+  initial={{ opacity: 0, y: -20 }}
+  animate={{ opacity: 1, y: 0 }}
+  exit={{ opacity: 0, y: 20 }}
+  transition={{ duration: 0.5 }}
+  className={`
+    text-center
+    break-words
+    whitespace-normal
+    font-futura
+    tracking-[-5px]
+    mb-6
+    cursor-pointer
+    overflow-hidden
+    bg-clip-text
+    ${index === words.length - 1 
+      ? "font-bold text-transparent bg-pink-300" 
+      : "font-medium text-transparent bg-white/50"}
+  `}
+  style={{
+    fontSize: "clamp(60px, 10vw, 150px)",
+    padding: "0 20px"
+  }}
+  onMouseMove={handleMouseMove}
+  onMouseLeave={handleMouseLeave}
+>
+  {words[index]}
+</motion.h1>
+
+      
+
+             {/* Подсказка */}
+             {/* {tooltip.visible && (
+          <motion.div
+            ref={tooltipRef}
+            className="absolute bg-black font-futura font-medium text-white text-sm px-3 py-1 rounded-lg shadow-lg "
+            style={{ top: tooltip.y, left: tooltip.x }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+          >
+          <PiEyesFill />
+          </motion.div>
+        )} */}
+
+
+
+
+        {/* Кнопка перехода */}
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+
+          className="px-6 py-3 bg-white/20 backdrop-blur-md rounded-lg text-lg font-futura font-light shadow-lg hover:bg-pink-300 cursor-pointer"
+         onClick={() =>{
+ 
+        
+           navigate("/catalogue")
+        }
+          
+          }>
+            explore
+        </motion.button>
       </div>
-    </>
+    </div></>
   );
 }
+
+//  import React, { useEffect, useState } from "react";
+// import { motion, AnimatePresence } from "framer-motion";
+// import { useNavigate } from "react-router-dom";
+// import Hero3D from "../Hero3D";
+// import LoadingScreen from "../LoadingScreen/LodingScreen";
+// import "./MenuPage.css";
+
+// const TEXT_DURATION_MS = 3000;
+// const EXIT_ANIM_MS = 500; // длительность анимации исчезновения текста/кнопки
+
+// const categories = ["Skateparks", "Ramps", "Events", "Parkramps"];
+
+// const background = {
+//   type: "image",
+//   url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1789665160/photo_2026-09-17_20-12-09_fqn0r2.jpg",
+// };
+
+// const heroModelUrl =
+//   "https://res.cloudinary.com/dbx6muxub/image/upload/v1786811336/model_eteyx8.glb";
+
+// const logoModelUrl = "/model.glb"; // тот же файл, что в LoadingScreen/LogoModel
+
+// export default function MenuPage() {
+//   const [index, setIndex] = useState(0);
+//   const navigate = useNavigate();
+
+//   const [isLoading, setIsLoading] = useState(true);
+//   const [isFadingOut, setIsFadingOut] = useState(false);
+
+//   // НОВОЕ: состояние перехода на страницу каталога
+//   const [isExploring, setIsExploring] = useState(false);
+//   const [activeModelUrl, setActiveModelUrl] = useState(heroModelUrl);
+
+//   const currentCategory = categories[index];
+
+//   useEffect(() => {
+//     if (isExploring) return; // не крутим категории во время перехода
+//     const timer = setInterval(() => {
+//       setIndex((prev) => (prev + 1) % categories.length);
+//     }, TEXT_DURATION_MS);
+//     return () => clearInterval(timer);
+//   }, [isExploring]);
+
+//   useEffect(() => {
+//     const fadeTimer = setTimeout(() => setIsFadingOut(true), 1500);
+//     const removeTimer = setTimeout(() => setIsLoading(false), 2300);
+//     return () => {
+//       clearTimeout(fadeTimer);
+//       clearTimeout(removeTimer);
+//     };
+//   }, []);
+
+//   const handleExplore = () => {
+//     if (isExploring) return;
+
+//     setIsExploring(true);           // скрывает текст и кнопку
+//     setActiveModelUrl(logoModelUrl); // переключаем модель на логотип
+
+//     // ждём, пока доиграет анимация исчезновения, и уходим на каталог
+//     setTimeout(() => {
+//       navigate("/catalogue");
+//     }, EXIT_ANIM_MS + 400);
+//   };
+
+//   return (
+//     <>
+//       {isLoading && <LoadingScreen isFadingOut={isFadingOut} />}
+
+//       <div className="hero3d relative w-full h-screen flex items-center justify-center overflow-hidden">
+//         {background.type === "image" && (
+//           <img
+//             src={background.url}
+//             alt="Background"
+//             className="absolute top-0 left-0 w-full h-full object-cover z-[2]"
+//           />
+//         )}
+
+//         <Hero3D
+//           modelUrl={activeModelUrl}
+//           media={background}
+//           restRotationY={isExploring ? 0 : (72 * Math.PI) / 180}
+//         />
+
+//         <AnimatePresence>
+//           {!isExploring && (
+//             <motion.div
+//               key="menu-content"
+//               exit={{ opacity: 0, y: -20 }}
+//               transition={{ duration: EXIT_ANIM_MS / 1000, ease: "easeInOut" }}
+//               className="relative z-10 flex flex-col items-center overflow-visible"
+//             >
+//               <AnimatePresence mode="wait">
+//                 <motion.h1
+//                   key={currentCategory}
+//                   initial={{ opacity: 0, y: -20 }}
+//                   animate={{ opacity: 1, y: 0 }}
+//                   exit={{ opacity: 0, y: 20 }}
+//                   transition={{ duration: 0.4, ease: "easeInOut" }}
+//                   className="text-center break-words whitespace-normal font-futura tracking-[-5px] mb-6 cursor-pointer overflow-hidden bg-clip-text font-medium text-transparent bg-white/50"
+//                   style={{ fontSize: "clamp(60px, 10vw, 150px)", padding: "0 20px" }}
+//                 >
+//                   {currentCategory}
+//                 </motion.h1>
+//               </AnimatePresence>
+
+//               <motion.button
+//                 whileHover={{ scale: 1.1 }}
+//                 whileTap={{ scale: 0.9 }}
+//                 className="px-6 py-3 bg-white/20 backdrop-blur-md rounded-lg text-lg font-futura font-light shadow-lg hover:bg-pink-300 cursor-pointer"
+//                 onClick={handleExplore}
+//               >
+//                 explore
+//               </motion.button>
+//             </motion.div>
+//           )}
+//         </AnimatePresence>
+//       </div>
+//     </>
+//   );
+// }
 
 // import React, { useEffect, useState } from "react";
 // import { motion, AnimatePresence } from "framer-motion";
