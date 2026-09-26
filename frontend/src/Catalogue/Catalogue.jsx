@@ -389,7 +389,7 @@ return (
           /></div>
    {/* mobileTooltipProductId === product.id &&      */}
       {isMobile && selectedProduct === null && (
-            <div onClick={(e) => handleClick(product, e)} className="mobile-tooltip absolute left-1/2 -translate-x-1/2 
+            <div  className="mobile-tooltip pointer-events-none absolute left-1/2 -translate-x-1/2 
                text-white text-base sm:text-lg font-futura bg-black font-bold
               px-2 py-2  animate-fadeIn 
                z-20">
