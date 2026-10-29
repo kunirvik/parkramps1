@@ -1,349 +1,177 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 
-/* ------------------------------------------------------------------ */
-/*  1. КОНТЕНТ — меняй тут                                              */
-/*  media: type "image" | "video", src — путь к твоему файлу.            */
-/*  Если файла нет, показывается цветная заглушка.                      */
-/* ------------------------------------------------------------------ */
-const SERVICES = [
-  {
-    id: "A1",
-    title: "Розробка та виробництво скейтпаркiв",
-    accent: "#ff4d1c",
-    text: "Проєктуємо парк під ваш майданчик і рівень райдерів, потім робимо елементи у власному виробництві: рейли, бокси, рампи, квотерпайпи.",
-    points: ["Проєкт та 3D-візуалізація", "Метал, фанера, бетон", "Монтаж і гарантія"],
-    media: [
-      { type: "video", src: "/media/park-1.mp4" },
-      { type: "image", src: "/media/park-2.jpg" },
-      { type: "image", src: "/media/park-3.jpg" },
-      { type: "video", src: "/media/park-4.mp4" },
-    ],
-  },
-  {
-    id: "A2",
-    title: "Під ключ",
-    accent: "#ffd400",
-    text: "Береме на себе весь шлях: від ідеї та погодження до відкриття. Одна команда, один кошторис, чіткі терміни.",
-    points: ["Підготовка майданчика", "Покриття та освітлення", "Здача об'єкта"],
-    media: [
-      { type: "image", src: "/media/key-1.jpg" },
-      { type: "video", src: "/media/key-2.mp4" },
-      { type: "image", src: "/media/key-3.jpg" },
-      { type: "image", src: "/media/key-4.jpg" },
-    ],
-  },
-  {
-    id: "A3",
-    title: "Івенти",
-    accent: "#ff2e93",
-    text: "Контести, джами, відкриття парків, шоу-програми. Збираємо райдерів, ставимо тимчасові модулі та організовуємо все від A до Я.",
-    points: ["Контести та джами", "Тимчасові модулі", "Звук, ведучі, медіа"],
-    media: [
-      { type: "video", src: "/media/event-1.mp4" },
-      { type: "image", src: "/media/event-2.jpg" },
-      { type: "video", src: "/media/event-3.mp4" },
-      { type: "image", src: "/media/event-4.jpg" },
-    ],
-  },
-  {
-    id: "B1",
-    title: "DIY",
-    accent: "#27e1ff",
-    text: "Будуємо разом із комʼюніті: майданчики своїми руками, воркшопи, матеріали та креслення для тих, хто хоче зробити сам.",
-    points: ["Воркшопи", "Креслення елементів", "Допомога з матеріалами"],
-    media: [
-      { type: "image", src: "/media/diy-1.jpg" },
-      { type: "image", src: "/media/diy-2.jpg" },
-      { type: "video", src: "/media/diy-3.mp4" },
-      { type: "image", src: "/media/diy-4.jpg" },
-    ],
-  },
-  {
-    id: "B2",
-    title: "Контакти",
-    accent: "#b6ff3b",
-    text: "Розкажіть про майданчик, місто та бюджет. Відповімо з першими ідеями та орієнтиром по вартості.",
-    links: [
-      { label: "+380 00 000 00 00", href: "tel:+380000000000" },
-      { label: "hello@yourname.com", href: "mailto:hello@yourname.com" },
-      { label: "@instagram", href: "https://instagram.com/" },
-    ],
-    media: [
-      { type: "image", src: "/media/contact-1.jpg" },
-      { type: "video", src: "/media/contact-2.mp4" },
-      { type: "image", src: "/media/contact-3.jpg" },
-      { type: "image", src: "/media/contact-4.jpg" },
-    ],
-  },
+// npm i gsap
+// Tailwind: должен быть подключён в проекте. Futura — у тебя уже подключена.
+
+const TRACKS = [
+  { n: "01", title: "Розробка та виробництво скейтпарків", tag: "DESIGN / BUILD", len: "∞" },
+  { n: "02", title: "Під ключ", tag: "FROM ZERO TO FIRST TRICK", len: "360°" },
+  { n: "03", title: "Івенти", tag: "JAMS / CONTESTS / SHOWS", len: "LIVE" },
+  { n: "04", title: "DIY", tag: "BUILD IT YOURSELF", len: "RAW" },
+  { n: "05", title: "Контакти", tag: "SAY HELLO", len: "→", contact: true },
 ];
 
-const BRAND = "YOUR NAME";
-const FUTURA = { fontFamily: "Futura, 'Futura PT', 'Jost', sans-serif" };
-const RUNNING_TEXT = "ПОСЛУГИ ✺ SKATEPARKS ✺ DIY ✺ ПОСЛУГИ ✺ SKATEPARKS ✺ DIY ✺ ";
+// псевдо-штрихкод (стабильный, без random)
+const BARS = Array.from({ length: 42 }, (_, i) => 1 + ((i * 7 + (i % 3) * 5) % 4));
 
-/* ------------------------------------------------------------------ */
-/*  2. БЕГУЩАЯ ЛЕНТА С ФОТО/ВИДЕО                                       */
-/* ------------------------------------------------------------------ */
-function Tile({ media, accent }) {
-  return (
-    <div
-      className="relative aspect-[16/10] h-24 shrink-0 overflow-hidden md:h-32"
-      style={{ background: `linear-gradient(135deg, ${accent}, #0c0c0c 90%)` }}
-    >
-      {media.type === "video" ? (
-        <video
-          src={media.src}
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="absolute inset-0 h-full w-full object-cover"
-          onError={(e) => (e.currentTarget.style.display = "none")}
-        />
-      ) : (
-        <img
-          src={media.src}
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover"
-          onError={(e) => (e.currentTarget.style.display = "none")}
-        />
-      )}
-    </div>
-  );
-}
-
-function Strip({ service, reverse }) {
-  const track = useRef(null);
-  const loop = [...service.media, ...service.media, ...service.media, ...service.media];
-
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const tween = gsap.fromTo(
-      track.current,
-      { xPercent: reverse ? -50 : 0 },
-      { xPercent: reverse ? 0 : -50, duration: 32, ease: "none", repeat: -1 }
-    );
-    return () => tween.kill();
-  }, [service.id, reverse]);
-
-  return (
-    <div ref={track} className="flex w-max gap-3 pl-3">
-      {loop.map((m, i) => (
-        <Tile key={`${service.id}-${i}`} media={m} accent={service.accent} />
-      ))}
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  3. ШТРИХКОД (декор задней обложки)                                  */
-/* ------------------------------------------------------------------ */
-const BARS = [2, 1, 3, 1, 1, 2, 4, 1, 2, 1, 1, 3, 2, 1, 4, 2, 1, 1, 3, 1, 2, 2, 1, 3, 1, 2, 1, 4];
-function Barcode() {
-  return (
-    <div className="flex h-12 items-stretch gap-[2px] bg-neutral-300 px-2 py-1.5">
-      {BARS.map((w, i) => (
-        <span key={i} className="bg-black" style={{ width: w * 1.5 }} />
-      ))}
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  4. СТРАНИЦА                                                         */
-/* ------------------------------------------------------------------ */
-export default function ServicesBackCover() {
+export default function BackCover() {
   const root = useRef(null);
-  const topStrip = useRef(null);
-  const botStrip = useRef(null);
-  const win = useRef(null);
-  const [active, setActive] = useState(null);
-  const lastActive = useRef(0);
-  if (active !== null) lastActive.current = active;
-  const svc = SERVICES[lastActive.current];
 
-  /* --- вход со страницы с бегущей строкой + первая раскладка --- */
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.set(topStrip.current, { yPercent: -101 });
-      gsap.set(botStrip.current, { yPercent: 101 });
-      gsap.set(win.current, { autoAlpha: 0 });
+      // 1. "занавес" — приход со страницы с бегущей строкой
+      const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
+      tl.fromTo(".curtain", { yPercent: 0 }, { yPercent: -100, duration: 1, ease: "power4.inOut" })
+        .from(".vinyl", { xPercent: -60, rotate: -200, opacity: 0, duration: 1.6 }, 0.3)
+        .from(".giant span", { yPercent: 110, stagger: 0.06, duration: 1 }, 0.5)
+        .from(".track", { x: -40, opacity: 0, stagger: 0.1, duration: 0.8 }, 0.9)
+        .from(".fade", { opacity: 0, y: 12, stagger: 0.08, duration: 0.7 }, 1.2)
+        .from(".bar", { scaleY: 0, transformOrigin: "bottom", stagger: 0.015, duration: 0.5 }, 1.4);
 
-      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (reduce) {
-        gsap.set(".intro", { display: "none" });
-        return;
-      }
+      // 2. пластинка крутится постоянно
+      gsap.to(".vinyl-disc", { rotate: 360, duration: 8, repeat: -1, ease: "none" });
 
-      // та же бегущая строка продолжает движение
-      gsap.to(".intro-text", { xPercent: -50, duration: 6, ease: "none", repeat: -1 });
-      gsap.set(".row-in", { yPercent: 110 });
-      gsap.set(".meta", { autoAlpha: 0 });
+      // 3. hover по трекам: сдвиг + ускорение пластинки
+      const spin = gsap.getTweensOf(".vinyl-disc")[0];
+      document.querySelectorAll(".track").forEach((el) => {
+        const line = el.querySelector(".line");
+        const title = el.querySelector(".title");
+        el.addEventListener("mouseenter", () => {
+          gsap.to(title, { x: 18, color: "#e5e5e5", duration: 0.35 });
+          gsap.to(line, { scaleX: 1, duration: 0.5, ease: "power3.out" });
+          gsap.to(spin, { timeScale: 4, duration: 0.5 });
+        });
+        el.addEventListener("mouseleave", () => {
+          gsap.to(title, { x: 0, color: "#8a8a8a", duration: 0.35 });
+          gsap.to(line, { scaleX: 0, duration: 0.4 });
+          gsap.to(spin, { timeScale: 1, duration: 0.8 });
+        });
+      });
 
-      gsap
-        .timeline({ delay: 0.35 })
-        .to(".intro-band", { height: "100vh", duration: 0.8, ease: "power4.inOut" })
-        .to(".intro-text", { autoAlpha: 0, duration: 0.2 }, "<0.4")
-        .to(".intro", { clipPath: "inset(0 0 100% 0)", duration: 0.7, ease: "power3.inOut" })
-        .set(".intro", { display: "none" })
-        .to(".row-in", { yPercent: 0, duration: 0.8, ease: "power4.out", stagger: 0.09 }, "-=0.35")
-        .to(".meta", { autoAlpha: 1, duration: 0.6, stagger: 0.1 }, "-=0.5");
-
-      // медленно вращающийся винил на фоне
-      gsap.to(".disc", { rotation: 360, duration: 60, ease: "none", repeat: -1 });
+      // 4. лёгкий параллакс от мыши
+      const move = (e) => {
+        const x = (e.clientX / innerWidth - 0.5) * 2;
+        const y = (e.clientY / innerHeight - 0.5) * 2;
+        gsap.to(".vinyl", { x: x * -25, y: y * -15, duration: 1 });
+        gsap.to(".giant", { x: x * 15, y: y * 8, duration: 1.2 });
+      };
+      window.addEventListener("mousemove", move);
+      return () => window.removeEventListener("mousemove", move);
     }, root);
+
     return () => ctx.revert();
   }, []);
-
-  /* --- ленты сверху/снизу --- */
-  useEffect(() => {
-    const on = active !== null;
-    gsap.to(topStrip.current, { yPercent: on ? 0 : -101, duration: 0.6, ease: "power3.out", overwrite: "auto" });
-    gsap.to(botStrip.current, { yPercent: on ? 0 : 101, duration: 0.6, ease: "power3.out", overwrite: "auto" });
-  }, [active !== null]);
-
-  /* --- окошко с описанием --- */
-  useEffect(() => {
-    if (active === null) {
-      gsap.to(win.current, { autoAlpha: 0, y: 12, duration: 0.25, overwrite: "auto" });
-    } else {
-      gsap.fromTo(
-        win.current,
-        { autoAlpha: 0, y: 28, rotate: 1.5 },
-        { autoAlpha: 1, y: 0, rotate: 0, duration: 0.45, ease: "power3.out", overwrite: "auto" }
-      );
-    }
-  }, [active]);
 
   return (
     <main
       ref={root}
-      style={FUTURA}
-      onMouseLeave={() => setActive(null)}
-      className="relative min-h-screen overflow-hidden bg-black px-6 py-36 text-neutral-400 md:px-14 md:py-48"
+      className="relative min-h-screen overflow-hidden bg-black text-neutral-500"
+      style={{ fontFamily: "Futura, 'Futura PT', 'Century Gothic', sans-serif" }}
     >
-      {/* винил на фоне */}
+      {/* занавес перехода */}
+      <div className="curtain fixed inset-0 z-50 bg-neutral-900" />
+
+      {/* зерно */}
       <div
-        className="disc pointer-events-none absolute -right-[18vmin] top-1/2 h-[90vmin] w-[90vmin] -translate-y-1/2 rounded-full opacity-60"
+        className="pointer-events-none absolute inset-0 opacity-[0.07]"
         style={{
-          background:
-            "radial-gradient(circle, #000 0 6%, #1b1b1b 6.5% 7%, transparent 7.5%), repeating-radial-gradient(circle, #0b0b0b 0 3px, #161616 3px 4px)",
+          backgroundImage:
+            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E\")",
         }}
       />
 
-      {/* шапка обложки */}
-      <header className="meta relative z-10 mb-10 flex items-end justify-between gap-6 md:mb-14">
-        <div>
-          <p className="text-2xl font-bold text-neutral-200 md:text-3xl">{BRAND}</p>
-          <p className="mt-1 text-sm">Послуги · сторона A / B</p>
-        </div>
-        <p className="text-sm">33⅓ об/хв</p>
-      </header>
-
-      {/* треклист = услуги */}
-      <ul className="relative z-10">
-        {SERVICES.map((s, i) => {
-          const isActive = active === i;
-          const dim = active !== null && !isActive;
-          return (
-            <li key={s.id} className="overflow-hidden">
-              <button
-                type="button"
-                onMouseEnter={() => setActive(i)}
-                onFocus={() => setActive(i)}
-                onClick={() => setActive(isActive ? null : i)}
-                className="row-in group flex w-full items-baseline gap-4 py-1 text-left outline-none md:gap-8"
-              >
-                <span
-                  className="w-8 shrink-0 text-sm font-medium transition-colors duration-300 md:w-12 md:text-lg"
-                  style={{ color: isActive ? s.accent : "#525252" }}
-                >
-                  {s.id}
-                </span>
-                <span
-                  className={`font-bold leading-[1.05] tracking-tight transition-colors duration-300 text-[clamp(1.9rem,5.6vw,5.2rem)] ${
-                    isActive ? "text-white" : dim ? "text-neutral-700" : "text-neutral-500"
-                  }`}
-                >
-                  {s.title}
-                </span>
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-
-      {/* низ обложки */}
-      <footer className="meta relative z-10 mt-12 flex items-end justify-between gap-6 text-xs md:mt-16">
-        <p className="max-w-[16rem] leading-relaxed">
-          Записано на майданчиках України. Усі права на ролики та рампи захищені.
-        </p>
-        <Barcode />
-      </footer>
-
-      {/* верхняя и нижняя ленты */}
-      <div className="pointer-events-none fixed inset-x-0 top-0 z-20 overflow-hidden">
-        <div ref={topStrip} className="py-3">
-          <Strip service={svc} />
-        </div>
-      </div>
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-20 overflow-hidden">
-        <div ref={botStrip} className="py-3">
-          <Strip service={svc} reverse />
-        </div>
-      </div>
-
-      {/* окошко с объяснением */}
-      <div className="pointer-events-none fixed inset-x-4 bottom-36 z-30 md:inset-x-auto md:bottom-auto md:right-14 md:top-1/2 md:w-[22rem] md:-translate-y-1/2">
-        <div
-          ref={win}
-          className="pointer-events-auto border border-neutral-800 bg-neutral-950/95 shadow-2xl backdrop-blur"
+      {/* пластинка, выглядывающая из-за края обложки */}
+      <div className="vinyl pointer-events-none absolute -left-[28vmin] top-1/2 h-[90vmin] w-[90vmin] -translate-y-1/2">
+        <div className="vinyl-disc h-full w-full rounded-full border border-neutral-800"
+          style={{
+            background:
+              "repeating-radial-gradient(circle, #0a0a0a 0 3px, #141414 3px 4px)",
+          }}
         >
-          <div className="h-1.5 w-full" style={{ background: svc.accent }} />
-          <div className="p-5 md:p-6">
-            <p className="mb-2 text-xl font-bold text-white md:text-2xl">{svc.title}</p>
-            <p className="text-sm leading-relaxed text-neutral-400">{svc.text}</p>
-
-            {svc.points && (
-              <ul className="mt-4 space-y-1.5 text-sm text-neutral-300">
-                {svc.points.map((p) => (
-                  <li key={p} className="flex gap-3">
-                    <span className="mt-[7px] h-1.5 w-1.5 shrink-0" style={{ background: svc.accent }} />
-                    {p}
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            {svc.links && (
-              <ul className="mt-4 space-y-2">
-                {svc.links.map((l) => (
-                  <li key={l.href}>
-                    <a
-                      href={l.href}
-                      className="text-lg font-bold text-white underline decoration-2 underline-offset-4 transition-colors hover:text-neutral-300"
-                      style={{ textDecorationColor: svc.accent }}
-                    >
-                      {l.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            )}
+          <div className="absolute left-1/2 top-1/2 flex h-[28%] w-[28%] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-neutral-700 bg-neutral-900 text-center text-[1.1vmin] uppercase tracking-[0.3em] text-neutral-500">
+            side B<br />33⅓ rpm
           </div>
         </div>
       </div>
 
-      {/* оверлей перехода: продолжение бегущей строки с прошлой страницы */}
-      <div className="intro fixed inset-0 z-50 flex items-center bg-transparent" style={{ clipPath: "inset(0 0 0% 0)" }}>
-        <div className="intro-band flex h-16 w-full items-center overflow-hidden bg-[#ff4d1c]">
-          <div className="intro-text flex w-max whitespace-nowrap text-3xl font-bold text-black">
-            <span>{RUNNING_TEXT.repeat(4)}</span>
-            <span>{RUNNING_TEXT.repeat(4)}</span>
+      {/* гигантский контурный заголовок */}
+      <h1 className="giant pointer-events-none absolute right-[-2vw] top-[4vh] select-none text-right text-[22vw] font-bold uppercase leading-[0.8] tracking-tighter text-transparent"
+        style={{ WebkitTextStroke: "1px #262626" }}>
+        {"SIDE".split("").map((c, i) => (
+          <span key={i} className="inline-block overflow-hidden">{c}</span>
+        ))}
+        <br />
+        {"B".split("").map((c, i) => (
+          <span key={i} className="inline-block overflow-hidden">{c}</span>
+        ))}
+      </h1>
+
+      {/* контент */}
+      <section className="relative z-10 mx-auto grid min-h-screen max-w-7xl grid-cols-1 gap-10 px-6 py-16 md:grid-cols-12 md:px-10">
+        <div className="hidden md:col-span-4 md:block" />
+
+        <div className="flex flex-col justify-between md:col-span-8">
+          <header className="fade flex items-center justify-between text-[11px] uppercase tracking-[0.35em]">
+            <span>Back cover</span>
+            <span>Cat. № SK8-001</span>
+          </header>
+
+          <div className="my-14">
+            <p className="fade mb-6 text-xs uppercase tracking-[0.4em] text-neutral-600">
+              Tracklist — Services
+            </p>
+
+            <ul>
+              {TRACKS.map((t) => (
+                <li key={t.n}>
+                  <a
+                    href={t.contact ? "#contacts" : "#"}
+                    className="track group relative flex items-baseline gap-5 py-5"
+                  >
+                    <span className="w-8 text-xs tabular-nums text-neutral-700">{t.n}</span>
+                    <span className="flex-1">
+                      <span className="title block text-2xl font-medium uppercase tracking-wide text-[#8a8a8a] md:text-4xl">
+                        {t.title}
+                      </span>
+                      <span className="mt-1 block text-[10px] uppercase tracking-[0.4em] text-neutral-700">
+                        {t.tag}
+                      </span>
+                    </span>
+                    <span className="text-sm tabular-nums text-neutral-600">{t.len}</span>
+                    <span className="line absolute bottom-0 left-0 h-px w-full origin-left scale-x-0 bg-neutral-500" />
+                    <span className="absolute bottom-0 left-0 h-px w-full bg-neutral-900" style={{ zIndex: -1 }} />
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
+
+          <footer id="contacts" className="fade grid grid-cols-2 items-end gap-8 text-[11px] uppercase tracking-[0.25em] md:grid-cols-3">
+            <div className="space-y-1">
+              <p className="text-neutral-700">Credits</p>
+              <a href="tel:+380000000000" className="block transition-colors hover:text-neutral-200">+38 000 000 00 00</a>
+              <a href="mailto:hello@example.com" className="block transition-colors hover:text-neutral-200">hello@example.com</a>
+              <a href="https://instagram.com/" className="block transition-colors hover:text-neutral-200">@instagram</a>
+            </div>
+
+            <p className="hidden text-[9px] leading-relaxed tracking-[0.2em] text-neutral-700 md:block">
+              Всі права на рампи захищені гравітацією. Катайся голосно.
+              <br />Made in Ukraine ℗ 2026
+            </p>
+
+            {/* штрихкод */}
+            <div className="justify-self-end bg-neutral-300 p-2">
+              <div className="flex h-12 items-end gap-[2px]">
+                {BARS.map((w, i) => (
+                  <span key={i} className="bar block bg-black" style={{ width: w, height: i % 9 === 0 ? "100%" : "88%" }} />
+                ))}
+              </div>
+              <p className="mt-1 text-center text-[8px] tracking-[0.3em] text-black">4 820000 081001</p>
+            </div>
+          </footer>
         </div>
-      </div>
+      </section>
     </main>
   );
 }
