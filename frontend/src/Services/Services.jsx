@@ -360,12 +360,9 @@
 // }
 
 
-
-import { useRef, useState } from "react";
-import { useGSAP } from "@gsap/react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 
-gsap.registerPlugin(useGSAP);
 
 const services = [
   {
@@ -417,7 +414,8 @@ export default function ServicesPage() {
 
   const service = services[active];
 
-  useGSAP(() => {
+ useEffect(() => {
+  const ctx = gsap.context(() => {
     const tl = gsap.timeline({ delay: 0.15 });
 
     tl.from(".album-top", {
@@ -425,40 +423,31 @@ export default function ServicesPage() {
       y: -10,
       duration: 0.5,
     })
-      .from(
-        ".album-heading",
-        {
-          opacity: 0,
-          y: 35,
-          duration: 0.7,
-          ease: "power3.out",
-        },
-        "-=0.2"
-      )
-      .from(
-        ".service-row",
-        {
-          opacity: 0,
-          x: -20,
-          stagger: 0.1,
-          duration: 0.55,
-          ease: "power2.out",
-        },
-        "-=0.3"
-      )
-      .from(
-        ".album-bottom",
-        {
-          opacity: 0,
-          duration: 0.5,
-        },
-        "-=0.1"
-      );
-  }, { scope: root });
+      .from(".album-heading", {
+        opacity: 0,
+        y: 35,
+        duration: 0.7,
+        ease: "power3.out",
+      }, "-=0.2")
+      .from(".service-row", {
+        opacity: 0,
+        x: -20,
+        stagger: 0.1,
+        duration: 0.55,
+      }, "-=0.3")
+      .from(".album-bottom", {
+        opacity: 0,
+        duration: 0.5,
+      }, "-=0.1");
+  }, root);
 
-  useGSAP(() => {
-    if (!preview.current) return;
+  return () => ctx.revert();
+}, []);
 
+useEffect(() => {
+  if (!root.current || !preview.current) return;
+
+  const ctx = gsap.context(() => {
     gsap.fromTo(
       preview.current,
       { opacity: 0, scale: 0.94, rotate: -3 },
@@ -476,7 +465,10 @@ export default function ServicesPage() {
       duration: 0.7,
       ease: "power2.inOut",
     });
-  }, { dependencies: [active], scope: root });
+  }, root);
+
+  return () => ctx.revert();
+}, [active]); 
 
   function movePreview(event) {
     if (window.matchMedia("(hover: none)").matches) return;
