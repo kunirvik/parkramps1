@@ -335,14 +335,13 @@ return (
        
       </div>
  
- <div className="flex-1 overflow-hidden flex flex-col items-center justify-center  "   style={{
-  marginTop: "clamp(10px, 1vw, 60px)"}}>  
+ <div className="flex-1 overflow-hidden flex flex-col items-center justify-center  "  >  
   <div className="grid grid-cols-1 md:grid-cols-2     "
         style={{
     maxHeight: "100vh",
     overflow: "auto",
 
-    // paddingTop: "clamp(50px, 3vw, 50px)", // отступ сверху
+    marginTop: "clamp(50px, 3vw, 50px)", // отступ сверху
  columnGap: "clamp(10px, 8vw, 140px)", // между фигурами и рампами, растёт быстрее
     rowGap: "clamp(10px, 3vw, 40px)",     // вертикальный отступ (до скейтпарков) как было   
     // gap: "clamp(10px, 3vw, 40px)", // min 10px, растет до 40px с экраном
@@ -384,8 +383,8 @@ return (
             alt={product.name}
             
             className="w-full h-full object-contain transition-all duration-300"
-            style={{
-  marginTop: "clamp(10px, 1vw, 60px)"}}
+         
+  
             onMouseMove={!isMobile ? (e) => handleMouseMove(e, product.id) : undefined}
             onMouseLeave={!isMobile ? handleMouseLeave : undefined} 
           /></div>
