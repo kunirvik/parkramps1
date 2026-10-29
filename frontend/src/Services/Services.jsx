@@ -373,7 +373,7 @@ const services = [
     title: "DESIGN / PRODUCTION",
     subtitle: "Розробка та виробництво скейтпарків",
     description:
-      "Від першого ескізу до створення простору для катання.",
+      "Від першого ескізу до створення простору для катання.000",
     tag: "ENGINEERING · DESIGN · BUILD",
     image: "/images/blueprint.webp",
     background: "#171914",
