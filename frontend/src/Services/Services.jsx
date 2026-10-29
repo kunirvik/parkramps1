@@ -1,177 +1,360 @@
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 
-// npm i gsap
-// Tailwind: должен быть подключён в проекте. Futura — у тебя уже подключена.
+/**
+ * Страница услуг в виде задней обложки альбома.
+ * Требования: react, gsap, tailwindcss. Шрифт Futura подключён у вас глобально.
+ *
+ * Медиа: положите файлы в /public/media и впишите пути в TRACKS.
+ * Если src не указан или файл не найден, показывается чертёжная сетка-заглушка.
+ */
 
 const TRACKS = [
-  { n: "01", title: "Розробка та виробництво скейтпарків", tag: "DESIGN / BUILD", len: "∞" },
-  { n: "02", title: "Під ключ", tag: "FROM ZERO TO FIRST TRICK", len: "360°" },
-  { n: "03", title: "Івенти", tag: "JAMS / CONTESTS / SHOWS", len: "LIVE" },
-  { n: "04", title: "DIY", tag: "BUILD IT YOURSELF", len: "RAW" },
-  { n: "05", title: "Контакти", tag: "SAY HELLO", len: "→", contact: true },
+  {
+    title: "Розробка та виробництво скейтпарків",
+    tag: "проєкт",
+    text: "Проектуємо парк під вашу ділянку і людей, які будуть на ньому кататись. Виготовляємо елементи самі: від рельєфу до рейлів.",
+    media: { type: "image", src: "/media/build.jpg" },
+  },
+  {
+    title: "Під ключ",
+    tag: "від нуля",
+    text: "Одна команда веде все: проєкт, основа, монтаж, фініш. Ви приходите на відкриття, а не на будмайданчик.",
+    media: { type: "video", src: "/media/turnkey.mp4" },
+  },
+  {
+    title: "Івенти",
+    tag: "наживо",
+    text: "Контести, джами, покази, майстер-класи. Ставимо трасу, світло і правила, щоб день пройшов без зупинок.",
+    media: { type: "image", src: "/media/events.jpg" },
+  },
+  {
+    title: "DIY",
+    tag: "своїми руками",
+    text: "Допомагаємо зібрати спот самостійно: креслення, матеріали, поради по бетону і дереву, виїзд на консультацію.",
+    media: { type: "image", src: "/media/diy.jpg" },
+  },
+  {
+    title: "Контакти",
+    tag: "на зв’язок",
+    text: "Напишіть, що у вас є: ділянка, ідея або просто бажання. Відповімо і підкажемо, з чого почати.",
+    media: { type: "image", src: "/media/contact.jpg" },
+  },
 ];
 
-// псевдо-штрихкод (стабильный, без random)
-const BARS = Array.from({ length: 42 }, (_, i) => 1 + ((i * 7 + (i % 3) * 5) % 4));
+const CONTACTS = [
+  { label: "пошта", value: "hello@yourpark.ua", href: "mailto:hello@yourpark.ua" },
+  { label: "телефон", value: "+380 00 000 00 00", href: "tel:+380000000000" },
+  { label: "instagram", value: "@yourpark", href: "https://instagram.com/yourpark" },
+];
+
+const font = { fontFamily: 'Futura, "Futura PT", "Century Gothic", sans-serif' };
+
+/* Штрихкод: детерминированный, чтобы не прыгал между рендерами */
+function Barcode() {
+  const bars = useMemo(() => {
+    let seed = 7;
+    const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
+    return Array.from({ length: 46 }, () => ({
+      w: 1 + Math.round(rnd() * 3),
+      gap: 1 + Math.round(rnd() * 2),
+    }));
+  }, []);
+  return (
+    <div className="flex h-12 items-stretch" aria-hidden="true">
+      {bars.map((b, i) => (
+        <span
+          key={i}
+          className="bg-neutral-500"
+          style={{ width: b.w, marginRight: b.gap }}
+        />
+      ))}
+    </div>
+  );
+}
+
+/* Заглушка: план парка в виде сетки */
+function Placeholder({ n }) {
+  return (
+    <div
+      className="relative h-full w-full bg-neutral-950"
+      style={{
+        backgroundImage:
+          "linear-gradient(#3a3a3a 1px, transparent 1px), linear-gradient(90deg, #3a3a3a 1px, transparent 1px)",
+        backgroundSize: "20px 20px",
+      }}
+    >
+      <span className="absolute bottom-2 left-3 text-5xl text-neutral-600">
+        {String(n).padStart(2, "0")}
+      </span>
+    </div>
+  );
+}
+
+function Media({ media, n }) {
+  const [failed, setFailed] = useState(!media?.src);
+  if (failed) return <Placeholder n={n} />;
+  if (media.type === "video") {
+    return (
+      <video
+        src={media.src}
+        autoPlay
+        muted
+        loop
+        playsInline
+        onError={() => setFailed(true)}
+        className="h-full w-full object-cover"
+      />
+    );
+  }
+  return (
+    <img
+      src={media.src}
+      alt=""
+      onError={() => setFailed(true)}
+      className="h-full w-full object-cover grayscale"
+    />
+  );
+}
 
 export default function BackCover() {
   const root = useRef(null);
+  const ticker = useRef(null);
+  const card = useRef(null);
+  const moveX = useRef(null);
+  const moveY = useRef(null);
+  const [active, setActive] = useState(null);
+  const [coarse, setCoarse] = useState(false);
 
+  useEffect(() => {
+    setCoarse(window.matchMedia("(pointer: coarse)").matches);
+  }, []);
+
+  /* Вход: бегущая строка предыдущей страницы продолжается сверху,
+     затем строки треклиста выезжают из-под линии */
   useLayoutEffect(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const ctx = gsap.context(() => {
-      // 1. "занавес" — приход со страницы с бегущей строкой
-      const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
-      tl.fromTo(".curtain", { yPercent: 0 }, { yPercent: -100, duration: 1, ease: "power4.inOut" })
-        .from(".vinyl", { xPercent: -60, rotate: -200, opacity: 0, duration: 1.6 }, 0.3)
-        .from(".giant span", { yPercent: 110, stagger: 0.06, duration: 1 }, 0.5)
-        .from(".track", { x: -40, opacity: 0, stagger: 0.1, duration: 0.8 }, 0.9)
-        .from(".fade", { opacity: 0, y: 12, stagger: 0.08, duration: 0.7 }, 1.2)
-        .from(".bar", { scaleY: 0, transformOrigin: "bottom", stagger: 0.015, duration: 0.5 }, 1.4);
+      if (reduce) return;
 
-      // 2. пластинка крутится постоянно
-      gsap.to(".vinyl-disc", { rotate: 360, duration: 8, repeat: -1, ease: "none" });
-
-      // 3. hover по трекам: сдвиг + ускорение пластинки
-      const spin = gsap.getTweensOf(".vinyl-disc")[0];
-      document.querySelectorAll(".track").forEach((el) => {
-        const line = el.querySelector(".line");
-        const title = el.querySelector(".title");
-        el.addEventListener("mouseenter", () => {
-          gsap.to(title, { x: 18, color: "#e5e5e5", duration: 0.35 });
-          gsap.to(line, { scaleX: 1, duration: 0.5, ease: "power3.out" });
-          gsap.to(spin, { timeScale: 4, duration: 0.5 });
-        });
-        el.addEventListener("mouseleave", () => {
-          gsap.to(title, { x: 0, color: "#8a8a8a", duration: 0.35 });
-          gsap.to(line, { scaleX: 0, duration: 0.4 });
-          gsap.to(spin, { timeScale: 1, duration: 0.8 });
-        });
+      gsap.set(ticker.current, { xPercent: 0 });
+      gsap.to(ticker.current, {
+        xPercent: -50,
+        duration: 28,
+        ease: "none",
+        repeat: -1,
       });
 
-      // 4. лёгкий параллакс от мыши
-      const move = (e) => {
-        const x = (e.clientX / innerWidth - 0.5) * 2;
-        const y = (e.clientY / innerHeight - 0.5) * 2;
-        gsap.to(".vinyl", { x: x * -25, y: y * -15, duration: 1 });
-        gsap.to(".giant", { x: x * 15, y: y * 8, duration: 1.2 });
-      };
-      window.addEventListener("mousemove", move);
-      return () => window.removeEventListener("mousemove", move);
+      const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
+      tl.from("[data-line]", {
+        scaleX: 0,
+        transformOrigin: "left center",
+        duration: 1,
+        stagger: 0.06,
+      })
+        .from(
+          "[data-row-inner]",
+          { yPercent: 110, duration: 0.9, stagger: 0.09 },
+          0.2
+        )
+        .from("[data-meta]", { opacity: 0, duration: 0.8, stagger: 0.05 }, 0.7);
     }, root);
-
     return () => ctx.revert();
   }, []);
+
+  /* Карточка у курсора */
+  useEffect(() => {
+    if (coarse) return;
+    gsap.set(card.current, { xPercent: 0, yPercent: 0, x: 0, y: 0 });
+    moveX.current = gsap.quickTo(card.current, "x", { duration: 0.45, ease: "power3" });
+    moveY.current = gsap.quickTo(card.current, "y", { duration: 0.45, ease: "power3" });
+
+    const onMove = (e) => {
+      const w = card.current.offsetWidth;
+      const h = card.current.offsetHeight;
+      let x = e.clientX + 28;
+      let y = e.clientY - h / 2;
+      if (x + w > window.innerWidth - 16) x = e.clientX - w - 28;
+      y = Math.max(16, Math.min(y, window.innerHeight - h - 16));
+      moveX.current(x);
+      moveY.current(y);
+    };
+    window.addEventListener("pointermove", onMove);
+    return () => window.removeEventListener("pointermove", onMove);
+  }, [coarse]);
+
+  useEffect(() => {
+    if (coarse || !card.current) return;
+    if (active === null) {
+      gsap.to(card.current, { autoAlpha: 0, scale: 0.92, duration: 0.2, ease: "power2.in" });
+    } else {
+      gsap.to(card.current, { autoAlpha: 1, scale: 1, duration: 0.35, ease: "back.out(1.6)" });
+      gsap.fromTo(
+        "[data-card-media]",
+        { clipPath: "inset(0 100% 0 0)" },
+        { clipPath: "inset(0 0% 0 0)", duration: 0.5, ease: "power3.out" }
+      );
+    }
+  }, [active, coarse]);
+
+  const t = active !== null ? TRACKS[active] : null;
 
   return (
     <main
       ref={root}
-      className="relative min-h-screen overflow-hidden bg-black text-neutral-500"
-      style={{ fontFamily: "Futura, 'Futura PT', 'Century Gothic', sans-serif" }}
+      style={font}
+      className="relative min-h-screen overflow-hidden bg-black text-neutral-400 selection:bg-neutral-300 selection:text-black"
     >
-      {/* занавес перехода */}
-      <div className="curtain fixed inset-0 z-50 bg-neutral-900" />
-
-      {/* зерно */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.07]"
-        style={{
-          backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E\")",
-        }}
-      />
-
-      {/* пластинка, выглядывающая из-за края обложки */}
-      <div className="vinyl pointer-events-none absolute -left-[28vmin] top-1/2 h-[90vmin] w-[90vmin] -translate-y-1/2">
-        <div className="vinyl-disc h-full w-full rounded-full border border-neutral-800"
-          style={{
-            background:
-              "repeating-radial-gradient(circle, #0a0a0a 0 3px, #141414 3px 4px)",
-          }}
-        >
-          <div className="absolute left-1/2 top-1/2 flex h-[28%] w-[28%] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-neutral-700 bg-neutral-900 text-center text-[1.1vmin] uppercase tracking-[0.3em] text-neutral-500">
-            side B<br />33⅓ rpm
-          </div>
+      {/* Продолжение бегущей строки */}
+      <div className="border-b border-neutral-800 py-2 text-sm text-neutral-600" aria-hidden="true">
+        <div ref={ticker} className="flex w-max whitespace-nowrap">
+          {[0, 1].map((k) => (
+            <span key={k} className="pr-8">
+              {Array.from({ length: 8 }, () => "скейтпарки під ключ  /  ").join("")}
+            </span>
+          ))}
         </div>
       </div>
 
-      {/* гигантский контурный заголовок */}
-      <h1 className="giant pointer-events-none absolute right-[-2vw] top-[4vh] select-none text-right text-[22vw] font-bold uppercase leading-[0.8] tracking-tighter text-transparent"
-        style={{ WebkitTextStroke: "1px #262626" }}>
-        {"SIDE".split("").map((c, i) => (
-          <span key={i} className="inline-block overflow-hidden">{c}</span>
-        ))}
-        <br />
-        {"B".split("").map((c, i) => (
-          <span key={i} className="inline-block overflow-hidden">{c}</span>
-        ))}
-      </h1>
-
-      {/* контент */}
-      <section className="relative z-10 mx-auto grid min-h-screen max-w-7xl grid-cols-1 gap-10 px-6 py-16 md:grid-cols-12 md:px-10">
-        <div className="hidden md:col-span-4 md:block" />
-
-        <div className="flex flex-col justify-between md:col-span-8">
-          <header className="fade flex items-center justify-between text-[11px] uppercase tracking-[0.35em]">
-            <span>Back cover</span>
-            <span>Cat. № SK8-001</span>
-          </header>
-
-          <div className="my-14">
-            <p className="fade mb-6 text-xs uppercase tracking-[0.4em] text-neutral-600">
-              Tracklist — Services
+      <div className="mx-auto grid max-w-6xl gap-10 px-6 pb-16 pt-10 md:grid-cols-[1fr_2.2fr] md:gap-16 md:pt-16">
+        {/* Левая колонка: как «служебная» сторона обложки */}
+        <aside className="flex flex-col justify-between gap-12 md:min-h-[70vh]">
+          <div>
+            <h1 className="text-3xl font-medium leading-tight text-neutral-300 md:text-4xl">
+              Сторона Б
+            </h1>
+            <p className="mt-3 max-w-[22ch] text-sm leading-relaxed text-neutral-500">
+              Те, хто катається, знають: найцікавіше завжди на звороті.
             </p>
+          </div>
 
-            <ul>
-              {TRACKS.map((t) => (
-                <li key={t.n}>
+          <div className="hidden md:block">
+            <ul className="space-y-1 text-sm">
+              {CONTACTS.map((c) => (
+                <li key={c.label} className="flex gap-3">
+                  <span className="w-20 text-neutral-600">{c.label}</span>
                   <a
-                    href={t.contact ? "#contacts" : "#"}
-                    className="track group relative flex items-baseline gap-5 py-5"
+                    href={c.href}
+                    className="text-neutral-400 underline decoration-neutral-700 underline-offset-4 transition-colors hover:text-neutral-100 focus-visible:text-neutral-100 focus-visible:outline-none"
                   >
-                    <span className="w-8 text-xs tabular-nums text-neutral-700">{t.n}</span>
-                    <span className="flex-1">
-                      <span className="title block text-2xl font-medium uppercase tracking-wide text-[#8a8a8a] md:text-4xl">
-                        {t.title}
-                      </span>
-                      <span className="mt-1 block text-[10px] uppercase tracking-[0.4em] text-neutral-700">
-                        {t.tag}
-                      </span>
-                    </span>
-                    <span className="text-sm tabular-nums text-neutral-600">{t.len}</span>
-                    <span className="line absolute bottom-0 left-0 h-px w-full origin-left scale-x-0 bg-neutral-500" />
-                    <span className="absolute bottom-0 left-0 h-px w-full bg-neutral-900" style={{ zIndex: -1 }} />
+                    {c.value}
                   </a>
                 </li>
               ))}
             </ul>
           </div>
+        </aside>
 
-          <footer id="contacts" className="fade grid grid-cols-2 items-end gap-8 text-[11px] uppercase tracking-[0.25em] md:grid-cols-3">
-            <div className="space-y-1">
-              <p className="text-neutral-700">Credits</p>
-              <a href="tel:+380000000000" className="block transition-colors hover:text-neutral-200">+38 000 000 00 00</a>
-              <a href="mailto:hello@example.com" className="block transition-colors hover:text-neutral-200">hello@example.com</a>
-              <a href="https://instagram.com/" className="block transition-colors hover:text-neutral-200">@instagram</a>
-            </div>
+        {/* Треклист */}
+        <section aria-label="Послуги">
+          <ol onMouseLeave={() => setActive(null)}>
+            {TRACKS.map((tr, i) => {
+              const isActive = active === i;
+              const dim = active !== null && !isActive;
+              return (
+                <li key={tr.title}>
+                  <div data-line className="h-px w-full bg-neutral-800" />
+                  <button
+                    type="button"
+                    onMouseEnter={() => setActive(i)}
+                    onFocus={() => setActive(i)}
+                    onBlur={() => setActive(null)}
+                    onClick={() => coarse && setActive(isActive ? null : i)}
+                    aria-expanded={isActive}
+                    className="group block w-full py-5 text-left focus-visible:outline-none"
+                  >
+                    <span className="block overflow-hidden">
+                      <span
+                        data-row-inner
+                        className={`flex items-baseline gap-4 transition-colors duration-300 md:gap-6 ${
+                          isActive
+                            ? "text-neutral-100"
+                            : dim
+                            ? "text-neutral-700"
+                            : "text-neutral-400"
+                        }`}
+                      >
+                        <span className="w-8 shrink-0 text-sm tabular-nums">
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                        <span className="text-2xl font-medium leading-tight md:text-4xl">
+                          {tr.title}
+                        </span>
+                        <span
+                          data-meta
+                          className="ml-auto hidden shrink-0 text-sm sm:block"
+                        >
+                          {tr.tag}
+                        </span>
+                      </span>
+                    </span>
 
-            <p className="hidden text-[9px] leading-relaxed tracking-[0.2em] text-neutral-700 md:block">
-              Всі права на рампи захищені гравітацією. Катайся голосно.
-              <br />Made in Ukraine ℗ 2026
+                    {/* Мобильный вариант: раскрытие внутри строки */}
+                    {coarse && (
+                      <span
+                        className={`grid transition-all duration-500 ${
+                          isActive ? "mt-4 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                        }`}
+                      >
+                        <span className="overflow-hidden">
+                          <span className="block aspect-[4/3] w-full overflow-hidden">
+                            {isActive && <Media media={tr.media} n={i + 1} />}
+                          </span>
+                          <span className="mt-3 block text-sm leading-relaxed text-neutral-400">
+                            {tr.text}
+                          </span>
+                        </span>
+                      </span>
+                    )}
+                  </button>
+                </li>
+              );
+            })}
+            <li>
+              <div data-line className="h-px w-full bg-neutral-800" />
+            </li>
+          </ol>
+
+          {/* Контакты для мобильных */}
+          <ul className="mt-10 space-y-1 text-sm md:hidden">
+            {CONTACTS.map((c) => (
+              <li key={c.label} className="flex gap-3">
+                <span className="w-20 text-neutral-600">{c.label}</span>
+                <a href={c.href} className="text-neutral-400 underline decoration-neutral-700 underline-offset-4">
+                  {c.value}
+                </a>
+              </li>
+            ))}
+          </ul>
+
+          {/* Выходные данные, как на обороте пластинки */}
+          <div className="mt-14 flex items-end justify-between gap-6">
+            <p className="max-w-[34ch] text-xs leading-relaxed text-neutral-600">
+              Записано на бетоні, дереві й металі. Жодна дошка не постраждала під час виробництва.
             </p>
+            <Barcode />
+          </div>
+        </section>
+      </div>
 
-            {/* штрихкод */}
-            <div className="justify-self-end bg-neutral-300 p-2">
-              <div className="flex h-12 items-end gap-[2px]">
-                {BARS.map((w, i) => (
-                  <span key={i} className="bar block bg-black" style={{ width: w, height: i % 9 === 0 ? "100%" : "88%" }} />
-                ))}
-              </div>
-              <p className="mt-1 text-center text-[8px] tracking-[0.3em] text-black">4 820000 081001</p>
+      {/* Карточка, що йде за курсором (десктоп) */}
+      {!coarse && (
+        <div
+          ref={card}
+          aria-hidden="true"
+          className="pointer-events-none invisible fixed left-0 top-0 z-50 w-[320px] opacity-0"
+          style={{ ...font, transform: "scale(0.92)" }}
+        >
+          <div className="border border-neutral-700 bg-black p-2">
+            <div data-card-media className="aspect-[4/3] w-full overflow-hidden">
+              {t && <Media key={active} media={t.media} n={active + 1} />}
             </div>
-          </footer>
+            <p className="px-1 pb-2 pt-3 text-sm leading-relaxed text-neutral-300">
+              {t?.text}
+            </p>
+          </div>
         </div>
-      </section>
+      )}
     </main>
   );
 }
