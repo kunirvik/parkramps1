@@ -347,7 +347,8 @@ return (
   <div className="grid grid-cols-1 md:grid-cols-2     "
         style={{
     maxHeight: "100%",
-    overflow: "auto",
+    // overflow: "auto",
+    overflow: "hidden",
   minHeight: 0,
   
  columnGap: "clamp(10px, 8vw, 140px)", // между фигурами и рампами, растёт быстрее
