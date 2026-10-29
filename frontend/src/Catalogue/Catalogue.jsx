@@ -336,7 +336,7 @@ return (
       </div>
  
  <div className="flex-1 overflow-hidden flex flex-col items-center justify-center  "   style={{
-  marginTop: "clamp(0px, 1vw, 60px)"}}>  
+  marginTop: "clamp(10px, 1vw, 60px)"}}>  
   <div className="grid grid-cols-1 md:grid-cols-2     "
         style={{
     maxHeight: "100vh",
