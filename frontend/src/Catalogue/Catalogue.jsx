@@ -323,19 +323,27 @@ return (
         .status-bar__sep { color: #222; margin: 0 8px; }
       `}</style>
 
-    <div className=" flex flex-col min-h-screen relative w-full">
-
+    {/* <div className=" flex flex-col min-h-screen relative w-full"> */}
+<div className="flex flex-col h-[100dvh] min-h-0 overflow-hidden relative w-full">
       {/* SocialButtons всегда вверху */}
-      <div className="z-50  flex-shrink-0">
+      {/* <div className="z-50  flex-shrink-0">
         <SocialButtons
           buttonLabel="gallery"
           onButtonClick={handleExit}
           buttonAnimationProps={{ whileTap: { scale: 0.85, opacity: 0.6 } }}
         />
        
-      </div>
+      </div> */}
+      <div className="relative z-50 shrink-0 min-h-[64px]">
+  <SocialButtons
+    buttonLabel="gallery"
+    onButtonClick={handleExit}
+    buttonAnimationProps={{ whileTap: { scale: 0.85, opacity: 0.6 } }}
+  />
+</div>
  
- <div className="flex-1 overflow-hidden flex flex-col items-center justify-center  "  >  
+ {/* <div className="flex-1 overflow-hidden flex flex-col items-center justify-center  "  >   */}
+ <div className="flex-1 min-h-0 overflow-hidden flex flex-col items-center justify-center">
   <div className="grid grid-cols-1 md:grid-cols-2     "
         style={{
     maxHeight: "100%",
