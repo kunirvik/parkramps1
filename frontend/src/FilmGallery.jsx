@@ -1623,8 +1623,10 @@
 // }
 import { useState, useEffect, useRef, useCallback, useMemo, memo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ChevronRight } from "lucide-react";
+// 
+
 import SocialButtons from "./SocialButtons/SocialButtons";
+import { ChevronRight, ChevronLeft } from "lucide-react";
 
 const STYLE_ID = "film-gallery-styles";
 if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
@@ -2156,8 +2158,35 @@ const activeCategoryLabel =
         stripHeight={isMobile ? 60 : 100}
       />
 
+
+
+
+{/* Кнопка «Назад» — слева от фотографии */}
+<button
+  onClick={handleClose}
+  aria-label="Назад"
+  className="fixed top-20 left-4 z-50 flex items-center justify-center w-10 h-10
+             bg-neutral-800/80 hover:bg-neutral-700 text-white/90 backdrop-blur-sm
+             transition-colors"
+>
+  <ChevronLeft size={20} />
+</button>
+
+{/* Кнопка перехода к продукту — справа от фотографии */}
+<button
+  onClick={handlePrimaryAction}
+  aria-label={canOpenProduct ? "Перейти до виробу" : "Закрити галерею"}
+  className="fixed top-20 right-4 z-50 flex items-center justify-center w-10 h-10
+             bg-neutral-800/80 hover:bg-neutral-700 text-white/90 backdrop-blur-sm
+             transition-colors"
+>
+  <IconOpenProduct />
+</button>
+ 
+
+
       {/* Единственная кнопка действия */}
-      <button
+      {/* <button
         onClick={handlePrimaryAction}
         aria-label={canOpenProduct ? "Перейти до виробу" : "Закрити галерею"}
         className="fixed top-20 right-4 z-50 flex items-center justify-center w-10 h-10
@@ -2165,7 +2194,7 @@ const activeCategoryLabel =
                    transition-colors"
       >
         <IconOpenProduct />
-      </button>
+      </button> */}
     </div>
   );
 }

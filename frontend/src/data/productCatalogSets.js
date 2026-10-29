@@ -172,7 +172,7 @@ const productCatalogSets = [
       {
         type: "video",
         src: `${CLOUDINARY_VIDEO}v1754506398/20220206_214037_qbp9jd.mp4`,
-        caption: "підпис",
+        // caption: "підпис",
       },
     ],
          specs: [
@@ -195,15 +195,23 @@ const productCatalogSets = [
     altImages: [`${CLOUDINARY}v1783083840/box_121_diy2_jkc9nu.webp`, `${CLOUDINARY}v1783083838/box_121_diy_dead8o.webp`],
 
     sample: [
-        { type: "image", src: `${CLOUDINARY}v1785165171/20260621_124337_i5tcck.jpg`, caption: "підпис 1" },
-       { type: "image", src: `${CLOUDINARY}v1785165171/20260621_124322_eguuup.jpg`, caption: "підпис 1" },
-      { type: "image", src: `${CLOUDINARY}v1783062743/grindbox2_kymbjd.webp`, caption: "підпис 1" },
-      { type: "image", src: `${CLOUDINARY}v1783062742/grindbox_xhcxsp.webp`, caption: "підпис 2" },
+        { type: "image", src: `${CLOUDINARY}v1785165171/20260621_124337_i5tcck.jpg`,
+        //  caption: "підпис 1" 
+        },
+       { type: "image", src: `${CLOUDINARY}v1785165171/20260621_124322_eguuup.jpg`,
+        //  caption: "підпис 1" 
+        },
+      { type: "image", src: `${CLOUDINARY}v1783062743/grindbox2_kymbjd.webp`, 
+      // caption: "підпис 1" 
+      },
+      { type: "image", src: `${CLOUDINARY}v1783062742/grindbox_xhcxsp.webp`,
+      // caption: "підпис 2" 
+      },
 
       {
         type: "video",
         src: `${CLOUDINARY_VIDEO}v1754506398/20220206_214037_qbp9jd.mp4`,
-        caption: "підпис",
+        // caption: "підпис",
       },
     ],
 
@@ -231,8 +239,12 @@ const productCatalogSets = [
     scale:0.75,
 
     sample: [
-      { type: "image", src: "/images/sample/quater.webp", caption: "підпис 1" },
-      { type: "image", src: "/images/sample/box.webp", caption: "підпис 2" },
+      { type: "image", src: "/images/sample/quater.webp",
+        // caption: "підпис 1"
+         },
+      { type: "image", src: "/images/sample/box.webp",
+          // caption: "підпис 2" 
+        },
     ],
        specs: [
     { label: "Висота", value: "80 см" },
@@ -258,10 +270,18 @@ const productCatalogSets = [
       "/images/sets/quaterr215h80w125d40top.png",
     ],
     sample: [
-      { type: "image", src: `${CLOUDINARY}v1783062355/vertwall2.1_ls0maz.webp`, caption: "підпис 1" },
-      { type: "image", src: `"/images/sample/vertwall2.1.webp"`, caption: "підпис 2" },
-      { type: "image", src: `${CLOUDINARY}v1783062464/vertwall2_ehot8p.webp`, caption: "підпис 3" },
-      { type: "image", src: `${CLOUDINARY}v1783062471/vertwall3_jtd7yu.webp`, caption: "підпис 4" },
+      { type: "image", src: `${CLOUDINARY}v1783062355/vertwall2.1_ls0maz.webp`, 
+      //caption: "підпис 1" 
+    },
+      { type: "image", src: `"/images/sample/vertwall2.1.webp"`, 
+       // caption: "підпис 2"
+       },
+      { type: "image", src: `${CLOUDINARY}v1783062464/vertwall2_ehot8p.webp`,
+     //  caption: "підпис 3"
+       },
+      { type: "image", src: `${CLOUDINARY}v1783062471/vertwall3_jtd7yu.webp`, 
+      //caption: "підпис 4"
+       },
     ],
        specs: [
     { label: "Висота", value: "80 см" },
