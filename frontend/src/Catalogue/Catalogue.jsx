@@ -384,6 +384,8 @@ return (
             alt={product.name}
             
             className="w-full h-full object-contain transition-all duration-300"
+            style={{
+  marginTop: "clamp(10px, 1vw, 60px)"}}
             onMouseMove={!isMobile ? (e) => handleMouseMove(e, product.id) : undefined}
             onMouseLeave={!isMobile ? handleMouseLeave : undefined} 
           /></div>
