@@ -119,7 +119,7 @@ const SocialButtons = forwardRef(function SocialButtons(props, ref) {
   </div>
 
   {/* Правая группа: точки + раскрывающееся меню, всегда справа */}
-  <div ref={menuRef} className="flex items-center gap-2 relative flex-shrink-0">
+  <div ref={menuRef} className="  flex items-center gap-2 relative flex-shrink-0">
     <AnimatePresence>
       {open && (
         <motion.div
@@ -134,7 +134,7 @@ const SocialButtons = forwardRef(function SocialButtons(props, ref) {
               key={i}
               onClick={btn.onClick || (() => window.open(btn.link, "_blank"))}
               title={btn.label}
-              className="w-9 h-9 flex items-center justify-center rounded opacity-60"
+              className="cursor-pointer w-9 h-9 flex items-center justify-center rounded opacity-60"
             >
               {btn.icon}
             </button>

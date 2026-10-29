@@ -16,6 +16,7 @@ import GalleryRoute from "./GalleryRoute";
 import MarketplacePage from "./Marketplacepage/Marketplacepage";
 import SkateparkLanding from "./SkateparkLanding/SkateparkLanding";
 import Brandsite from "./Brandsite/Brandsite";
+import Services from "./Services/Services";
 function App() {
   const location = useLocation();
 
@@ -34,7 +35,8 @@ function App() {
      <Route path="/gallery/all" element={<GalleryRoute />} />    
      <Route path="/gallery/:type/:id" element={<GalleryRoute />} />
  <Route path="/skateparklanding" element={<SkateparkLanding/>} />
- 
+
+ <Route path="/services" element={<Services />} />
         <Route path="/product/sets/:id" element={<SetsProductDetail />} />
         <Route path="/product/ramps/:id" element={<RampsProductDetail />} />
         <Route path="/product/skateparks/:id" element={<SkateparksProductDetail />} />

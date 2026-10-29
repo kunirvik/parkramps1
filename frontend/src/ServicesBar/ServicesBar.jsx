@@ -146,6 +146,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 
 const services = [
   { label: "▸ розробка та виробництво скейтпаркiв" },
@@ -280,7 +281,13 @@ export default function ServicesBar({ page, category }) {
 
   return (
     <div className="w-full bg-black border-b border-[#1a1a1a] text-[#555] px-6 py-2 font-futura font-light z-50">
-      <MarqueeLabels items={services} />
+       <Link
+    to="/services"
+    aria-label="Перейти до послуг"
+    className="block w-full bg-black border-b border-[#1a1a1a] text-[#555] px-6 py-2 font-futura font-light z-50 cursor-pointer transition-colors hover:text-[#888]"
+  >
+    <MarqueeLabels items={services} />
+  </Link>
     </div>
   );
 }
