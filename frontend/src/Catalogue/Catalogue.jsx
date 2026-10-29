@@ -338,10 +338,10 @@ return (
  <div className="flex-1 overflow-hidden flex flex-col items-center justify-center  "  >  
   <div className="grid grid-cols-1 md:grid-cols-2     "
         style={{
-    maxHeight: "100vh",
+    maxHeight: "100%",
     overflow: "auto",
-
-    marginTop: "clamp(50px, 3vw, 50px)", // отступ сверху
+  minHeight: 0,
+  
  columnGap: "clamp(10px, 8vw, 140px)", // между фигурами и рампами, растёт быстрее
     rowGap: "clamp(10px, 3vw, 40px)",     // вертикальный отступ (до скейтпарков) как было   
     // gap: "clamp(10px, 3vw, 40px)", // min 10px, растет до 40px с экраном
