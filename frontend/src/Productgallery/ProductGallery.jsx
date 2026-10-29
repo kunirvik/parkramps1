@@ -960,21 +960,43 @@ useEffect(() => {
   return () => stopHoverAnimation();
 }, [stopHoverAnimation]); 
 
+// const toggleHint = useCallback((e) => {
+//   e.stopPropagation();
+//   clearTimeout(autoHintTimerRef.current);
+//   clearTimeout(hintCloseTimerRef.current);
+//   setAutoHintVisible(false);
+
+//   setHintOpen((prev) => {
+//     const next = !prev;
+//     if (next && isTouchDevice) {
+//       hintCloseTimerRef.current = setTimeout(() => setHintOpen(false), 2800);
+//     }
+//     return next;
+//   });
+// }, [isTouchDevice]); 
+
+
 const toggleHint = useCallback((e) => {
   e.stopPropagation();
+
   clearTimeout(autoHintTimerRef.current);
   clearTimeout(hintCloseTimerRef.current);
+
   setAutoHintVisible(false);
 
   setHintOpen((prev) => {
     const next = !prev;
-    if (next && isTouchDevice) {
-      hintCloseTimerRef.current = setTimeout(() => setHintOpen(false), 2800);
+
+    if (next) {
+      hintCloseTimerRef.current = setTimeout(() => {
+        setHintOpen(false);
+        hintCloseTimerRef.current = null;
+      }, 2800);
     }
+
     return next;
   });
-}, [isTouchDevice]); 
-
+}, []);
 
 
 
@@ -997,7 +1019,7 @@ useEffect(() => {
 }, [state.activeProductIndex, stopHoverAnimation]);
   
 
-const HINT_TEXT_DESKTOP = "Нажмите на фото — запустится анимация. Ещё раз — пауза";
+const HINT_TEXT_DESKTOP = "Натисніть — запуститься анімація. Ще раз — пауза";
 const HINT_TEXT_MOBILE = "Натисніть — запуститься анімація"; // или "" чтобы вообще скрыть текст
 
 const hintText = isTouchDevice ? HINT_TEXT_MOBILE : HINT_TEXT_DESKTOP;

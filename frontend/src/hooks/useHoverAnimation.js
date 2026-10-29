@@ -228,6 +228,8 @@
 //     playIntervalRef,
 //   };
 // }
+// 
+
 import { useCallback, useRef } from "react";
 
 export function useHoverAnimation(isTouchDevice, setState) {
@@ -235,50 +237,125 @@ export function useHoverAnimation(isTouchDevice, setState) {
   const playingProductRef = useRef(null);
   const playSessionRef = useRef(0);
 
-  const getTotalImages = (product) => 1 + (product?.altImages?.length || 0);
+  const getTotalImages = (product) =>
+    1 + (product?.altImages?.length || 0);
 
-  // Чем больше фото — тем меньше интервал (быстрее анимация)
   const computeSpeed = (totalImages) => {
-    const MAX_SPEED = 750; // мс между кадрами при малом кол-ве фото
-    const MIN_SPEED = 250; // нижняя граница, чтобы не было слишком быстро
-    const STEP = 60;       // на сколько мс ускоряемся за каждое доп. фото
+    const MAX_SPEED = 750;
+    const MIN_SPEED = 250;
+    const STEP = 60;
 
-    // например: 2 фото -> 650, 5 фото -> 650 - 3*60 = 470, и т.д.
-    const speed = MAX_SPEED - (totalImages - 2) * STEP;
-    return Math.max(MIN_SPEED, speed);
+    return Math.max(
+      MIN_SPEED,
+      MAX_SPEED - (totalImages - 2) * STEP
+    );
   };
 
+  // Предварительно загружаем и декодируем все кадры продукта.
+  const preloadImages = useCallback(async (product) => {
+    const urls = [
+      product?.image,
+      ...(product?.altImages || []),
+    ].filter(Boolean);
+
+    await Promise.all(
+      urls.map(
+        (url) =>
+          new Promise((resolve) => {
+            const img = new Image();
+            img.src = url;
+
+            const finish = () => resolve();
+
+            if (img.complete) {
+              if (typeof img.decode === "function") {
+                img.decode().then(finish).catch(finish);
+              } else {
+                finish();
+              }
+              return;
+            }
+
+            img.onload = async () => {
+              if (typeof img.decode === "function") {
+                try {
+                  await img.decode();
+                } catch {
+                  // Ошибка декодирования не блокирует анимацию.
+                }
+              }
+              finish();
+            };
+
+            // Не зависаем бесконечно, если изображение недоступно.
+            img.onerror = finish;
+          })
+      )
+    );
+  }, []);
+
   const stopHoverAnimation = useCallback(() => {
-    clearTimeout(playTimeoutRef.current);
-    playTimeoutRef.current = null;
+    // Инвалидируем в том числе незавершённую загрузку.
+    playSessionRef.current += 1;
+
+    if (playTimeoutRef.current !== null) {
+      clearTimeout(playTimeoutRef.current);
+      playTimeoutRef.current = null;
+    }
+
     playingProductRef.current = null;
   }, []);
 
   const startPlayAnimation = useCallback(
-    (productIndex, product, startFrame = 0, speedOverride = null) => {
+    async (productIndex, product, startFrame = 0, speedOverride = null) => {
       stopHoverAnimation();
 
       const totalImages = getTotalImages(product);
       if (totalImages <= 1) return;
 
-      const speed = speedOverride ?? computeSpeed(totalImages);
-
-      playingProductRef.current = productIndex;
       const session = ++playSessionRef.current;
 
-      let frame = startFrame % totalImages;
+      playingProductRef.current = productIndex;
+
+      // Первый кадр не переключаем, пока кадры не подготовлены.
+      await preloadImages(product);
+
+      // Пока загружались изображения, пользователь мог остановить
+      // анимацию или переключить продукт.
+      if (
+        playSessionRef.current !== session ||
+        playingProductRef.current !== productIndex
+      ) {
+        return;
+      }
+
+      const speed = speedOverride ?? computeSpeed(totalImages);
+      let frame = ((startFrame % totalImages) + totalImages) % totalImages;
 
       const scheduleNext = () => {
         playTimeoutRef.current = setTimeout(() => {
-          if (playSessionRef.current !== session || playingProductRef.current !== productIndex) return;
+          playTimeoutRef.current = null;
+
+          if (
+            playSessionRef.current !== session ||
+            playingProductRef.current !== productIndex
+          ) {
+            return;
+          }
 
           frame = (frame + 1) % totalImages;
 
           setState((prev) => {
+            // Защита от устаревшего обновления состояния.
             if (playSessionRef.current !== session) return prev;
+
             const indices = [...prev.selectedImageIndices];
             indices[productIndex] = frame;
-            return { ...prev, selectedImageIndices: indices };
+
+            return {
+              ...prev,
+              selectedImageIndices: indices,
+            };
           });
 
           scheduleNext();
@@ -287,19 +364,27 @@ export function useHoverAnimation(isTouchDevice, setState) {
 
       scheduleNext();
     },
-    [stopHoverAnimation, setState]
+    [preloadImages, setState, stopHoverAnimation]
   );
 
   const handleMouseEnter = useCallback(
     (index, product, canAnimate = true) => {
       if (isTouchDevice || !canAnimate) return;
-      setState((prev) => ({ ...prev, hoveredIndex: index }));
+
+      setState((prev) => ({
+        ...prev,
+        hoveredIndex: index,
+      }));
     },
     [isTouchDevice, setState]
   );
 
   const handleMouseLeave = useCallback(() => {
-    setState((prev) => ({ ...prev, hoveredIndex: null }));
+    setState((prev) => ({
+      ...prev,
+      hoveredIndex: null,
+    }));
+
     stopHoverAnimation();
   }, [setState, stopHoverAnimation]);
 
@@ -310,6 +395,89 @@ export function useHoverAnimation(isTouchDevice, setState) {
     stopHoverAnimation,
   };
 }
+
+//import { useCallback, useRef } from "react";
+
+// export function useHoverAnimation(isTouchDevice, setState) {
+//   const playTimeoutRef = useRef(null);
+//   const playingProductRef = useRef(null);
+//   const playSessionRef = useRef(0);
+
+//   const getTotalImages = (product) => 1 + (product?.altImages?.length || 0);
+
+//   // Чем больше фото — тем меньше интервал (быстрее анимация)
+//   const computeSpeed = (totalImages) => {
+//     const MAX_SPEED = 750; // мс между кадрами при малом кол-ве фото
+//     const MIN_SPEED = 250; // нижняя граница, чтобы не было слишком быстро
+//     const STEP = 60;       // на сколько мс ускоряемся за каждое доп. фото
+
+//     // например: 2 фото -> 650, 5 фото -> 650 - 3*60 = 470, и т.д.
+//     const speed = MAX_SPEED - (totalImages - 2) * STEP;
+//     return Math.max(MIN_SPEED, speed);
+//   };
+
+//   const stopHoverAnimation = useCallback(() => {
+//     clearTimeout(playTimeoutRef.current);
+//     playTimeoutRef.current = null;
+//     playingProductRef.current = null;
+//   }, []);
+
+//   const startPlayAnimation = useCallback(
+//     (productIndex, product, startFrame = 0, speedOverride = null) => {
+//       stopHoverAnimation();
+
+//       const totalImages = getTotalImages(product);
+//       if (totalImages <= 1) return;
+
+//       const speed = speedOverride ?? computeSpeed(totalImages);
+
+//       playingProductRef.current = productIndex;
+//       const session = ++playSessionRef.current;
+
+//       let frame = startFrame % totalImages;
+
+//       const scheduleNext = () => {
+//         playTimeoutRef.current = setTimeout(() => {
+//           if (playSessionRef.current !== session || playingProductRef.current !== productIndex) return;
+
+//           frame = (frame + 1) % totalImages;
+
+//           setState((prev) => {
+//             if (playSessionRef.current !== session) return prev;
+//             const indices = [...prev.selectedImageIndices];
+//             indices[productIndex] = frame;
+//             return { ...prev, selectedImageIndices: indices };
+//           });
+
+//           scheduleNext();
+//         }, speed);
+//       };
+
+//       scheduleNext();
+//     },
+//     [stopHoverAnimation, setState]
+//   );
+
+//   const handleMouseEnter = useCallback(
+//     (index, product, canAnimate = true) => {
+//       if (isTouchDevice || !canAnimate) return;
+//       setState((prev) => ({ ...prev, hoveredIndex: index }));
+//     },
+//     [isTouchDevice, setState]
+//   );
+
+//   const handleMouseLeave = useCallback(() => {
+//     setState((prev) => ({ ...prev, hoveredIndex: null }));
+//     stopHoverAnimation();
+//   }, [setState, stopHoverAnimation]);
+
+//   return {
+//     handleMouseEnter,
+//     handleMouseLeave,
+//     startPlayAnimation,
+//     stopHoverAnimation,
+//   };
+// }
 // import { useCallback, useRef } from "react";
 
 // export function useHoverAnimation(isTouchDevice, setState) {
