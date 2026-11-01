@@ -50,14 +50,14 @@ const fragment = /* glsl */ `
 
   void main() {
     float fres = pow(1.0 - abs(dot(normalize(vNormal), normalize(vView))), 2.2);
-    float scan = 0.5 + 0.5 * sin(vY * 220.0 - uTime * 2.5);
+   float scan = 0.5 + 0.5 * sin(vY * 160.0 - uTime * 2.0);
     float flick = step(0.96, fract(sin(floor(uTime * 18.0) * 91.7) * 43758.5)) * uGlitch;
 
-    float solid = fres * 0.85 + scan * 0.07;
-    float wire = 0.32 + scan * 0.1;
-    float a = mix(solid, wire, uWire);
-    a *= 1.0 - flick * 0.8;
-
+float solid = fres * 0.38 + scan * 0.025;
+float wire = 0.12 + scan * 0.035;
+  float a = mix(solid, wire, uWire);
+a = clamp(a, 0.0, 0.42);
+a *= 1.0 - flick * 0.8;
     gl_FragColor = vec4(uColor, a);
   }
 `;
