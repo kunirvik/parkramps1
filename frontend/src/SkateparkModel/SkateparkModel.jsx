@@ -69,7 +69,7 @@ function makeMaterial(color, size, wire) {
     transparent: true,
     depthWrite: false,
     side: THREE.DoubleSide,
-    blending: THREE.AdditiveBlending,
+    blending: THREE.NormalBlending,
     wireframe: wire,
     uniforms: {
       uTime: { value: 0 },
