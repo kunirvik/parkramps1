@@ -350,7 +350,7 @@ export default function BackCover({ origin, onClose }) {
           <div className="h-[46vh] min-h-[320px] w-full">
             <Canvas camera={{ position: [0, 1.4, 4.2], fov: 35 }} dpr={[1, 2]}>
               <Suspense fallback={null}>
-                <SkateparkModel url="https://res.cloudinary.com/dbx6muxub/image/upload/v1786811336/model_eteyx8.glb" />
+                <SkateparkModel url="https://res.cloudinary.com/dbx6muxub/image/upload/v1756032285/Cloudinary%203D/models/box1_yqjqga.glb" />
               </Suspense>
             </Canvas>
           </div>
