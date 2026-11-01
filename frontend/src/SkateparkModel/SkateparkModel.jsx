@@ -89,7 +89,7 @@ function applyMaterial(root, material) {
 }
 
 export default function SkateparkModel({
-  url = 'https://res.cloudinary.com/dbx6muxub/image/upload/v1756032285/Cloudinary%203D/models/box1_yqjqga.glb',
+  url = 'https://res.cloudinary.com/dbx6muxub/image/upload/v1793542923/sp1_f0qnhd.glb',
   color = '#b8b8b8',
   speed = 0.35,
 }) {
@@ -147,4 +147,4 @@ export default function SkateparkModel({
   );
 }
 
-useGLTF.preload('https://res.cloudinary.com/dbx6muxub/image/upload/v1786811336/model_eteyx8.glb');
+useGLTF.preload('https://res.cloudinary.com/dbx6muxub/image/upload/v1793542923/sp1_f0qnhd.glb');
