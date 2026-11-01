@@ -1,7 +1,7 @@
 import { Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import gsap from 'gsap';
-import SkateparkModel from '../SkateparkModel.jsx';
+import SkateparkModel from '../SkateparkModel/SkateparkModel';
 
 /*
   Задня обкладинка платівки = сторінка послуг.
