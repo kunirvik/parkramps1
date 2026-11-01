@@ -39,46 +39,115 @@ const vertex = /* glsl */ `
   }
 `;
 
-const fragment = /* glsl */ `
-  uniform float uTime;
-  uniform float uGlitch;
-  uniform float uWire;
-  uniform vec3 uColor;
-  varying vec3 vNormal;
-  varying vec3 vView;
-  varying float vY;
+const fragment = /* glsl */`
+uniform float uTime;
+uniform float uGlitch;
+uniform float uWire;
+uniform vec3 uColor;
 
-  void main() {
-    float fres = pow(1.0 - abs(dot(normalize(vNormal), normalize(vView))), 2.2);
-   float scan = 0.5 + 0.5 * sin(vY * 160.0 - uTime * 2.0);
-    float flick = step(0.96, fract(sin(floor(uTime * 18.0) * 91.7) * 43758.5)) * uGlitch;
+varying vec3 vNormal;
+varying vec3 vView;
+varying float vY;
 
-float solid = fres * 0.38 + scan * 0.025;
-float wire = 0.12 + scan * 0.035;
-  float a = mix(solid, wire, uWire);
-a = clamp(a, 0.0, 0.42);
-a *= 1.0 - flick * 0.8;
-    gl_FragColor = vec4(uColor, a);
-  }
-`;
+void main() {
+  vec3 normal = normalize(vNormal);
+  vec3 view = normalize(vView);
+
+  // Контрастные края
+  float fres = pow(
+    1.0 - abs(dot(normal, view)),
+    3.5
+  );
+
+  // Тонкая цифровая сетка
+  float scan = sin(vY * 280.0 - uTime * 3.0);
+  scan = smoothstep(-0.4, 0.8, scan);
+
+  // Редкие горизонтальные помехи
+  float noise = fract(
+    sin(floor(vY * 90.0 + uTime * 12.0) * 127.1)
+    * 43758.5453
+  );
+
+  float glitchLine = step(0.94, noise) * uGlitch;
+
+  // Контраст материала
+  float solid = fres * 0.55 + scan * 0.08;
+  float wire = 0.18 + scan * 0.08;
+
+  float alpha = mix(solid, wire, uWire);
+
+  alpha += glitchLine * 0.25;
+  alpha = clamp(alpha, 0.0, 0.48);
+
+  // Локальное мерцание
+  float flicker = 0.92 + 0.08 * sin(uTime * 35.0);
+
+  gl_FragColor = vec4(
+    uColor * flicker,
+    alpha
+  );
+}`;
+//  `
+//   uniform float uTime;
+//   uniform float uGlitch;
+//   uniform float uWire;
+//   uniform vec3 uColor;
+//   varying vec3 vNormal;
+//   varying vec3 vView;
+//   varying float vY;
+
+//   void main() {
+//     float fres = pow(1.0 - abs(dot(normalize(vNormal), normalize(vView))), 2.2);
+//    float scan = 0.5 + 0.5 * sin(vY * 160.0 - uTime * 2.0);
+//     float flick = step(0.96, fract(sin(floor(uTime * 18.0) * 91.7) * 43758.5)) * uGlitch;
+
+// float solid = fres * 0.38 + scan * 0.025;
+// float wire = 0.12 + scan * 0.035;
+//   float a = mix(solid, wire, uWire);
+// a = clamp(a, 0.0, 0.42);
+// a *= 1.0 - flick * 0.8;
+//     gl_FragColor = vec4(uColor, a);
+//   }
+// `;
 
 function makeMaterial(color, size, wire) {
+  // return new THREE.ShaderMaterial({
+  //   vertexShader: vertex,
+  //   fragmentShader: fragment,
+  //   transparent: true,
+  //   depthWrite: false,
+  //   side: THREE.DoubleSide,
+  //   blending: THREE.NormalBlending,
+  //   wireframe: wire,
+  //   uniforms: {
+  //     uTime: { value: 0 },
+  //     uGlitch: { value: 0 },
+  //     uSize: { value: size },
+  //     uWire: { value: wire ? 1 : 0 },
+  //     uColor: { value: new THREE.Color(color) },
+  //   },
+  // });
   return new THREE.ShaderMaterial({
-    vertexShader: vertex,
-    fragmentShader: fragment,
-    transparent: true,
-    depthWrite: false,
-    side: THREE.DoubleSide,
-    blending: THREE.NormalBlending,
-    wireframe: wire,
-    uniforms: {
-      uTime: { value: 0 },
-      uGlitch: { value: 0 },
-      uSize: { value: size },
-      uWire: { value: wire ? 1 : 0 },
-      uColor: { value: new THREE.Color(color) },
+  vertexShader: vertex,
+  fragmentShader: fragment,
+
+  transparent: true,
+  depthWrite: false,
+
+  side: THREE.DoubleSide,
+  blending: THREE.NormalBlending,
+
+  uniforms: {
+    uTime: { value: 0 },
+    uGlitch: { value: 0 },
+    uSize: { value: size },
+    uWire: { value: wire ? 1 : 0 },
+    uColor: {
+      value: new THREE.Color('#d0d0d0')
     },
-  });
+  },
+});
 }
 
 function applyMaterial(root, material) {
