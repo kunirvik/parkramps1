@@ -324,7 +324,8 @@ return (
       `}</style>
 
     {/* <div className=" flex flex-col min-h-screen relative w-full"> */}
-<div className="flex flex-col h-[100dvh] min-h-0 overflow-hidden relative w-full">
+{/* <div className="flex flex-col h-[100dvh] min-h-0 overflow-hidden relative w-full"> */}
+<div className="flex flex-col min-h-[100dvh] relative w-full overflow-x-hidden md:h-[100dvh] md:overflow-hidden">
       {/* SocialButtons всегда вверху */}
       {/* <div className="z-50  flex-shrink-0">
         <SocialButtons
@@ -343,20 +344,29 @@ return (
 </div>
  
  {/* <div className="flex-1 overflow-hidden flex flex-col items-center justify-center  "  >   */}
- <div className="flex-1 min-h-0 overflow-hidden flex flex-col items-center justify-center">
+ {/* <div className="flex-1 min-h-0 overflow-hidden flex flex-col items-center justify-center"> */}
+ 
+ <div className="flex-1 min-h-0 flex flex-col items-center justify-center md:overflow-hidden">
   <div className="grid grid-cols-1 md:grid-cols-2     "
-        style={{
-    maxHeight: "100%",
-    // overflow: "auto",
-    overflow: "hidden",
-  minHeight: 0,
+  //       style={{
+  //   maxHeight: "100%",
+  //   // overflow: "auto",
+  //   overflow: "hidden",
+  // minHeight: 0,
   
- columnGap: "clamp(10px, 8vw, 140px)", // между фигурами и рампами, растёт быстрее
-    rowGap: "clamp(10px, 3vw, 40px)",     // вертикальный отступ (до скейтпарков) как было   
-    // gap: "clamp(10px, 3vw, 40px)", // min 10px, растет до 40px с экраном
-    // padding: "clamp(20px, 1vw, 20px)", // тоже динамически для отступов
-  }}>
-   
+  
+//  columnGap: "clamp(10px, 8vw, 140px)", // между фигурами и рампами, растёт быстрее
+//     rowGap: "clamp(10px, 3vw, 40px)",     // вертикальный отступ (до скейтпарков) как было   
+//     // gap: "clamp(10px, 3vw, 40px)", // min 10px, растет до 40px с экраном
+//     // padding: "clamp(20px, 1vw, 20px)", // тоже динамически для отступов
+//   }}
+   style={{
+  maxHeight: isMobile ? "none" : "100%",
+  minHeight: 0,
+  overflow: "visible",
+  columnGap: "clamp(10px, 8vw, 140px)",
+  rowGap: "clamp(10px, 3vw, 40px)",
+}}>
 
 
     {products.map((product, index) => ( 
