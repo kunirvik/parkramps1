@@ -533,13 +533,13 @@
 // }
 
 
-import { useState, useEffect, useRef, useCallback, Suspense } from "react";
-import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Canvas } from "@react-three/fiber";
-import LoadingScreen from "../LoadingScreen/LodingScreen";
-// поправте путь под вашу структуру папок
-import SkateparkStage, { preloadModels } from "../SkateparkStage/SkateparkStage";
+// import { useState, useEffect, useRef, useCallback, Suspense } from "react";
+// import { useNavigate } from "react-router-dom";
+// import { motion } from "framer-motion";
+// import { Canvas } from "@react-three/fiber";
+// import LoadingScreen from "../LoadingScreen/LodingScreen";
+// // поправте путь под вашу структуру папок
+// import SkateparkStage, { preloadModels } from "../SkateparkStage/SkateparkStage";
 
 /*
   Одно слово = одна модель. Единственный источник правды — index.
