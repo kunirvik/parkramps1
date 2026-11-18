@@ -556,7 +556,6 @@ import { Canvas } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import { Leva, useControls } from "leva";
 import LoadingScreen from "../LoadingScreen/LodingScreen";
-// поправьте путь под вашу структуру папок
 import SkateparkStage, { preloadModels } from "../SkateparkStage/SkateparkStage";
 import MorphPoints from "../SkateparkStage/MorphPoints";
 import Dancers from "../SkateparkStage/Dancers";
