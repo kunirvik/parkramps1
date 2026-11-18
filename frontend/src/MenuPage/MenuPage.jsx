@@ -561,7 +561,7 @@ import { LOOKS } from "../SkateparkStage/GlitchMaterial";
 const SLIDES = [
   { word: "Skateparks", model: { url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1793542923/sp1_f0qnhd.glb", scale: 1.15 } },
   { word: "Ramps",      model: { url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1794991173/mini_pwew3g.glb",      scale: 1.0 } },
-  { word: "Events",     model: { url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1786869663/logo_alatkf.glb",    scale: 1.1 } },
+  { word: "Events",     model: { url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1795018424/quater1_jj9ndf.glb",    scale: 1.1 } },
   { word: "Parkramps",  model: { url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1786811336/model_eteyx8.glb",  scale: 1.0 } },
 ];
 const MODELS = SLIDES.map((s) => s.model);
@@ -570,7 +570,7 @@ const MODELS = SLIDES.map((s) => s.model);
 // Нужен FBX с mixamo.com (Format: FBX Binary, Skin: With Skin, лучше In Place).
 // Загрузите файл в Cloudinary (как raw) и вставьте ссылку.
 const EVENTS_INDEX = 2;
-const DANCER_URL = "https://res.cloudinary.com/dbx6muxub/raw/upload/v1795019675/Catwalk_Walk_Forward_HighKnees_f9gsjp.fbx";
+const DANCER_URL = "https://res.cloudinary.com/dbx6muxub/raw/upload/v1795021355/Hip_Hop_Dancing_1_flomq0.fbx";
 const DANCERS = { count: 5, height: 0.7, spacing: 0.55, y: -0.95, z: 0.8 };
 
 // грузим модели, пока висит LoadingScreen
