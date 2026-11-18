@@ -551,10 +551,10 @@ import SkateparkStage, { preloadModels } from "../SkateparkStage/SkateparkStage"
 */
 
 const SLIDES = [
-  { word: "Skateparks", model: { url: "/models/skatepark.glb", scale: 1.15 } },
-  { word: "Ramps",      model: { url: "/models/ramp.glb",      scale: 1.0 } },
-  { word: "Events",     model: { url: "/models/events.glb",    scale: 1.1 } },
-  { word: "Parkramps",  model: { url: "/models/parkramp.glb",  scale: 1.0 } },
+  { word: "Skateparks", model: { url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1756032285/Cloudinary%203D/models/box1_yqjqga.glb", scale: 1.15 } },
+  { word: "Ramps",      model: { url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1793542923/sp1_f0qnhd.glb",      scale: 1.0 } },
+  { word: "Events",     model: { url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1786869663/logo_alatkf.glb",    scale: 1.1 } },
+  // { word: "Parkramps",  model: { url: "/models/parkramp.glb",  scale: 1.0 } },
 ];
 const MODELS = SLIDES.map((s) => s.model);
 
