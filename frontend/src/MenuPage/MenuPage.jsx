@@ -542,10 +542,10 @@ const words = ["Skateparks", "Ramps", "Events", "Parkramps"];
 
 // по одной .glb модели на каждое слово (лежат в public/models/)
 const models = [
-  "https://res.cloudinary.com/dbx6muxub/image/upload/v1786869663/logo_alatkf.glb",
   "https://res.cloudinary.com/dbx6muxub/image/upload/v1793542923/sp1_f0qnhd.glb",
-  "https://res.cloudinary.com/dbx6muxub/image/upload/v1786811336/model_eteyx8.glb",
-
+  "https://res.cloudinary.com/dbx6muxub/image/upload/v1756032285/Cloudinary%203D/models/box1_yqjqga.glb",
+  "/models/events.glb",
+  "/models/parkramp.glb",
 ];
 
 // цвет частиц для каждого слова (последнее — розовый, как у текста)
