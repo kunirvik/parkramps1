@@ -1,23 +1,25 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { useGLTF } from '@react-three/drei';
+import { useFBX } from '@react-three/drei';
 import * as THREE from 'three';
 import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { LOOKS, makeMaterial, applyLook } from './GlitchMaterial';
 
 /*
-  Ряд танцующих человечков в том же глитч-стиле.
+  Ряд танцующих человечков из Mixamo (FBX) в том же глитч-стиле.
   Появляются (перерисовываются снизу вверх) когда visible=true,
   стираются когда visible=false.
 
-  url        — GLB со скелетом и анимацией танца (например Michelle.glb из
-               примеров three.js или любой танец с mixamo.com, формат glTF/GLB)
+  url        — FBX с mixamo.com: Format = FBX Binary, Skin = With Skin,
+               желательно включить «In Place»
   count      — сколько человечков
   height     — высота одного человечка в единицах сцены (модели ~2 высотой)
   spacing    — расстояние между ними по X
   y, z       — положение ряда
+  clipIndex  — какой клип проигрывать (в файле с Mixamo он один)
 */
 
+// границы по Y в локальных координатах геометрии (в них считает шейдер)
 function localBounds(scene) {
   let minY = Infinity;
   let maxY = -Infinity;
@@ -39,33 +41,38 @@ export default function Dancers({
   spacing = 0.55,
   y = -0.95,
   z = 0.8,
+  clipIndex = 0,
   look = LOOKS.hologram,
   reduced = false,
 }) {
-  const { scene, animations } = useGLTF(url);
+  // useFBX возвращает THREE.Group; клипы лежат в .animations
+  const fbx = useFBX(url);
   const groups = useRef([]);
   const state = useRef({ m: 0 });
 
   const rig = useMemo(() => {
-    const box = new THREE.Box3().setFromObject(scene);
+    fbx.updateMatrixWorld(true);
+    // Mixamo в сантиметрах (и armature с масштабом) — нормализуем по реальной высоте
+    const box = new THREE.Box3().setFromObject(fbx);
     const dim = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
     const k = height / (dim.y || 1);
-    const bounds = localBounds(scene);
+    const bounds = localBounds(fbx);
+    const clip = fbx.animations[clipIndex] ?? fbx.animations[0];
 
     const dancers = Array.from({ length: count }, (_, i) => {
       const mats = [makeMaterial(false, bounds), makeMaterial(true, bounds)];
       const mixers = mats.map((mat) => {
-        const root = cloneSkinned(scene);
+        const root = cloneSkinned(fbx);
         root.traverse((o) => {
           if (o.isMesh) {
-            o.material = mat;
+            o.material = mat; // родные FBX-материалы (в т.ч. массивы) заменяем нашим
             o.frustumCulled = false; // skinned-меши иначе могут пропадать
           }
         });
         const mixer = new THREE.AnimationMixer(root);
-        if (animations.length) {
-          const a = mixer.clipAction(animations[0]);
+        if (clip) {
+          const a = mixer.clipAction(clip);
           a.play();
           a.time = i * 0.43; // чтобы не танцевали синхронно
           a.timeScale = 0.9 + 0.08 * (i % 4);
@@ -76,7 +83,7 @@ export default function Dancers({
     });
 
     return { dancers, k, offset: [-center.x * k, -box.min.y * k, -center.z * k] };
-  }, [scene, animations, count, height]);
+  }, [fbx, count, height, clipIndex]);
 
   useEffect(() => {
     rig.dancers.forEach((d) => applyLook(d.mats, look));
