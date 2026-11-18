@@ -532,90 +532,183 @@
 //   );
 // }
 
-import { useState, useEffect } from "react";
+
+import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { Canvas } from "@react-three/fiber";
 import LoadingScreen from "../LoadingScreen/LodingScreen";
-import ModelBackground from "../ModelBackground"; // <-- новый компонент
+// поправте путь под вашу структуру папок
+import SkateparkStage, { preloadModels } from "../SkateparkStage/SkateparkStage";
 
-const words = ["Skateparks", "Ramps", "Events", "Parkramps"];
+/*
+  Одно слово = одна модель. Единственный источник правды — index.
+  Когда index меняется, текст анимируется, а модель стирается (глитч)
+  и перерисовывается в модель, привязанную к новому слову.
 
-// по одной .glb модели на каждое слово (лежат в public/models/)
-const models = [
-  "https://res.cloudinary.com/dbx6muxub/image/upload/v1793542923/sp1_f0qnhd.glb",
-  "https://res.cloudinary.com/dbx6muxub/image/upload/v1756032285/Cloudinary%203D/models/box1_yqjqga.glb",
-  "/models/events.glb",
-  "/models/parkramp.glb",
+  Переключать можно: колесом мыши, свайпом, стрелками, точками внизу,
+  а если ничего не трогать — само раз в AUTO_MS.
+*/
+
+const SLIDES = [
+  { word: "Skateparks", model: { url: "/models/skatepark.glb", scale: 1.15 } },
+  { word: "Ramps",      model: { url: "/models/ramp.glb",      scale: 1.0 } },
+  { word: "Events",     model: { url: "/models/events.glb",    scale: 1.1 } },
+  { word: "Parkramps",  model: { url: "/models/parkramp.glb",  scale: 1.0 } },
 ];
+const MODELS = SLIDES.map((s) => s.model);
 
-// цвет частиц для каждого слова (последнее — розовый, как у текста)
-const colors = ["#111111", "#111111", "#111111", "#f9a8d4"];
+// грузим модели, пока висит LoadingScreen
+preloadModels(MODELS);
+
+const AUTO_MS = 5000; // автосмена (переход длится ~2 с, поэтому не 2000 как раньше)
+const LOCK_MS = 2200; // пауза после смены, чтобы анимация успела доиграть
+
+// Фон страницы тёмный → 'additive'. Если картинка светлая:
+// поставьте MODEL_BLEND = "normal" и MODEL_COLOR = "#111111".
+const MODEL_BLEND = "additive";
+const MODEL_COLOR = "#e5e5e5";
 
 export default function MenuPage() {
   const [index, setIndex] = useState(0);
-  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [isFadingOut, setIsFadingOut] = useState(false);
-  const [modelsReady, setModelsReady] = useState(false);
+  const navigate = useNavigate();
 
-  // смена слова
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % words.length);
-    }, 3000); // чуть больше, чтобы анимация (1.8с) успевала проиграться
-    return () => clearInterval(interval);
-  }, []);
+  const lockRef = useRef(0);
+  const touchY = useRef(null);
 
-  // лоадер: держим, пока не загрузятся модели (минимум 1.5с)
+  const reduced =
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // лоадер (как у вас было)
   useEffect(() => {
-    if (!modelsReady) return;
     const timer = setTimeout(() => setIsFadingOut(true), 1500);
     const removeLoadingScreen = setTimeout(() => setIsLoading(false), 2300);
     return () => {
       clearTimeout(timer);
       clearTimeout(removeLoadingScreen);
     };
-  }, [modelsReady]);
+  }, []);
+
+  // смена слова/модели с защитой от слишком частых переключений
+  const change = useCallback((next) => {
+    const now = performance.now();
+    if (now < lockRef.current) return;
+    lockRef.current = now + LOCK_MS;
+    setIndex(next);
+  }, []);
+
+  const step = useCallback(
+    (dir) => change((index + dir + SLIDES.length) % SLIDES.length),
+    [change, index]
+  );
+
+  // автосмена: таймер перезапускается после каждой смены
+  useEffect(() => {
+    if (isLoading) return;
+    const id = setTimeout(() => step(1), AUTO_MS);
+    return () => clearTimeout(id);
+  }, [index, isLoading, step]);
+
+  // колесо мыши и клавиши
+  useEffect(() => {
+    if (isLoading) return;
+    const onWheel = (e) => {
+      if (Math.abs(e.deltaY) < 20) return;
+      step(e.deltaY > 0 ? 1 : -1);
+    };
+    const onKey = (e) => {
+      if (e.key === "ArrowDown" || e.key === "ArrowRight") step(1);
+      if (e.key === "ArrowUp" || e.key === "ArrowLeft") step(-1);
+    };
+    window.addEventListener("wheel", onWheel, { passive: true });
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [isLoading, step]);
+
+  // свайп на телефоне
+  const onTouchStart = (e) => (touchY.current = e.touches[0].clientY);
+  const onTouchEnd = (e) => {
+    if (touchY.current == null) return;
+    const dy = touchY.current - e.changedTouches[0].clientY;
+    touchY.current = null;
+    if (Math.abs(dy) > 50) step(dy > 0 ? 1 : -1);
+  };
+
+  const isLast = index === SLIDES.length - 1;
 
   return (
     <>
       {isLoading && <LoadingScreen isFadingOut={isFadingOut} />}
 
-      <div className="relative w-full h-screen flex items-center justify-center overflow-hidden">
-        {/* 3D-фон: index связывает смену слова со сменой модели */}
-        <ModelBackground
-          index={index}
-          models={models}
-          colors={colors}
-          onReady={() => setModelsReady(true)}
-        />
+      <div
+        className="relative w-full h-screen flex items-center justify-center overflow-hidden"
+        style={{ touchAction: "none" }}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+      >
+        <picture>
+          {/* для телефонов и планшетов */}
+          <source srcSet="/project2.png" media="(max-width: 1024px)" />
+          {/* для десктопа */}
+          <img
+            src="/project.png"
+            alt="Project"
+            className="absolute top-0 left-0 w-full h-full object-cover"
+          />
+        </picture>
+
+        {/* 3D-модель между фоном и текстом; клики проходят насквозь */}
+        {!isLoading && (
+          <div className="absolute inset-0 z-[5] pointer-events-none">
+            <Canvas
+              camera={{ position: [0, 1.4, 4.2], fov: 35 }}
+              dpr={[1, 1.75]}
+            >
+              <Suspense fallback={null}>
+                <SkateparkStage
+                  models={MODELS}
+                  mode="swap"
+                  activeIndex={index}
+                  blending={MODEL_BLEND}
+                  color={MODEL_COLOR}
+                  reduced={reduced}
+                />
+              </Suspense>
+            </Canvas>
+          </div>
+        )}
 
         {/* Анимированный текст */}
         <div className="relative z-10 flex flex-col items-center overflow-visible">
           <motion.h1
             key={index}
             initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.5 }}
+            animate={{ opacity: 1, y: 0, x: [0, -8, 6, -3, 0] }}
+            transition={{ duration: 0.5, x: { duration: 0.4 } }}
             className={`
-              text-center break-words whitespace-normal font-futura
-              tracking-[-5px] mb-6 cursor-pointer overflow-hidden bg-clip-text
-              ${
-                index === words.length - 1
-                  ? "font-bold text-transparent bg-pink-300"
-                  : "font-medium text-transparent bg-white/50"
-              }
+              text-center
+              break-words
+              whitespace-normal
+              font-futura
+              tracking-[-5px]
+              mb-6
+              overflow-hidden
+              bg-clip-text
+              ${isLast
+                ? "font-bold text-transparent bg-pink-300"
+                : "font-medium text-transparent bg-white/50"}
             `}
-            style={{
-              fontSize: "clamp(60px, 10vw, 150px)",
-              padding: "0 20px",
-            }}
+            style={{ fontSize: "clamp(60px, 10vw, 150px)", padding: "0 20px" }}
           >
-            {words[index]}
+            {SLIDES[index].word}
           </motion.h1>
 
-          {/* Кнопка перехода */}
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
@@ -625,10 +718,123 @@ export default function MenuPage() {
             explore
           </motion.button>
         </div>
+
+        {/* точки-индикаторы: можно кликнуть и перейти к нужному слову */}
+        <div className="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 items-center gap-3 font-futura text-xs text-white/60">
+          <span>{String(index + 1).padStart(2, "0")}</span>
+          {SLIDES.map((s, i) => (
+            <button
+              key={s.word}
+              aria-label={s.word}
+              onClick={() => change(i)}
+              className={`h-2 w-2 rounded-full transition-all ${
+                i === index ? "scale-125 bg-white" : "bg-white/30 hover:bg-white/60"
+              }`}
+            />
+          ))}
+          <span>{String(SLIDES.length).padStart(2, "0")}</span>
+        </div>
       </div>
     </>
   );
 }
+// import { useState, useEffect } from "react";
+// import { useNavigate } from "react-router-dom";
+// import { motion } from "framer-motion";
+// import LoadingScreen from "../LoadingScreen/LodingScreen";
+// import ModelBackground from "../ModelBackground"; // <-- новый компонент
+
+// const words = ["Skateparks", "Ramps", "Events", "Parkramps"];
+
+// // по одной .glb модели на каждое слово (лежат в public/models/)
+// const models = [
+//   "https://res.cloudinary.com/dbx6muxub/image/upload/v1793542923/sp1_f0qnhd.glb",
+//   "/models/ramp.glb",
+//   "/models/events.glb",
+//   "/models/parkramp.glb",
+// ];
+
+// // цвет частиц для каждого слова (последнее — розовый, как у текста)
+// const colors = ["#111111", "#111111", "#111111", "#f9a8d4"];
+
+// export default function MenuPage() {
+//   const [index, setIndex] = useState(0);
+//   const navigate = useNavigate();
+//   const [isLoading, setIsLoading] = useState(true);
+//   const [isFadingOut, setIsFadingOut] = useState(false);
+//   const [modelsReady, setModelsReady] = useState(false);
+
+//   // смена слова
+//   useEffect(() => {
+//     const interval = setInterval(() => {
+//       setIndex((prev) => (prev + 1) % words.length);
+//     }, 3000); // чуть больше, чтобы анимация (1.8с) успевала проиграться
+//     return () => clearInterval(interval);
+//   }, []);
+
+//   // лоадер: держим, пока не загрузятся модели (минимум 1.5с)
+//   useEffect(() => {
+//     if (!modelsReady) return;
+//     const timer = setTimeout(() => setIsFadingOut(true), 1500);
+//     const removeLoadingScreen = setTimeout(() => setIsLoading(false), 2300);
+//     return () => {
+//       clearTimeout(timer);
+//       clearTimeout(removeLoadingScreen);
+//     };
+//   }, [modelsReady]);
+
+//   return (
+//     <>
+//       {isLoading && <LoadingScreen isFadingOut={isFadingOut} />}
+
+//       <div className="relative w-full h-screen flex items-center justify-center overflow-hidden">
+//         {/* 3D-фон: index связывает смену слова со сменой модели */}
+//         <ModelBackground
+//           index={index}
+//           models={models}
+//           colors={colors}
+//           onReady={() => setModelsReady(true)}
+//         />
+
+//         {/* Анимированный текст */}
+//         <div className="relative z-10 flex flex-col items-center overflow-visible">
+//           <motion.h1
+//             key={index}
+//             initial={{ opacity: 0, y: -20 }}
+//             animate={{ opacity: 1, y: 0 }}
+//             exit={{ opacity: 0, y: 20 }}
+//             transition={{ duration: 0.5 }}
+//             className={`
+//               text-center break-words whitespace-normal font-futura
+//               tracking-[-5px] mb-6 cursor-pointer overflow-hidden bg-clip-text
+//               ${
+//                 index === words.length - 1
+//                   ? "font-bold text-transparent bg-pink-300"
+//                   : "font-medium text-transparent bg-white/50"
+//               }
+//             `}
+//             style={{
+//               fontSize: "clamp(60px, 10vw, 150px)",
+//               padding: "0 20px",
+//             }}
+//           >
+//             {words[index]}
+//           </motion.h1>
+
+//           {/* Кнопка перехода */}
+//           <motion.button
+//             whileHover={{ scale: 1.1 }}
+//             whileTap={{ scale: 0.9 }}
+//             className="px-6 py-3 bg-white/20 backdrop-blur-md rounded-lg text-lg font-futura font-light shadow-lg hover:bg-pink-300 cursor-pointer"
+//             onClick={() => navigate("/catalogue")}
+//           >
+//             explore
+//           </motion.button>
+//         </div>
+//       </div>
+//     </>
+//   );
+// }
 
 //  import React, { useEffect, useState } from "react";
 // import { motion, AnimatePresence } from "framer-motion";
