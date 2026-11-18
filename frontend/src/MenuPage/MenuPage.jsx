@@ -700,16 +700,15 @@ export default function MenuPage() {
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-        <picture>
-          {/* для телефонов и планшетов */}
+        {/* <picture>
           <source srcSet="/project2.png" media="(max-width: 1024px)" />
-          {/* для десктопа */}
+         
           <img
             src="/project.png"
             alt="Project"
             className="absolute top-0 left-0 w-full h-full object-cover"
           />
-        </picture>
+        </picture> */}
 
         {/* 3D-сцена между фоном и текстом; клики проходят насквозь */}
         {!isLoading && (
