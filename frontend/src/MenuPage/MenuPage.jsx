@@ -585,6 +585,10 @@ const LOCK_MS = 2200; // пауза после смены, чтобы анима
 const DEFAULT_PRESET = "hologram";
 const DEFAULT_STYLE = "mesh"; // 'mesh' (сетка) | 'morph' (точки, перетекают друг в друга)
 
+// Во сколько раз модель больше на десктопе (ширина ≥ 768px). На мобиле всегда 1.
+// 1.6 — модель почти во весь экран; 2+ — уже вылезает за края.
+const DESKTOP_ZOOM = 1.6;
+
 export default function MenuPage() {
   const [index, setIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -594,6 +598,18 @@ export default function MenuPage() {
   const lockRef = useRef(0);
   const touchY = useRef(null);
   const glitchRef = useRef(0); // сила глитча → хроматическая аберрация
+
+  // десктоп (как md: в Tailwind) — модель крупнее, сцена на весь экран
+  const [isDesktop, setIsDesktop] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches
+  );
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const on = () => setIsDesktop(mq.matches);
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
+  const zoom = isDesktop ? DESKTOP_ZOOM : 1;
 
   const reduced =
     typeof window !== "undefined" &&
@@ -687,6 +703,18 @@ export default function MenuPage() {
 
   const isLast = index === SLIDES.length - 1;
 
+  /*
+    Раскладка (одинаково на десктопе и мобиле):
+
+      ┌────────────────────────┐
+      │  сцена (flex-1)        │  ← слово лежит ЗА моделью (z-1),
+      │   слово  ← z-1         │    3D-канвас поверх (z-5)
+      │   модель ← z-5         │
+      ├────────────────────────┤
+      │  кнопка                │  ← отдельная полоса снизу (z-10):
+      │  ● ● ● ●               │    с моделями и танцорами не пересекается
+      └────────────────────────┘
+  */
   return (
     <>
       {isLoading && <LoadingScreen isFadingOut={isFadingOut} />}
@@ -694,91 +722,99 @@ export default function MenuPage() {
       {/* панель настройки эффектов: только с ?debug */}
       <Leva hidden={!debug} collapsed />
 
+      {/* 100svh вместо h-screen: на телефонах не прыгает от адресной строки */}
       <div
-        className="relative w-full h-screen flex items-center justify-center overflow-hidden"
+        className="relative flex h-[100svh] w-full flex-col overflow-hidden"
         style={{ touchAction: "none" }}
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-        {/* <picture>
+        <picture>
+          {/* для телефонов и планшетов */}
           <source srcSet="/project2.png" media="(max-width: 1024px)" />
-         
+          {/* для десктопа */}
           <img
             src="/project.png"
             alt="Project"
             className="absolute top-0 left-0 w-full h-full object-cover"
           />
-        </picture> */}
+        </picture>
 
-        {/* 3D-сцена между фоном и текстом; клики проходят насквозь */}
-        {!isLoading && (
-          <div className="absolute inset-0 z-[5] pointer-events-none">
-            <Canvas
-              camera={{ position: [0, 1.4, 4.2], fov: 35 }}
-              dpr={[1, 1.75]}
-              gl={{ alpha: true }}
+        {/* ===== Сцена: слово + 3D-модель ===== */}
+        <div className="relative min-h-0 flex-1 md:absolute md:inset-0">
+          {/* Слово ЗА моделью. Модель полупрозрачная, поэтому буквы
+              просвечивают сквозь неё. На мобиле слово уходит наверх,
+              чтобы не спорить с моделью; на md+ стоит по центру. */}
+          <div className="pointer-events-none absolute inset-0 z-[1] flex items-start justify-center pt-[12%] md:items-center md:pt-0">
+            <motion.h1
+              key={index}
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0, x: [0, -8, 6, -3, 0] }}
+              transition={{ duration: 0.5, x: { duration: 0.4 } }}
+              className={`
+                select-none
+                whitespace-nowrap
+                text-center
+                font-futura
+                tracking-[-0.04em]
+                leading-none
+                ${isLast ? "font-bold text-pink-300" : "font-medium text-white/50"}
+              `}
+              style={{ fontSize: "clamp(56px, 15vw, 220px)", padding: "0 20px" }}
             >
-              <Suspense fallback={null}>
-                {look.style === "morph" ? (
-                  <MorphPoints
-                    models={MODELS}
-                    activeIndex={index}
-                    look={look}
-                    reduced={reduced}
-                    glitchRef={glitchRef}
-                  />
-                ) : (
-                  <SkateparkStage
-                    models={MODELS}
-                    mode="swap"
-                    activeIndex={index}
-                    look={look}
-                    reduced={reduced}
-                    glitchRef={glitchRef}
-                  />
-                )}
-
-                {/* танцующие человечки только на слайде Events */}
-                <Dancers
-                  visible={index === EVENTS_INDEX}
-                  url={DANCER_URL}
-                  look={look}
-                  reduced={reduced}
-                  {...DANCERS}
-                />
-              </Suspense>
-
-              {/* хроматическая аберрация (ca = 0 → выключена) */}
-              <Effects amount={look.ca} glitchRef={glitchRef} />
-            </Canvas>
+              {SLIDES[index].word}
+            </motion.h1>
           </div>
-        )}
 
-        {/* Анимированный текст */}
-        <div className="relative z-10 flex flex-col items-center overflow-visible">
-          <motion.h1
-            key={index}
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0, x: [0, -8, 6, -3, 0] }}
-            transition={{ duration: 0.5, x: { duration: 0.4 } }}
-            className={`
-              text-center
-              break-words
-              whitespace-normal
-              font-futura
-              tracking-[-5px]
-              mb-6
-              overflow-hidden
-              bg-clip-text
-              ${isLast
-                ? "font-bold text-transparent bg-pink-300"
-                : "font-medium text-transparent bg-white/50"}
-            `}
-            style={{ fontSize: "clamp(60px, 10vw, 150px)", padding: "0 20px" }}
-          >
-            {SLIDES[index].word}
-          </motion.h1>
+          {/* 3D-сцена поверх слова; клики проходят насквозь */}
+          {!isLoading && (
+            <div className="pointer-events-none absolute inset-0 z-[5]">
+              <Canvas
+                camera={{ position: [0, 1.4, 4.2], fov: 35 }}
+                dpr={[1, 1.75]}
+                gl={{ alpha: true }}
+              >
+                <Suspense fallback={null}>
+                  {look.style === "morph" ? (
+                    <MorphPoints
+                      models={MODELS}
+                      activeIndex={index}
+                      look={look}
+                      zoom={zoom}
+                      reduced={reduced}
+                      glitchRef={glitchRef}
+                    />
+                  ) : (
+                    <SkateparkStage
+                      models={MODELS}
+                      mode="swap"
+                      activeIndex={index}
+                      look={look}
+                      zoom={zoom}
+                      reduced={reduced}
+                      glitchRef={glitchRef}
+                    />
+                  )}
 
+                  {/* танцующие человечки только на слайде Events */}
+                  <Dancers
+                    visible={index === EVENTS_INDEX}
+                    url={DANCER_URL}
+                    look={look}
+                    reduced={reduced}
+                    {...DANCERS}
+                  />
+                </Suspense>
+
+                {/* хроматическая аберрация (ca = 0 → выключена) */}
+                <Effects amount={look.ca} glitchRef={glitchRef} />
+              </Canvas>
+            </div>
+          )}
+        </div>
+
+        {/* ===== Низ: кнопка + индикаторы ===== */}
+        <div className="relative z-10 flex flex-col items-center gap-3 pt-2 pb-[max(1.5rem,env(safe-area-inset-bottom))] md:absolute md:inset-x-0 md:bottom-0 md:pb-8">
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
@@ -787,27 +823,38 @@ export default function MenuPage() {
           >
             explore
           </motion.button>
-        </div>
 
-        {/* точки-индикаторы: можно кликнуть и перейти к нужному слову */}
-        <div className="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 items-center gap-3 font-futura text-xs text-white/60">
-          <span>{String(index + 1).padStart(2, "0")}</span>
-          {SLIDES.map((s, i) => (
-            <button
-              key={s.word}
-              aria-label={s.word}
-              onClick={() => change(i)}
-              className={`h-2 w-2 rounded-full transition-all ${
-                i === index ? "scale-125 bg-white" : "bg-white/30 hover:bg-white/60"
-              }`}
-            />
-          ))}
-          <span>{String(SLIDES.length).padStart(2, "0")}</span>
+          {/* «сторис»: 4 полоски. Прошедшие залиты, текущая заполняется
+              за AUTO_MS (ровно до автосмены), остальные пустые. Клик → к слову. */}
+          <div className="flex w-[min(78vw,320px)] items-center gap-1.5">
+            {SLIDES.map((s, i) => (
+              <button
+                key={s.word}
+                aria-label={s.word}
+                onClick={() => i !== index && change(i)}
+                className="group flex-1 cursor-pointer py-2"
+              >
+                <div className="h-[3px] overflow-hidden rounded-full bg-white/25 transition-colors group-hover:bg-white/40">
+                  {i < index && <div className="h-full w-full bg-white" />}
+                  {i === index && (
+                    <motion.div
+                      key={index}
+                      className="h-full w-full origin-left bg-white"
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: isLoading ? 0 : 1 }}
+                      transition={{ duration: reduced ? 0 : AUTO_MS / 1000, ease: "linear" }}
+                    />
+                  )}
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </>
   );
 }
+
 
 // import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 // import { useNavigate } from "react-router-dom";
