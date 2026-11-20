@@ -564,13 +564,304 @@ const SLIDES = [
   { word: "Events",     model: { url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1795022552/tampaset_wskp6q.glb",    scale: 1.1 } },
   { word: "Parkramps",  model: { url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1786811336/model_eteyx8.glb",  scale: 1.0 } },
 ];
+// const MODELS = SLIDES.map((s) => s.model);
+
+// // Танцующие человечки на слайде Events.
+// // Нужен FBX с mixamo.com (Format: FBX Binary, Skin: With Skin, лучше In Place).
+// // Загрузите файл в Cloudinary (как raw) и вставьте ссылку.
+// const EVENTS_INDEX = 2;
+// const DANCER_URL = "https://res.cloudinary.com/dbx6muxub/raw/upload/v1795021355/Hip_Hop_Dancing_1_flomq0.fbx";
+// const DANCERS = { count: 5, height: 0.7, spacing: 0.55, y: -0.95, z: 0.8 };
+
+// // грузим модели, пока висит LoadingScreen
+// preloadModels(MODELS);
+// useFBX.preload(DANCER_URL);
+
+// const AUTO_MS = 5000; // автосмена (переход длится ~2 с)
+// const LOCK_MS = 2200; // пауза после смены, чтобы анимация успела доиграть
+
+// // Значения по умолчанию (когда панель скрыта).
+// // Пресеты: hologram | wireframe | xray | neon | ink (ink — для светлого фона)
+// const DEFAULT_PRESET = "hologram";
+// const DEFAULT_STYLE = "mesh"; // 'mesh' (сетка) | 'morph' (точки, перетекают друг в друга)
+
+// // Во сколько раз модель больше на десктопе (ширина ≥ 768px). На мобиле всегда 1.
+// // 1.6 — модель почти во весь экран; 2+ — уже вылезает за края.
+// const DESKTOP_ZOOM = 1.6;
+
+// export default function MenuPage() {
+//   const [index, setIndex] = useState(0);
+//   const [isLoading, setIsLoading] = useState(true);
+//   const [isFadingOut, setIsFadingOut] = useState(false);
+//   const navigate = useNavigate();
+
+//   const lockRef = useRef(0);
+//   const touchY = useRef(null);
+//   const glitchRef = useRef(0); // сила глитча → хроматическая аберрация
+
+//   // десктоп (как md: в Tailwind) — модель крупнее, сцена на весь экран
+//   const [isDesktop, setIsDesktop] = useState(
+//     () => typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches
+//   );
+//   useEffect(() => {
+//     const mq = window.matchMedia("(min-width: 768px)");
+//     const on = () => setIsDesktop(mq.matches);
+//     mq.addEventListener("change", on);
+//     return () => mq.removeEventListener("change", on);
+//   }, []);
+//   const zoom = isDesktop ? DESKTOP_ZOOM : 1;
+
+//   const reduced =
+//     typeof window !== "undefined" &&
+//     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+//   const debug =
+//     typeof window !== "undefined" &&
+//     new URLSearchParams(window.location.search).has("debug");
+
+//   // панель настройки эффектов (скрыта без ?debug, но значения работают всегда)
+//   const [look, setLook] = useControls(() => ({
+//     preset: {
+//       value: DEFAULT_PRESET,
+//       options: Object.keys(LOOKS),
+//       onChange: (p, _path, ctx) => {
+//         if (!ctx.initial) setLook(LOOKS[p]);
+//       },
+//     },
+//     style: { value: DEFAULT_STYLE, options: ["mesh", "morph"] },
+//     color: LOOKS[DEFAULT_PRESET].color,
+//     color2: LOOKS[DEFAULT_PRESET].color2,
+//     blending: { value: LOOKS[DEFAULT_PRESET].blending, options: ["additive", "normal"] },
+//     fill: { value: LOOKS[DEFAULT_PRESET].fill, min: 0, max: 1 },
+//     lines: { value: LOOKS[DEFAULT_PRESET].lines, min: 0, max: 1 },
+//     fresnel: { value: LOOKS[DEFAULT_PRESET].fresnel, min: 0.5, max: 6 },
+//     scan: { value: LOOKS[DEFAULT_PRESET].scan, min: 0, max: 1 },
+//     edge: { value: LOOKS[DEFAULT_PRESET].edge, min: 0, max: 1.5 },
+//     ca: { value: LOOKS[DEFAULT_PRESET].ca, min: 0, max: 1 },
+//     dots: { value: LOOKS[DEFAULT_PRESET].dots, min: 0, max: 1 },
+//     point: { value: LOOKS[DEFAULT_PRESET].point, min: 0.5, max: 6 },
+//     scatter: { value: LOOKS[DEFAULT_PRESET].scatter, min: 0, max: 2 },
+//   }));
+
+//   // лоадер (как у вас было)
+//   useEffect(() => {
+//     const timer = setTimeout(() => setIsFadingOut(true), 1500);
+//     const removeLoadingScreen = setTimeout(() => setIsLoading(false), 2300);
+//     return () => {
+//       clearTimeout(timer);
+//       clearTimeout(removeLoadingScreen);
+//     };
+//   }, []);
+
+//   // смена слова/модели с защитой от слишком частых переключений
+//   const change = useCallback((next) => {
+//     const now = performance.now();
+//     if (now < lockRef.current) return;
+//     lockRef.current = now + LOCK_MS;
+//     setIndex(next);
+//   }, []);
+
+//   const step = useCallback(
+//     (dir) => change((index + dir + SLIDES.length) % SLIDES.length),
+//     [change, index]
+//   );
+
+//   // автосмена: таймер перезапускается после каждой смены
+//   useEffect(() => {
+//     if (isLoading) return;
+//     const id = setTimeout(() => step(1), AUTO_MS);
+//     return () => clearTimeout(id);
+//   }, [index, isLoading, step]);
+
+//   // колесо мыши и клавиши
+//   useEffect(() => {
+//     if (isLoading) return;
+//     const onWheel = (e) => {
+//       if (Math.abs(e.deltaY) < 20) return;
+//       step(e.deltaY > 0 ? 1 : -1);
+//     };
+//     const onKey = (e) => {
+//       if (e.key === "ArrowDown" || e.key === "ArrowRight") step(1);
+//       if (e.key === "ArrowUp" || e.key === "ArrowLeft") step(-1);
+//     };
+//     window.addEventListener("wheel", onWheel, { passive: true });
+//     window.addEventListener("keydown", onKey);
+//     return () => {
+//       window.removeEventListener("wheel", onWheel);
+//       window.removeEventListener("keydown", onKey);
+//     };
+//   }, [isLoading, step]);
+
+//   // свайп на телефоне
+//   const onTouchStart = (e) => (touchY.current = e.touches[0].clientY);
+//   const onTouchEnd = (e) => {
+//     if (touchY.current == null) return;
+//     const dy = touchY.current - e.changedTouches[0].clientY;
+//     touchY.current = null;
+//     if (Math.abs(dy) > 50) step(dy > 0 ? 1 : -1);
+//   };
+
+//   const isLast = index === SLIDES.length - 1;
+
+//   /*
+//     Раскладка (одинаково на десктопе и мобиле):
+
+//       ┌────────────────────────┐
+//       │  сцена (flex-1)        │  ← слово лежит ЗА моделью (z-1),
+//       │   слово  ← z-1         │    3D-канвас поверх (z-5)
+//       │   модель ← z-5         │
+//       ├────────────────────────┤
+//       │  кнопка                │  ← отдельная полоса снизу (z-10):
+//       │  ● ● ● ●               │    с моделями и танцорами не пересекается
+//       └────────────────────────┘
+//   */
+//   return (
+//     <>
+//       {isLoading && <LoadingScreen isFadingOut={isFadingOut} />}
+
+//       {/* панель настройки эффектов: только с ?debug */}
+//       <Leva hidden={!debug} collapsed />
+
+//       {/* 100svh вместо h-screen: на телефонах не прыгает от адресной строки */}
+//       <div
+//         className="relative flex h-[100svh] w-full flex-col overflow-hidden"
+//         style={{ touchAction: "none" }}
+//         onTouchStart={onTouchStart}
+//         onTouchEnd={onTouchEnd}
+//       >
+//         <picture>
+//           {/* для телефонов и планшетов */}
+//           <source srcSet="/project2.png" media="(max-width: 1024px)" />
+//           {/* для десктопа */}
+//           <img
+//             src="/project.png"
+//             alt="Project"
+//             className="absolute top-0 left-0 w-full h-full object-cover"
+//           />
+//         </picture>
+
+//         {/* ===== Сцена: слово + 3D-модель ===== */}
+//         <div className="relative min-h-0 flex-1 md:absolute md:inset-0">
+//           {/* Слово ЗА моделью. Модель полупрозрачная, поэтому буквы
+//               просвечивают сквозь неё. На мобиле слово уходит наверх,
+//               чтобы не спорить с моделью; на md+ стоит по центру. */}
+//           <div className="pointer-events-none absolute inset-0 z-[1] flex items-start justify-center pt-[12%] md:items-center md:pt-0">
+//             <motion.h1
+//               key={index}
+//               initial={{ opacity: 0, y: -20 }}
+//               animate={{ opacity: 1, y: 0, x: [0, -8, 6, -3, 0] }}
+//               transition={{ duration: 0.5, x: { duration: 0.4 } }}
+//               className={`
+//                 select-none
+//                 whitespace-nowrap
+//                 text-center
+//                 font-futura
+//                 tracking-[-0.04em]
+//                 leading-none
+//                 ${isLast ? "font-bold text-pink-300" : "font-medium text-white/50"}
+//               `}
+//               style={{ fontSize: "clamp(56px, 15vw, 220px)", padding: "0 20px" }}
+//             >
+//               {SLIDES[index].word}
+//             </motion.h1>
+//           </div>
+
+//           {/* 3D-сцена поверх слова; клики проходят насквозь */}
+//           {!isLoading && (
+//             <div className="pointer-events-none absolute inset-0 z-[5]">
+//               <Canvas
+//                 camera={{ position: [0, 1.4, 4.2], fov: 35 }}
+//                 dpr={[1, 1.75]}
+//                 gl={{ alpha: true }}
+//               >
+//                 <Suspense fallback={null}>
+//                   {look.style === "morph" ? (
+//                     <MorphPoints
+//                       models={MODELS}
+//                       activeIndex={index}
+//                       look={look}
+//                       zoom={zoom}
+//                       reduced={reduced}
+//                       glitchRef={glitchRef}
+//                     />
+//                   ) : (
+//                     <SkateparkStage
+//                       models={MODELS}
+//                       mode="swap"
+//                       activeIndex={index}
+//                       look={look}
+//                       zoom={zoom}
+//                       reduced={reduced}
+//                       glitchRef={glitchRef}
+//                     />
+//                   )}
+
+//                   {/* танцующие человечки только на слайде Events */}
+//                   <Dancers
+//                     visible={index === EVENTS_INDEX}
+//                     url={DANCER_URL}
+//                     look={look}
+//                     reduced={reduced}
+//                     {...DANCERS}
+//                   />
+//                 </Suspense>
+
+//                 {/* хроматическая аберрация (ca = 0 → выключена) */}
+//                 <Effects amount={look.ca} glitchRef={glitchRef} />
+//               </Canvas>
+//             </div>
+//           )}
+//         </div>
+
+//         {/* ===== Низ: кнопка + индикаторы ===== */}
+//         <div className="relative z-10 flex flex-col items-center gap-3 pt-2 pb-[max(1.5rem,env(safe-area-inset-bottom))] md:absolute md:inset-x-0 md:bottom-0 md:pb-8">
+//           <motion.button
+//             whileHover={{ scale: 1.1 }}
+//             whileTap={{ scale: 0.9 }}
+//             className="px-6 py-3 bg-white/20 backdrop-blur-md rounded-lg text-lg font-futura font-light shadow-lg hover:bg-pink-300 cursor-pointer"
+//             onClick={() => navigate("/catalogue")}
+//           >
+//             explore
+//           </motion.button>
+
+//           {/* «сторис»: 4 полоски. Прошедшие залиты, текущая заполняется
+//               за AUTO_MS (ровно до автосмены), остальные пустые. Клик → к слову. */}
+//           <div className="flex w-[min(78vw,320px)] items-center gap-1.5">
+//             {SLIDES.map((s, i) => (
+//               <button
+//                 key={s.word}
+//                 aria-label={s.word}
+//                 onClick={() => i !== index && change(i)}
+//                 className="group flex-1 cursor-pointer py-2"
+//               >
+//                 <div className="h-[3px] overflow-hidden rounded-full bg-white/25 transition-colors group-hover:bg-white/40">
+//                   {i < index && <div className="h-full w-full bg-white" />}
+//                   {i === index && (
+//                     <motion.div
+//                       key={index}
+//                       className="h-full w-full origin-left bg-white"
+//                       initial={{ scaleX: 0 }}
+//                       animate={{ scaleX: isLoading ? 0 : 1 }}
+//                       transition={{ duration: reduced ? 0 : AUTO_MS / 1000, ease: "linear" }}
+//                     />
+//                   )}
+//                 </div>
+//               </button>
+//             ))}
+//           </div>
+//         </div>
+//       </div>
+//     </>
+//   );
+// }
+
 const MODELS = SLIDES.map((s) => s.model);
 
 // Танцующие человечки на слайде Events.
 // Нужен FBX с mixamo.com (Format: FBX Binary, Skin: With Skin, лучше In Place).
 // Загрузите файл в Cloudinary (как raw) и вставьте ссылку.
 const EVENTS_INDEX = 2;
-const DANCER_URL = "https://res.cloudinary.com/dbx6muxub/raw/upload/v1795021355/Hip_Hop_Dancing_1_flomq0.fbx";
+const DANCER_URL = "https://res.cloudinary.com/dbx6muxub/raw/upload/ВАШ_ФАЙЛ/dancer.fbx";
 const DANCERS = { count: 5, height: 0.7, spacing: 0.55, y: -0.95, z: 0.8 };
 
 // грузим модели, пока висит LoadingScreen
@@ -589,6 +880,21 @@ const DEFAULT_STYLE = "mesh"; // 'mesh' (сетка) | 'morph' (точки, пе
 // 1.6 — модель почти во весь экран; 2+ — уже вылезает за края.
 const DESKTOP_ZOOM = 1.6;
 
+// Если что-то в 3D упало (не загрузился файл, нет WebGL), страница не белеет —
+// просто не показывается этот кусок. Причина будет в консоли.
+class Safe extends Component {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  componentDidCatch(e) {
+    console.warn("[3D] не загрузилось:", e);
+  }
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
+}
+
 export default function MenuPage() {
   const [index, setIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -606,8 +912,12 @@ export default function MenuPage() {
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 768px)");
     const on = () => setIsDesktop(mq.matches);
-    mq.addEventListener("change", on);
-    return () => mq.removeEventListener("change", on);
+    if (mq.addEventListener) mq.addEventListener("change", on);
+    else mq.addListener(on);
+    return () => {
+      if (mq.removeEventListener) mq.removeEventListener("change", on);
+      else mq.removeListener(on);
+    };
   }, []);
   const zoom = isDesktop ? DESKTOP_ZOOM : 1;
 
@@ -724,7 +1034,7 @@ export default function MenuPage() {
 
       {/* 100svh вместо h-screen: на телефонах не прыгает от адресной строки */}
       <div
-        className="relative flex h-[100svh] w-full flex-col overflow-hidden"
+        className="relative flex h-screen h-[100svh] w-full flex-col overflow-hidden"
         style={{ touchAction: "none" }}
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
@@ -769,6 +1079,7 @@ export default function MenuPage() {
           {/* 3D-сцена поверх слова; клики проходят насквозь */}
           {!isLoading && (
             <div className="pointer-events-none absolute inset-0 z-[5]">
+              <Safe>
               <Canvas
                 camera={{ position: [0, 1.4, 4.2], fov: 35 }}
                 dpr={[1, 1.75]}
@@ -796,19 +1107,27 @@ export default function MenuPage() {
                     />
                   )}
 
-                  {/* танцующие человечки только на слайде Events */}
-                  <Dancers
-                    visible={index === EVENTS_INDEX}
-                    url={DANCER_URL}
-                    look={look}
-                    reduced={reduced}
-                    {...DANCERS}
-                  />
                 </Suspense>
 
+                {/* танцующие человечки только на слайде Events.
+                    Свой Suspense и Safe: если FBX грузится долго или не загрузился,
+                    модели и текст всё равно показываются. */}
+                <Safe>
+                  <Suspense fallback={null}>
+                    <Dancers
+                      visible={index === EVENTS_INDEX}
+                      url={DANCER_URL}
+                      look={look}
+                      reduced={reduced}
+                      {...DANCERS}
+                    />
+                  </Suspense>
+                </Safe>
+
                 {/* хроматическая аберрация (ca = 0 → выключена) */}
-                <Effects amount={look.ca} glitchRef={glitchRef} />
+                <Effects amount={isDesktop ? look.ca : 0} glitchRef={glitchRef} />
               </Canvas>
+              </Safe>
             </div>
           )}
         </div>
