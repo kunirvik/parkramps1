@@ -531,7 +531,7 @@
 //     </div></>
 //   );
 // }
-import { useState, useEffect, useRef, useCallback, Suspense } from "react";
+import { Component, useState, useEffect, useRef, useCallback, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Canvas } from "@react-three/fiber";
