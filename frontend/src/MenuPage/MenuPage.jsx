@@ -1039,16 +1039,16 @@ export default function MenuPage() {
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-        <picture>
-          {/* для телефонов и планшетов */}
+        {/* <picture>
+
           <source srcSet="/project2.png" media="(max-width: 1024px)" />
-          {/* для десктопа */}
+
           <img
             src="/project.png"
             alt="Project"
             className="absolute top-0 left-0 w-full h-full object-cover"
           />
-        </picture>
+        </picture> */}
 
         {/* ===== Сцена: слово + 3D-модель ===== */}
         <div className="relative min-h-0 flex-1 md:absolute md:inset-0">
