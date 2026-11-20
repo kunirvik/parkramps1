@@ -561,7 +561,7 @@ import { LOOKS } from "../SkateparkStage/GlitchMaterial";
 const SLIDES = [
   { word: "Skateparks", model: { url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1793542923/sp1_f0qnhd.glb", scale: 1.15 } },
   { word: "Ramps",      model: { url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1794991173/mini_pwew3g.glb",      scale: 1.0 } },
-  { word: "Events",     model: { url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1795022552/tampaset_wskp6q.glb",    scale: 1.1 } },
+  { word: "Events",     model: { url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1795107447/box_ohvvi6.glb",    scale: 1.1 } },
   { word: "Parkramps",  model: { url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1786811336/model_eteyx8.glb",  scale: 1.0 } },
 ];
 // const MODELS = SLIDES.map((s) => s.model);
