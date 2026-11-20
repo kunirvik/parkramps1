@@ -813,7 +813,7 @@ const MODELS = SLIDES.map((s) => s.model);
 // Нужен FBX с mixamo.com (Format: FBX Binary, Skin: With Skin, лучше In Place).
 // Загрузите файл в Cloudinary (как raw) и вставьте ссылку.
 const EVENTS_INDEX = 2;
-const DANCER_URL = "https://res.cloudinary.com/dbx6muxub/raw/upload/ВАШ_ФАЙЛ/dancer.fbx";
+const DANCER_URL = "https://res.cloudinary.com/dbx6muxub/raw/upload/v1795021355/Hip_Hop_Dancing_1_flomq0.fbx";
 const DANCERS = { count: 5, height: 0.7, spacing: 0.55, y: -0.95, z: 0.8 };
 
 // грузим модели, пока висит LoadingScreen
@@ -956,16 +956,16 @@ export default function MenuPage() {
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-        <picture>
-          {/* для телефонов и планшетов */}
+        {/* <picture>
+        
           <source srcSet="/project2.png" media="(max-width: 1024px)" />
-          {/* для десктопа */}
+    
           <img
             src="/project.png"
             alt="Project"
             className="absolute top-0 left-0 w-full h-full object-cover"
           />
-        </picture>
+        </picture> */}
 
         {/* ===== Сцена: слово + 3D-модель ===== */}
         <div className="relative min-h-0 flex-1">
