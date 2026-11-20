@@ -297,13 +297,11 @@
 //     </group>
 //   );
 // }
-
-
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
-import { LOOKS, makeMaterial, applyLook, applyMaterial } from './GlitchMaterial';
+import { LOOKS, makeMaterial, applyLook, applyMaterial } from './glitchMaterial';
 
 /*
   Режим mesh: прозрачные глитч-модели (стирание сверху вниз → перерисовка снизу вверх).
@@ -344,6 +342,7 @@ export default function SkateparkStage({
   mode = 'swap',
   activeIndex,
   look = LOOKS.hologram,
+  zoom = 1,
   speed = 0.35,
   onIndex,
   readoutRef,
@@ -475,7 +474,7 @@ export default function SkateparkStage({
   });
 
   return (
-    <group ref={spin}>
+    <group ref={spin} scale={zoom}>
       {items.map((it, i) => (
         <group
           key={i}
@@ -490,4 +489,197 @@ export default function SkateparkStage({
       ))}
     </group>
   );
-}
+} 
+
+// import { useEffect, useMemo, useRef } from 'react';
+// import { useFrame, useThree } from '@react-three/fiber';
+// import { useGLTF } from '@react-three/drei';
+// import * as THREE from 'three';
+// import { LOOKS, makeMaterial, applyLook, applyMaterial } from './GlitchMaterial';
+
+// /*
+//   Режим mesh: прозрачные глитч-модели (стирание сверху вниз → перерисовка снизу вверх).
+
+//   Props:
+//     models      — [{ url, scale, position }]
+//     mode        — 'swap' | 'cluster'
+//     activeIndex — номер модели (управляемый режим)
+//     look        — объект из LOOKS (цвет, яркость слоёв, blending…)
+//     glitchRef   — ref, куда пишется текущая сила глитча (для хроматической аберрации)
+// */
+
+// function prepare(scene, model) {
+//   const box = new THREE.Box3().setFromObject(scene);
+//   const dim = box.getSize(new THREE.Vector3());
+//   const center = box.getCenter(new THREE.Vector3());
+//   const maxDim = Math.max(dim.x, dim.y, dim.z) || 1;
+//   const k = (2 / maxDim) * (model.scale ?? 1);
+//   const bounds = { minY: box.min.y, height: dim.y || 1, size: maxDim };
+
+//   const solidMat = makeMaterial(false, bounds);
+//   const wireMat = makeMaterial(true, bounds);
+
+//   return {
+//     solid: applyMaterial(scene.clone(true), solidMat),
+//     wire: applyMaterial(scene.clone(true), wireMat),
+//     mats: [solidMat, wireMat],
+//     k,
+//     offset: center.multiplyScalar(-k),
+//     position: model.position ?? [0, 0, 0],
+//   };
+// }
+
+// export const preloadModels = (models) => useGLTF.preload(models.map((m) => m.url));
+
+// export default function SkateparkStage({
+//   models,
+//   mode = 'swap',
+//   activeIndex,
+//   look = LOOKS.hologram,
+//   speed = 0.35,
+//   onIndex,
+//   readoutRef,
+//   triggerRef,
+//   glitchRef,
+//   reduced = false,
+// }) {
+//   const urls = models.map((m) => m.url);
+//   const gltfs = useGLTF(urls);
+//   const { size, camera } = useThree();
+
+//   const controlled = activeIndex !== undefined;
+//   const target = useRef(activeIndex ?? 0);
+//   target.current = activeIndex ?? 0;
+
+//   const spin = useRef();
+//   const groups = useRef([]);
+//   const fx = useRef({
+//     phase: 'in',
+//     t0: -1,
+//     nextAt: 4,
+//     nextMicro: 1.2,
+//     microEnd: 0,
+//     reveal: 0,
+//     glitch: 0,
+//     index: Math.min(activeIndex ?? 0, models.length - 1),
+//     force: false,
+//     lastDeg: -1,
+//   });
+
+//   // материалы НЕ пересоздаются при смене look — только обновляются uniform'ы
+//   const items = useMemo(
+//     () => gltfs.map((g, i) => prepare(g.scene, models[i])),
+//     [urls.join('|')] // eslint-disable-line react-hooks/exhaustive-deps
+//   );
+
+//   useEffect(() => {
+//     items.forEach((it) => applyLook(it.mats, look));
+//   }, [items, look]);
+
+//   useEffect(() => {
+//     if (triggerRef) triggerRef.current = () => (fx.current.force = true);
+//   }, [triggerRef]);
+
+//   useEffect(() => {
+//     const aspect = size.width / size.height;
+//     camera.position.set(0, 1.4, 4.2 * Math.max(1, 1.15 / aspect));
+//     camera.lookAt(0, 0, 0);
+//     camera.updateProjectionMatrix();
+//   }, [size, camera]);
+
+//   useFrame(({ clock }, delta) => {
+//     const t = clock.elapsedTime;
+//     const f = fx.current;
+//     const n = items.length;
+
+//     if (reduced) {
+//       f.reveal = 1;
+//       f.glitch = 0;
+//       if (controlled) f.index = target.current;
+//     } else if (f.phase === 'hold') {
+//       f.reveal = 1;
+//       if (t > f.nextMicro) {
+//         f.microEnd = t + 0.1 + Math.random() * 0.15;
+//         f.nextMicro = t + 1.5 + Math.random() * 2.5;
+//       }
+//       f.glitch = t < f.microEnd ? 1 : 0;
+
+//       const needSwap = controlled && target.current !== f.index;
+//       if (needSwap || f.force || (!controlled && t > f.nextAt)) {
+//         f.force = false;
+//         f.phase = 'out';
+//         f.t0 = t;
+//       }
+//     } else if (f.phase === 'out') {
+//       const k = Math.min((t - f.t0) / 0.55, 1);
+//       f.glitch = 1;
+//       f.reveal = 1 - k * k;
+//       if (k >= 1) {
+//         if (controlled) {
+//           f.index = Math.min(target.current, n - 1);
+//         } else if (mode === 'swap' && n > 1) {
+//           f.index = (f.index + 1) % n;
+//           onIndex?.(f.index);
+//         }
+//         f.phase = 'in';
+//         f.t0 = t;
+//       }
+//     } else {
+//       if (f.t0 < 0) f.t0 = t;
+//       const k = Math.min((t - f.t0) / 1.5, 1);
+//       f.reveal = 1 - Math.pow(1 - k, 3);
+//       f.glitch = k > 0 && k < 0.35 && Math.random() < 0.5 ? 1 : 0;
+//       if (k >= 1) {
+//         f.phase = 'hold';
+//         f.nextAt = t + 3.5 + Math.random() * 2.5;
+//         f.nextMicro = t + 1.2;
+//       }
+//     }
+
+//     if (glitchRef) glitchRef.current = f.glitch;
+
+//     items.forEach((it, i) => {
+//       let r;
+//       if (mode === 'swap') {
+//         r = i === f.index ? f.reveal : 0;
+//       } else {
+//         const stagger = 0.35;
+//         r = THREE.MathUtils.clamp(f.reveal * (1 + stagger) - i * stagger, 0, 1);
+//       }
+//       it.mats.forEach((m) => {
+//         m.uniforms.uTime.value = t;
+//         m.uniforms.uGlitch.value = f.glitch;
+//         m.uniforms.uReveal.value = r;
+//       });
+//       if (groups.current[i]) groups.current[i].visible = r > 0.001;
+//     });
+
+//     if (spin.current) {
+//       spin.current.rotation.y += reduced ? 0 : delta * speed;
+//       spin.current.position.x = f.glitch ? (Math.random() - 0.5) * 0.08 : 0;
+
+//       const deg = Math.round((((spin.current.rotation.y * 180) / Math.PI) % 360 + 360) % 360);
+//       if (readoutRef?.current && deg !== f.lastDeg) {
+//         f.lastDeg = deg;
+//         readoutRef.current.textContent = `rot ${String(deg).padStart(3, '0')}°`;
+//       }
+//     }
+//   });
+
+//   return (
+//     <group ref={spin}>
+//       {items.map((it, i) => (
+//         <group
+//           key={i}
+//           ref={(g) => (groups.current[i] = g)}
+//           position={mode === 'swap' ? [0, 0, 0] : it.position}
+//         >
+//           <group position={it.offset} scale={it.k}>
+//             <primitive object={it.solid} />
+//             <primitive object={it.wire} />
+//           </group>
+//         </group>
+//       ))}
+//     </group>
+//   );
+// }

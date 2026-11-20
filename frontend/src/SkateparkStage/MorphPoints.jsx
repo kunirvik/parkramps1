@@ -95,6 +95,7 @@ export default function MorphPoints({
   models,
   activeIndex = 0,
   look = LOOKS.hologram,
+  zoom = 1,
   count = 24000,
   speed = 0.35,
   readoutRef,
@@ -200,7 +201,7 @@ export default function MorphPoints({
   });
 
   return (
-    <group ref={spin}>
+    <group ref={spin} scale={zoom}>
       <points geometry={geometry} material={material} frustumCulled={false} />
     </group>
   );

@@ -561,253 +561,10 @@ import { LOOKS } from "../SkateparkStage/GlitchMaterial";
 const SLIDES = [
   { word: "Skateparks", model: { url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1793542923/sp1_f0qnhd.glb", scale: 1.15 } },
   { word: "Ramps",      model: { url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1794991173/mini_pwew3g.glb",      scale: 1.0 } },
-  { word: "Events",     model: { url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1795107447/box_ohvvi6.glb",    scale: 1.1 } },
+  { word: "Events",     model: { url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1795022552/tampaset_wskp6q.glb",    scale: 1.1 } },
   { word: "Parkramps",  model: { url: "https://res.cloudinary.com/dbx6muxub/image/upload/v1786811336/model_eteyx8.glb",  scale: 1.0 } },
 ];
 const MODELS = SLIDES.map((s) => s.model);
-
-// // Танцующие человечки на слайде Events.
-// // Нужен FBX с mixamo.com (Format: FBX Binary, Skin: With Skin, лучше In Place).
-// // Загрузите файл в Cloudinary (как raw) и вставьте ссылку.
-// const EVENTS_INDEX = 2;
-// const DANCER_URL = "https://res.cloudinary.com/dbx6muxub/raw/upload/v1795021355/Hip_Hop_Dancing_1_flomq0.fbx";
-// const DANCERS = { count: 5, height: 0.7, spacing: 0.55, y: -0.95, z: 0.8 };
-
-// // грузим модели, пока висит LoadingScreen
-// preloadModels(MODELS);
-// useFBX.preload(DANCER_URL);
-
-// const AUTO_MS = 5000; // автосмена (переход длится ~2 с)
-// const LOCK_MS = 2200; // пауза после смены, чтобы анимация успела доиграть
-
-// // Значения по умолчанию (когда панель скрыта).
-// // Пресеты: hologram | wireframe | xray | neon | ink (ink — для светлого фона)
-// const DEFAULT_PRESET = "hologram";
-// const DEFAULT_STYLE = "mesh"; // 'mesh' (сетка) | 'morph' (точки, перетекают друг в друга)
-
-// export default function MenuPage() {
-//   const [index, setIndex] = useState(0);
-//   const [isLoading, setIsLoading] = useState(true);
-//   const [isFadingOut, setIsFadingOut] = useState(false);
-//   const navigate = useNavigate();
-
-//   const lockRef = useRef(0);
-//   const touchY = useRef(null);
-//   const glitchRef = useRef(0); // сила глитча → хроматическая аберрация
-
-//   const reduced =
-//     typeof window !== "undefined" &&
-//     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-//   const debug =
-//     typeof window !== "undefined" &&
-//     new URLSearchParams(window.location.search).has("debug");
-
-//   // панель настройки эффектов (скрыта без ?debug, но значения работают всегда)
-//   const [look, setLook] = useControls(() => ({
-//     preset: {
-//       value: DEFAULT_PRESET,
-//       options: Object.keys(LOOKS),
-//       onChange: (p, _path, ctx) => {
-//         if (!ctx.initial) setLook(LOOKS[p]);
-//       },
-//     },
-//     style: { value: DEFAULT_STYLE, options: ["mesh", "morph"] },
-//     color: LOOKS[DEFAULT_PRESET].color,
-//     color2: LOOKS[DEFAULT_PRESET].color2,
-//     blending: { value: LOOKS[DEFAULT_PRESET].blending, options: ["additive", "normal"] },
-//     fill: { value: LOOKS[DEFAULT_PRESET].fill, min: 0, max: 1 },
-//     lines: { value: LOOKS[DEFAULT_PRESET].lines, min: 0, max: 1 },
-//     fresnel: { value: LOOKS[DEFAULT_PRESET].fresnel, min: 0.5, max: 6 },
-//     scan: { value: LOOKS[DEFAULT_PRESET].scan, min: 0, max: 1 },
-//     edge: { value: LOOKS[DEFAULT_PRESET].edge, min: 0, max: 1.5 },
-//     ca: { value: LOOKS[DEFAULT_PRESET].ca, min: 0, max: 1 },
-//     dots: { value: LOOKS[DEFAULT_PRESET].dots, min: 0, max: 1 },
-//     point: { value: LOOKS[DEFAULT_PRESET].point, min: 0.5, max: 6 },
-//     scatter: { value: LOOKS[DEFAULT_PRESET].scatter, min: 0, max: 2 },
-//   }));
-
-//   // лоадер (как у вас было)
-//   useEffect(() => {
-//     const timer = setTimeout(() => setIsFadingOut(true), 1500);
-//     const removeLoadingScreen = setTimeout(() => setIsLoading(false), 2300);
-//     return () => {
-//       clearTimeout(timer);
-//       clearTimeout(removeLoadingScreen);
-//     };
-//   }, []);
-
-//   // смена слова/модели с защитой от слишком частых переключений
-//   const change = useCallback((next) => {
-//     const now = performance.now();
-//     if (now < lockRef.current) return;
-//     lockRef.current = now + LOCK_MS;
-//     setIndex(next);
-//   }, []);
-
-//   const step = useCallback(
-//     (dir) => change((index + dir + SLIDES.length) % SLIDES.length),
-//     [change, index]
-//   );
-
-//   // автосмена: таймер перезапускается после каждой смены
-//   useEffect(() => {
-//     if (isLoading) return;
-//     const id = setTimeout(() => step(1), AUTO_MS);
-//     return () => clearTimeout(id);
-//   }, [index, isLoading, step]);
-
-//   // колесо мыши и клавиши
-//   useEffect(() => {
-//     if (isLoading) return;
-//     const onWheel = (e) => {
-//       if (Math.abs(e.deltaY) < 20) return;
-//       step(e.deltaY > 0 ? 1 : -1);
-//     };
-//     const onKey = (e) => {
-//       if (e.key === "ArrowDown" || e.key === "ArrowRight") step(1);
-//       if (e.key === "ArrowUp" || e.key === "ArrowLeft") step(-1);
-//     };
-//     window.addEventListener("wheel", onWheel, { passive: true });
-//     window.addEventListener("keydown", onKey);
-//     return () => {
-//       window.removeEventListener("wheel", onWheel);
-//       window.removeEventListener("keydown", onKey);
-//     };
-//   }, [isLoading, step]);
-
-//   // свайп на телефоне
-//   const onTouchStart = (e) => (touchY.current = e.touches[0].clientY);
-//   const onTouchEnd = (e) => {
-//     if (touchY.current == null) return;
-//     const dy = touchY.current - e.changedTouches[0].clientY;
-//     touchY.current = null;
-//     if (Math.abs(dy) > 50) step(dy > 0 ? 1 : -1);
-//   };
-
-//   const isLast = index === SLIDES.length - 1;
-
-//   return (
-//     <>
-//       {isLoading && <LoadingScreen isFadingOut={isFadingOut} />}
-
-//       {/* панель настройки эффектов: только с ?debug */}
-//       <Leva hidden={!debug} collapsed />
-
-//       <div
-//         className="relative w-full h-screen flex items-center justify-center overflow-hidden"
-//         style={{ touchAction: "none" }}
-//         onTouchStart={onTouchStart}
-//         onTouchEnd={onTouchEnd}
-//       >
-//         {/* <picture>
-//           <source srcSet="/project2.png" media="(max-width: 1024px)" />
-         
-//           <img
-//             src="/project.png"
-//             alt="Project"
-//             className="absolute top-0 left-0 w-full h-full object-cover"
-//           />
-//         </picture> */}
-
-//         {/* 3D-сцена между фоном и текстом; клики проходят насквозь */}
-//         {!isLoading && (
-//           <div className="absolute inset-0 z-[5] pointer-events-none">
-//             <Canvas
-//               camera={{ position: [0, 1.4, 4.2], fov: 35 }}
-//               dpr={[1, 1.75]}
-//               gl={{ alpha: true }}
-//             >
-//               <Suspense fallback={null}>
-//                 {look.style === "morph" ? (
-//                   <MorphPoints
-//                     models={MODELS}
-//                     activeIndex={index}
-//                     look={look}
-//                     reduced={reduced}
-//                     glitchRef={glitchRef}
-//                   />
-//                 ) : (
-//                   <SkateparkStage
-//                     models={MODELS}
-//                     mode="swap"
-//                     activeIndex={index}
-//                     look={look}
-//                     reduced={reduced}
-//                     glitchRef={glitchRef}
-//                   />
-//                 )}
-
-//                 {/* танцующие человечки только на слайде Events */}
-//                 <Dancers
-//                   visible={index === EVENTS_INDEX}
-//                   url={DANCER_URL}
-//                   look={look}
-//                   reduced={reduced}
-//                   {...DANCERS}
-//                 />
-//               </Suspense>
-
-//               {/* хроматическая аберрация (ca = 0 → выключена) */}
-//               <Effects amount={look.ca} glitchRef={glitchRef} />
-//             </Canvas>
-//           </div>
-//         )}
-
-//         {/* Анимированный текст */}
-//         <div className="relative z-10 flex flex-col items-center overflow-visible">
-//           <motion.h1
-//             key={index}
-//             initial={{ opacity: 0, y: -20 }}
-//             animate={{ opacity: 1, y: 0, x: [0, -8, 6, -3, 0] }}
-//             transition={{ duration: 0.5, x: { duration: 0.4 } }}
-//             className={`
-//               text-center
-//               break-words
-//               whitespace-normal
-//               font-futura
-//               tracking-[-5px]
-//               mb-6
-//               overflow-hidden
-//               bg-clip-text
-//               ${isLast
-//                 ? "font-bold text-transparent bg-pink-300"
-//                 : "font-medium text-transparent bg-white/50"}
-//             `}
-//             style={{ fontSize: "clamp(60px, 10vw, 150px)", padding: "0 20px" }}
-//           >
-//             {SLIDES[index].word}
-//           </motion.h1>
-
-//           <motion.button
-//             whileHover={{ scale: 1.1 }}
-//             whileTap={{ scale: 0.9 }}
-//             className="px-6 py-3 bg-white/20 backdrop-blur-md rounded-lg text-lg font-futura font-light shadow-lg hover:bg-pink-300 cursor-pointer"
-//             onClick={() => navigate("/catalogue")}
-//           >
-//             explore
-//           </motion.button>
-//         </div>
-
-//         {/* точки-индикаторы: можно кликнуть и перейти к нужному слову */}
-//         <div className="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 items-center gap-3 font-futura text-xs text-white/60">
-//           <span>{String(index + 1).padStart(2, "0")}</span>
-//           {SLIDES.map((s, i) => (
-//             <button
-//               key={s.word}
-//               aria-label={s.word}
-//               onClick={() => change(i)}
-//               className={`h-2 w-2 rounded-full transition-all ${
-//                 i === index ? "scale-125 bg-white" : "bg-white/30 hover:bg-white/60"
-//               }`}
-//             />
-//           ))}
-//           <span>{String(SLIDES.length).padStart(2, "0")}</span>
-//         </div>
-//       </div>
-//     </>
-//   );
-// }
 
 // Танцующие человечки на слайде Events.
 // Нужен FBX с mixamo.com (Format: FBX Binary, Skin: With Skin, лучше In Place).
@@ -930,18 +687,6 @@ export default function MenuPage() {
 
   const isLast = index === SLIDES.length - 1;
 
-  /*
-    Раскладка (одинаково на десктопе и мобиле):
-
-      ┌────────────────────────┐
-      │  сцена (flex-1)        │  ← слово лежит ЗА моделью (z-1),
-      │   слово  ← z-1         │    3D-канвас поверх (z-5)
-      │   модель ← z-5         │
-      ├────────────────────────┤
-      │  кнопка                │  ← отдельная полоса снизу (z-10):
-      │  ● ● ● ●               │    с моделями и танцорами не пересекается
-      └────────────────────────┘
-  */
   return (
     <>
       {isLoading && <LoadingScreen isFadingOut={isFadingOut} />}
@@ -949,17 +694,15 @@ export default function MenuPage() {
       {/* панель настройки эффектов: только с ?debug */}
       <Leva hidden={!debug} collapsed />
 
-      {/* 100svh вместо h-screen: на телефонах не прыгает от адресной строки */}
       <div
-        className="relative flex h-[100svh] w-full flex-col overflow-hidden"
+        className="relative w-full h-screen flex items-center justify-center overflow-hidden"
         style={{ touchAction: "none" }}
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
         {/* <picture>
-        
           <source srcSet="/project2.png" media="(max-width: 1024px)" />
-    
+         
           <img
             src="/project.png"
             alt="Project"
@@ -967,79 +710,75 @@ export default function MenuPage() {
           />
         </picture> */}
 
-        {/* ===== Сцена: слово + 3D-модель ===== */}
-        <div className="relative min-h-0 flex-1">
-          {/* Слово ЗА моделью. Модель полупрозрачная, поэтому буквы
-              просвечивают сквозь неё. На мобиле слово уходит наверх,
-              чтобы не спорить с моделью; на md+ стоит по центру. */}
-          <div className="pointer-events-none absolute inset-0 z-[1] flex items-start justify-center pt-[12%] md:items-center md:pt-0">
-            <motion.h1
-              key={index}
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0, x: [0, -8, 6, -3, 0] }}
-              transition={{ duration: 0.5, x: { duration: 0.4 } }}
-              className={`
-                select-none
-                whitespace-nowrap
-                text-center
-                font-futura
-                tracking-[-0.04em]
-                leading-none
-                ${isLast ? "font-bold text-pink-300" : "font-medium text-white/50"}
-              `}
-              style={{ fontSize: "clamp(56px, 15vw, 220px)", padding: "0 20px" }}
+        {/* 3D-сцена между фоном и текстом; клики проходят насквозь */}
+        {!isLoading && (
+          <div className="absolute inset-0 z-[5] pointer-events-none">
+            <Canvas
+              camera={{ position: [0, 1.4, 4.2], fov: 35 }}
+              dpr={[1, 1.75]}
+              gl={{ alpha: true }}
             >
-              {SLIDES[index].word}
-            </motion.h1>
-          </div>
-
-          {/* 3D-сцена поверх слова; клики проходят насквозь */}
-          {!isLoading && (
-            <div className="pointer-events-none absolute inset-0 z-[5]">
-              <Canvas
-                camera={{ position: [0, 1.4, 4.2], fov: 35 }}
-                dpr={[1, 1.75]}
-                gl={{ alpha: true }}
-              >
-                <Suspense fallback={null}>
-                  {look.style === "morph" ? (
-                    <MorphPoints
-                      models={MODELS}
-                      activeIndex={index}
-                      look={look}
-                      reduced={reduced}
-                      glitchRef={glitchRef}
-                    />
-                  ) : (
-                    <SkateparkStage
-                      models={MODELS}
-                      mode="swap"
-                      activeIndex={index}
-                      look={look}
-                      reduced={reduced}
-                      glitchRef={glitchRef}
-                    />
-                  )}
-
-                  {/* танцующие человечки только на слайде Events */}
-                  <Dancers
-                    visible={index === EVENTS_INDEX}
-                    url={DANCER_URL}
+              <Suspense fallback={null}>
+                {look.style === "morph" ? (
+                  <MorphPoints
+                    models={MODELS}
+                    activeIndex={index}
                     look={look}
                     reduced={reduced}
-                    {...DANCERS}
+                    glitchRef={glitchRef}
                   />
-                </Suspense>
+                ) : (
+                  <SkateparkStage
+                    models={MODELS}
+                    mode="swap"
+                    activeIndex={index}
+                    look={look}
+                    reduced={reduced}
+                    glitchRef={glitchRef}
+                  />
+                )}
 
-                {/* хроматическая аберрация (ca = 0 → выключена) */}
-                <Effects amount={look.ca} glitchRef={glitchRef} />
-              </Canvas>
-            </div>
-          )}
-        </div>
+                {/* танцующие человечки только на слайде Events */}
+                <Dancers
+                  visible={index === EVENTS_INDEX}
+                  url={DANCER_URL}
+                  look={look}
+                  reduced={reduced}
+                  {...DANCERS}
+                />
+              </Suspense>
 
-        {/* ===== Низ: кнопка + индикаторы ===== */}
-        <div className="relative z-10 flex flex-col items-center gap-5 pt-2 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+              {/* хроматическая аберрация (ca = 0 → выключена) */}
+              <Effects amount={look.ca} glitchRef={glitchRef} />
+            </Canvas>
+          </div>
+        )}
+
+        {/* Анимированный текст */}
+        <div className="relative z-10 flex flex-col items-center overflow-visible">
+          <motion.h1
+            key={index}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0, x: [0, -8, 6, -3, 0] }}
+            transition={{ duration: 0.5, x: { duration: 0.4 } }}
+            className={`
+              text-center
+              break-words
+              whitespace-normal
+              font-futura
+              tracking-[-5px]
+              mb-6
+              overflow-hidden
+              bg-clip-text
+              ${isLast
+                ? "font-bold text-transparent bg-pink-300"
+                : "font-medium text-transparent bg-white/50"}
+            `}
+            style={{ fontSize: "clamp(60px, 10vw, 150px)", padding: "0 20px" }}
+          >
+            {SLIDES[index].word}
+          </motion.h1>
+
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
@@ -1048,22 +787,22 @@ export default function MenuPage() {
           >
             explore
           </motion.button>
+        </div>
 
-          {/* точки-индикаторы: можно кликнуть и перейти к нужному слову */}
-          <div className="flex items-center gap-3 font-futura text-xs text-white/60">
-            <span>{String(index + 1).padStart(2, "0")}</span>
-            {SLIDES.map((s, i) => (
-              <button
-                key={s.word}
-                aria-label={s.word}
-                onClick={() => change(i)}
-                className={`h-2 w-2 rounded-full transition-all ${
-                  i === index ? "scale-125 bg-white" : "bg-white/30 hover:bg-white/60"
-                }`}
-              />
-            ))}
-            <span>{String(SLIDES.length).padStart(2, "0")}</span>
-          </div>
+        {/* точки-индикаторы: можно кликнуть и перейти к нужному слову */}
+        <div className="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 items-center gap-3 font-futura text-xs text-white/60">
+          <span>{String(index + 1).padStart(2, "0")}</span>
+          {SLIDES.map((s, i) => (
+            <button
+              key={s.word}
+              aria-label={s.word}
+              onClick={() => change(i)}
+              className={`h-2 w-2 rounded-full transition-all ${
+                i === index ? "scale-125 bg-white" : "bg-white/30 hover:bg-white/60"
+              }`}
+            />
+          ))}
+          <span>{String(SLIDES.length).padStart(2, "0")}</span>
         </div>
       </div>
     </>
